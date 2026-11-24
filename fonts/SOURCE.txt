@@ -1,0 +1,5 @@
+NotoSansJP-Regular.ttf
+Source: https://github.com/google/fonts/tree/main/ofl/notosansjp
+Original: NotoSansJP[wght].ttf (Google Fonts / Noto authors)
+Weight 400 instantiated with fontTools; family metadata renamed BDMT Japanese Regular, no outline changes. SIL OFL 1.1, see OFL.txt.
+This is a local offline asset. No network font service is used at runtime.
