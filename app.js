@@ -30622,8 +30622,8 @@ function repairProgressMetadata(t2) {
   }
   return affected.length;
 }
-function checkTeamEligibility(rule2, id) {
-  const q = rule2?.eligibility;
+function checkTeamEligibility(rule, id) {
+  const q = rule?.eligibility;
   if (!q) return;
   const p = Object.hasOwn(q.players, id) ? q.players[id] : void 0;
   ensure(p, "\u51FA\u5834\u8CC7\u683C\u60C5\u5831\u304C\u672A\u767B\u9332\u3067\u3059\uFF1A" + id);
@@ -30998,6 +30998,166 @@ function mountBracketZoom(host, views) {
     });
     teardown.observe(host, { childList: true });
   }
+}
+
+// src/bracket-layout.ts
+function bracketLayout(t2, matches, results = true, resultNumbers = false) {
+  const segments = [], captions = [];
+  const index = new Map(matches.map((m) => [m.id, m]));
+  const used = new Set(matches.flatMap((m) => m.deps));
+  const final = matches.find((m) => !used.has(m.id));
+  if (!final) return { width: 680, height: 100, segments, captions };
+  const entries = new Map(t2.events.flatMap((e) => e.entries.map((p) => [p.id, p])));
+  const step = 120, edge = 200, center = edge + step * final.round, w = 2 * center;
+  const team = t2.events.find((e) => e.id === final.eventId)?.team;
+  const pitch = Math.max(resultNumbers ? 78 : 64, (team?.rubbers ?? 0) * 16 + 16);
+  function line(x1, y1, x2, y2, red = false) {
+    if (x1 !== x2 || y1 !== y2) segments.push({ x1, y1, x2, y2, red });
+  }
+  function players(m) {
+    return [0, 1].reduce((n2, i) => {
+      const child = index.get(feeder(m, i));
+      return n2 + (child ? players(child) : Number(!!(i ? m.right : m.left)));
+    }, 0);
+  }
+  function player(id, side, y2) {
+    const entry = entries.get(id), x = side < 0 ? edge : w - edge;
+    if (entry) captions.push({
+      x: x + side * 10,
+      y: y2,
+      align: side < 0 ? "end" : "start",
+      kind: "player",
+      lines: [entry.name, entry.club].filter(Boolean)
+    });
+    return { x, y: y2, red: false };
+  }
+  function games2(m) {
+    if (m.rubbers?.length) return m.rubbers.map((r, i) => i + 1 + "\u672C " + r.games.map((g) => g.join("-")).join("/"));
+    return (m.retirementGames ?? m.games).map((g) => (m.winner === m.right ? [g[1], g[0]] : g).join("-"));
+  }
+  function counts(m) {
+    return [0, 1].map((i) => {
+      if (m.walkover) return m.winner === (i === 0 ? m.left : m.right) ? "" : "\xD7";
+      return String(m.rubbers?.length ? m.rubbers.filter((r) => r.winner === (i === 0 ? "left" : "right")).length : m.games.filter((g) => g[i] > g[1 - i]).length);
+    });
+  }
+  function caption(m, x, y2, side) {
+    const done3 = results && m.status === "completed", score2 = done3 ? games2(m) : [];
+    if (done3 && m.walkover && !score2.length && !resultNumbers) return;
+    captions.push({
+      x: x + side * 9,
+      y: y2 + (side === 0 ? 17 : done3 ? -8 * Math.max(1, score2.length + (resultNumbers ? 1 : 0)) : -8),
+      align: side < 0 ? "end" : side > 0 ? "start" : "middle",
+      kind: done3 ? "score" : "number",
+      lines: done3 ? resultNumbers ? [String(matchNumber(m, t2)), ...score2] : score2.length ? score2 : ["\u7D50\u679C\u3092\u78BA\u8A8D"] : [String(matchNumber(m, t2))],
+      match: m
+    });
+  }
+  function branch(m, side, cursor) {
+    const leaf = (id) => {
+      const p = player(id, side, cursor.y);
+      cursor.y += pitch;
+      return p;
+    };
+    if (m.status === "bye" && !m.deps.length) return leaf(m.left || m.right);
+    const [a, b] = [0, 1].map((i) => {
+      const child = index.get(feeder(m, i));
+      return child ? branch(child, side, cursor) : leaf(i ? m.right : m.left);
+    });
+    const x = center + side * step * (final.round - m.round), y2 = (a.y + b.y) / 2;
+    const done3 = results && m.status === "completed";
+    [a, b].forEach((p, i) => {
+      const won = done3 && !!m.winner && m.winner === (i === 0 ? m.left : m.right);
+      line(p.x, p.y, x, p.y, done3 ? won : p.red);
+      line(x, p.y, x, y2, won);
+      if (done3) {
+        const text2 = counts(m)[i];
+        if (text2) captions.push({ x: x - side * 6, y: p.y, align: side < 0 ? "start" : "end", kind: "count", lines: [text2], match: m.walkover ? m : void 0 });
+      }
+    });
+    caption(m, x, y2, side);
+    return { x, y: y2, red: done3 && !!m.winner };
+  }
+  const halves = [0, 1].map((i) => index.get(feeder(final, i)));
+  let height = 145;
+  let left, right;
+  if (halves.some(Boolean)) {
+    left = halves[0] ? branch(halves[0], -1, { y: 42 }) : player(final.left, -1, 42);
+    const rightSegments = segments.length, rightCaptions = captions.length;
+    right = halves[1] ? branch(halves[1], 1, { y: 42 }) : player(final.right, 1, 42);
+    const offset = left.y - right.y;
+    const shift = (fromSegment, fromCaption, dy) => {
+      for (let i = fromSegment; i < segments.length; i++) {
+        segments[i].y1 += dy;
+        segments[i].y2 += dy;
+      }
+      for (let i = fromCaption; i < captions.length; i++) captions[i].y += dy;
+    };
+    if (offset >= 0) {
+      shift(rightSegments, rightCaptions, offset);
+      right.y += offset;
+    } else {
+      shift(0, 0, -offset);
+      shift(rightSegments, rightCaptions, offset);
+      left.y -= offset;
+    }
+    height = Math.max((halves[0] ? players(halves[0]) : 1) * pitch + Math.max(0, -offset), (halves[1] ? players(halves[1]) : 1) * pitch + Math.max(0, offset)) + 60;
+  } else {
+    left = player(final.left, -1, 65);
+    right = player(final.right, 1, 65);
+  }
+  const y = (left.y + right.y) / 2, finished4 = results && final.status === "completed";
+  [left, right].forEach((p, i) => {
+    const won = finished4 && !!final.winner && final.winner === (i === 0 ? final.left : final.right);
+    line(p.x, p.y, center, p.y, finished4 ? won : p.red);
+    line(center, p.y, center, y, won);
+    const count = finished4 ? counts(final)[i] : "";
+    if (count) captions.push({ x: center + (i === 0 ? -1 : 1) * 20, y: p.y - 10, align: "middle", kind: "count", lines: [count], match: final.walkover ? final : void 0 });
+  });
+  line(center, y, center, y - 35, finished4 && !!final.winner);
+  caption(final, center, y, 0);
+  return { width: w, height, segments, captions };
+}
+
+// src/print-bracket.ts
+function printableBrackets(t2, matches, results, resultNumbers = false) {
+  const used = new Set(matches.flatMap((m) => m.deps)), root = matches.find((m) => !used.has(m.id));
+  if (!root) return [];
+  const index = new Map(matches.map((m) => [m.id, m]));
+  const collect = (m) => [m, ...m.deps.flatMap((id) => index.has(id) ? collect(index.get(id)) : [])];
+  const pages = [];
+  function section2(m) {
+    const tree = collect(m), layout = bracketLayout(t2, tree, results, resultNumbers);
+    if (layout.height / layout.width <= 1.62 && tree.length <= 31) {
+      pages.push({ title: "\u5BFE\u6226\u56F3 \xB7 " + matchNumber(m, t2), layout });
+      return;
+    }
+    const ids = [0, 1].map((i) => feeder(m, i));
+    for (const id of ids) {
+      const child = index.get(id);
+      if (child) section2(child);
+    }
+    const event = t2.events.find((e) => e.id === m.eventId);
+    const extra = ids.flatMap((id, i) => {
+      const x = index.get(id);
+      const side = i ? "right" : "left";
+      if (!x || m[side]) return [];
+      return [{ id: "print-source-" + i, name: String(matchNumber(x, t2)) + " \u306E\u52DD\u8005", club: "", seed: 0, players: [] }];
+    });
+    const resolved = {
+      ...m,
+      left: m.left || (ids[0] ? "print-source-0" : ""),
+      right: m.right || (ids[1] ? "print-source-1" : ""),
+      feeds: void 0,
+      deps: [],
+      round: 1,
+      displayNumber: String(matchNumber(m, t2))
+    };
+    const local = { ...t2, events: t2.events.map((e) => e === event ? { ...e, entries: [...e.entries, ...extra] } : e) };
+    pages.push({ title: "\u63A5\u7D9A \xB7 " + matchNumber(m, t2), layout: bracketLayout(local, [resolved], results, resultNumbers) });
+  }
+  section2(root);
+  return pages;
 }
 
 // node_modules/tslib/tslib.es6.js
@@ -46402,216 +46562,10 @@ var PDFButton = (
 );
 var PDFButton_default = PDFButton;
 
-// src/generic-score-sheet.ts
-var ink = rgb(0.1, 0.13, 0.16);
-var rule = rgb(0.31, 0.34, 0.39);
-var shade = rgb(0.91, 0.94, 0.96);
-function drawScoreSheet(p, font, type) {
-  const text2 = (s2, x, y, size = 9) => p.drawText(s2, { x, y, size, font, color: ink });
-  const box = (x, y, w, h, filled = false) => p.drawRectangle({ x, y, width: w, height: h, borderWidth: 0.6, borderColor: rule, ...filled ? { color: shade } : {} });
-  const line = (x, y, x2, y2) => p.drawLine({ start: { x, y }, end: { x: x2, y: y2 }, thickness: 0.55, color: rule });
-  text2("\u30D0\u30C9\u30DF\u30F3\u30C8\u30F3\u3000\u8A66\u5408\u8A18\u9332\u7968", 26, 558, 18);
-  text2(type === "singles" ? "\u30B7\u30F3\u30B0\u30EB\u30B9" : "\u30C0\u30D6\u30EB\u30B9", 713, 561, 12);
-  box(26, 494, 790, 53);
-  line(26, 519, 816, 519);
-  for (const [s2, x, y] of [["\u5927\u4F1A\u540D", 37, 529], ["\u7A2E\u76EE", 385, 529], ["\u8A66\u5408\u756A\u53F7", 638, 529], ["\u958B\u50AC\u65E5", 37, 505], ["\u30B3\u30FC\u30C8", 221, 505], ["\u4E88\u5B9A\u6642\u523B", 369, 505], ["\u958B\u59CB", 543, 505], ["\u7D42\u4E86", 684, 505]]) text2(s2, x, y);
-  for (const [x, side] of [[26, "\u5DE6\u5074"], [429, "\u53F3\u5074"]]) {
-    box(x, 410, 387, 76);
-    box(x, 469, 387, 17, true);
-    text2(side + "\u3000\u9078\u624B\u540D", x + 9, 474);
-    text2("\u6240\u5C5E", x + 13, 419);
-    if (type === "doubles") line(x + 11, 453, x + 376, 453);
-    line(x + 11, 432, x + 376, 432);
-  }
-  for (let game = 1; game <= 3; game++) {
-    const x = 26, top = 399 - (game - 1) * 107, span = 790, first = 57, step = (span - first) / 35;
-    box(x, top - 96, span, 96);
-    box(x, top - 19, span, 19, true);
-    text2("\u7B2C" + game + "\u30B2\u30FC\u30E0", x + 9, top - 13, 10);
-    text2("\u30B2\u30FC\u30E0\u7D42\u4E86\u5F97\u70B9\u3000\u5DE6\uFF1A\u3000\u3000\u3000\u3000\u3000\u53F3\uFF1A\u3000\u3000\u3000\u3000\u3000\u6240\u8981\u6642\u9593\uFF1A\u3000\u3000\u3000\u3000\u3000\u30B7\u30E3\u30C8\u30EB\u6570\uFF1A", x + 133, top - 13);
-    const labels = type === "singles" ? ["\u5DE6 \u9078\u624B", "\u53F3 \u9078\u624B", "\u5099\u8003"] : ["\u5DE6 \u9078\u624B1", "\u5DE6 \u9078\u624B2", "\u53F3 \u9078\u624B1", "\u53F3 \u9078\u624B2", "\u5099\u8003"];
-    const rowH = 77 / labels.length;
-    line(x + first, top - 19, x + first, top - 96);
-    for (let col = 1; col < 35; col++) line(x + first + col * step, top - 19, x + first + col * step, top - 96);
-    for (const [i, label2] of labels.entries()) {
-      text2(label2, x + 5, top - 19 - (i + 0.65) * rowH, 8);
-      if (i) line(x, top - 19 - i * rowH, x + span, top - 19 - i * rowH);
-    }
-  }
-  box(26, 43, 790, 39);
-  text2("\u52DD\u8005\u30FB\u30B2\u30FC\u30E0\u6570\uFF1A", 36, 69);
-  text2("\u52DD\u8005\u7F72\u540D\uFF1A", 356, 69);
-  text2("\u4E3B\u5BE9\u7F72\u540D\uFF1A", 591, 69);
-  text2("\u30B5\u30FC\u30D3\u30B9\u30B8\u30E3\u30C3\u30B8\uFF1A", 36, 51);
-  text2("\u30EC\u30D5\u30A7\u30EA\u30FC\u7F72\u540D\uFF1A", 356, 51);
-  text2("\u5099\u8003\uFF1A", 591, 51);
-  text2("\u904B\u55B6\u8A18\u9332\u6B04\u3000W \u8B66\u544A \uFF0F F \u30D5\u30A9\u30EB\u30C8 \uFF0F D \u5931\u683C \uFF0F I \u8CA0\u50B7 \uFF0F R \u68C4\u6A29", 29, 26, 8);
-}
-
-// src/bracket-layout.ts
-function bracketLayout(t2, matches, results = true, resultNumbers = false) {
-  const segments = [], captions = [];
-  const index = new Map(matches.map((m) => [m.id, m]));
-  const used = new Set(matches.flatMap((m) => m.deps));
-  const final = matches.find((m) => !used.has(m.id));
-  if (!final) return { width: 680, height: 100, segments, captions };
-  const entries = new Map(t2.events.flatMap((e) => e.entries.map((p) => [p.id, p])));
-  const step = 120, edge = 200, center = edge + step * final.round, w = 2 * center;
-  const team = t2.events.find((e) => e.id === final.eventId)?.team;
-  const pitch = Math.max(resultNumbers ? 78 : 64, (team?.rubbers ?? 0) * 16 + 16);
-  function line(x1, y1, x2, y2, red = false) {
-    if (x1 !== x2 || y1 !== y2) segments.push({ x1, y1, x2, y2, red });
-  }
-  function players(m) {
-    return [0, 1].reduce((n2, i) => {
-      const child = index.get(feeder(m, i));
-      return n2 + (child ? players(child) : Number(!!(i ? m.right : m.left)));
-    }, 0);
-  }
-  function player(id, side, y2) {
-    const entry = entries.get(id), x = side < 0 ? edge : w - edge;
-    if (entry) captions.push({
-      x: x + side * 10,
-      y: y2,
-      align: side < 0 ? "end" : "start",
-      kind: "player",
-      lines: [entry.name, entry.club].filter(Boolean)
-    });
-    return { x, y: y2, red: false };
-  }
-  function games2(m) {
-    if (m.rubbers?.length) return m.rubbers.map((r, i) => i + 1 + "\u672C " + r.games.map((g) => g.join("-")).join("/"));
-    return (m.retirementGames ?? m.games).map((g) => (m.winner === m.right ? [g[1], g[0]] : g).join("-"));
-  }
-  function counts(m) {
-    return [0, 1].map((i) => {
-      if (m.walkover) return m.winner === (i === 0 ? m.left : m.right) ? "" : "\xD7";
-      return String(m.rubbers?.length ? m.rubbers.filter((r) => r.winner === (i === 0 ? "left" : "right")).length : m.games.filter((g) => g[i] > g[1 - i]).length);
-    });
-  }
-  function caption(m, x, y2, side) {
-    const done3 = results && m.status === "completed", score2 = done3 ? games2(m) : [];
-    if (done3 && m.walkover && !score2.length && !resultNumbers) return;
-    captions.push({
-      x: x + side * 9,
-      y: y2 + (side === 0 ? 17 : done3 ? -8 * Math.max(1, score2.length + (resultNumbers ? 1 : 0)) : -8),
-      align: side < 0 ? "end" : side > 0 ? "start" : "middle",
-      kind: done3 ? "score" : "number",
-      lines: done3 ? resultNumbers ? [String(matchNumber(m, t2)), ...score2] : score2.length ? score2 : ["\u7D50\u679C\u3092\u78BA\u8A8D"] : [String(matchNumber(m, t2))],
-      match: m
-    });
-  }
-  function branch(m, side, cursor) {
-    const leaf = (id) => {
-      const p = player(id, side, cursor.y);
-      cursor.y += pitch;
-      return p;
-    };
-    if (m.status === "bye" && !m.deps.length) return leaf(m.left || m.right);
-    const [a, b] = [0, 1].map((i) => {
-      const child = index.get(feeder(m, i));
-      return child ? branch(child, side, cursor) : leaf(i ? m.right : m.left);
-    });
-    const x = center + side * step * (final.round - m.round), y2 = (a.y + b.y) / 2;
-    const done3 = results && m.status === "completed";
-    [a, b].forEach((p, i) => {
-      const won = done3 && !!m.winner && m.winner === (i === 0 ? m.left : m.right);
-      line(p.x, p.y, x, p.y, done3 ? won : p.red);
-      line(x, p.y, x, y2, won);
-      if (done3) {
-        const text2 = counts(m)[i];
-        if (text2) captions.push({ x: x - side * 6, y: p.y, align: side < 0 ? "start" : "end", kind: "count", lines: [text2], match: m.walkover ? m : void 0 });
-      }
-    });
-    caption(m, x, y2, side);
-    return { x, y: y2, red: done3 && !!m.winner };
-  }
-  const halves = [0, 1].map((i) => index.get(feeder(final, i)));
-  let height = 145;
-  let left, right;
-  if (halves.some(Boolean)) {
-    left = halves[0] ? branch(halves[0], -1, { y: 42 }) : player(final.left, -1, 42);
-    const rightSegments = segments.length, rightCaptions = captions.length;
-    right = halves[1] ? branch(halves[1], 1, { y: 42 }) : player(final.right, 1, 42);
-    const offset = left.y - right.y;
-    const shift = (fromSegment, fromCaption, dy) => {
-      for (let i = fromSegment; i < segments.length; i++) {
-        segments[i].y1 += dy;
-        segments[i].y2 += dy;
-      }
-      for (let i = fromCaption; i < captions.length; i++) captions[i].y += dy;
-    };
-    if (offset >= 0) {
-      shift(rightSegments, rightCaptions, offset);
-      right.y += offset;
-    } else {
-      shift(0, 0, -offset);
-      shift(rightSegments, rightCaptions, offset);
-      left.y -= offset;
-    }
-    height = Math.max((halves[0] ? players(halves[0]) : 1) * pitch + Math.max(0, -offset), (halves[1] ? players(halves[1]) : 1) * pitch + Math.max(0, offset)) + 60;
-  } else {
-    left = player(final.left, -1, 65);
-    right = player(final.right, 1, 65);
-  }
-  const y = (left.y + right.y) / 2, finished4 = results && final.status === "completed";
-  [left, right].forEach((p, i) => {
-    const won = finished4 && !!final.winner && final.winner === (i === 0 ? final.left : final.right);
-    line(p.x, p.y, center, p.y, finished4 ? won : p.red);
-    line(center, p.y, center, y, won);
-    const count = finished4 ? counts(final)[i] : "";
-    if (count) captions.push({ x: center + (i === 0 ? -1 : 1) * 20, y: p.y - 10, align: "middle", kind: "count", lines: [count], match: final.walkover ? final : void 0 });
-  });
-  line(center, y, center, y - 35, finished4 && !!final.winner);
-  caption(final, center, y, 0);
-  return { width: w, height, segments, captions };
-}
-
-// src/print-bracket.ts
-function printableBrackets(t2, matches, results, resultNumbers = false) {
-  const used = new Set(matches.flatMap((m) => m.deps)), root = matches.find((m) => !used.has(m.id));
-  if (!root) return [];
-  const index = new Map(matches.map((m) => [m.id, m]));
-  const collect = (m) => [m, ...m.deps.flatMap((id) => index.has(id) ? collect(index.get(id)) : [])];
-  const pages = [];
-  function section2(m) {
-    const tree = collect(m), layout = bracketLayout(t2, tree, results, resultNumbers);
-    if (layout.height / layout.width <= 1.62 && tree.length <= 31) {
-      pages.push({ title: "\u5BFE\u6226\u56F3 \xB7 " + matchNumber(m, t2), layout });
-      return;
-    }
-    const ids = [0, 1].map((i) => feeder(m, i));
-    for (const id of ids) {
-      const child = index.get(id);
-      if (child) section2(child);
-    }
-    const event = t2.events.find((e) => e.id === m.eventId);
-    const extra = ids.flatMap((id, i) => {
-      const x = index.get(id);
-      const side = i ? "right" : "left";
-      if (!x || m[side]) return [];
-      return [{ id: "print-source-" + i, name: String(matchNumber(x, t2)) + " \u306E\u52DD\u8005", club: "", seed: 0, players: [] }];
-    });
-    const resolved = {
-      ...m,
-      left: m.left || (ids[0] ? "print-source-0" : ""),
-      right: m.right || (ids[1] ? "print-source-1" : ""),
-      feeds: void 0,
-      deps: [],
-      round: 1,
-      displayNumber: String(matchNumber(m, t2))
-    };
-    const local = { ...t2, events: t2.events.map((e) => e === event ? { ...e, entries: [...e.entries, ...extra] } : e) };
-    pages.push({ title: "\u63A5\u7D9A \xB7 " + matchNumber(m, t2), layout: bracketLayout(local, [resolved], results, resultNumbers) });
-  }
-  section2(root);
-  return pages;
-}
-
 // src/schedule-pdf.ts
-var ink2 = rgb(0.13, 0.16, 0.21);
+var ink = rgb(0.13, 0.16, 0.21);
 var border = rgb(0.72, 0.75, 0.79);
-var shade2 = rgb(0.93, 0.95, 0.97);
+var shade = rgb(0.93, 0.95, 0.97);
 var time = (value) => String(Math.floor(value / 60)).padStart(2, "0") + ":" + String(value % 60).padStart(2, "0");
 var status = { waiting: "\u5F85\u6A5F", called: "\u547C\u51FA\u6E08", playing: "\u9032\u884C\u4E2D", completed: "\u7D42\u4E86", bye: "\u514D\u9664" };
 var order = (a, b) => a.time - b.time || (a.queueOrder ?? a.number) - (b.queueOrder ?? b.number);
@@ -46653,8 +46607,8 @@ function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
     }
     let x = left;
     for (const [i, col] of items.entries()) {
-      page2.drawRectangle({ x, y: y - rh, width: widths[i], height: rh, borderColor: border, borderWidth: 0.45, ...head2 ? { color: shade2 } : {} });
-      for (const [j, item] of col.entries()) page2.drawText(item.s, { x: x + 3, y: y - 13 - j * 12, size: item.size, font, color: ink2 });
+      page2.drawRectangle({ x, y: y - rh, width: widths[i], height: rh, borderColor: border, borderWidth: 0.45, ...head2 ? { color: shade } : {} });
+      for (const [j, item] of col.entries()) page2.drawText(item.s, { x: x + 3, y: y - 13 - j * 12, size: item.size, font, color: ink });
       x += widths[i];
     }
     y -= rh;
@@ -46666,10 +46620,10 @@ function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
     const topic = lines(t2.name + "\u3000" + title2 + (pageNumber > 1 ? "\uFF08\u7D9A\uFF09" : ""), available, 13, false);
     y = h - 28;
     for (const l of topic) {
-      page2.drawText(l.s, { x: left, y, size: l.size, font, color: ink2 });
+      page2.drawText(l.s, { x: left, y, size: l.size, font, color: ink });
       y -= 16;
     }
-    page2.drawText(String(pdf.getPageCount()), { x: w - 35, y: 16, font, size: 8, color: ink2 });
+    page2.drawText(String(pdf.getPageCount()), { x: w - 35, y: 16, font, size: 8, color: ink });
     y -= 5;
     row(headers.map((text2) => [{ text: text2, atomic: true }]), true);
   }
@@ -47256,23 +47210,23 @@ function updateQualifications(t2, sourceId) {
   const stages = t2.stages.filter((s2) => s2.source === sourceId);
   let changed = false;
   for (const stage of stages) {
-    const rule2 = stage.qualification;
-    ensure(rule2, "\u65E7\u7248\u306E\u6C7A\u52DD\u306F\u9032\u51FA\u6761\u4EF6\u3092\u518D\u8A08\u7B97\u3067\u304D\u307E\u305B\u3093\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u53D6\u308A\u6D88\u3057\u3066\u304B\u3089\u8A02\u6B63\u3057\u3066\u304F\u3060\u3055\u3044");
-    const next = "slots" in rule2 ? rule2.slots.map((slot) => resolveFinalSlot(t2, slot)) : qualifiedGroups(t2, source).flatMap((rows, i) => {
-      if (rule2.place !== void 0) {
+    const rule = stage.qualification;
+    ensure(rule, "\u65E7\u7248\u306E\u6C7A\u52DD\u306F\u9032\u51FA\u6761\u4EF6\u3092\u518D\u8A08\u7B97\u3067\u304D\u307E\u305B\u3093\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u53D6\u308A\u6D88\u3057\u3066\u304B\u3089\u8A02\u6B63\u3057\u3066\u304F\u3060\u3055\u3044");
+    const next = "slots" in rule ? rule.slots.map((slot) => resolveFinalSlot(t2, slot)) : qualifiedGroups(t2, source).flatMap((rows, i) => {
+      if (rule.place !== void 0) {
         ensure(!rows.some((r) => r.tied), "\u9032\u51FA\u5883\u754C\u304C\u540C\u9806\u4F4D\u3067\u3059\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u9806\u4F4D\u3092\u88C1\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
-        return rows.filter((r) => r.rank === rule2.place).map((r) => r.id);
+        return rows.filter((r) => r.rank === rule.place).map((r) => r.id);
       }
-      const count = rule2.counts[i];
+      const count = rule.counts[i];
       ensure(!(rows[count] && rows[count - 1].rank === rows[count].rank), "\u9032\u51FA\u5883\u754C\u304C\u540C\u9806\u4F4D\u3067\u3059\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u9806\u4F4D\u3092\u88C1\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
       return rows.slice(0, count).map((r) => r.id);
     });
-    ensure(next.length === rule2.previous.length && next.every((id) => !!id) && new Set(next).size === next.length, "\u8A02\u6B63\u5F8C\u306E\u9032\u51FA\u8005\u306B\u6B20\u843D\u3084\u91CD\u8907\u304C\u3042\u308A\u307E\u3059\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u67A0\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
-    if (next.every((id, i) => id === rule2.previous[i])) continue;
+    ensure(next.length === rule.previous.length && next.every((id) => !!id) && new Set(next).size === next.length, "\u8A02\u6B63\u5F8C\u306E\u9032\u51FA\u8005\u306B\u6B20\u843D\u3084\u91CD\u8907\u304C\u3042\u308A\u307E\u3059\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u67A0\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
+    if (next.every((id, i) => id === rule.previous[i])) continue;
     const matches = t2.matches.filter((n2) => n2.stageId === stage.id);
     ensure(!stage.locked && !t2.stages.some((s2) => s2.source === stage.id) && matches.every((n2) => ["waiting", "bye"].includes(n2.status)), "\u6C7A\u52DD\u9032\u51FA\u8005\u304C\u5909\u308F\u308A\u307E\u3059\u3002\u6C7A\u52DD\u5074\u304B\u3089\u7D50\u679C\u30FB\u9032\u884C\u3092\u53D6\u308A\u6D88\u3057\u3066\u304B\u3089\u8A02\u6B63\u3057\u3066\u304F\u3060\u3055\u3044");
     changed = true;
-    const mapping = new Map(rule2.previous.map((id, i) => [id, next[i]]));
+    const mapping = new Map(rule.previous.map((id, i) => [id, next[i]]));
     const replace = (id) => mapping.get(id) ?? id;
     for (const g of stage.groups) {
       g.entries = g.entries.map(replace);
@@ -47285,7 +47239,7 @@ function updateQualifications(t2, sourceId) {
       m.right = right;
       m.winner = replace(m.winner);
     }
-    rule2.previous = next;
+    rule.previous = next;
   }
   if (changed && t2.matches.some((m) => m.court > 0)) validateSchedule(t2);
 }
@@ -71198,9 +71152,9 @@ var OTProcessor = /* @__PURE__ */ (function() {
         }
         var set = table10.ruleSets[index];
         for (var _iterator14 = _createForOfIteratorHelperLoose$d(set), _step14; !(_step14 = _iterator14()).done; ) {
-          var rule2 = _step14.value;
-          if (this.sequenceMatches(1, rule2.input)) {
-            return this.applyLookupList(rule2.lookupRecords);
+          var rule = _step14.value;
+          if (this.sequenceMatches(1, rule.input)) {
+            return this.applyLookupList(rule.lookupRecords);
           }
         }
         break;
@@ -71237,9 +71191,9 @@ var OTProcessor = /* @__PURE__ */ (function() {
         }
         var set = table10.chainRuleSets[index];
         for (var _iterator16 = _createForOfIteratorHelperLoose$d(set), _step16; !(_step16 = _iterator16()).done; ) {
-          var rule2 = _step16.value;
-          if (this.sequenceMatches(-rule2.backtrack.length, rule2.backtrack) && this.sequenceMatches(1, rule2.input) && this.sequenceMatches(1 + rule2.input.length, rule2.lookahead)) {
-            return this.applyLookupList(rule2.lookupRecords);
+          var rule = _step16.value;
+          if (this.sequenceMatches(-rule.backtrack.length, rule.backtrack) && this.sequenceMatches(1, rule.input) && this.sequenceMatches(1 + rule.input.length, rule.lookahead)) {
+            return this.applyLookupList(rule.lookupRecords);
           }
         }
         break;
@@ -80435,24 +80389,29 @@ async function generateScoreSheetsPdf(t2, matchIds, fontBytes, templates) {
   const { pdf, font } = await document2(fontBytes);
   const sources = /* @__PURE__ */ new Map();
   for (const m of matches) {
-    let field2 = function(value, x, y, max3, size = 10, center = false) {
-      const text2 = safeText(font, value);
+    let field2 = function(value, x, top, w, h, max3, center = false, maxLines = 1) {
+      const text2 = safeText(font, value).trim();
       if (!text2) return;
-      const natural = font.widthOfTextAtSize(text2, size), scaled = Math.min(size, size * max3 / natural);
-      if (scaled < 6) {
-        const lines = wrap(font, text2, 7, max3);
-        ensure(lines.length <= 3, "\u7528\u7D19\u306E\u8A18\u5165\u6B04\u306B\u53CE\u307E\u3089\u306A\u3044\u540D\u79F0\u3067\u3059");
-        for (const [i, line] of lines.entries()) page2.drawText(line, { x, y: y + 5 - i * 7, size: 7, font, color: INK });
-        return;
+      let size = max3, lines = [text2];
+      while (true) {
+        lines = maxLines === 1 ? [text2] : wrap(font, text2, size, w);
+        if (lines.length <= maxLines && lines.length * size * 1.15 <= h && lines.every((line) => font.widthOfTextAtSize(line, size) <= w)) break;
+        size *= 0.94;
       }
-      page2.drawText(text2, { x: center ? x + (max3 - Math.min(natural, max3)) / 2 : x, y, size: scaled, font, color: INK });
-    }, side2 = function(entry, x) {
-      const pair = entry.name.split(/[/／・\n]/).map((n2) => n2.trim());
+      const lineHeight = size * 1.15;
+      const baseline = top + (h - lines.length * lineHeight) / 2 + size * 0.93;
+      for (const [i, line] of lines.entries()) {
+        const left2 = center ? x + (w - font.widthOfTextAtSize(line, size)) / 2 : x;
+        page2.drawText(line, { x: left2, y: page2.getHeight() - baseline - i * lineHeight, size, font, color: INK });
+      }
+    }, side2 = function(entry, x, clubX) {
+      const memberSeparator = /[/／\n]/;
+      const pair = entry.name.split(memberSeparator.test(entry.name) ? memberSeparator : /・/).map((n2) => n2.trim()).filter(Boolean);
       if (kind === "doubles" && pair.length === 2) {
-        field2(pair[0], x + 13, 459, 340, 13);
-        field2(pair[1], x + 13, 440, 340, 13);
-      } else field2(entry.name, x + 13, 452, 340, 13);
-      field2(entry.club, x + 60, 419, 300, 10);
+        field2(pair[0], x, 55, 99, 21, 11, true, 2);
+        field2(pair[1], x, 81, 99, 21, 11, true, 2);
+      } else field2(entry.name, x, kind === "singles" ? 54 : 55, 99, kind === "singles" ? 48 : 21, 12, true, kind === "singles" ? 3 : 2);
+      field2(entry.club, clubX, 110, 103, 17, 9, true, 2);
     };
     var field = field2, side = side2;
     const event = t2.events.find((e) => e.id === m.eventId);
@@ -80467,17 +80426,17 @@ async function generateScoreSheetsPdf(t2, matchIds, fontBytes, templates) {
       ensure(source.getPageCount() === 1 && Math.abs(width - 841.89) < 2 && Math.abs(height - 595.28) < 2, "\u5BE9\u5224\u7528\u7D19\u306E\u539F\u672C\u304CA4\u6A2A1\u30DA\u30FC\u30B8\u3067\u306F\u3042\u308A\u307E\u305B\u3093");
       sources.set(kind, source);
     }
-    const page2 = pdf.addPage([PageSizes.A4[1], PageSizes.A4[0]]);
-    drawScoreSheet(page2, font, kind);
+    const [page2] = await pdf.copyPages(source, [0]);
+    pdf.addPage(page2);
     const left = entryOf(t2, m.left), right = entryOf(t2, m.right);
-    field2(t2.name, 100, 529, 260, 10);
-    field2(event.name, 430, 529, 190, 10);
-    field2(String(matchNumber(m, t2)), 705, 529, 105);
-    field2(t2.date, 100, 505, 120);
-    field2(m.court ? String(m.court) : "", 282, 505, 84);
-    field2(m.court ? String(Math.floor(m.time / 60)).padStart(2, "0") + ":" + String(m.time % 60).padStart(2, "0") : "", 430, 505, 105);
-    side2(left, 26);
-    side2(right, 429);
+    field2(event.name, 216, 9, 410, 16, 11, true);
+    field2(t2.name, 96, 25, 114, 15, 10, false, 2);
+    field2(String(matchNumber(m, t2)), 96, 43, 114, 14, 10);
+    field2(m.court ? String(m.court) : "", 96, 60, 114, 14, 10);
+    field2(t2.date, 96, 77, 114, 14, 10);
+    field2(m.court ? String(Math.floor(m.time / 60)).padStart(2, "0") + ":" + String(m.time % 60).padStart(2, "0") : "", 96, 94, 114, 14, 10);
+    side2(left, 248, 235);
+    side2(right, 488, 499);
   }
   return pdf.save();
 }
@@ -109001,9 +108960,9 @@ function migratePractices(rows, tournaments, rules = {}) {
       const ids = parsed;
       const courts = Number(s2["\u30B3\u30FC\u30C8\u6570"]), rounds = Number(s2["\u5DE1\u6570"]);
       ensure(Number.isInteger(courts) && courts >= 1 && courts <= 64 && Number.isInteger(rounds) && rounds >= 1 && rounds <= 50, "\u7DF4\u7FD2\u30B3\u30FC\u30C8\u6570/\u5DE1\u6570\u304C\u4E0D\u6B63\uFF1A" + sid2);
-      const rule2 = structuredClone(rules[sid2] || { base: 21, cap: 30, wins: 1, deuce: true });
-      ruleCheck(rule2);
-      ensure(rule2.wins === 1, "GAS\u7DF4\u7FD2\u5C65\u6B74\u306F1\u30B2\u30FC\u30E0\u65B9\u5F0F\u3067\u3059\uFF1A" + sid2);
+      const rule = structuredClone(rules[sid2] || { base: 21, cap: 30, wins: 1, deuce: true });
+      ruleCheck(rule);
+      ensure(rule.wins === 1, "GAS\u7DF4\u7FD2\u5C65\u6B74\u306F1\u30B2\u30FC\u30E0\u65B9\u5F0F\u3067\u3059\uFF1A" + sid2);
       const mapping = new Map(ids.map((id) => [id, uid()])), sessionAliases = ids.map((id) => ({ sessionId: sid2, sourceId: id, memberId: mapping.get(id), masterId: practiceMasterId(id) }));
       const members = ids.map((id) => ({ id: mapping.get(id), name: text(sourceMembers.find((m) => text(m, "\u30E1\u30F3\u30D0\u30FCID") === id), "\u6C0F\u540D"), masterId: practiceMasterId(id) }));
       const sourceGames = games2.filter((g) => text(g, "\u30BB\u30C3\u30B7\u30E7\u30F3ID") === sid2);
@@ -109021,7 +108980,7 @@ function migratePractices(rows, tournaments, rules = {}) {
         if (status2 === "\u7D42\u4E86") {
           ensure(text(g, "\u5DE6\u5F97\u70B9").trim() !== "" && text(g, "\u53F3\u5F97\u70B9").trim() !== "", "\u7D42\u4E86\u7DF4\u7FD2\u306B\u5F97\u70B9\u306A\u3057\uFF1A" + id);
           scores = [[Number(g["\u5DE6\u5F97\u70B9"]), Number(g["\u53F3\u5F97\u70B9"])]];
-          winner = result(scores, rule2);
+          winner = result(scores, rule);
         } else ensure(text(g, "\u5DE6\u5F97\u70B9") === "" && text(g, "\u53F3\u5F97\u70B9") === "", "\u672A\u7D42\u4E86\u7DF4\u7FD2\u306B\u9014\u4E2D\u5F97\u70B9\u304C\u3042\u308A\u307E\u3059\u3002\u5143\u8A18\u9332\u3092\u78BA\u8A8D\uFF1A" + id);
         return { id, round, court, left, right, games: scores, winner };
       });
@@ -109033,7 +108992,7 @@ function migratePractices(rows, tournaments, rules = {}) {
       }
       const name6 = text(s2, "\u540D\u79F0");
       ensure(name6.trim() && name6.length <= 120, "\u7DF4\u7FD2\u540D\u304C\u4E0D\u6B63\uFF1A" + sid2);
-      const practice = { id: sid2, name: name6, members, rule: rule2, matches };
+      const practice = { id: sid2, name: name6, members, rule, matches };
       const tid = text(s2, "\u5927\u4F1AID");
       let host = tournaments.find((t2) => t2.origin === tid), separate = false;
       if (tid) ensure(host, "\u7DF4\u7FD2\u306E\u5927\u4F1AID\u53C2\u7167\u304C\u4E0D\u6B63\uFF1A" + sid2);
@@ -109252,14 +109211,14 @@ function migrateGas(input3, options2 = {}) {
       const es = rows("\u7A2E\u76EE\u30DE\u30B9\u30BF\u30FC").filter((e) => str(e, "\u5927\u4F1AID") === tid);
       for (const raw of es) {
         const eid2 = str(raw, "\u7A2E\u76EEID");
-        const rule2 = properties["v305_event_rule_" + eid2] || { base: num2(tour, "\u5F97\u70B9\u57FA\u672C\u70B9", 21), cap: num2(tour, "\u5F97\u70B9\u4E0A\u9650", 30), wins: num2(tour, "\u5FC5\u8981\u30B2\u30FC\u30E0\u52DD\u6570", 2), deuce: str(tour, "\u30C7\u30E5\u30FC\u30B9\u65B9\u5F0F") !== "\u306A\u3057" };
+        const rule = properties["v305_event_rule_" + eid2] || { base: num2(tour, "\u5F97\u70B9\u57FA\u672C\u70B9", 21), cap: num2(tour, "\u5F97\u70B9\u4E0A\u9650", 30), wins: num2(tour, "\u5FC5\u8981\u30B2\u30FC\u30E0\u52DD\u6570", 2), deuce: str(tour, "\u30C7\u30E5\u30FC\u30B9\u65B9\u5F0F") !== "\u306A\u3057" };
         const type = str(raw, "\u7AF6\u6280\u7A2E\u5225") === "\u56E3\u4F53\u6226" ? "team" : str(raw, "\u7AF6\u6280\u7A2E\u5225") === "\u30C0\u30D6\u30EB\u30B9" ? "doubles" : "singles";
         const entries = rows("\u53C2\u52A0\u8005\u4E00\u89A7").filter((p) => str(p, "\u7A2E\u76EEID") === eid2).map((p) => {
           const id = str(p, "\u53C2\u52A0ID"), master = players.find((x) => str(x, "\u9078\u624BID") === str(p, "\u767B\u9332ID"));
           const members = [...rows("\u8FFD\u52A0_\u30DA\u30A2\u69CB\u6210"), ...rows("\u8FFD\u52A0_\u56E3\u4F53\u69CB\u6210")].filter((x) => str(x, "\u53C2\u52A0ID") === id).sort((a, b) => num2(a, "\u9806\u756A") - num2(b, "\u9806\u756A")).map((x) => str(x, "\u9078\u624BID"));
           return { id, name: str(p, "\u8868\u793A\u540D"), club: str(p, "\u6240\u5C5E\u30AF\u30E9\u30D6"), seed: num2(p, "\u30B7\u30FC\u30C9\u9806\u4F4D"), players: members.length ? members : [str(p, "\u767B\u9332ID") || id], kana: master ? str(master, "\u30D5\u30EA\u30AC\u30CA") : "", gender: master ? str(master, "\u6027\u5225") : "", grade: master ? str(master, "\u5B66\u5E74") : "", status: str(p, "\u53C2\u52A0\u72B6\u614B") };
         });
-        t2.events.push({ id: eid2, name: str(raw, "\u7A2E\u76EE\u540D"), type, rule: rule2, entries });
+        t2.events.push({ id: eid2, name: str(raw, "\u7A2E\u76EE\u540D"), type, rule, entries });
       }
       const stageRows = rows("\u30B9\u30C6\u30FC\u30B8").filter((s2) => str(s2, "\u5927\u4F1AID") === tid).sort((a, b) => num2(a, "\u30B9\u30C6\u30FC\u30B8\u9806") - num2(b, "\u30B9\u30C6\u30FC\u30B8\u9806"));
       for (const r of stageRows) {
@@ -109960,7 +109919,8 @@ async function render() {
   );
   if (page === "results") {
     const sheets2 = t.matches.filter((m) => m.eventId === eid && m.left && m.right && m.status !== "bye" && eventOf(t, m.eventId).type !== "team");
-    html += section("\u5BE9\u5224\u7528\u30B9\u30B3\u30A2\u30B7\u30FC\u30C8", sheets2.length ? select2("1\u8A66\u5408\u3092\u51FA\u529B", "scoreSheetMatch", sheets2.map((m) => ({ id: m.id, name: label(m, t) + "\u3000" + (lookupEntry(m.left)?.name ?? "") + " \u5BFE " + (lookupEntry(m.right)?.name ?? "") }))) + button3("\u9078\u629E\u8A66\u5408\u306E\u30B9\u30B3\u30A2\u30B7\u30FC\u30C8", "scoreSheet") + button3("\u5BFE\u6226\u8005\u78BA\u5B9A\u6E08\u307F\u306E\u5168\u8A66\u5408\u3092\u4E00\u62EC\u51FA\u529B", "scoreSheets") : "\u5BFE\u6226\u8005\u304C\u78BA\u5B9A\u3059\u308B\u3068\u51FA\u529B\u3067\u304D\u307E\u3059\u3002");
+    const multi = new Set(t.matches.filter((m) => m.left && m.right && m.status !== "bye" && eventOf(t, m.eventId).type !== "team").map((m) => m.eventId)).size > 1;
+    html += section("\u5BE9\u5224\u7528\u30B9\u30B3\u30A2\u30B7\u30FC\u30C8", (sheets2.length ? select2("1\u8A66\u5408\u3092\u51FA\u529B", "scoreSheetMatch", sheets2.map((m) => ({ id: m.id, name: label(m, t) + "\u3000" + (lookupEntry(m.left)?.name ?? "") + " \u5BFE " + (lookupEntry(m.right)?.name ?? "") }))) + button3("\u9078\u629E\u8A66\u5408\u306E\u30B9\u30B3\u30A2\u30B7\u30FC\u30C8", "scoreSheet") + button3("\u5BFE\u6226\u8005\u78BA\u5B9A\u6E08\u307F\u306E\u5168\u8A66\u5408\u3092\u4E00\u62EC\u51FA\u529B", "scoreSheets") : "\u5BFE\u6226\u8005\u304C\u78BA\u5B9A\u3059\u308B\u3068\u51FA\u529B\u3067\u304D\u307E\u3059\u3002") + (multi ? button3("\u5168\u7A2E\u76EE\u306E\u5BFE\u6226\u8005\u78BA\u5B9A\u6E08\u307F\u8A66\u5408\u3092\u4E00\u62EC\u51FA\u529B", "scoreSheetsAll") : ""));
   }
   if (page === "results") html += stageForms(t, t.stages.filter((s2) => s2.eventId === eid && (!s2.exchange || s2.groups[0].entries.length <= 24)));
   if (page === "practice") {
@@ -110834,8 +110794,9 @@ async function act(action, b) {
       break;
     }
     case "scoreSheet":
-    case "scoreSheets": {
-      const ids = action === "scoreSheet" ? [val2("scoreSheetMatch")] : t.matches.filter((m) => m.eventId === eid && m.left && m.right && m.status !== "bye" && eventOf(t, m.eventId).type !== "team").map((m) => m.id);
+    case "scoreSheets":
+    case "scoreSheetsAll": {
+      const ids = action === "scoreSheet" ? [val2("scoreSheetMatch")] : t.matches.filter((m) => (action === "scoreSheetsAll" || m.eventId === eid) && m.left && m.right && m.status !== "bye" && eventOf(t, m.eventId).type !== "team").map((m) => m.id);
       notice("\u30B9\u30B3\u30A2\u30B7\u30FC\u30C8\u4F5C\u6210\u4E2D\u2026");
       const [font, templates] = await Promise.all([loadPdfFont(), loadScoreTemplates(t, ids)]);
       offerPdf(await generateScoreSheetsPdf(t, ids, font, templates), "\u30B9\u30B3\u30A2\u30B7\u30FC\u30C8.pdf");
