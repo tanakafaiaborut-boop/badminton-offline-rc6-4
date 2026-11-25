@@ -80412,6 +80412,9 @@ async function generateScoreSheetsPdf(t2, matchIds, fontBytes, templates) {
         field2(pair[1], x, 81, 99, 21, 11, true, 2);
       } else field2(entry.name, x, kind === "singles" ? 54 : 55, 99, kind === "singles" ? 48 : 21, 12, true, kind === "singles" ? 3 : 2);
       field2(entry.club, clubX, 110, 103, 17, 9, true, 2);
+      if (kind === "singles") return [entry.name];
+      if (pair.length === 2) return pair;
+      return entry.players.map((id) => t2.roster?.find((player) => player.id === id)?.name || id);
     };
     var field = field2, side = side2;
     const event = t2.events.find((e) => e.id === m.eventId);
@@ -80435,8 +80438,22 @@ async function generateScoreSheetsPdf(t2, matchIds, fontBytes, templates) {
     field2(m.court ? String(m.court) : "", 96, 60, 114, 14, 10);
     field2(t2.date, 96, 77, 114, 14, 10);
     field2(m.court ? String(Math.floor(m.time / 60)).padStart(2, "0") + ":" + String(m.time % 60).padStart(2, "0") : "", 96, 94, 114, 14, 10);
-    side2(left, 248, 235);
-    side2(right, 488, 499);
+    const names = [...side2(left, 248, 235), ...side2(right, 488, 499)];
+    const rowHeight = kind === "singles" ? 31.2 : 15.6;
+    for (const gameTop of [136.08, 263.52, 391.2]) {
+      for (const [row, name6] of names.entries()) {
+        field2(
+          name6,
+          34.2,
+          gameTop + row * rowHeight + 1.8,
+          101.76,
+          rowHeight - 3.6,
+          kind === "singles" ? 12 : 10.5,
+          true,
+          2
+        );
+      }
+    }
   }
   return pdf.save();
 }
