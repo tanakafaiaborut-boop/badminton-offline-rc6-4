@@ -26739,7 +26739,7 @@ var require_inflate = __commonJS({
       var hbuf = new utils3.Buf8(4);
       var opts;
       var n2;
-      var order2 = (
+      var order = (
         /* permutation of code lengths */
         [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]
       );
@@ -27192,12 +27192,12 @@ var require_inflate = __commonJS({
                   hold += input3[next++] << bits4;
                   bits4 += 8;
                 }
-                state.lens[order2[state.have++]] = hold & 7;
+                state.lens[order[state.have++]] = hold & 7;
                 hold >>>= 3;
                 bits4 -= 3;
               }
               while (state.have < 19) {
-                state.lens[order2[state.have++]] = 0;
+                state.lens[order[state.have++]] = 0;
               }
               state.lencode = state.lendyn;
               state.lenbits = 7;
@@ -30390,6 +30390,14 @@ function validate(t2) {
   if (t2.scheduleMode !== void 0) ensure(["fixed", "flow"].includes(t2.scheduleMode), "\u9032\u884C\u65B9\u5F0F\u4E0D\u6B63");
   if (t2.certificate) ensure(typeof t2.certificate.background === "string" && t2.certificate.background.length <= 3e6 && (!t2.certificate.background || /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(t2.certificate.background)) && Number.isFinite(t2.certificate.x) && Math.abs(t2.certificate.x) <= 200 && Number.isFinite(t2.certificate.y) && Math.abs(t2.certificate.y) <= 300 && t2.certificate.fontSize >= 12 && t2.certificate.fontSize <= 80, "\u8CDE\u72B6\u30C6\u30F3\u30D7\u30EC\u30FC\u30C8\u4E0D\u6B63");
   ensure(Array.isArray(t2.events) && Array.isArray(t2.stages) && Array.isArray(t2.matches) && Array.isArray(t2.history) && t2.events.length <= 200 && t2.matches.length <= 5e4, "\u30C7\u30FC\u30BF\u4EF6\u6570\u30FB\u5F62\u5F0F\u304C\u4E0D\u6B63\u3067\u3059");
+  const isDate2 = (s2) => typeof s2 === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s2) && Number.isFinite(Date.parse(s2)) && new Date(s2).toISOString().slice(0, 10) === s2;
+  const integer = (v2, min, max3) => Number.isSafeInteger(v2) && v2 >= min && v2 <= max3;
+  const ref = (v2) => typeof v2 === "string" && v2.length > 0 && v2.length <= 120;
+  const ranges = (rs) => Array.isArray(rs) && rs.length <= 1e3 && rs.every((r) => r && (!r.eventId || ref(r.eventId)) && (r.kind === "all" || r.kind === "finals" || (r.kind === "round" || r.kind === "after-round") && integer(r.value, 1, 32) || (r.kind === "best" || r.kind === "after-best") && [2, 4, 8, 16, 32, 64, 128, 256].includes(r.value) || (r.kind === "stage" || r.kind === "through-stage" || r.kind === "through-match") && ref(r.id) || r.kind === "matches" && Array.isArray(r.ids) && r.ids.length <= 5e4 && r.ids.every(ref) && new Set(r.ids).size === r.ids.length));
+  if (t2.competitionDays !== void 0) ensure(Array.isArray(t2.competitionDays) && t2.competitionDays.length > 0 && t2.competitionDays.length <= 31 && new Set(t2.competitionDays.map((d) => d.date)).size === t2.competitionDays.length && t2.competitionDays.every((d, i) => d && isDate2(d.date) && (!i || t2.competitionDays[i - 1].date < d.date) && integer(d.start, 0, 1439) && integer(d.end, d.start + 1, 1440) && integer(d.courts, 1, 64) && integer(d.rest, 0, 120) && ranges(d.ranges) && (d.breaks === void 0 || Array.isArray(d.breaks) && d.breaks.length <= 12 && d.breaks.every((b, i2) => b && integer(b.start, d.start, d.end - 1) && integer(b.end, b.start + 1, d.end) && (!i2 || d.breaks[i2 - 1].end <= b.start)))), "\u958B\u50AC\u65E5\u8A2D\u5B9A\u304C\u4E0D\u6B63");
+  const split = t2.printSplit;
+  if (split !== void 0) ensure(split && (["one", "days", "events", "stages", "rounds"].includes(split.kind) || split.kind === "boundaries" && Array.isArray(split.ids) && split.ids.length <= 499 && split.ids.every(ref) || split.kind === "times" && Array.isArray(split.starts) && split.starts.length <= 499 && split.starts.every((b) => b && isDate2(b.date) && integer(b.time, 0, 1439)) && new Set(split.starts.map((b) => b.date + "/" + b.time)).size === split.starts.length || split.kind === "ranges" && Array.isArray(split.pages) && split.pages.length <= 499 && split.pages.every((q) => q && typeof q.title === "string" && q.title.length <= 120 && ranges(q.ranges))), "PDF\u5206\u5272\u8A2D\u5B9A\u304C\u4E0D\u6B63");
+  const courtLimit = Math.max(t2.courts, ...(t2.competitionDays ?? []).map((d) => d.courts));
   const ids = /* @__PURE__ */ new Set();
   const unique = (id) => {
     ensure(typeof id === "string" && /^[\w-]{1,100}$/.test(id) && !["__proto__", "constructor", "prototype"].includes(id) && !ids.has(id), "ID\u91CD\u8907\u307E\u305F\u306F\u4E0D\u6B63");
@@ -30471,13 +30479,15 @@ function validate(t2) {
       const left = entryIndex.get(m.left).players, right = entryIndex.get(m.right).players;
       ensure(!left.some((p) => right.includes(p)), "\u540C\u3058\u9078\u624B\u304C\u5BFE\u6226\u306E\u4E21\u5074\u306B\u3044\u307E\u3059");
     }
+    ensure(m.dateOverride === void 0 || typeof m.dateOverride === "boolean" && !!m.scheduledDate, "\u65E5\u7A0B\u306E\u624B\u52D5\u6307\u5B9A\u304C\u4E0D\u6B63");
+    ensure(m.scheduledDate === void 0 || t2.competitionDays?.some((d) => d.date === m.scheduledDate), "\u8A66\u5408\u306E\u958B\u50AC\u65E5\u304C\u4E0D\u6B63");
     ensure(m.scheduleOrdinal === void 0 || Number.isSafeInteger(m.scheduleOrdinal) && m.scheduleOrdinal > 0 && m.status !== "bye", "\u4E88\u5B9A\u63A1\u756A\u304C\u4E0D\u6B63");
     ensure(m.manualSchedule === void 0 || typeof m.manualSchedule === "boolean", "\u624B\u52D5\u5272\u5F53\u8A2D\u5B9A\u304C\u4E0D\u6B63");
     ensure(m.exchangeSequence === void 0 || !!s2.exchange && Number.isSafeInteger(m.exchangeSequence) && m.exchangeSequence >= 1 && m.exchangeSequence <= (s2.exchange.sequence ?? 0), "\u4EA4\u6D41\u6226\u306E\u8868\u793A\u9806\u304C\u4E0D\u6B63");
     ensure(m.queueOrder === void 0 || Number.isSafeInteger(m.queueOrder) && m.queueOrder > 0, "\u8A66\u5408\u9806\u304C\u4E0D\u6B63");
     ensure(m.bracketNo === void 0 || s2.kind === "bracket" && m.status !== "bye" && Number.isSafeInteger(m.bracketNo) && m.bracketNo > 0, "\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u756A\u53F7\u304C\u4E0D\u6B63");
     if (m.displayNumber !== void 0) ensure(typeof m.displayNumber === "string" && m.displayNumber.trim().length > 0 && m.displayNumber.length <= 48 && !/[\u0000-\u001f]/.test(m.displayNumber), "\u8868\u793A\u8A66\u5408\u756A\u53F7\u304C\u4E0D\u6B63");
-    ensure(Number.isInteger(m.number) && m.number > 0 && Number.isInteger(m.round) && m.round > 0 && Number.isInteger(m.court) && m.court >= 0 && m.court <= t2.courts && Number.isFinite(m.time) && m.time >= 0 && Number.isInteger(m.duration) && m.duration >= 1, "\u8A66\u5408\u9032\u884C\u8A2D\u5B9A\u304C\u4E0D\u6B63");
+    ensure(Number.isInteger(m.number) && m.number > 0 && Number.isInteger(m.round) && m.round > 0 && Number.isInteger(m.court) && m.court >= 0 && m.court <= courtLimit && Number.isFinite(m.time) && m.time >= 0 && Number.isInteger(m.duration) && m.duration >= 1, "\u8A66\u5408\u9032\u884C\u8A2D\u5B9A\u304C\u4E0D\u6B63");
     ensure(["waiting", "called", "playing", "completed", "bye"].includes(m.status) && Array.isArray(m.games), "\u8A66\u5408\u72B6\u614B\u304C\u4E0D\u6B63");
     if (m.termination !== void 0) ensure(["walkover", "withdrawal", "retirement"].includes(m.termination) && m.status === "completed" && m.walkover === true && !m.games.length, "\u68C4\u6A29\u533A\u5206\u304C\u4E0D\u6B63\u3067\u3059");
     if (m.retirementGames !== void 0) {
@@ -30549,7 +30559,7 @@ function validate(t2) {
   if (t2.applicationFields !== void 0) ensure(["none", "age", "grade"].includes(t2.applicationFields), "\u7533\u8FBC\u9805\u76EE\u304C\u4E0D\u6B63");
   if (t2.scheduleNumbersLocked !== void 0) ensure(typeof t2.scheduleNumbersLocked === "boolean", "\u63A1\u756A\u30ED\u30C3\u30AF\u304C\u4E0D\u6B63");
   for (const e of t2.events) for (const p of e.entries) ensure(p.registrationTeamId === void 0 || e.type === "team" && teamIds.has(p.registrationTeamId), "\u56E3\u4F53\u306E\u30C1\u30FC\u30E0\u53C2\u7167\u304C\u4E0D\u6B63");
-  const masterIds = new Set(t2.roster?.map((p) => p.id));
+  const masterIds = new Set(t2.roster?.map((p) => p.id)), members = new Map((t2.roster ?? []).map((p) => [p.id, p.teamId ?? ""]));
   for (const p of t2.roster ?? []) ensure((p.teamId === void 0 || teamIds.has(p.teamId)) && (p.teamRank === void 0 || Number.isSafeInteger(p.teamRank) && p.teamRank > 0) && (p.age === void 0 || Number.isInteger(p.age) && p.age >= 0 && p.age <= 120) && [p.kana, p.grade, p.gender].every((x) => x === void 0 || typeof x === "string" && x.length <= 120), "\u53C2\u52A0\u8005\u5C5E\u6027\u304C\u4E0D\u6B63");
   for (const e of t2.events) {
     if (e.entryEligibility) {
@@ -30559,6 +30569,14 @@ function validate(t2) {
     ensure(e.pairCounter === void 0 || e.type === "doubles" && Number.isSafeInteger(e.pairCounter) && e.pairCounter > 0, "\u30DA\u30A2\u63A1\u756A\u304C\u4E0D\u6B63");
     const pairs = e.pairDrafts ?? [], numbered = e.entries.filter((p) => p.pairNo !== void 0);
     ensure(Array.isArray(pairs) && (!pairs.length && !numbered.length || e.type === "doubles") && pairs.length <= 2e3 && (/* @__PURE__ */ new Set([...pairs.map((p) => p.number), ...numbered.map((p) => p.pairNo)])).size === pairs.length + numbered.length && pairs.every((p) => Number.isSafeInteger(p.number) && p.number > 0 && Array.isArray(p.players) && p.players.length === 1 && masterIds.has(p.players[0])) && numbered.every((p) => Number.isSafeInteger(p.pairNo) && p.pairNo > 0 && p.players.every((id) => masterIds.has(id))), "\u30DA\u30A2\u8A2D\u5B9A\u304C\u4E0D\u6B63");
+    ensure([...pairs, ...numbered].every((p) => p.pairRank === void 0 || Number.isSafeInteger(p.pairRank) && p.pairRank > 0), "\u30C1\u30FC\u30E0\u5225\u30DA\u30A2\u9806\u4F4D\u304C\u4E0D\u6B63");
+    const seenRanks = /* @__PURE__ */ new Set();
+    for (const p of [...pairs, ...numbered]) if (p.pairRank !== void 0) {
+      const groups = new Set(p.players.map((id) => members.get(id) ?? ""));
+      const scope = groups.size === 1 ? [...groups][0] : "@mixed", mark = scope + ":" + p.pairRank;
+      ensure(!seenRanks.has(mark), "\u540C\u3058\u6240\u5C5E\u30FB\u7A2E\u76EE\u306E\u30DA\u30A2\u9806\u4F4D\u304C\u91CD\u8907");
+      seenRanks.add(mark);
+    }
     const pending = pairs.flatMap((p) => p.players);
     ensure(new Set(pending).size === pending.length && pending.every((id) => !e.entries.some((p) => p.players.includes(id))), "\u30DA\u30A2\u6240\u5C5E\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
   }
@@ -30614,7 +30632,7 @@ function validate(t2) {
       unique(p.id);
       ruleCheck(p.rule);
       ensure(p.members.length >= 4 && p.members.length <= 200 && p.matches.length <= 2500, "\u7DF4\u7FD2\u4EF6\u6570\u304C\u4E0D\u6B63");
-      const members = new Set(p.members.map((m) => m.id));
+      const members2 = new Set(p.members.map((m) => m.id));
       p.members.forEach((m) => {
         unique(m.id);
         ensure(typeof m.name === "string" && m.name.length > 0, "\u7DF4\u7FD2\u8005\u540D\u4E0D\u6B63");
@@ -30623,7 +30641,7 @@ function validate(t2) {
       for (const m of p.matches) {
         unique(m.id);
         const all = [...m.left, ...m.right];
-        ensure(m.left.length === 2 && m.right.length === 2 && new Set(all).size === 4 && all.every((id) => members.has(id)), "\u7DF4\u7FD2\u69CB\u6210\u304C\u4E0D\u6B63");
+        ensure(m.left.length === 2 && m.right.length === 2 && new Set(all).size === 4 && all.every((id) => members2.has(id)), "\u7DF4\u7FD2\u69CB\u6210\u304C\u4E0D\u6B63");
         const used = rounds.get(m.round) || /* @__PURE__ */ new Set();
         ensure(all.every((id) => !used.has(id)), "\u5DE1\u5185\u3067\u9078\u624B\u304C\u91CD\u8907");
         all.forEach((id) => used.add(id));
@@ -30749,226 +30767,276 @@ function atomicMutation(t2, work) {
   return result2;
 }
 
-// src/roster.ts
-function collectRoster(t2) {
-  const players = new Map((t2.roster ?? []).map((p) => [p.id, p]));
-  const clubs = new Set(t2.clubs ?? []);
-  for (const e of t2.events) for (const entry of e.entries) {
-    if (entry.club.trim() && !(e.type === "doubles" && entry.pairNo !== void 0 && entry.club.includes("\uFF0F"))) clubs.add(entry.club.trim());
-    const separator = /[／/\n]/;
-    const names = entry.name.split(separator.test(entry.name) ? separator : /・/).map((n2) => n2.trim());
-    entry.players.forEach((id, i) => {
-      if (id.startsWith("TEAM-PENDING-")) return;
-      const name6 = e.type === "singles" ? entry.name : e.type === "doubles" && names.length === 2 ? names[i] : id;
-      const old = players.get(id);
-      if (!old || e.type === "singles" && !old.teamId) players.set(id, { ...old, id, name: name6, club: entry.club, kana: old?.kana ?? entry.kana, gender: old?.gender ?? entry.gender, grade: old?.grade ?? entry.grade });
-      else if (!old.club && entry.club) players.set(id, { ...old, club: entry.club });
-    });
+// src/calendar.ts
+var validDay = (s2) => /^\d{4}-\d{2}-\d{2}$/.test(s2) && Number.isFinite(Date.parse(s2)) && new Date(s2).toISOString().slice(0, 10) === s2;
+var dayOffset = (s2) => Date.parse(s2) / 6e4;
+var clockText = (n2) => String(Math.floor(n2 / 60)).padStart(2, "0") + ":" + String(n2 % 60).padStart(2, "0");
+function rangeMatches(t2, m, r) {
+  if (r.eventId && m.eventId !== r.eventId) return false;
+  if (r.kind === "all") return true;
+  if (r.kind === "matches") return r.ids.includes(m.id);
+  const stage = t2.stages.find((s2) => s2.id === m.stageId);
+  if (r.kind === "finals") return !!stage?.source;
+  if (r.kind === "stage") return m.stageId === r.id;
+  if (r.kind === "through-stage") {
+    const stop = t2.stages.find((s2) => s2.id === r.id);
+    return !!stop && m.eventId === stop.eventId && t2.stages.indexOf(stage) <= t2.stages.indexOf(stop);
   }
-  return { players: [...players.values()], clubs: [...clubs] };
+  if (r.kind === "through-match") {
+    const stop = t2.matches.find((s2) => s2.id === r.id);
+    return !!stop && m.eventId === stop.eventId && (m.scheduleOrdinal ?? m.bracketNo ?? m.number) <= (stop.scheduleOrdinal ?? stop.bracketNo ?? stop.number);
+  }
+  if (r.kind === "round" || r.kind === "after-round") return r.kind === "round" ? m.round <= r.value : m.round > r.value;
+  if ((r.kind === "best" || r.kind === "after-best") && stage?.kind === "bracket") {
+    const g = stage.groups.find((g2) => g2.id === m.groupId);
+    const size = g?.slots?.length ?? 2 ** Math.ceil(Math.log2(Math.max(2, g?.entries.length ?? 2)));
+    const limit = Math.log2(size) - Math.log2(r.value);
+    return r.kind === "best" ? m.round <= limit : m.round > limit;
+  }
+  return false;
 }
-function preserveRoster(t2) {
-  const { players, clubs } = collectRoster(t2);
-  if (players.length || t2.roster) t2.roster = players;
-  if (clubs.length || t2.clubs) t2.clubs = clubs;
+function rangeProblems(t2, r) {
+  if (r.eventId && !t2.events.some((e) => e.id === r.eventId)) return "\u7A2E\u76EE\u304C\u524A\u9664\u3055\u308C\u3066\u3044\u307E\u3059\uFF1A" + r.eventId;
+  if ((r.kind === "stage" || r.kind === "through-stage") && !t2.stages.some((m) => m.id === r.id)) return "\u30B9\u30C6\u30FC\u30B8\u304C\u524A\u9664\u3055\u308C\u3066\u3044\u307E\u3059\uFF1A" + r.id;
+  if (r.kind === "through-match" && !t2.matches.some((m) => m.id === r.id && m.status !== "bye")) return "\u5206\u5272\u5BFE\u8C61\u8A66\u5408\u304C\u524A\u9664\u3055\u308C\u3066\u3044\u307E\u3059\uFF1A" + r.id;
+  if (r.kind === "matches" && r.ids.some((id) => !t2.matches.some((m) => m.id === id && m.status !== "bye"))) return "\u624B\u52D5\u6307\u5B9A\u306B\u5931\u52B9\u3057\u305F\u8A66\u5408\u304C\u3042\u308A\u307E\u3059";
+  return "";
 }
-function deletionSummary(t2, id) {
-  const event = eventOf(t2, id), matches = t2.matches.filter((m) => m.eventId === id && m.status !== "bye");
-  return { name: event.name, entrants: event.entries.length, players: new Set(event.entries.flatMap((p) => p.players).filter((p) => !p.startsWith("TEAM-PENDING-"))).size, matches: matches.length, results: matches.filter((m) => m.status === "completed" || m.rubbers?.some((r) => r.games.length)).length };
+function plannedDate(t2, m) {
+  if (!t2.competitionDays?.length) return t2.date;
+  if (m.scheduledDate) return m.scheduledDate;
+  return t2.competitionDays.find((d) => d.ranges.some((r) => rangeMatches(t2, m, r)))?.date;
 }
-function deleteEvent(t2, id) {
-  return atomicMutation(t2, (d) => {
-    eventOf(d, id);
-    preserveRoster(d);
-    const stages = new Set(d.stages.filter((s2) => s2.eventId === id).map((s2) => s2.id));
-    const groups = new Set(d.stages.filter((s2) => stages.has(s2.id)).flatMap((s2) => s2.groups.map((g) => g.id)));
-    const removed = new Set(d.matches.filter((m) => m.eventId === id).map((m) => m.id));
-    for (const a of d.archives ?? []) {
-      for (const s2 of a.stages.filter((s3) => s3.eventId === id)) s2.groups.forEach((g) => groups.add(g.id));
-      for (const m of a.matches.filter((m2) => m2.eventId === id)) removed.add(m.id);
-      a.stages = a.stages.filter((s2) => s2.eventId !== id);
-      a.matches = a.matches.filter((m) => m.eventId !== id);
-      if (a.events) a.events = a.events.filter((e) => e.id !== id);
+var dayConfig = (t2, date) => t2.competitionDays?.find((d) => d.date === date);
+var calendarCourts = (t2, date) => dayConfig(t2, date)?.courts ?? t2.courts;
+var protectedFixture = (m) => m.status !== "waiting" && m.status !== "bye" || m.startedAt !== void 0 || !!m.rubbers?.some((r) => r.games.length);
+function moveFixture(t2, id, date) {
+  return atomicMutation(t2, (d) => moveFixtureInto(d, id, date));
+}
+function moveFixtureInto(t2, id, date) {
+  const m = t2.matches.find((m2) => m2.id === id);
+  ensure(m && m.status !== "bye" && !protectedFixture(m), "\u672A\u958B\u59CB\u30FB\u5185\u8A33\u672A\u5165\u529B\u306E\u8A66\u5408\u3060\u3051\u79FB\u52D5\u3067\u304D\u307E\u3059");
+  ensure(dayConfig(t2, date), "\u79FB\u52D5\u5148\u306F\u8A2D\u5B9A\u6E08\u307F\u306E\u958B\u50AC\u65E5\u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+  m.scheduledDate = date;
+  m.dateOverride = true;
+  m.court = 0;
+  m.time = 0;
+  m.manualSchedule = false;
+  validateDayOrder(t2);
+}
+function configureCalendar(t2, days2) {
+  return atomicMutation(t2, (d) => configureCalendarInto(d, days2));
+}
+function configureCalendarInto(t2, days2) {
+  const previous = new Map(t2.matches.map((m) => [m.id, plannedDate(t2, m)]));
+  const sorted = [...days2].sort((a, b) => a.date.localeCompare(b.date));
+  t2.competitionDays = sorted.length ? sorted : void 0;
+  for (const m of t2.matches) {
+    const old = previous.get(m.id);
+    if (protectedFixture(m)) {
+      if (sorted.length) {
+        ensure(old && dayConfig(t2, old), "\u9032\u884C\u6E08\u307F\u8A66\u5408\u306E\u958B\u50AC\u65E5\u3092\u524A\u9664\u3067\u304D\u307E\u305B\u3093");
+        m.scheduledDate = old;
+      } else {
+        ensure(old === t2.date, "\u8907\u6570\u65E5\u306B\u9032\u884C\u6E08\u307F\u306E\u5927\u4F1A\u3092\u5358\u65E5\u306B\u623B\u305B\u307E\u305B\u3093");
+        delete m.scheduledDate;
+        delete m.dateOverride;
+      }
+      ensure(m.court <= calendarCourts(t2, old), "\u9032\u884C\u6E08\u307F\u8A66\u5408\u306E\u30B3\u30FC\u30C8\u3092\u524A\u9664\u3067\u304D\u307E\u305B\u3093");
+    } else {
+      if (m.scheduledDate && (!m.dateOverride || !dayConfig(t2, m.scheduledDate))) {
+        delete m.scheduledDate;
+        delete m.dateOverride;
+      }
+      if (old !== plannedDate(t2, m) || m.court > calendarCourts(t2, plannedDate(t2, m))) {
+        m.court = 0;
+        m.time = 0;
+        m.manualSchedule = false;
+      }
     }
-    ensure(d.matches.every((m) => m.eventId === id || m.deps.every((x) => !removed.has(x))), "\u4ED6\u7A2E\u76EE\u306E\u8A66\u5408\u304C\u5BFE\u8C61\u7A2E\u76EE\u3092\u53C2\u7167\u3057\u3066\u3044\u307E\u3059");
-    d.events = d.events.filter((e) => e.id !== id);
-    d.stages = d.stages.filter((s2) => !stages.has(s2.id));
-    d.matches = d.matches.filter((m) => !removed.has(m.id));
-    if (d.rulings) d.rulings = d.rulings.filter((r) => !groups.has(r.groupId));
-    if (d.corrections) d.corrections = d.corrections.filter((c) => !removed.has(c.matchId));
-    if (d.archives) d.archives = d.archives.filter((a) => a.stages.length || a.matches.length || a.events?.length);
-  });
+  }
+  validateDayOrder(t2);
+}
+function validateDayOrder(t2) {
+  if (!t2.competitionDays) return;
+  const dates = new Map(t2.matches.map((m) => [m.id, plannedDate(t2, m)]));
+  const matchStages = /* @__PURE__ */ new Map();
+  for (const m of t2.matches) {
+    const date = dates.get(m.id);
+    if (m.status === "bye" || !date) continue;
+    for (const id of m.deps) {
+      const dependency = dates.get(id);
+      ensure(!dependency || dependency <= date, "\u52DD\u3061\u4E0A\u304C\u308A\u5143\u3088\u308A\u524D\u306E\u65E5\u306B\u79FB\u52D5\u3067\u304D\u307E\u305B\u3093");
+    }
+    if ((matchStages.get(m.stageId) ?? "") < date) matchStages.set(m.stageId, date);
+  }
+  for (const s2 of t2.stages.filter((s3) => s3.source)) {
+    const source = matchStages.get(s2.source);
+    if (source) ensure(t2.matches.filter((m) => m.stageId === s2.id && m.status !== "bye").every((m) => !dates.get(m.id) || dates.get(m.id) >= source), "\u4E88\u9078\u3088\u308A\u524D\u306E\u65E5\u306B\u6C7A\u52DD\u3092\u914D\u7F6E\u3067\u304D\u307E\u305B\u3093");
+  }
+}
+function scheduleOrder(t2, fixtures = t2.matches) {
+  return fixtures.filter((m) => m.status !== "bye").sort((a, b) => (plannedDate(t2, a) ?? "9999").localeCompare(plannedDate(t2, b) ?? "9999") || Number(a.court === 0) - Number(b.court === 0) || a.time - b.time || a.court - b.court || (a.queueOrder ?? a.number) - (b.queueOrder ?? b.number) || a.number - b.number);
+}
+function timetableRows(t2, fixtures = t2.matches, columns = t2.courts) {
+  const output = [], byTime = /* @__PURE__ */ new Map(), waiting = /* @__PURE__ */ new Map();
+  for (const m of scheduleOrder(t2, fixtures)) {
+    const date = plannedDate(t2, m) ?? "\u65E5\u7A0B\u672A\u6307\u5B9A";
+    if (!m.court) {
+      const list = waiting.get(date) ?? [];
+      list.push(m);
+      waiting.set(date, list);
+      continue;
+    }
+    const key4 = date + " " + m.time, rows = byTime.get(key4) ?? [];
+    let row = rows.find((r) => !r.cells[m.court - 1]);
+    if (!row) {
+      row = { date, time: m.time, cells: Array.from({ length: columns }) };
+      rows.push(row);
+      byTime.set(key4, rows);
+    }
+    row.cells[m.court - 1] = m;
+  }
+  for (const rows of byTime.values()) output.push(...rows);
+  for (const [date, ms] of waiting) for (let i = 0; i < ms.length; i += columns) {
+    const cells = Array.from({ length: columns }, (_2, j) => ms[i + j]);
+    output.push({ date, cells });
+  }
+  return output.sort((a, b) => a.date.localeCompare(b.date) || (a.time ?? 1440) - (b.time ?? 1440));
+}
+function splitTimetable(t2, split = { kind: "one" }) {
+  const all = scheduleOrder(t2), pages = [];
+  const add = (title2, fixtures) => {
+    if (fixtures.length) pages.push({ title: title2, fixtures });
+  };
+  if (split.kind === "one") pages.push({ title: "\u5168\u65E5\u7A0B", fixtures: all });
+  else if (split.kind === "boundaries") {
+    const indexes = split.ids.map((id) => all.findIndex((m) => m.id === id));
+    ensure(indexes.every((i) => i > 0) && new Set(indexes).size === indexes.length, "\u5206\u5272\u8A66\u5408\u304C\u7121\u52B9\u30FB\u91CD\u8907\u3001\u307E\u305F\u306F\u5148\u982D\u3067\u3059");
+    const cuts = [0, ...indexes.sort((a, b) => a - b), all.length];
+    for (let i = 1; i < cuts.length; i++) add("\u8A66\u5408\u756A\u53F7 " + matchNumber(all[cuts[i - 1]], t2) + " \u304B\u3089", all.slice(cuts[i - 1], cuts[i]));
+  } else if (split.kind === "times") {
+    const starts = [...split.starts].sort((a, b) => a.date.localeCompare(b.date) || a.time - b.time);
+    const locate = (m) => {
+      const date = plannedDate(t2, m);
+      let index = 0;
+      if (date && m.court) {
+        for (const [i, b] of starts.entries()) if (date > b.date || date === b.date && m.time >= b.time) index = i + 1;
+      }
+      return index;
+    };
+    for (let i = 0; i <= starts.length; i++) add(i ? starts[i - 1].date + " " + clockText(starts[i - 1].time) + " \u304B\u3089" : "\u6307\u5B9A\u65E5\u6642\u3088\u308A\u524D\u30FB\u672A\u5272\u5F53", all.filter((m) => locate(m) === i));
+  } else if (split.kind === "ranges") {
+    for (const pg of split.pages) {
+      for (const r of pg.ranges) ensure(!rangeProblems(t2, r), rangeProblems(t2, r));
+      add(pg.title, all.filter((m) => pg.ranges.some((r) => rangeMatches(t2, m, r))));
+    }
+    const specified = new Set(pages.flatMap((p) => p.fixtures.map((m) => m.id)));
+    add("\u672A\u6307\u5B9A\u306E\u8A66\u5408", all.filter((m) => !specified.has(m.id)));
+  } else {
+    const groups = /* @__PURE__ */ new Map();
+    for (const m of all) {
+      const e = t2.events.find((e2) => e2.id === m.eventId), stage = t2.stages.find((s2) => s2.id === m.stageId);
+      const [key4, title2] = split.kind === "days" ? [plannedDate(t2, m) ?? "\u672A\u6307\u5B9A", plannedDate(t2, m) ?? "\u65E5\u7A0B\u672A\u6307\u5B9A"] : split.kind === "events" ? [e.id, e.name] : split.kind === "stages" ? [stage.id, e.name + " " + stage.name] : [stage.id + ":" + m.round, e.name + " " + stage.name + " \u7B2C" + m.round + "\u30E9\u30A6\u30F3\u30C9"];
+      const g = groups.get(key4) ?? { title: title2, fixtures: [] };
+      g.fixtures.push(m);
+      groups.set(key4, g);
+    }
+    pages.push(...groups.values());
+  }
+  const ids = pages.flatMap((p) => p.fixtures.map((m) => m.id));
+  ensure(new Set(ids).size === ids.length && ids.length === all.length, "\u51FA\u529B\u8A2D\u5B9A\u306B\u8A66\u5408\u306E\u91CD\u8907\u307E\u305F\u306F\u6B20\u843D\u304C\u3042\u308A\u307E\u3059");
+  ensure(pages.length <= 500, "\u51FA\u529B\u7BC4\u56F2\u306F500\u30DA\u30FC\u30B8\u4EE5\u5185\u3067\u3059");
+  return pages.length ? pages : [{ title: "\u5168\u65E5\u7A0B", fixtures: [] }];
 }
 
-// src/registration.ts
-var key = (s2) => s2.normalize("NFKC").trim().replace(/\s+/g, " ").toLowerCase();
-function registrationView(t2) {
-  const { players, clubs } = collectRoster(t2);
-  const teams = [...t2.registrationTeams ?? []];
-  for (const name6 of clubs) if (name6.trim() && name6.length <= 120 && !teams.some((x) => key(x.name) === key(name6))) {
-    let n2 = teams.length + 1;
-    while (teams.some((x) => x.id === "legacy-club-" + n2)) n2++;
-    teams.push({ id: "legacy-club-" + n2, name: name6 });
-  }
-  const byClub = new Map(teams.map((x) => [key(x.name), x.id]));
-  return { teams, players: players.map((p) => ({ ...p, teamId: p.teamId ?? byClub.get(key(p.club)) })) };
+// src/calendar-input.ts
+function fixtureId(t2, text2) {
+  const match = t2.matches.find((m) => m.status !== "bye" && (m.id === text2 || String(matchNumber(m, t2)) === text2));
+  ensure(match, "\u6307\u5B9A\u3055\u308C\u305F\u8A66\u5408\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093\uFF1A" + text2);
+  return match.id;
 }
-function initializeRegistration(t2) {
-  const { teams, players } = registrationView(t2);
-  t2.registrationTeams = teams;
-  t2.roster = players;
+function minute(text2, allowEnd = false) {
+  ensure(/^\d\d:\d\d$/.test(text2), "\u6642\u523B\u306FHH:MM\u3067\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+  const [h, m] = text2.split(":").map(Number);
+  ensure(m < 60 && (h < 24 || allowEnd && h === 24 && m === 0), "\u6642\u523B\u304C\u4E0D\u6B63\u3067\u3059\uFF1A" + text2);
+  return h * 60 + m;
 }
-function registerTeam(t2, name6) {
-  const normalized = name6.trim();
-  ensure(normalized && normalized.length <= 120, "\u6240\u5C5E\u30C1\u30FC\u30E0\u540D\u306F1\u301C120\u6587\u5B57\u3067\u3059");
-  const found = t2.registrationTeams.find((x) => key(x.name) === key(normalized));
-  if (found) return found;
-  const team = { id: uid(), name: normalized };
-  t2.registrationTeams.push(team);
-  return team;
-}
-function nextTeamRank(t2, teamId) {
-  return Math.max(0, ...(t2.roster ?? []).filter((p) => p.teamId === teamId).map((p) => p.teamRank ?? 0)) + 1;
-}
-function putParticipant(t2, input3, id) {
-  const name6 = input3.name.trim(), team = t2.registrationTeams.find((x) => x.id === input3.teamId);
-  ensure(name6 && name6.length <= 120 && team, "\u6C0F\u540D\u3068\u6240\u5C5E\u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
-  const p = t2.roster.find((x) => x.id === id);
-  ensure(!id || p, "\u9078\u624BID\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
-  ensure(!p || p.teamId === team.id || !t2.events.some((e) => e.entries.some((x) => x.players.includes(p.id)) || e.pairDrafts?.some((x) => x.players.includes(p.id))), "\u51FA\u5834\u4E2D\u306E\u9078\u624B\u306E\u6240\u5C5E\u5909\u66F4\u306F\u5148\u306B\u30A8\u30F3\u30C8\u30EA\u30FC\u3092\u89E3\u9664\u3057\u3066\u304F\u3060\u3055\u3044");
-  const peers = t2.roster.filter((x) => x.id !== id && x.teamId === team.id && x.teamRank !== void 0);
-  const value = { ...input3, id: p?.id ?? uid(), name: name6, club: team.name, teamRank: input3.teamRank ?? p?.teamRank ?? nextTeamRank(t2, team.id) };
-  if (p && p.teamId === team.id && p.teamRank !== void 0 && value.teamRank !== p.teamRank) {
-    const old = p.teamRank, next = value.teamRank;
-    for (const peer of peers) {
-      const rank = peer.teamRank;
-      if (next < old && rank >= next && rank < old) peer.teamRank = rank + 1;
-      if (next > old && rank <= next && rank > old) peer.teamRank = rank - 1;
-    }
-  } else ensure(!peers.some((x) => x.teamRank === value.teamRank), "\u540C\u3058\u30C1\u30FC\u30E0\u5185\u9806\u4F4D\u304C\u767B\u9332\u6E08\u307F\u3067\u3059");
-  if (p) Object.assign(p, value);
-  else t2.roster.push(value);
-  for (const e of t2.events.filter((e2) => !t2.stages.some((s2) => s2.eventId === e2.id))) {
-    if (e.entries.some((entry) => entry.players.includes(value.id)) || e.pairDrafts?.some((x) => x.players.includes(value.id))) eligible(e, value);
-    for (const entry of e.entries.filter((e2) => e2.players.includes(value.id))) {
-      if (e.type === "singles") Object.assign(entry, { name: value.name, club: value.club, kana: value.kana, gender: value.gender, grade: value.grade });
-      if (e.type === "doubles" && entry.pairNo !== void 0) Object.assign(entry, pairDetails(t2, entry.players));
-    }
-  }
-  return value;
-}
-function eligible(e, p) {
-  const q = e.entryEligibility;
-  ensure(
-    !q || (!q.gender || q.gender === p.gender) && (!q.grade || q.grade === p.grade) && (q.minAge === void 0 || p.age !== void 0 && p.age >= q.minAge) && (q.maxAge === void 0 || p.age !== void 0 && p.age <= q.maxAge),
-    e.name + " \u306E\u53C2\u52A0\u8CC7\u683C\u3092\u6E80\u305F\u3057\u307E\u305B\u3093\uFF1A" + p.name
-  );
-}
-function editable(t2, id) {
-  const e = eventOf(t2, id);
-  ensure(!t2.stages.some((s2) => s2.eventId === id), "\u7D44\u5408\u305B\u4F5C\u6210\u5F8C\u306F\u5909\u66F4\u3067\u304D\u307E\u305B\u3093\u3002\u7D44\u5408\u305B\u3092\u4FDD\u7BA1\u30FB\u53D6\u6D88\u3057\u3066\u304F\u3060\u3055\u3044");
-  return e;
-}
-function pairDetails(t2, players) {
-  const names = players.map((id) => {
-    const p = t2.roster.find((x) => x.id === id);
-    ensure(p, "\u30DA\u30A2\u306E\u9078\u624B\u304C\u3042\u308A\u307E\u305B\u3093");
-    return p;
+var eventCode = (t2, id) => id ? t2.events.find((e) => e.id === id)?.code ?? id : "*";
+function parseRanges(t2, value) {
+  return value.split(";").map((s2) => s2.trim()).filter(Boolean).map((s2) => {
+    const [code3, kind, arg] = s2.split(":");
+    const e = t2.events.find((e2) => e2.code === code3 || e2.id === code3);
+    ensure(code3 === "*" || e, "\u7A2E\u76EE\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093\uFF1A" + code3);
+    const eventId = e?.id;
+    let r;
+    if (kind === "all" || kind === "finals") r = { kind, eventId };
+    else if (kind === "best" || kind === "round" || kind === "after-best" || kind === "after-round") {
+      const value2 = Number(arg);
+      ensure(kind.endsWith("best") ? [2, 4, 8, 16, 32, 64, 128, 256].includes(value2) : Number.isInteger(value2) && value2 >= 1 && value2 <= 32, "\u30E9\u30A6\u30F3\u30C9\u306E\u6307\u5B9A\u304C\u4E0D\u6B63\uFF1A" + s2);
+      r = { kind, eventId, value: value2 };
+    } else if (kind === "stage" || kind === "through-stage") {
+      r = { kind, eventId, id: arg };
+    } else if (kind === "through-match") r = { kind, eventId, id: fixtureId(t2, arg) };
+    else if (kind === "matches") {
+      ensure(arg, "\u624B\u52D5\u8A66\u5408\u304C\u7A7A\u6B04\u3067\u3059");
+      const ids = arg.split(",").map((x) => fixtureId(t2, x.trim()));
+      r = { kind, eventId, ids };
+    } else throw Error("\u7BC4\u56F2\u306E\u6307\u5B9A\u304C\u4E0D\u6B63\uFF1A" + s2);
+    const error2 = rangeProblems(t2, r);
+    ensure(!error2, error2);
+    return r;
   });
-  const clubs = [...new Set(names.map((p) => p.club))];
-  return { name: names.map((p) => p.name).join("\uFF0F"), club: clubs.length === 1 ? clubs[0] : clubs.join("\uFF0F") };
 }
-function addPair(t2, e, number, players) {
-  ensure(players.length === 2 && players.every(Boolean) && new Set(players).size === 2 && !e.entries.some((p) => p.players.some((id) => players.includes(id))), "\u30C0\u30D6\u30EB\u30B9\u306E\u69CB\u6210\u307E\u305F\u306F\u91CD\u8907\u304C\u4E0D\u6B63\u3067\u3059");
-  for (const id of players) {
-    const p = t2.roster.find((x) => x.id === id);
-    ensure(p, "\u9078\u624B\u672A\u767B\u9332");
-    eligible(e, p);
-  }
-  ensure(!e.entries.some((p) => p.pairNo === number), "\u30DA\u30A2\u756A\u53F7\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
-  e.entries.push({ id: uid(), seed: 0, players, pairNo: number, ...pairDetails(t2, players) });
-  e.pairCounter = Math.max(e.pairCounter ?? 1, number + 1);
+function formatRanges(t2, ranges) {
+  return ranges.map((r) => {
+    const base = eventCode(t2, r.eventId) + ":" + r.kind;
+    if ("ids" in r) return base + ":" + r.ids.join(",");
+    if ("id" in r) return base + ":" + r.id;
+    if ("value" in r) return base + ":" + r.value;
+    return base;
+  }).join("; ");
 }
-function setRegistration(t2, eventId, playerId, selected) {
-  const e = editable(t2, eventId), p = t2.roster.find((x) => x.id === playerId);
-  ensure(p, "\u5927\u4F1A\u540D\u7C3F\u306B\u9078\u624B\u304C\u3042\u308A\u307E\u305B\u3093");
-  const existing = e.entries.find((x) => x.players.includes(playerId));
-  const drafts = e.pairDrafts ?? (e.pairDrafts = []);
-  const pending = drafts.findIndex((d) => d.players.includes(playerId));
-  if (e.type === "team") {
-    if (selected && !existing) {
-      eligible(e, p);
-      const team = t2.registrationTeams.find((x) => x.id === p.teamId);
-      ensure(team, "\u56E3\u4F53\u6226\u3067\u306F\u6240\u5C5E\u30C1\u30FC\u30E0\u3092\u767B\u9332\u3057\u3066\u304F\u3060\u3055\u3044");
-      const row = e.entries.find((r) => r.registrationTeamId === team.id) ?? e.entries.find((r) => key(r.club || r.name) === key(team.name));
-      if (row) {
-        row.registrationTeamId = team.id;
-        row.players = row.players.filter((id) => !id.startsWith("TEAM-PENDING-"));
-        row.players.push(p.id);
-      } else e.entries.push({ id: uid(), name: team.name, club: team.name, seed: 0, players: [p.id], registrationTeamId: team.id });
-    }
-    if (!selected && existing) {
-      existing.players = existing.players.filter((id) => id !== p.id);
-      if (!existing.players.length) e.entries = e.entries.filter((x) => x !== existing);
-    }
-    return;
-  }
-  if (e.type === "singles") {
-    if (selected && !existing) {
-      eligible(e, p);
-      e.entries.push({ id: uid(), players: [p.id], name: p.name, club: p.club, seed: 0, kana: p.kana, gender: p.gender, grade: p.grade });
-    }
-    if (!selected && existing) e.entries = e.entries.filter((x) => x !== existing);
-    return;
-  }
-  if (!selected) {
-    if (existing) {
-      const n2 = existing.pairNo ?? allocatePair(e);
-      e.entries = e.entries.filter((x) => x !== existing);
-      drafts.push({ number: n2, players: existing.players.filter((id) => id !== playerId) });
-    } else if (pending >= 0) drafts.splice(pending, 1);
-  } else if (!existing && pending < 0) {
-    eligible(e, p);
-    if (drafts.length) {
-      const first = [...drafts].sort((a, b) => a.number - b.number)[0];
-      drafts.splice(drafts.indexOf(first), 1);
-      addPair(t2, e, first.number, [...first.players, playerId]);
-    } else drafts.push({ number: allocatePair(e), players: [playerId] });
-  }
+function parseDays(t2, text2) {
+  return text2.split(/\r?\n/).map((x) => x.trim()).filter(Boolean).map((line) => {
+    const parts = line.split("|").map((s2) => s2.trim());
+    const [date, start, end, courts, rest, ranges, pauses] = parts;
+    ensure((parts.length === 6 || parts.length === 7) && validDay(date), "\u958B\u50AC\u65E5\u306E\u5F62\u5F0F\u304C\u4E0D\u6B63\uFF1A" + line);
+    const breaks = pauses ? pauses.split(",").map((item) => {
+      const [start2, end2] = item.trim().split("-");
+      return { start: minute(start2), end: minute(end2, true) };
+    }).sort((a, b) => a.start - b.start) : void 0;
+    return { date, start: minute(start), end: minute(end, true), courts: Number(courts), rest: Number(rest), ranges: parseRanges(t2, ranges), breaks };
+  });
 }
-function allocatePair(e) {
-  const n2 = Math.max(e.pairCounter ?? 1, ...e.entries.map((x) => (x.pairNo ?? 0) + 1), ...(e.pairDrafts ?? []).map((x) => x.number + 1));
-  e.pairCounter = n2 + 1;
-  return n2;
+function formatDays(t2, days2) {
+  return days2.map((d) => [d.date, clockText(d.start), clockText(d.end), d.courts, d.rest, formatRanges(t2, d.ranges), ...d.breaks?.length ? [d.breaks.map((b) => clockText(b.start) + "-" + clockText(b.end)).join(",")] : []].join(" | ")).join("\n");
 }
-function changePair(t2, eventId, number, ids) {
-  const e = editable(t2, eventId);
-  ensure(e.type === "doubles" && ids.length === 2 && ids.every(Boolean) && new Set(ids).size === 2, "\u5225\u3005\u306E2\u540D\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
-  const old = e.entries.find((p) => p.pairNo === number);
-  const draft = e.pairDrafts?.find((p) => p.number === number);
-  ensure(old || draft, "\u30DA\u30A2\u304C\u3042\u308A\u307E\u305B\u3093");
-  ensure(!e.entries.some((p) => p !== old && p.players.some((id) => ids.includes(id))) && !e.pairDrafts?.some((p) => p !== draft && p.players.some((id) => ids.includes(id))), "\u5225\u306E\u30DA\u30A2\u306B\u767B\u9332\u6E08\u307F\u306E\u9078\u624B\u306F\u5148\u306B\u89E3\u9664\u3057\u3066\u304F\u3060\u3055\u3044");
-  if (old && ids.every((id) => old.players.includes(id))) {
-    Object.assign(old, { players: ids, ...pairDetails(t2, ids) });
-    return;
-  }
-  if (old) e.entries = e.entries.filter((p) => p !== old);
-  if (draft) e.pairDrafts = e.pairDrafts.filter((p) => p !== draft);
-  addPair(t2, e, number, ids);
+function parsePrintSplit(t2, kind, text2) {
+  const lines = text2.split(/\r?\n/).map((s2) => s2.trim()).filter(Boolean);
+  if (kind === "boundaries" || kind === "times" || kind === "ranges") ensure(lines.length, "\u5206\u5272\u4F4D\u7F6E\u307E\u305F\u306F\u7BC4\u56F2\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+  if (kind === "boundaries") return { kind, ids: lines.flatMap((l) => l.split(",").map((v2) => fixtureId(t2, v2.trim()))) };
+  if (kind === "times") return { kind, starts: lines.map((l) => {
+    const [date, time2] = l.split(/\s+/);
+    ensure(validDay(date), "\u5883\u754C\u65E5\u306F YYYY-MM-DD HH:MM \u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+    return { date, time: minute(time2) };
+  }) };
+  if (kind === "ranges") return { kind, pages: lines.map((l) => {
+    const [title2, text3] = l.split("|");
+    ensure(title2?.trim() && text3?.trim(), "\u30DA\u30FC\u30B8\u540D | \u7BC4\u56F2 \u3067\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+    return { title: title2.trim(), ranges: parseRanges(t2, text3) };
+  }) };
+  return { kind };
 }
-function setRegistrationSeed(t2, eventId, entryId, seed) {
-  const e = eventOf(t2, eventId);
-  ensure(!t2.stages.some((s2) => s2.eventId === eventId), "\u7D44\u5408\u305B\u4F5C\u6210\u5F8C\u306F\u30B7\u30FC\u30C9\u5909\u66F4\u3067\u304D\u307E\u305B\u3093\u3002\u5148\u306B\u4FDD\u7BA1\u30FB\u53D6\u6D88\u3057\u3066\u304F\u3060\u3055\u3044");
-  const entry = e.entries.find((p) => p.id === entryId);
-  ensure(entry && Number.isSafeInteger(seed) && seed >= 0 && !e.entries.some((p) => p !== entry && seed > 0 && p.seed === seed), "\u30B7\u30FC\u30C9\u9806\u4F4D\u304C\u4E0D\u6B63\u3001\u307E\u305F\u306F\u540C\u4E00\u7A2E\u76EE\u5185\u3067\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
-  entry.seed = seed;
+function formatPrintSplit(t2, s2) {
+  if (s2?.kind === "boundaries") return s2.ids.map((id) => {
+    const m = t2.matches.find((m2) => m2.id === id);
+    return m ? String(matchNumber(m, t2)) : id;
+  }).join("\n");
+  if (s2?.kind === "times") return s2.starts.map((b) => b.date + " " + clockText(b.time)).join("\n");
+  if (s2?.kind === "ranges") return s2.pages.map((p) => p.title + " | " + formatRanges(t2, p.ranges)).join("\n");
+  return "";
 }
-function assertNoPendingPairs(e) {
-  ensure(!e.pairDrafts?.length, "\u30C0\u30D6\u30EB\u30B9\u30DA\u30A2\u306B\u6B20\u54E1\u304C\u3042\u308A\u307E\u3059\u30022\u540D\u305A\u3064\u767B\u9332\u3057\u3066\u304B\u3089\u7D44\u5408\u305B\u3092\u4F5C\u6210\u3057\u3066\u304F\u3060\u3055\u3044");
-}
-
-// src/application-xlsx.ts
-var import_exceljs2 = __toESM(require_exceljs_min(), 1);
 
 // node_modules/xlsx/xlsx.mjs
 /*! xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
@@ -33194,8 +33262,8 @@ var CFB = /* @__PURE__ */ (function _CFB() {
       FileIndex.push(o);
     }
   }
-  function read_date(blob, offset) {
-    return new Date((__readUInt32LE(blob, offset + 4) / 1e7 * Math.pow(2, 32) + __readUInt32LE(blob, offset) / 1e7 - 11644473600) * 1e3);
+  function read_date(blob, offset2) {
+    return new Date((__readUInt32LE(blob, offset2 + 4) / 1e7 * Math.pow(2, 32) + __readUInt32LE(blob, offset2) / 1e7 - 11644473600) * 1e3);
   }
   function read_file(filename2, options2) {
     get_fs();
@@ -34030,7 +34098,7 @@ var CFB = /* @__PURE__ */ (function _CFB() {
       var efsz = blob.read_shift(2);
       var fcsz = blob.read_shift(2);
       blob.l += 8;
-      var offset = blob.read_shift(4);
+      var offset2 = blob.read_shift(4);
       var EF = parse_extra_field(
         /*::(*/
         blob.slice(blob.l + namelen, blob.l + namelen + efsz)
@@ -34038,7 +34106,7 @@ var CFB = /* @__PURE__ */ (function _CFB() {
       );
       blob.l += namelen + efsz + fcsz;
       var L2 = blob.l;
-      blob.l = offset + 4;
+      blob.l = offset2 + 4;
       if (EF && EF[1]) {
         if ((EF[1] || {}).usz) usz = EF[1].usz;
         if ((EF[1] || {}).csz) csz = EF[1].csz;
@@ -43678,9 +43746,9 @@ function parse_PtgAttrBaxcel(blob) {
 }
 function parse_PtgAttrChoose(blob, length, opts) {
   blob.l += 2;
-  var offset = blob.read_shift(opts && opts.biff == 2 ? 1 : 2);
+  var offset2 = blob.read_shift(opts && opts.biff == 2 ? 1 : 2);
   var o = [];
-  for (var i = 0; i <= offset; ++i) o.push(blob.read_shift(opts && opts.biff == 2 ? 1 : 2));
+  for (var i = 0; i <= offset2; ++i) o.push(blob.read_shift(opts && opts.biff == 2 ? 1 : 2));
   return o;
 }
 function parse_PtgAttrGoto(blob, length, opts) {
@@ -55916,12 +55984,12 @@ function popcnt(x) {
   x = (x & 858993459) + (x >> 2 & 858993459);
   return (x + (x >> 4) & 252645135) * 16843009 >>> 24;
 }
-function readDecimal128LE(buf, offset) {
-  var exp = (buf[offset + 15] & 127) << 7 | buf[offset + 14] >> 1;
-  var mantissa = buf[offset + 14] & 1;
-  for (var j = offset + 13; j >= offset; --j)
+function readDecimal128LE(buf, offset2) {
+  var exp = (buf[offset2 + 15] & 127) << 7 | buf[offset2 + 14] >> 1;
+  var mantissa = buf[offset2 + 14] & 1;
+  for (var j = offset2 + 13; j >= offset2; --j)
     mantissa = mantissa * 256 + buf[j];
-  return (buf[offset + 15] & 128 ? -mantissa : mantissa) * Math.pow(10, exp - 6176);
+  return (buf[offset2 + 15] & 128 ? -mantissa : mantissa) * Math.pow(10, exp - 6176);
 }
 function parse_varint49(buf, ptr2) {
   var l = ptr2.l;
@@ -56077,24 +56145,24 @@ function parse_snappy_chunk(type, buf) {
       l += len2;
       continue;
     } else {
-      var offset = 0, length = 0;
+      var offset2 = 0, length = 0;
       if (tag2 == 1) {
         length = (buf[l] >> 2 & 7) + 4;
-        offset = (buf[l++] & 224) << 3;
-        offset |= buf[l++];
+        offset2 = (buf[l++] & 224) << 3;
+        offset2 |= buf[l++];
       } else {
         length = (buf[l++] >> 2) + 1;
         if (tag2 == 2) {
-          offset = buf[l] | buf[l + 1] << 8;
+          offset2 = buf[l] | buf[l + 1] << 8;
           l += 2;
         } else {
-          offset = (buf[l] | buf[l + 1] << 8 | buf[l + 2] << 16 | buf[l + 3] << 24) >>> 0;
+          offset2 = (buf[l] | buf[l + 1] << 8 | buf[l + 2] << 16 | buf[l + 3] << 24) >>> 0;
           l += 4;
         }
       }
-      if (offset == 0)
+      if (offset2 == 0)
         throw new Error("Invalid offset 0");
-      var j = chunks.length - 1, off3 = offset;
+      var j = chunks.length - 1, off3 = offset2;
       while (j >= 0 && off3 >= chunks[j].length) {
         off3 -= chunks[j].length;
         --j;
@@ -57423,7 +57491,7 @@ function make_json_row(sheet, r, R, cols, header, hdr, o) {
 }
 function sheet_to_json(sheet, opts) {
   if (sheet == null || sheet["!ref"] == null) return [];
-  var val3 = { t: "n", v: 0 }, header = 0, offset = 1, hdr = [], v2 = 0, vv = "";
+  var val3 = { t: "n", v: 0 }, header = 0, offset2 = 1, hdr = [], v2 = 0, vv = "";
   var r = { s: { r: 0, c: 0 }, e: { r: 0, c: 0 } };
   var o = opts || {};
   var range3 = o.range != null ? o.range : sheet["!ref"];
@@ -57442,7 +57510,7 @@ function sheet_to_json(sheet, opts) {
     default:
       r = range3;
   }
-  if (header > 0) offset = 0;
+  if (header > 0) offset2 = 0;
   var rr = encode_row(r.s.r);
   var cols = [];
   var out = [];
@@ -57482,7 +57550,7 @@ function sheet_to_json(sheet, opts) {
         hdr[C] = vv;
     }
   }
-  for (R = r.s.r + offset; R <= r.e.r; ++R) {
+  for (R = r.s.r + offset2; R <= r.e.r; ++R) {
     if ((rowinfo[R] || {}).hidden) continue;
     var row = make_json_row(sheet, r, R, cols, header, hdr, o);
     if (row.isempty === false || (header === 1 ? o.blankrows !== false : !!o.blankrows)) out[outi++] = row.row;
@@ -57588,7 +57656,7 @@ function sheet_add_json(_ws, js, opts) {
   var o = opts || {};
   var dense = _ws ? _ws["!data"] != null : o.dense;
   if (DENSE != null && dense == null) dense = DENSE;
-  var offset = +!o.skipHeader;
+  var offset2 = +!o.skipHeader;
   var ws = _ws || {};
   if (!_ws && dense) ws["!data"] = [];
   var _R = 0, _C = 0;
@@ -57600,32 +57668,32 @@ function sheet_add_json(_ws, js, opts) {
       _C = _origin.c;
     }
   }
-  var range3 = { s: { c: 0, r: 0 }, e: { c: _C, r: _R + js.length - 1 + offset } };
+  var range3 = { s: { c: 0, r: 0 }, e: { c: _C, r: _R + js.length - 1 + offset2 } };
   if (ws["!ref"]) {
     var _range = safe_decode_range(ws["!ref"]);
     range3.e.c = Math.max(range3.e.c, _range.e.c);
     range3.e.r = Math.max(range3.e.r, _range.e.r);
     if (_R == -1) {
       _R = _range.e.r + 1;
-      range3.e.r = _R + js.length - 1 + offset;
+      range3.e.r = _R + js.length - 1 + offset2;
     }
   } else {
     if (_R == -1) {
       _R = 0;
-      range3.e.r = js.length - 1 + offset;
+      range3.e.r = js.length - 1 + offset2;
     }
   }
   var hdr = o.header || [], C = 0;
   var ROW = [];
   js.forEach(function(JS, R) {
-    if (dense && !ws["!data"][_R + R + offset]) ws["!data"][_R + R + offset] = [];
-    if (dense) ROW = ws["!data"][_R + R + offset];
+    if (dense && !ws["!data"][_R + R + offset2]) ws["!data"][_R + R + offset2] = [];
+    if (dense) ROW = ws["!data"][_R + R + offset2];
     keys(JS).forEach(function(k) {
       if ((C = hdr.indexOf(k)) == -1) hdr[C = hdr.length] = k;
       var v2 = JS[k];
       var t2 = "z";
       var z = "";
-      var ref = dense ? "" : encode_col(_C + C) + encode_row(_R + R + offset);
+      var ref = dense ? "" : encode_col(_C + C) + encode_row(_R + R + offset2);
       var cell = dense ? ROW[_C + C] : ws[ref];
       if (v2 && typeof v2 === "object" && !(v2 instanceof Date)) {
         if (dense) ROW[_C + C] = v2;
@@ -57663,7 +57731,7 @@ function sheet_add_json(_ws, js, opts) {
   range3.e.c = Math.max(range3.e.c, _C + hdr.length - 1);
   var __R = encode_row(_R);
   if (dense && !ws["!data"][_R]) ws["!data"][_R] = [];
-  if (offset) for (C = 0; C < hdr.length; ++C) {
+  if (offset2) for (C = 0; C < hdr.length; ++C) {
     if (dense) ws["!data"][_R][C + _C] = { t: "s", v: hdr[C] };
     else ws[encode_col(C + _C) + __R] = { t: "s", v: hdr[C] };
   }
@@ -58235,9 +58303,9 @@ function inspectZip(buffer2, maxExpanded = 30 * 1024 * 1024, maxEntries = 2e3) {
   }
   ensure(end >= 0, "ZIP\u7D42\u7AEF\u30FB\u30B3\u30E1\u30F3\u30C8\u9577\u30FB\u672B\u5C3E\u30C7\u30FC\u30BF\u304C\u4E0D\u6B63");
   ensure(v2.getUint16(end + 4, true) === 0 && v2.getUint16(end + 6, true) === 0, "\u5206\u5272ZIP\u306F\u975E\u5BFE\u5FDC");
-  const count = v2.getUint16(end + 10, true), offset = v2.getUint32(end + 16, true), size = v2.getUint32(end + 12, true);
-  ensure(count > 0 && count <= maxEntries && count !== 65535 && v2.getUint16(end + 8, true) === count && offset + size === end, "ZIP\u4EF6\u6570\u30FB\u7D22\u5F15\u5883\u754C\u304C\u4E0D\u6B63");
-  let at = offset, total = 0;
+  const count = v2.getUint16(end + 10, true), offset2 = v2.getUint32(end + 16, true), size = v2.getUint32(end + 12, true);
+  ensure(count > 0 && count <= maxEntries && count !== 65535 && v2.getUint16(end + 8, true) === count && offset2 + size === end, "ZIP\u4EF6\u6570\u30FB\u7D22\u5F15\u5883\u754C\u304C\u4E0D\u6B63");
+  let at = offset2, total = 0;
   const names = /* @__PURE__ */ new Set(), ranges = [];
   const text2 = (start, len2) => new TextDecoder("utf-8", { fatal: true }).decode(bytes.subarray(start, start + len2));
   for (let i = 0; i < count; i++) {
@@ -58252,15 +58320,15 @@ function inspectZip(buffer2, maxExpanded = 30 * 1024 * 1024, maxEntries = 2e3) {
     total += expanded;
     ensure(total <= maxExpanded, "\u5C55\u958B\u5F8C\u30B5\u30A4\u30BA\u304C\u4E0A\u9650\u3092\u8D85\u3048\u307E\u3059");
     ensure(!expanded || packed > 0 && expanded / packed <= 1e3, "ZIP\u5727\u7E2E\u6BD4\u304C\u4E0A\u9650\u3092\u8D85\u3048\u307E\u3059");
-    ensure(local + 30 <= offset && v2.getUint32(local, true) === 67324752, "ZIP\u30ED\u30FC\u30AB\u30EB\u30D8\u30C3\u30C0\u4E0D\u6B63");
+    ensure(local + 30 <= offset2 && v2.getUint32(local, true) === 67324752, "ZIP\u30ED\u30FC\u30AB\u30EB\u30D8\u30C3\u30C0\u4E0D\u6B63");
     const lf = v2.getUint16(local + 6, true), lm = v2.getUint16(local + 8, true), ln = v2.getUint16(local + 26, true), le = v2.getUint16(local + 28, true);
     const data2 = local + 30 + ln + le, dataEnd = data2 + packed;
-    ensure(lf === flags2 && lm === method && ln === nameLen && dataEnd <= offset && text2(local + 30, ln) === name6, "ZIP\u30ED\u30FC\u30AB\u30EB\u540D\u30FB\u65B9\u5F0F\u30FB\u5883\u754C\u304C\u7D22\u5F15\u3068\u4E0D\u4E00\u81F4");
+    ensure(lf === flags2 && lm === method && ln === nameLen && dataEnd <= offset2 && text2(local + 30, ln) === name6, "ZIP\u30ED\u30FC\u30AB\u30EB\u540D\u30FB\u65B9\u5F0F\u30FB\u5883\u754C\u304C\u7D22\u5F15\u3068\u4E0D\u4E00\u81F4");
     let rangeEnd = dataEnd;
     if (flags2 & 8) {
       let pos = dataEnd;
-      if (pos + 4 <= offset && v2.getUint32(pos, true) === 134695760) pos += 4;
-      ensure(pos + 12 <= offset && v2.getUint32(pos, true) === crc && v2.getUint32(pos + 4, true) === packed && v2.getUint32(pos + 8, true) === expanded, "ZIP\u30C7\u30FC\u30BF\u8A18\u8FF0\u5B50\u304C\u4E0D\u4E00\u81F4");
+      if (pos + 4 <= offset2 && v2.getUint32(pos, true) === 134695760) pos += 4;
+      ensure(pos + 12 <= offset2 && v2.getUint32(pos, true) === crc && v2.getUint32(pos + 4, true) === packed && v2.getUint32(pos + 8, true) === expanded, "ZIP\u30C7\u30FC\u30BF\u8A18\u8FF0\u5B50\u304C\u4E0D\u4E00\u81F4");
       rangeEnd = pos + 12;
       for (const [off3, value] of [[14, crc], [18, packed], [22, expanded]]) ensure(v2.getUint32(local + off3, true) === 0 || v2.getUint32(local + off3, true) === value, "ZIP\u30ED\u30FC\u30AB\u30EB\u30B5\u30A4\u30BA\u304C\u4E0D\u4E00\u81F4");
     } else ensure(v2.getUint32(local + 14, true) === crc && v2.getUint32(local + 18, true) === packed && v2.getUint32(local + 22, true) === expanded, "ZIP\u30ED\u30FC\u30AB\u30EBCRC\u30FB\u30B5\u30A4\u30BA\u304C\u4E0D\u4E00\u81F4");
@@ -58281,10 +58349,275 @@ function inspectZip(buffer2, maxExpanded = 30 * 1024 * 1024, maxEntries = 2e3) {
     ranges.push({ start: local, end: rangeEnd });
     at += 46 + nameLen + extra + comment;
   }
-  ensure(at === offset + size, "ZIP\u7D22\u5F15\u30B5\u30A4\u30BA\u304C\u4E0D\u4E00\u81F4");
+  ensure(at === offset2 + size, "ZIP\u7D22\u5F15\u30B5\u30A4\u30BA\u304C\u4E0D\u4E00\u81F4");
   ranges.sort((a, b) => a.start - b.start);
-  ensure(ranges[0].start === 0 && ranges.every((r, i) => r.end <= (i + 1 < ranges.length ? ranges[i + 1].start : offset)), "ZIP\u9818\u57DF\u91CD\u8907\u30FB\u5148\u982D\u30C7\u30FC\u30BF\u304C\u4E0D\u6B63");
+  ensure(ranges[0].start === 0 && ranges.every((r, i) => r.end <= (i + 1 < ranges.length ? ranges[i + 1].start : offset2)), "ZIP\u9818\u57DF\u91CD\u8907\u30FB\u5148\u982D\u30C7\u30FC\u30BF\u304C\u4E0D\u6B63");
   return { names: [...names], total };
+}
+
+// src/roster.ts
+function collectRoster(t2) {
+  const players = new Map((t2.roster ?? []).map((p) => [p.id, p]));
+  const clubs = new Set(t2.clubs ?? []);
+  for (const e of t2.events) for (const entry of e.entries) {
+    if (entry.club.trim() && !(e.type === "doubles" && entry.pairNo !== void 0 && entry.club.includes("\uFF0F"))) clubs.add(entry.club.trim());
+    const separator = /[／/\n]/;
+    const names = entry.name.split(separator.test(entry.name) ? separator : /・/).map((n2) => n2.trim());
+    entry.players.forEach((id, i) => {
+      if (id.startsWith("TEAM-PENDING-")) return;
+      const name6 = e.type === "singles" ? entry.name : e.type === "doubles" && names.length === 2 ? names[i] : id;
+      const old = players.get(id);
+      if (!old || e.type === "singles" && !old.teamId) players.set(id, { ...old, id, name: name6, club: entry.club, kana: old?.kana ?? entry.kana, gender: old?.gender ?? entry.gender, grade: old?.grade ?? entry.grade });
+      else if (!old.club && entry.club) players.set(id, { ...old, club: entry.club });
+    });
+  }
+  return { players: [...players.values()], clubs: [...clubs] };
+}
+function preserveRoster(t2) {
+  const { players, clubs } = collectRoster(t2);
+  if (players.length || t2.roster) t2.roster = players;
+  if (clubs.length || t2.clubs) t2.clubs = clubs;
+}
+function deletionSummary(t2, id) {
+  const event = eventOf(t2, id), matches = t2.matches.filter((m) => m.eventId === id && m.status !== "bye");
+  return { name: event.name, entrants: event.entries.length, players: new Set(event.entries.flatMap((p) => p.players).filter((p) => !p.startsWith("TEAM-PENDING-"))).size, matches: matches.length, results: matches.filter((m) => m.status === "completed" || m.rubbers?.some((r) => r.games.length)).length };
+}
+function deleteEvent(t2, id) {
+  return atomicMutation(t2, (d) => {
+    eventOf(d, id);
+    preserveRoster(d);
+    const stages = new Set(d.stages.filter((s2) => s2.eventId === id).map((s2) => s2.id));
+    const groups = new Set(d.stages.filter((s2) => stages.has(s2.id)).flatMap((s2) => s2.groups.map((g) => g.id)));
+    const removed = new Set(d.matches.filter((m) => m.eventId === id).map((m) => m.id));
+    for (const a of d.archives ?? []) {
+      for (const s2 of a.stages.filter((s3) => s3.eventId === id)) s2.groups.forEach((g) => groups.add(g.id));
+      for (const m of a.matches.filter((m2) => m2.eventId === id)) removed.add(m.id);
+      a.stages = a.stages.filter((s2) => s2.eventId !== id);
+      a.matches = a.matches.filter((m) => m.eventId !== id);
+      if (a.events) a.events = a.events.filter((e) => e.id !== id);
+    }
+    ensure(d.matches.every((m) => m.eventId === id || m.deps.every((x) => !removed.has(x))), "\u4ED6\u7A2E\u76EE\u306E\u8A66\u5408\u304C\u5BFE\u8C61\u7A2E\u76EE\u3092\u53C2\u7167\u3057\u3066\u3044\u307E\u3059");
+    d.events = d.events.filter((e) => e.id !== id);
+    d.stages = d.stages.filter((s2) => !stages.has(s2.id));
+    d.matches = d.matches.filter((m) => !removed.has(m.id));
+    if (d.rulings) d.rulings = d.rulings.filter((r) => !groups.has(r.groupId));
+    if (d.corrections) d.corrections = d.corrections.filter((c) => !removed.has(c.matchId));
+    if (d.archives) d.archives = d.archives.filter((a) => a.stages.length || a.matches.length || a.events?.length);
+  });
+}
+
+// src/registration.ts
+var key = (s2) => s2.normalize("NFKC").trim().replace(/\s+/g, " ").toLowerCase();
+function registrationView(t2) {
+  const { players, clubs } = collectRoster(t2);
+  const teams = [...t2.registrationTeams ?? []];
+  for (const name6 of clubs) if (name6.trim() && name6.length <= 120 && !teams.some((x) => key(x.name) === key(name6))) {
+    let n2 = teams.length + 1;
+    while (teams.some((x) => x.id === "legacy-club-" + n2)) n2++;
+    teams.push({ id: "legacy-club-" + n2, name: name6 });
+  }
+  const byClub = new Map(teams.map((x) => [key(x.name), x.id]));
+  return { teams, players: players.map((p) => ({ ...p, teamId: p.teamId ?? byClub.get(key(p.club)) })) };
+}
+function initializeRegistration(t2) {
+  const { teams, players } = registrationView(t2);
+  t2.registrationTeams = teams;
+  t2.roster = players;
+}
+function registerTeam(t2, name6) {
+  const normalized = name6.trim();
+  ensure(normalized && normalized.length <= 120, "\u6240\u5C5E\u30C1\u30FC\u30E0\u540D\u306F1\u301C120\u6587\u5B57\u3067\u3059");
+  const found = t2.registrationTeams.find((x) => key(x.name) === key(normalized));
+  if (found) return found;
+  const team = { id: uid(), name: normalized };
+  t2.registrationTeams.push(team);
+  return team;
+}
+function nextTeamRank(t2, teamId) {
+  return Math.max(0, ...(t2.roster ?? []).filter((p) => p.teamId === teamId).map((p) => p.teamRank ?? 0)) + 1;
+}
+function putParticipant(t2, input3, id) {
+  const name6 = input3.name.trim(), team = t2.registrationTeams.find((x) => x.id === input3.teamId);
+  ensure(name6 && name6.length <= 120 && team, "\u6C0F\u540D\u3068\u6240\u5C5E\u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+  const p = t2.roster.find((x) => x.id === id);
+  ensure(!id || p, "\u9078\u624BID\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
+  ensure(!p || p.teamId === team.id || !t2.events.some((e) => e.entries.some((x) => x.players.includes(p.id)) || e.pairDrafts?.some((x) => x.players.includes(p.id))), "\u51FA\u5834\u4E2D\u306E\u9078\u624B\u306E\u6240\u5C5E\u5909\u66F4\u306F\u5148\u306B\u30A8\u30F3\u30C8\u30EA\u30FC\u3092\u89E3\u9664\u3057\u3066\u304F\u3060\u3055\u3044");
+  const peers = t2.roster.filter((x) => x.id !== id && x.teamId === team.id && x.teamRank !== void 0);
+  const value = { ...input3, id: p?.id ?? uid(), name: name6, club: team.name, teamRank: input3.teamRank ?? p?.teamRank ?? nextTeamRank(t2, team.id) };
+  if (p && p.teamId === team.id && p.teamRank !== void 0 && value.teamRank !== p.teamRank) {
+    const old = p.teamRank, next = value.teamRank;
+    for (const peer of peers) {
+      const rank = peer.teamRank;
+      if (next < old && rank >= next && rank < old) peer.teamRank = rank + 1;
+      if (next > old && rank <= next && rank > old) peer.teamRank = rank - 1;
+    }
+  } else ensure(!peers.some((x) => x.teamRank === value.teamRank), "\u540C\u3058\u30C1\u30FC\u30E0\u5185\u9806\u4F4D\u304C\u767B\u9332\u6E08\u307F\u3067\u3059");
+  if (p) Object.assign(p, value);
+  else t2.roster.push(value);
+  for (const e of t2.events.filter((e2) => !t2.stages.some((s2) => s2.eventId === e2.id))) {
+    if (e.entries.some((entry) => entry.players.includes(value.id)) || e.pairDrafts?.some((x) => x.players.includes(value.id))) eligible(e, value);
+    for (const entry of e.entries.filter((e2) => e2.players.includes(value.id))) {
+      if (e.type === "singles") Object.assign(entry, { name: value.name, club: value.club, kana: value.kana, gender: value.gender, grade: value.grade });
+      if (e.type === "doubles" && entry.pairNo !== void 0) Object.assign(entry, pairDetails(t2, entry.players));
+    }
+  }
+  return value;
+}
+function eligible(e, p) {
+  const q = e.entryEligibility;
+  ensure(
+    !q || (!q.gender || q.gender === p.gender) && (!q.grade || q.grade === p.grade) && (q.minAge === void 0 || p.age !== void 0 && p.age >= q.minAge) && (q.maxAge === void 0 || p.age !== void 0 && p.age <= q.maxAge),
+    e.name + " \u306E\u53C2\u52A0\u8CC7\u683C\u3092\u6E80\u305F\u3057\u307E\u305B\u3093\uFF1A" + p.name
+  );
+}
+function editable(t2, id) {
+  const e = eventOf(t2, id);
+  ensure(!t2.stages.some((s2) => s2.eventId === id), "\u7D44\u5408\u305B\u4F5C\u6210\u5F8C\u306F\u5909\u66F4\u3067\u304D\u307E\u305B\u3093\u3002\u7D44\u5408\u305B\u3092\u4FDD\u7BA1\u30FB\u53D6\u6D88\u3057\u3066\u304F\u3060\u3055\u3044");
+  return e;
+}
+function pairDetails(t2, players) {
+  const names = players.map((id) => {
+    const p = t2.roster.find((x) => x.id === id);
+    ensure(p, "\u30DA\u30A2\u306E\u9078\u624B\u304C\u3042\u308A\u307E\u305B\u3093");
+    return p;
+  });
+  const clubs = [...new Set(names.map((p) => p.club))];
+  return { name: names.map((p) => p.name).join("\uFF0F"), club: clubs.length === 1 ? clubs[0] : clubs.join("\uFF0F") };
+}
+function addPair(t2, e, number, players, rank) {
+  ensure(players.length === 2 && players.every(Boolean) && new Set(players).size === 2 && !e.entries.some((p) => p.players.some((id) => players.includes(id))), "\u30C0\u30D6\u30EB\u30B9\u306E\u69CB\u6210\u307E\u305F\u306F\u91CD\u8907\u304C\u4E0D\u6B63\u3067\u3059");
+  for (const id of players) {
+    const p = t2.roster.find((x) => x.id === id);
+    ensure(p, "\u9078\u624B\u672A\u767B\u9332");
+    eligible(e, p);
+  }
+  ensure(!e.entries.some((p) => p.pairNo === number), "\u30DA\u30A2\u756A\u53F7\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
+  if (rank === void 0) rank = nextPairRank(t2, e, players);
+  e.entries.push({ id: uid(), seed: 0, players, pairNo: number, ...rank === void 0 ? {} : { pairRank: rank }, ...pairDetails(t2, players) });
+  e.pairCounter = Math.max(e.pairCounter ?? 1, number + 1);
+}
+function setRegistration(t2, eventId, playerId, selected) {
+  const e = editable(t2, eventId), p = t2.roster.find((x) => x.id === playerId);
+  ensure(p, "\u5927\u4F1A\u540D\u7C3F\u306B\u9078\u624B\u304C\u3042\u308A\u307E\u305B\u3093");
+  const existing = e.entries.find((x) => x.players.includes(playerId));
+  const drafts = e.pairDrafts ?? (e.pairDrafts = []);
+  const pending = drafts.findIndex((d) => d.players.includes(playerId));
+  if (e.type === "team") {
+    if (selected && !existing) {
+      eligible(e, p);
+      const team = t2.registrationTeams.find((x) => x.id === p.teamId);
+      ensure(team, "\u56E3\u4F53\u6226\u3067\u306F\u6240\u5C5E\u30C1\u30FC\u30E0\u3092\u767B\u9332\u3057\u3066\u304F\u3060\u3055\u3044");
+      const row = e.entries.find((r) => r.registrationTeamId === team.id) ?? e.entries.find((r) => key(r.club || r.name) === key(team.name));
+      if (row) {
+        row.registrationTeamId = team.id;
+        row.players = row.players.filter((id) => !id.startsWith("TEAM-PENDING-"));
+        row.players.push(p.id);
+      } else e.entries.push({ id: uid(), name: team.name, club: team.name, seed: 0, players: [p.id], registrationTeamId: team.id });
+    }
+    if (!selected && existing) {
+      existing.players = existing.players.filter((id) => id !== p.id);
+      if (!existing.players.length) e.entries = e.entries.filter((x) => x !== existing);
+    }
+    return;
+  }
+  if (e.type === "singles") {
+    if (selected && !existing) {
+      eligible(e, p);
+      e.entries.push({ id: uid(), players: [p.id], name: p.name, club: p.club, seed: 0, kana: p.kana, gender: p.gender, grade: p.grade });
+    }
+    if (!selected && existing) e.entries = e.entries.filter((x) => x !== existing);
+    return;
+  }
+  if (!selected) {
+    if (existing) {
+      const n2 = existing.pairNo ?? allocatePair(e);
+      const currentRank = pairDisplay(t2, e, { number: existing.pairNo ?? 0, id: existing.id, players: existing.players, pairRank: existing.pairRank });
+      e.entries = e.entries.filter((x) => x !== existing);
+      drafts.push({ number: n2, players: existing.players.filter((id) => id !== playerId), pairRank: pairScope(t2, existing.players) === "@mixed" ? nextPairRank(t2, e, [existing.players.find((id) => id !== playerId)]) : currentRank });
+    } else if (pending >= 0) drafts.splice(pending, 1);
+  } else if (!existing && pending < 0) {
+    eligible(e, p);
+    const candidates2 = drafts.filter((d) => pairScope(t2, d.players) === pairScope(t2, [playerId]));
+    if (candidates2.length) {
+      const first = candidates2.sort((a, b) => a.number - b.number)[0];
+      drafts.splice(drafts.indexOf(first), 1);
+      addPair(t2, e, first.number, [...first.players, playerId], first.pairRank);
+    } else drafts.push({ number: allocatePair(e), players: [playerId], pairRank: nextPairRank(t2, e, [playerId]) });
+  }
+}
+function allocatePair(e) {
+  const n2 = Math.max(e.pairCounter ?? 1, ...e.entries.map((x) => (x.pairNo ?? 0) + 1), ...(e.pairDrafts ?? []).map((x) => x.number + 1));
+  e.pairCounter = n2 + 1;
+  return n2;
+}
+function changePair(t2, eventId, number, ids) {
+  const e = editable(t2, eventId);
+  ensure(e.type === "doubles" && ids.length === 2 && ids.every(Boolean) && new Set(ids).size === 2, "\u5225\u3005\u306E2\u540D\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+  const old = e.entries.find((p) => p.pairNo === number);
+  const draft = e.pairDrafts?.find((p) => p.number === number);
+  ensure(old || draft, "\u30DA\u30A2\u304C\u3042\u308A\u307E\u305B\u3093");
+  ensure(!e.entries.some((p) => p !== old && p.players.some((id) => ids.includes(id))) && !e.pairDrafts?.some((p) => p !== draft && p.players.some((id) => ids.includes(id))), "\u5225\u306E\u30DA\u30A2\u306B\u767B\u9332\u6E08\u307F\u306E\u9078\u624B\u306F\u5148\u306B\u89E3\u9664\u3057\u3066\u304F\u3060\u3055\u3044");
+  if (old && ids.every((id) => old.players.includes(id))) {
+    Object.assign(old, { players: ids, ...pairDetails(t2, ids) });
+    return;
+  }
+  if (old) e.entries = e.entries.filter((p) => p !== old);
+  if (draft) e.pairDrafts = e.pairDrafts.filter((p) => p !== draft);
+  addPair(t2, e, number, ids, pairScope(t2, old?.players ?? draft.players) === pairScope(t2, ids) ? old?.pairRank ?? draft?.pairRank : void 0);
+}
+function setRegistrationSeed(t2, eventId, entryId, seed) {
+  const e = eventOf(t2, eventId);
+  ensure(!t2.stages.some((s2) => s2.eventId === eventId), "\u7D44\u5408\u305B\u4F5C\u6210\u5F8C\u306F\u30B7\u30FC\u30C9\u5909\u66F4\u3067\u304D\u307E\u305B\u3093\u3002\u5148\u306B\u4FDD\u7BA1\u30FB\u53D6\u6D88\u3057\u3066\u304F\u3060\u3055\u3044");
+  const entry = e.entries.find((p) => p.id === entryId);
+  ensure(entry && Number.isSafeInteger(seed) && seed >= 0 && !e.entries.some((p) => p !== entry && seed > 0 && p.seed === seed), "\u30B7\u30FC\u30C9\u9806\u4F4D\u304C\u4E0D\u6B63\u3001\u307E\u305F\u306F\u540C\u4E00\u7A2E\u76EE\u5185\u3067\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
+  entry.seed = seed;
+}
+function assertNoPendingPairs(e) {
+  ensure(!e.pairDrafts?.length, "\u30C0\u30D6\u30EB\u30B9\u30DA\u30A2\u306B\u6B20\u54E1\u304C\u3042\u308A\u307E\u3059\u30022\u540D\u305A\u3064\u767B\u9332\u3057\u3066\u304B\u3089\u7D44\u5408\u305B\u3092\u4F5C\u6210\u3057\u3066\u304F\u3060\u3055\u3044");
+}
+function pairScope(t2, players) {
+  const byId = new Map((t2.roster ?? []).map((p) => [p.id, p]));
+  const teams = [...new Set(players.map((id) => byId.get(id)?.teamId ?? ""))];
+  return teams.length === 1 ? teams[0] : "@mixed";
+}
+function pairSlots(e) {
+  return [...e.entries.map((p) => ({ number: p.pairNo ?? 0, players: p.players, pairRank: p.pairRank, id: p.id })), ...e.pairDrafts ?? []].sort((a, b) => a.number - b.number);
+}
+function pairDisplay(t2, e, slot) {
+  const team = pairScope(t2, slot.players);
+  const slots = pairSlots(e).filter((p) => pairScope(t2, p.players) === team);
+  const reserved = new Set(slots.flatMap((p) => p.pairRank ? [p.pairRank] : []));
+  let candidate = 0;
+  for (const p of slots) {
+    if (p.pairRank) {
+      if (p.id ? slot.id === p.id : slot.number === p.number) return p.pairRank;
+    } else {
+      do {
+        candidate++;
+      } while (reserved.has(candidate));
+      if (p.id ? slot.id === p.id : slot.number === p.number) return candidate;
+    }
+  }
+  return candidate + 1;
+}
+function rankPair(t2, eid2, number, rank) {
+  const e = eventOf(t2, eid2);
+  const target = e.entries.find((p) => p.pairNo === number);
+  ensure(target && Number.isSafeInteger(rank) && rank > 0, "\u30DA\u30A2\u3068\u9806\u4F4D\u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+  const scope = pairScope(t2, target.players), peers = pairSlots(e).filter((p) => pairScope(t2, p.players) === scope);
+  ensure(rank <= peers.length, "\u30DA\u30A2\u9806\u4F4D\u306F1\u301C" + peers.length + "\u3067\u3059");
+  const ordered2 = peers.sort((a, b) => pairDisplay(t2, e, a) - pairDisplay(t2, e, b));
+  const index = ordered2.findIndex((p) => p.number === number);
+  const [moved] = ordered2.splice(index, 1);
+  ordered2.splice(rank - 1, 0, moved);
+  for (const [i, p] of ordered2.entries()) {
+    const row = p.id ? e.entries.find((x) => x.id === p.id) : e.pairDrafts?.find((x) => x.number === p.number);
+    if (row) row.pairRank = i + 1;
+  }
+}
+function nextPairRank(t2, e, players) {
+  const scope = pairScope(t2, players);
+  return Math.max(0, ...pairSlots(e).filter((p) => pairScope(t2, p.players) === scope).map((p) => pairDisplay(t2, e, p))) + 1;
 }
 
 // src/exchange.ts
@@ -58351,22 +58684,22 @@ function plan(t2, s2) {
     neighbours.get(a.id).add(b);
     neighbours.get(b.id).add(a);
   }
-  const order2 = (a, b) => counts.get(a.id) - counts.get(b.id) || neighbours.get(a.id).size - neighbours.get(b.id).size || capacity.get(a.id) - capacity.get(b.id);
+  const order = (a, b) => counts.get(a.id) - counts.get(b.id) || neighbours.get(a.id).size - neighbours.get(b.id).size || capacity.get(a.id) - capacity.get(b.id);
   function remove(a, b) {
     neighbours.get(a.id).delete(b);
     neighbours.get(b.id).delete(a);
   }
   while (true) {
-    const a = entries.filter((p) => neighbours.get(p.id).size).sort(order2)[0];
+    const a = entries.filter((p) => neighbours.get(p.id).size).sort(order)[0];
     if (!a) break;
-    const b = [...neighbours.get(a.id)].sort(order2)[0];
+    const b = [...neighbours.get(a.id)].sort(order)[0];
     select3(a, b);
     remove(a, b);
     for (const p of [a, b]) if (counts.get(p.id) >= options2.target) for (const q of neighbours.get(p.id)) remove(p, q);
   }
   const eligible2 = new Set(choices.map(([a, b]) => pairKey(a.id, b.id)));
   for (const [key4, [a, b]] of [...selected]) {
-    const under = entries.filter((p) => counts.get(p.id) < options2.target).sort(order2);
+    const under = entries.filter((p) => counts.get(p.id) < options2.target).sort(order);
     if (!under.length) break;
     const edges = (from) => under.filter((p) => {
       if (p === a || p === b) return false;
@@ -58466,38 +58799,46 @@ var localDay = (epoch2) => {
   const d = new Date(epoch2);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
-var restFor = (t2, id) => t2.playerRest?.find((x) => x.id === id)?.minutes ?? t2.restMinutes ?? 0;
-function dayMinute(t2, epoch2) {
-  if (epoch2 === void 0 || !Number.isFinite(epoch2) || localDay(epoch2) !== t2.date) return void 0;
+var actualDateAllowed = (t2, epoch2, date) => dayMinute(t2, epoch2, date) !== void 0 || !!t2.competitionDays && !!dayConfig(t2, localDay(epoch2));
+var restFor = (t2, id, date) => t2.playerRest?.find((x) => x.id === id)?.minutes ?? dayConfig(t2, date)?.rest ?? t2.restMinutes ?? 0;
+function dayMinute(t2, epoch2, date = t2.date) {
+  if (epoch2 === void 0 || !Number.isFinite(epoch2) || localDay(epoch2) !== date) return void 0;
   const d = new Date(epoch2);
-  return d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
+  return d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60 + d.getMilliseconds() / 6e4;
 }
 function reservation(t2, m, now) {
-  const start = dayMinute(t2, m.startedAt);
+  const date = plannedDate(t2, m);
+  const start = dayMinute(t2, m.startedAt, date);
   if (start === void 0) return m;
-  let end = m.status === "completed" ? dayMinute(t2, m.finishedAt) : void 0;
+  let end = m.status === "completed" ? dayMinute(t2, m.finishedAt, date) : void 0;
   if (end === void 0) {
     end = start + m.duration;
-    const minute = now === void 0 ? void 0 : dayMinute(t2, now);
-    if (m.status === "playing" && minute !== void 0 && minute >= end) end = minute + m.duration;
+    const minute2 = dayMinute(t2, now, date);
+    if (m.status === "playing" && minute2 !== void 0 && minute2 >= end) end = minute2 + m.duration;
   }
   ensure(end >= start, "\u5B9F\u7D42\u4E86\u65E5\u6642\u304C\u5B9F\u958B\u59CB\u524D\u3067\u3059");
   return { ...m, time: start, duration: Math.max(1, end - start) };
 }
+var offset = (t2, m) => t2.competitionDays?.length ? dayOffset(plannedDate(t2, m) ?? t2.date) : 0;
+var absolute = (t2, m, now) => {
+  const slot = reservation(t2, m, now);
+  return { ...slot, time: slot.time + offset(t2, m) };
+};
 function progressStatus(t2, now = Date.now()) {
-  const minute = dayMinute(t2, now);
   return t2.matches.map((m) => {
-    const actualStart = ["playing", "completed"].includes(m.status) ? dayMinute(t2, m.startedAt) : void 0, rawEnd = m.status === "completed" && actualStart !== void 0 ? dayMinute(t2, m.finishedAt) : void 0, actualEnd = rawEnd !== void 0 && rawEnd >= actualStart ? rawEnd : void 0;
-    const delayMinutes = Math.max(0, actualStart !== void 0 ? actualStart - m.time : m.status === "called" && minute !== void 0 && m.court > 0 ? minute - m.time : 0);
-    const overrunMinutes = m.status === "playing" && actualStart !== void 0 && minute !== void 0 ? Math.max(0, minute - (actualStart + m.duration)) : actualEnd !== void 0 && actualStart !== void 0 ? Math.max(0, actualEnd - (actualStart + m.duration)) : 0;
+    const date = plannedDate(t2, m), minute2 = dayMinute(t2, now, date);
+    const actualStart = ["playing", "completed"].includes(m.status) ? dayMinute(t2, m.startedAt, date) : void 0, rawEnd = m.status === "completed" && actualStart !== void 0 ? dayMinute(t2, m.finishedAt, date) : void 0, actualEnd = rawEnd !== void 0 && rawEnd >= actualStart ? rawEnd : void 0;
+    const delayMinutes = Math.max(0, actualStart !== void 0 ? actualStart - m.time : m.status === "called" && minute2 !== void 0 && m.court > 0 ? minute2 - m.time : 0);
+    const overrunMinutes = m.status === "playing" && actualStart !== void 0 && minute2 !== void 0 ? Math.max(0, minute2 - (actualStart + m.duration)) : actualEnd !== void 0 && actualStart !== void 0 ? Math.max(0, actualEnd - (actualStart + m.duration)) : 0;
     return { id: m.id, number: m.number, status: m.status, scheduledStart: m.time, startedAt: m.startedAt, finishedAt: m.finishedAt, actualTimingKnown: actualStart !== void 0 && (m.status !== "completed" || actualEnd !== void 0), delayMinutes: Math.floor(delayMinutes), overrunMinutes: Math.floor(overrunMinutes) };
   });
 }
 function startMatch(t2, id, now = Date.now()) {
   return atomicMutation(t2, (d) => {
     const m = d.matches.find((m2) => m2.id === id);
-    ensure(m && m.status === "called" && m.court >= 1 && m.court <= d.courts && m.left && m.right, "\u547C\u51FA\u6E08\u307F\u30FB\u30B3\u30FC\u30C8\u5272\u5F53\u6E08\u307F\u306E\u8A66\u5408\u3060\u3051\u958B\u59CB\u3067\u304D\u307E\u3059");
-    ensure(Number.isSafeInteger(now) && now >= 0 && localDay(now) === d.date, "\u5927\u4F1A\u958B\u50AC\u65E5\u3068\u958B\u59CB\u65E5\u6642\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\uFF08\u65E5\u5225\u4E88\u5B9A\u306E\u307F\u5BFE\u5FDC\uFF09");
+    const date = m && plannedDate(d, m);
+    ensure(m && m.status === "called" && m.court >= 1 && m.court <= calendarCourts(d, date) && m.left && m.right, "\u547C\u51FA\u6E08\u307F\u30FB\u30B3\u30FC\u30C8\u5272\u5F53\u6E08\u307F\u306E\u8A66\u5408\u3060\u3051\u958B\u59CB\u3067\u304D\u307E\u3059");
+    ensure(Number.isSafeInteger(now) && now >= 0 && localDay(now) === date, "\u5927\u4F1A\u958B\u50AC\u65E5\u3068\u958B\u59CB\u65E5\u6642\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
     ensure(m.deps.every((id2) => {
       const dep = d.matches.find((x) => x.id === id2);
       return !!dep && finished(dep);
@@ -58508,12 +58849,12 @@ function startMatch(t2, id, now = Date.now()) {
     const players = new Set(possiblePlayers(d, id));
     for (const other of d.matches) {
       if (other.id === id) continue;
-      if (other.status === "completed" && other.court === m.court && other.finishedAt !== void 0 && dayMinute(d, other.finishedAt) !== void 0) ensure(now >= other.finishedAt, "\u7AEF\u672B\u6642\u8A08\u304C\u30B3\u30FC\u30C8\u306E\u5B9F\u7D42\u4E86\u65E5\u6642\u3088\u308A\u524D\u3067\u3059");
+      if (other.status === "completed" && other.court === m.court && other.finishedAt !== void 0 && dayMinute(d, other.finishedAt, date) !== void 0) ensure(now >= other.finishedAt, "\u7AEF\u672B\u6642\u8A08\u304C\u30B3\u30FC\u30C8\u306E\u5B9F\u7D42\u4E86\u65E5\u6642\u3088\u308A\u524D\u3067\u3059");
       if (["called", "playing"].includes(other.status)) {
         ensure(other.court !== m.court, "\u30B3\u30FC\u30C8\u304C\u4F7F\u7528\u4E2D\u3067\u3059");
         ensure(!possiblePlayers(d, other.id).some((p) => players.has(p)), "\u9078\u624B\u304C\u547C\u51FA\u30FB\u8A66\u5408\u4E2D\u3067\u3059");
       }
-      if (other.status === "completed" && other.finishedAt !== void 0 && Number.isSafeInteger(other.finishedAt) && dayMinute(d, other.finishedAt) !== void 0 && (other.startedAt === void 0 || dayMinute(d, other.startedAt) === void 0 || other.finishedAt >= other.startedAt) && possiblePlayers(d, other.id).some((p) => players.has(p) && now - other.finishedAt < restFor(d, p) * 6e4)) throw Error("\u4F11\u61A9\u4E0D\u8DB3\u3067\u3059");
+      if (other.status === "completed" && other.finishedAt !== void 0 && Number.isSafeInteger(other.finishedAt) && actualDateAllowed(d, other.finishedAt, date) && (other.startedAt === void 0 || !actualDateAllowed(d, other.startedAt, date) || other.finishedAt >= other.startedAt) && possiblePlayers(d, other.id).some((p) => players.has(p) && now - other.finishedAt < restFor(d, p, date) * 6e4)) throw Error("\u4F11\u61A9\u4E0D\u8DB3\u3067\u3059");
     }
     m.status = "playing";
     m.startedAt = now;
@@ -58522,14 +58863,23 @@ function startMatch(t2, id, now = Date.now()) {
 }
 function validateSchedule(t2) {
   for (const m of t2.matches) {
-    ensure(Number.isInteger(m.court) && m.court >= 0 && m.court <= t2.courts, "\u30B3\u30FC\u30C8\u756A\u53F7\u304C\u4E0D\u6B63");
+    const date = plannedDate(t2, m), day = dayConfig(t2, date);
+    ensure(Number.isInteger(m.court) && m.court >= 0 && m.court <= calendarCourts(t2, date), "\u30B3\u30FC\u30C8\u756A\u53F7\u304C\u4E0D\u6B63");
     ensure(Number.isInteger(m.time) && m.time >= 0 && m.time < 1440 && Number.isInteger(m.duration) && m.duration > 0 && m.time + m.duration <= 1440, "\u4E88\u5B9A\u6642\u523B\u304C\u4E0D\u6B63");
+    if (t2.competitionDays?.length && m.court && m.status !== "bye") {
+      ensure(day, "\u958B\u50AC\u65E5\u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+      if (m.status === "waiting" && !partialProgress(m)) {
+        ensure(m.time >= day.start && m.time + m.duration <= day.end, "\u8A66\u5408\u304C\u958B\u50AC\u65E5\u306E\u5229\u7528\u6642\u9593\u5916\u3067\u3059");
+        ensure(!day.breaks?.some((b) => m.time < b.end && m.time + m.duration > b.start), "\u4F11\u5834\u6642\u9593\u3068\u91CD\u306A\u3063\u3066\u3044\u307E\u3059");
+      }
+    }
   }
-  const slots = t2.matches.filter((m) => m.court > 0 && m.status !== "bye").map((m) => reservation(t2, m));
+  const slots = t2.matches.filter((m) => m.court > 0 && m.status !== "bye").map((m) => absolute(t2, m));
   const end = new Map(slots.map((m) => [m.id, m.time + m.duration]));
   const courts = /* @__PURE__ */ new Map(), players = /* @__PURE__ */ new Map();
   for (const m of slots) {
-    ensure(Number.isFinite(m.time) && m.time >= 0 && m.time + m.duration <= 1440, "\u4E88\u5B9A\u6642\u523B\u304C\u4E0D\u6B63");
+    const local = m.time - offset(t2, m), date = plannedDate(t2, m);
+    ensure(Number.isFinite(local) && local >= 0 && local + m.duration <= 1440, "\u4E88\u5B9A\u6642\u523B\u304C\u4E0D\u6B63");
     const overlaps = (x) => m.time < x.time + x.duration && x.time < m.time + m.duration;
     const cs = courts.get(m.court) || [];
     ensure(!cs.some(overlaps), "\u4E88\u5B9A\u306E\u30B3\u30FC\u30C8\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
@@ -58537,7 +58887,7 @@ function validateSchedule(t2) {
     courts.set(m.court, cs);
     for (const p of possiblePlayers(t2, m.id)) {
       const ps = players.get(p) || [];
-      ensure(!ps.some((x) => m.time < x.time + x.duration + restFor(t2, p) && x.time < m.time + m.duration + restFor(t2, p)), "\u9078\u624B\u30FB\u52DD\u3061\u4E0A\u304C\u308A\u5019\u88DC\u306E\u4E88\u5B9A\u307E\u305F\u306F\u4F11\u61A9\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
+      ensure(!ps.some((x) => m.time < x.time + x.duration + restFor(t2, p, plannedDate(t2, x)) && x.time < m.time + m.duration + restFor(t2, p, date)), "\u9078\u624B\u30FB\u52DD\u3061\u4E0A\u304C\u308A\u5019\u88DC\u306E\u4E88\u5B9A\u307E\u305F\u306F\u4F11\u61A9\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
       ps.push(m);
       players.set(p, ps);
     }
@@ -58562,8 +58912,8 @@ function applyScheduleNumbers(t2) {
   ensure(!scheduleNumberingLocked(t2), "\u5927\u4F1A\u9032\u884C\u958B\u59CB\u5F8C\u306F\u8A66\u5408\u756A\u53F7\u3092\u5909\u66F4\u3067\u304D\u307E\u305B\u3093");
   validateSchedule(t2);
   const counters = /* @__PURE__ */ new Map();
-  const order2 = t2.matches.filter((m) => m.status !== "bye").sort((a, b) => Number(a.court === 0) - Number(b.court === 0) || a.time - b.time || a.court - b.court || (a.queueOrder ?? a.number) - (b.queueOrder ?? b.number) || a.number - b.number);
-  for (const m of order2) {
+  const order = scheduleOrder(t2);
+  for (const m of order) {
     const next = (counters.get(m.eventId) ?? 0) + 1;
     counters.set(m.eventId, next);
     m.scheduleOrdinal = next;
@@ -58576,12 +58926,20 @@ function replan(t2, start, duration, gap, mode, rest, now = Date.now(), numberin
   const copy = structuredClone(t2);
   copy.restMinutes = rest;
   copy.scheduleMode = mode;
+  const today = localDay(now);
+  for (const d of copy.competitionDays ?? []) for (const r of d.ranges) ensure(!rangeProblems(copy, r), rangeProblems(copy, r));
+  if (copy.competitionDays) for (const m of copy.matches) {
+    if (m.status === "bye") continue;
+    const date = plannedDate(copy, m);
+    ensure(date, "\u958B\u50AC\u65E5\u304C\u672A\u6307\u5B9A\u306E\u8A66\u5408\u304C\u3042\u308A\u307E\u3059");
+    m.scheduledDate = date;
+  }
   ensure(!copy.matches.some((m) => ["called", "playing"].includes(m.status) && !m.court), "\u547C\u51FA\u30FB\u8A66\u5408\u4E2D\u306E\u30B3\u30FC\u30C8\u304C\u672A\u5272\u5F53\u3067\u3059");
-  const placed = copy.matches.filter((m) => (m.status !== "waiting" || (partialProgress(m) || m.manualSchedule)) && m.status !== "bye" && m.court > 0).map((m) => reservation(copy, m, now));
+  const placed = copy.matches.filter((m) => (m.status !== "waiting" || (partialProgress(m) || m.manualSchedule)) && m.status !== "bye" && m.court > 0).map((m) => absolute(copy, m, now));
   const ready = new Set(copy.matches.filter((m) => m.status !== "waiting" || partialProgress(m) || m.manualSchedule && m.court > 0).map((m) => m.id));
   copy.matches.filter((m) => m.status === "bye").forEach((m) => ready.add(m.id));
   const playerMap = new Map(copy.matches.map((m) => [m.id, new Set(possiblePlayers(copy, m.id))]));
-  const actualNow = copy.matches.some((x) => dayMinute(copy, x.startedAt) !== void 0) ? dayMinute(copy, now) : void 0;
+  const actualNow = copy.matches.some((x) => dayMinute(copy, x.startedAt, today) !== void 0) ? dayMinute(copy, now, today) : void 0;
   const unavailable = new Map(copy.stages.filter((s2) => s2.exchange).map((s2) => [s2.id, new Set(s2.exchange.inactive)]));
   const pending = copy.matches.filter((m) => m.status === "waiting" && !partialProgress(m) && !(m.manualSchedule && m.court > 0) && ![m.left, m.right].some((id) => unavailable.get(m.stageId)?.has(id)));
   const weights = new Map(copy.events.map((e) => [e.id, e.schedulePriority ?? e.entries.length]));
@@ -58614,34 +58972,40 @@ function replan(t2, start, duration, gap, mode, rest, now = Date.now(), numberin
     ensure(index >= 0, "\u4E88\u5B9A\u306E\u4F9D\u5B58\u95A2\u4FC2\u3092\u89E3\u6C7A\u3067\u304D\u307E\u305B\u3093");
     const m = pending.splice(index, 1)[0], stage = copy.stages.find((s2) => s2.id === m.stageId);
     const deps = [...m.deps, ...copy.matches.filter((x) => x.stageId === stage.source).map((x) => x.id)];
-    let earliest = Math.max(start, actualNow ?? start, ...deps.map((id) => {
+    const date = plannedDate(copy, m), day = dayConfig(copy, date), base = offset(copy, m), open = (day?.start ?? start) + base;
+    const earliest = Math.ceil(Math.max(open, date === today && actualNow !== void 0 ? base + actualNow : open, ...deps.map((id) => {
       const n2 = copy.matches.find((m2) => m2.id === id);
-      return n2.status === "bye" || n2.status === "completed" && n2.court === 0 ? start : (placed.find((p) => p.id === id) || n2).time + (placed.find((p) => p.id === id) || n2).duration;
-    }));
+      if (copy.competitionDays && n2.status !== "bye") ensure(plannedDate(copy, n2) <= date, "\u4F9D\u5B58\u5143\u3088\u308A\u524D\u306E\u958B\u50AC\u65E5\u306B\u914D\u7F6E\u3067\u304D\u307E\u305B\u3093");
+      if (n2.status === "bye" || n2.status === "completed" && n2.court === 0) return open;
+      const slot = placed.find((p) => p.id === id);
+      ensure(slot, "\u4E88\u9078\u30FB\u52DD\u3061\u4E0A\u304C\u308A\u5143\u306E\u4E88\u5B9A\u304C\u672A\u5272\u5F53\u3067\u3059");
+      return slot.time + slot.duration;
+    })));
     assigned.set(m.eventId, (assigned.get(m.eventId) || 0) + 1);
     const ps = playerMap.get(m.id);
     let bestTime = Infinity, bestCourt = 0;
-    for (let court = 1; court <= copy.courts; court++) {
-      const blocked = [];
+    for (let court = 1; court <= calendarCourts(copy, date); court++) {
+      const blocked = (day?.breaks ?? []).map((b) => ({ start: base + b.start, end: base + b.end }));
       for (const x of byCourt.get(court) || []) blocked.push({ start: x.time - gap, end: x.time + x.duration + gap });
-      for (const p of ps) for (const x of byPlayer.get(p) || []) blocked.push({ start: x.time - restFor(copy, p), end: x.time + x.duration + restFor(copy, p) });
+      for (const p of ps) for (const x of byPlayer.get(p) || []) blocked.push({ start: x.time - restFor(copy, p, date), end: x.time + x.duration + restFor(copy, p, plannedDate(copy, x)) });
       blocked.sort((a, b) => a.start - b.start || a.end - b.end);
       let at = earliest;
       for (const x of blocked) {
         if (at + duration <= x.start) break;
-        if (at < x.end && x.start < at + duration) at = x.end;
+        if (at < x.end && x.start < at + duration) at = Math.ceil(x.end);
       }
       if (at < bestTime) {
         bestTime = at;
         bestCourt = court;
       }
     }
-    ensure(bestTime + duration <= 1440, "\u5F53\u65E5\u4E2D\u306B\u914D\u7F6E\u3067\u304D\u307E\u305B\u3093");
+    ensure(bestTime + duration <= base + (day?.end ?? 1440), (date || "") + " \u5F53\u65E5\u4E2D\u306B\u914D\u7F6E\u3067\u304D\u307E\u305B\u3093");
     m.court = bestCourt;
-    m.time = bestTime;
+    m.time = bestTime - base;
     m.duration = duration;
-    placed.push(m);
-    indexPlaced(m);
+    const position = { ...m, time: bestTime };
+    placed.push(position);
+    indexPlaced(position);
     ready.add(m.id);
     remaining.set(m.stageId, remaining.get(m.stageId) - 1);
   }
@@ -58664,7 +59028,7 @@ function editSchedule(t2, id, patch) {
   if (Object.prototype.hasOwnProperty.call(patch, "number") && !Object.prototype.hasOwnProperty.call(patch, "displayNumber") && (originalLabel === void 0 || originalLabel.trim() === String(originalNumber))) m.displayNumber = String(m.number);
   if (m.displayNumber !== void 0) ensure(typeof m.displayNumber === "string", "\u8868\u793A\u8A66\u5408\u756A\u53F7\u304C\u4E0D\u6B63");
   if (typeof m.displayNumber === "string") m.displayNumber = m.displayNumber.trim();
-  ensure(Number.isInteger(m.court) && m.court >= 0 && m.court <= copy.courts && Number.isInteger(m.time) && m.time >= 0 && m.time < 1440 && Number.isInteger(m.duration) && m.duration > 0 && m.duration <= 1440 && m.time + m.duration <= 1440, "\u30B3\u30FC\u30C8\u30FB\u6642\u9593\u304C\u4E0D\u6B63");
+  ensure(Number.isInteger(m.court) && m.court >= 0 && m.court <= calendarCourts(copy, plannedDate(copy, m)) && Number.isInteger(m.time) && m.time >= 0 && m.time < 1440 && Number.isInteger(m.duration) && m.duration > 0 && m.duration <= 1440 && m.time + m.duration <= 1440, "\u30B3\u30FC\u30C8\u30FB\u6642\u9593\u304C\u4E0D\u6B63");
   ensure(copy.matches.every((x) => Number.isSafeInteger(x.number) && x.number > 0), "\u8A66\u5408\u756A\u53F7\u306F1\u4EE5\u4E0A\u306E\u6574\u6570\u3067\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
   ensure(new Set(copy.matches.map((m2) => m2.number)).size === copy.matches.length, "\u8A66\u5408\u756A\u53F7\u91CD\u8907");
   ensure(copy.matches.every((x) => x.displayNumber === void 0 || typeof x.displayNumber === "string" && x.displayNumber.trim().length > 0 && x.displayNumber.length <= 48 && !/[\u0000-\u001f]/.test(x.displayNumber)), "\u8868\u793A\u8A66\u5408\u756A\u53F7\u304C\u4E0D\u6B63");
@@ -58684,6 +59048,7 @@ function candidates(t2, now = Date.now(), allowEarly = false) {
     memo.set(m.id, result2);
     return result2;
   };
+  const today = localDay(now);
   const workload = /* @__PURE__ */ new Map();
   const busy2 = /* @__PURE__ */ new Set(), occupied = /* @__PURE__ */ new Set(), courtLast = /* @__PURE__ */ new Map(), last2 = /* @__PURE__ */ new Map(), stageDone = new Map(t2.stages.map((s2) => [s2.id, true]));
   for (const m of t2.matches) {
@@ -58693,12 +59058,13 @@ function candidates(t2, now = Date.now(), allowEarly = false) {
       occupied.add(m.court);
       players(m).forEach((p) => busy2.add(p));
     }
-    if (m.status === "completed" && m.finishedAt !== void 0 && Number.isSafeInteger(m.finishedAt) && dayMinute(t2, m.finishedAt) !== void 0) {
-      courtLast.set(m.court, Math.max(courtLast.get(m.court) || 0, m.finishedAt));
-      if (m.startedAt === void 0 || dayMinute(t2, m.startedAt) === void 0 || m.finishedAt >= m.startedAt) for (const p of players(m)) last2.set(p, Math.max(last2.get(p) || 0, m.finishedAt));
+    if (m.status === "completed" && m.finishedAt !== void 0 && Number.isSafeInteger(m.finishedAt) && actualDateAllowed(t2, m.finishedAt, today)) {
+      if (dayMinute(t2, m.finishedAt, today) !== void 0) courtLast.set(m.court, Math.max(courtLast.get(m.court) || 0, m.finishedAt));
+      if (m.startedAt === void 0 || !actualDateAllowed(t2, m.startedAt, today) || m.finishedAt >= m.startedAt) for (const p of players(m)) last2.set(p, Math.max(last2.get(p) || 0, m.finishedAt));
     }
   }
-  const validClock = Number.isSafeInteger(now) && now >= 0 && localDay(now) === t2.date, minute = validClock ? new Date(now).getHours() * 60 + new Date(now).getMinutes() : void 0, free = Array.from({ length: t2.courts }, (_2, i) => i + 1).filter((c) => !occupied.has(c)), safeFree = free.some((c) => (courtLast.get(c) || 0) <= now), fixed2 = t2.scheduleMode === "fixed";
+  const day = dayConfig(t2, today);
+  const validClock = Number.isSafeInteger(now) && now >= 0 && (t2.competitionDays ? !!dayConfig(t2, today) : today === t2.date), minute2 = validClock ? new Date(now).getHours() * 60 + new Date(now).getMinutes() : void 0, free = Array.from({ length: calendarCourts(t2, today) }, (_2, i) => i + 1).filter((c) => !occupied.has(c)), safeFree = free.some((c) => (courtLast.get(c) || 0) <= now), fixed2 = t2.scheduleMode === "fixed";
   return t2.matches.filter((m) => {
     const stage = stages.get(m.stageId);
     return m.status === "waiting" && m.left && m.right && m.deps.every((id) => matches.has(id) && finished(matches.get(id))) && stage && (!stage.source || stageDone.get(stage.source));
@@ -58721,15 +59087,15 @@ function candidates(t2, now = Date.now(), allowEarly = false) {
     }
     return a.time - b.time || (a.queueOrder ?? a.number) - (b.queueOrder ?? b.number);
   }).map((m) => {
-    const ps = players(m), lastPlayed = Math.max(0, ...ps.map((p) => last2.get(p) || 0)), assigned = m.court > 0, reason2 = stages.get(m.stageId)?.exchange?.inactive.some((id) => id === m.left || id === m.right) ? "\u53C2\u52A0\u8005\u304C\u96E2\u8131\u6E08\u307F" : events2.get(m.eventId)?.type === "team" && !m.rubbers ? "\u56E3\u4F53\u30AA\u30FC\u30C0\u30FC\u3092\u5148\u306B\u767B\u9332\u3057\u3066\u304F\u3060\u3055\u3044" : !validClock ? "\u5927\u4F1A\u958B\u50AC\u65E5\u3068\u547C\u51FA\u65E5\u6642\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044" : ps.some((p) => busy2.has(p)) ? "\u9078\u624B\u304C\u8A66\u5408\u4E2D" : lastPlayed > now ? "\u9078\u624B\u306E\u5B9F\u7D42\u4E86\u6642\u523B\u3088\u308A\u7AEF\u672B\u6642\u8A08\u304C\u524D\u3067\u3059" : ps.some((p) => last2.has(p) && now - last2.get(p) < restFor(t2, p) * 6e4) ? "\u4F11\u61A9\u4E0D\u8DB3" : stages.get(m.stageId)?.exchange?.end && minute !== void 0 && minute + m.duration > stages.get(m.stageId).exchange.end ? "\u7D42\u4E86\u4E88\u5B9A\u307E\u3067\u306B\u53CE\u307E\u308A\u307E\u305B\u3093" : fixed2 && (!Number.isInteger(m.court) || m.court < 1 || m.court > t2.courts) ? "\u30B3\u30FC\u30C8\u304C\u672A\u5272\u5F53\u3067\u3059" : (fixed2 || assigned) && occupied.has(m.court) ? "\u30B3\u30FC\u30C8\u304C\u4F7F\u7528\u4E2D\u3067\u3059" : (fixed2 || assigned) && (courtLast.get(m.court) || 0) > now ? "\u30B3\u30FC\u30C8\u306E\u5B9F\u7D42\u4E86\u6642\u523B\u3088\u308A\u7AEF\u672B\u6642\u8A08\u304C\u524D\u3067\u3059" : !fixed2 && free.length === 0 ? "\u30B3\u30FC\u30C8\u304C\u4F7F\u7528\u4E2D\u3067\u3059" : !fixed2 && !safeFree ? "\u30B3\u30FC\u30C8\u306E\u5B9F\u7D42\u4E86\u6642\u523B\u3088\u308A\u7AEF\u672B\u6642\u8A08\u304C\u524D\u3067\u3059" : !allowEarly && fixed2 && minute !== void 0 && m.time > minute ? "\u958B\u59CB\u4E88\u5B9A\u524D" : "";
+    const ps = players(m), lastPlayed = Math.max(0, ...ps.map((p) => last2.get(p) || 0)), assigned = m.court > 0, reason2 = stages.get(m.stageId)?.exchange?.inactive.some((id) => id === m.left || id === m.right) ? "\u53C2\u52A0\u8005\u304C\u96E2\u8131\u6E08\u307F" : events2.get(m.eventId)?.type === "team" && !m.rubbers ? "\u56E3\u4F53\u30AA\u30FC\u30C0\u30FC\u3092\u5148\u306B\u767B\u9332\u3057\u3066\u304F\u3060\u3055\u3044" : !validClock || plannedDate(t2, m) !== today ? "\u5927\u4F1A\u958B\u50AC\u65E5\u3068\u547C\u51FA\u65E5\u6642\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044" : day && minute2 !== void 0 && (minute2 < day.start || minute2 + m.duration > day.end || day.breaks?.some((b) => minute2 < b.end && minute2 + m.duration > b.start)) ? "\u958B\u50AC\u65E5\u306E\u5229\u7528\u6642\u9593\u5916\u3067\u3059" : ps.some((p) => busy2.has(p)) ? "\u9078\u624B\u304C\u8A66\u5408\u4E2D" : lastPlayed > now ? "\u9078\u624B\u306E\u5B9F\u7D42\u4E86\u6642\u523B\u3088\u308A\u7AEF\u672B\u6642\u8A08\u304C\u524D\u3067\u3059" : ps.some((p) => last2.has(p) && now - last2.get(p) < restFor(t2, p, today) * 6e4) ? "\u4F11\u61A9\u4E0D\u8DB3" : stages.get(m.stageId)?.exchange?.end && minute2 !== void 0 && minute2 + m.duration > stages.get(m.stageId).exchange.end ? "\u7D42\u4E86\u4E88\u5B9A\u307E\u3067\u306B\u53CE\u307E\u308A\u307E\u305B\u3093" : fixed2 && (!Number.isInteger(m.court) || m.court < 1 || m.court > calendarCourts(t2, today)) ? "\u30B3\u30FC\u30C8\u304C\u672A\u5272\u5F53\u3067\u3059" : (fixed2 || assigned) && occupied.has(m.court) ? "\u30B3\u30FC\u30C8\u304C\u4F7F\u7528\u4E2D\u3067\u3059" : (fixed2 || assigned) && (courtLast.get(m.court) || 0) > now ? "\u30B3\u30FC\u30C8\u306E\u5B9F\u7D42\u4E86\u6642\u523B\u3088\u308A\u7AEF\u672B\u6642\u8A08\u304C\u524D\u3067\u3059" : !fixed2 && free.length === 0 ? "\u30B3\u30FC\u30C8\u304C\u4F7F\u7528\u4E2D\u3067\u3059" : !fixed2 && !safeFree ? "\u30B3\u30FC\u30C8\u306E\u5B9F\u7D42\u4E86\u6642\u523B\u3088\u308A\u7AEF\u672B\u6642\u8A08\u304C\u524D\u3067\u3059" : !allowEarly && fixed2 && minute2 !== void 0 && m.time > minute2 ? "\u958B\u59CB\u4E88\u5B9A\u524D" : "";
     const court = reason2 ? void 0 : assigned ? m.court : free.find((c) => (courtLast.get(c) || 0) <= now);
     return { id: m.id, number: m.number, reason: reason2, court };
   });
 }
 function callNext(t2, now = Date.now()) {
-  ensure(Number.isSafeInteger(now) && now >= 0 && localDay(now) === t2.date, "\u5927\u4F1A\u958B\u50AC\u65E5\u3068\u547C\u51FA\u65E5\u6642\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\uFF08\u65E5\u5225\u4E88\u5B9A\u306E\u307F\u5BFE\u5FDC\uFF09");
+  ensure(Number.isSafeInteger(now) && now >= 0 && (t2.competitionDays ? !!dayConfig(t2, localDay(now)) : localDay(now) === t2.date), "\u5927\u4F1A\u958B\u50AC\u65E5\u3068\u547C\u51FA\u65E5\u6642\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
   return atomicMutation(t2, (d) => {
-    const free = Array.from({ length: d.courts }, (_2, i) => i + 1).filter((c) => !d.matches.some((m) => m.court === c && ["called", "playing"].includes(m.status)));
+    const free = Array.from({ length: calendarCourts(d, localDay(now)) }, (_2, i) => i + 1).filter((c) => !d.matches.some((m) => m.court === c && ["called", "playing"].includes(m.status)));
     const matches = new Map(d.matches.map((m) => [m.id, m]));
     const players = (m) => possiblePlayers(d, m.id);
     const busy2 = new Set(d.matches.filter((m) => ["called", "playing"].includes(m.status)).flatMap(players));
@@ -58738,10 +59104,11 @@ function callNext(t2, now = Date.now()) {
       const m = matches.get(c.id);
       const ps = players(m);
       if (ps.some((p) => busy2.has(p))) continue;
-      const safeCourt = (court2) => !d.matches.some((x) => x.id !== m.id && x.court === court2 && x.status === "completed" && x.finishedAt !== void 0 && Number.isFinite(x.finishedAt) && dayMinute(d, x.finishedAt) !== void 0 && x.finishedAt > now);
+      const safeCourt = (court2) => !d.matches.some((x) => x.id !== m.id && x.court === court2 && x.status === "completed" && x.finishedAt !== void 0 && Number.isFinite(x.finishedAt) && dayMinute(d, x.finishedAt, localDay(now)) !== void 0 && x.finishedAt > now);
       const court = d.scheduleMode === "fixed" || m.court > 0 ? free.find((n2) => n2 === m.court && safeCourt(n2)) : free.find(safeCourt);
       if (!court) continue;
       m.court = court;
+      if (d.competitionDays) m.scheduledDate = localDay(now);
       m.status = "called";
       ps.forEach((p) => busy2.add(p));
       free.splice(free.indexOf(court), 1);
@@ -58756,22 +59123,23 @@ function callSelected(t2, id, now = Date.now()) {
     ensure(!item.reason, item.reason);
     const match = d.matches.find((m) => m.id === id);
     if (!match.court) {
-      const court = Array.from({ length: d.courts }, (_2, i) => i + 1).find((c) => !d.matches.some((m) => m.court === c && (["called", "playing"].includes(m.status) || m.status === "completed" && m.finishedAt !== void 0 && dayMinute(d, m.finishedAt) !== void 0 && m.finishedAt > now)));
+      const court = Array.from({ length: calendarCourts(d, localDay(now)) }, (_2, i) => i + 1).find((c) => !d.matches.some((m) => m.court === c && (["called", "playing"].includes(m.status) || m.status === "completed" && m.finishedAt !== void 0 && dayMinute(d, m.finishedAt, localDay(now)) !== void 0 && m.finishedAt > now)));
       ensure(court, "\u4F7F\u7528\u53EF\u80FD\u306A\u30B3\u30FC\u30C8\u304C\u3042\u308A\u307E\u305B\u3093");
       match.court = court;
     }
+    if (d.competitionDays) match.scheduledDate = localDay(now);
     match.status = "called";
   });
 }
 
 // src/rank-draw.ts
 function rankPositions(size) {
-  let order2 = [1, 2];
-  while (order2.length < size) {
-    const complement = 2 * order2.length + 1;
-    order2 = order2.flatMap((rank, i) => i % 2 ? [complement - rank, rank] : [rank, complement - rank]);
+  let order = [1, 2];
+  while (order.length < size) {
+    const complement = 2 * order.length + 1;
+    order = order.flatMap((rank, i) => i % 2 ? [complement - rank, rank] : [rank, complement - rank]);
   }
-  return order2;
+  return order;
 }
 function rankOrder(entries, random = Math.random, useRanks = true) {
   const seats = Array(entries.length).fill(void 0);
@@ -59382,9 +59750,9 @@ function promoteMatchSlots(t2, sid2, slots, name6 = "\u6C7A\u52DD\u30C8\u30FC\u3
     let size = 2;
     while (size < ids.length) size *= 2;
     const positions = rankPositions(size).map((n2) => n2 - 1);
-    const order2 = Array(ids.length);
-    positions.filter((i) => i < ids.length).forEach((i, slot) => order2[i] = ids[slot]);
-    const stage = drawInto(d, source.eventId, "bracket", 1, "manual", order2, sid2, name6);
+    const order = Array(ids.length);
+    positions.filter((i) => i < ids.length).forEach((i, slot) => order[i] = ids[slot]);
+    const stage = drawInto(d, source.eventId, "bracket", 1, "manual", order, sid2, name6);
     stage.qualification = { previous: ids, slots: structuredClone(slots) };
     return stage.id;
   });
@@ -59605,7 +59973,44 @@ function rosterRows(rows) {
   return hasHeader ? rowsWithData.slice(1).map((r) => positions.map((i) => r[i] || "")) : rowsWithData;
 }
 
+// src/bulk-registration.ts
+function previewTeamBatch(t2, teamId, text2) {
+  const team = t2.registrationTeams?.find((x) => x.id === teamId);
+  ensure(team, "\u4E00\u62EC\u767B\u9332\u3059\u308B\u6240\u5C5E\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+  ensure(text2.length <= 15e4, "\u4E00\u62EC\u767B\u9332\u306E\u6587\u5B57\u6570\u4E0A\u9650\u3092\u8D85\u3048\u307E\u3057\u305F");
+  const result2 = [];
+  const used = new Set(t2.roster?.filter((p) => p.teamId === teamId).map((p) => p.name.normalize("NFKC").trim()));
+  const first = nextTeamRank(t2, teamId);
+  for (const raw of text2.replace(/^\uFEFF/, "").split(/\r?\n/)) {
+    if (!raw.trim()) continue;
+    let cells = [];
+    let error2 = "";
+    try {
+      cells = raw.includes("	") ? raw.split("	", 4) : parseCsv(raw)[0] ?? [];
+    } catch {
+      error2 = "\u533A\u5207\u308A\u30FB\u5F15\u7528\u7B26\u304C\u4E0D\u6B63";
+    }
+    const [name6 = "", kana = ""] = cells.map((s2) => s2.trim());
+    if (!error2 && (!name6 || cells.length > 2 || name6.length > 120 || kana.length > 120)) error2 = "\u6C0F\u540D\u304C\u7A7A\u6B04\u30013\u5217\u4EE5\u4E0A\u3001\u307E\u305F\u306F120\u6587\u5B57\u8D85";
+    const normalized = name6.normalize("NFKC").trim();
+    result2.push({ name: name6, kana, rank: first + result2.length, duplicate: used.has(normalized), error: error2 });
+    used.add(normalized);
+  }
+  ensure(result2.length > 0 && result2.length <= 1e3, "1\u301C1000\u540D\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+  return { team, result: result2 };
+}
+function commitTeamBatch(t2, teamId, text2, duplicateAccepted = false) {
+  initializeRegistration(t2);
+  const { team, result: result2 } = previewTeamBatch(t2, teamId, text2);
+  ensure(!result2.some((r) => r.error), "\u5165\u529B\u30A8\u30E9\u30FC\u3092\u4FEE\u6B63\u3057\u3066\u304F\u3060\u3055\u3044");
+  ensure(duplicateAccepted || !result2.some((r) => r.duplicate), "\u540C\u540D\u5019\u88DC\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
+  const entries = result2.map((r) => ({ id: uid(), name: r.name, kana: r.kana, teamRank: r.rank, club: team.name, teamId }));
+  t2.roster.push(...entries);
+  return entries;
+}
+
 // src/application-xlsx.ts
+var import_exceljs2 = __toESM(require_exceljs_min(), 1);
 var events = (t2) => t2.events;
 var code = (e) => e.code ?? "ID-" + e.id;
 var format = "BDMT-APPLICATION-1";
@@ -59617,7 +60022,7 @@ async function applicationWorkbook(t2) {
   ws.views = [{ state: "frozen", ySplit: 1 }];
   ws.getRow(1).font = { bold: true };
   ws.columns.forEach((column, i) => column.width = i < fixed(t2).length ? 23 : 13);
-  meta.addRows([[format, t2.id, t2.applicationFields ?? "none", t2.origin], ["\u5927\u4F1A\u540D", t2.name], ["\u8A18\u5165\u65B9\u6CD5", "\u30B7\u30F3\u30B0\u30EB\u30B9\u30FB\u56E3\u4F53\u306F\u25CB\u3001\u30C0\u30D6\u30EB\u30B9\u306F\u540C\u3058\u756A\u53F7\u30922\u540D\u3002\u7A7A\u6B04\u306F\u51FA\u5834\u306A\u3057\u3002"], ["\u518D\u63D0\u51FA", "\u521D\u56DE\u3068\u540C\u3058\u6240\u5C5E\u30FB\u9806\u4F4D\u30FB\u6C0F\u540D\u30FB\u3075\u308A\u304C\u306A\u3001\u307E\u305F\u306F\u904B\u55B6\u8005\u304B\u3089\u6848\u5185\u3055\u308C\u305F\u53C2\u52A0\u8005ID\u3092\u5165\u529B\u3002"], ...events(t2).map((e) => [e.id, code(e), e.type, e.name])]);
+  meta.addRows([[format, t2.id, t2.applicationFields ?? "none", t2.origin, "TEAM-PAIR"], ["\u5927\u4F1A\u540D", t2.name], ["\u8A18\u5165\u65B9\u6CD5", "\u30B7\u30F3\u30B0\u30EB\u30B9\u30FB\u56E3\u4F53\u306F\u25CB\u3001\u30C0\u30D6\u30EB\u30B9\u306F\u6240\u5C5E\u3054\u3068\u306B\u540C\u3058\u756A\u53F7\u30922\u540D\u3002\u7570\u6240\u5C5E\u30DA\u30A2\u306F\u4E21\u540D\u306E\u6B04\u306B M1\u3001M2 \u7B49\u3092\u5165\u529B\u3002\u7A7A\u6B04\u306F\u51FA\u5834\u306A\u3057\u3002"], ["\u518D\u63D0\u51FA", "\u521D\u56DE\u3068\u540C\u3058\u6240\u5C5E\u30FB\u9806\u4F4D\u30FB\u6C0F\u540D\u30FB\u3075\u308A\u304C\u306A\u3001\u307E\u305F\u306F\u904B\u55B6\u8005\u304B\u3089\u6848\u5185\u3055\u308C\u305F\u53C2\u52A0\u8005ID\u3092\u5165\u529B\u3002"], ...events(t2).map((e) => [e.id, code(e), e.type, e.name])]);
   return wb;
 }
 async function previewApplications(input3, files) {
@@ -59669,9 +60074,11 @@ async function previewApplications(input3, files) {
           eligible(event, p);
           if (event.type !== "doubles") ensure(["\u25CB", "\u3007", "\u25EF"].includes(cell), "\u30B7\u30F3\u30B0\u30EB\u30B9\u306F\u25CB\u3067\u8A18\u5165\uFF1A" + name6 + " " + code(event));
           else {
-            ensure(/^\d+$/.test(cell) && Number.isSafeInteger(Number(cell)) && Number(cell) > 0, "\u6B63\u306E\u30DA\u30A2\u756A\u53F7\u3092\u8A18\u5165\uFF1A" + name6 + " " + code(event));
-            const k = JSON.stringify([index, id, Number(cell)]);
-            const pair = local.get(k) ?? { eventId: id, label: cell, ids: [] };
+            const pairNumber = cell.replace(/^M/i, "");
+            ensure(/^[0-9]+$/.test(pairNumber) && Number.isSafeInteger(Number(pairNumber)) && Number(pairNumber) > 0, "\u6B63\u306E\u30DA\u30A2\u756A\u53F7\uFF08\u7570\u6240\u5C5E\u306FM\u4ED8\u304D\uFF09\u3092\u8A18\u5165\uFF1A" + name6 + " " + code(event));
+            const scope = meta[0][4] === "TEAM-PAIR" ? /^m/i.test(cell) ? "@mixed" : team.id : "@legacy";
+            const k = JSON.stringify([index, id, scope, Number(pairNumber)]);
+            const pair = local.get(k) ?? { eventId: id, label: cell, ids: [], rank: meta[0][4] === "TEAM-PAIR" ? Number(pairNumber) : void 0 };
             pair.ids.push(p.id);
             local.set(k, pair);
           }
@@ -59716,7 +60123,23 @@ async function previewApplications(input3, files) {
       ensure(!drawn || !remove.length && !add.length && !drafts.length, e.name + "\uFF1A\u7D44\u5408\u305B\u4F5C\u6210\u5F8C\u306E\u30DA\u30A2\u5909\u66F4\u306F\u3067\u304D\u307E\u305B\u3093");
       if (remove.length) e.entries = e.entries.filter((x) => !remove.includes(x));
       if (drafts.length) e.pairDrafts = e.pairDrafts.filter((x) => !drafts.includes(x));
-      for (const p of add) addPair(t2, e, allocatePair(e), p.ids);
+      const matching = (p) => e.entries.find((x) => p.ids.every((id) => x.players.includes(id)));
+      const ranked2 = requests.filter((p) => p.rank !== void 0);
+      const targeted = new Set(ranked2.flatMap((p) => matching(p)?.id ? [matching(p).id] : []));
+      const reservations = new Set(pairSlots(e).filter((p) => !p.id || !targeted.has(p.id)).map((p) => pairScope(t2, p.players) + ":" + pairDisplay(t2, e, p)));
+      for (const p of ranked2) {
+        const key4 = pairScope(t2, p.ids) + ":" + p.rank;
+        ensure(!reservations.has(key4), e.name + "\uFF1A\u540C\u3058\u6240\u5C5E\u306E\u30DA\u30A2\u9806\u4F4D\u304C\u91CD\u8907\uFF1A" + p.label);
+        reservations.add(key4);
+      }
+      for (const p of ranked2) {
+        const entry = matching(p);
+        if (entry && entry.pairRank !== p.rank) {
+          if (entry.pairRank !== void 0) details.push(e.name + " " + entry.name + " \u30DA\u30A2\u9806\u4F4D " + entry.pairRank + " \u2192 " + p.rank);
+          entry.pairRank = p.rank;
+        }
+      }
+      for (const p of add) addPair(t2, e, allocatePair(e), p.ids, p.rank);
     }
   }
   validate(t2);
@@ -59883,7 +60306,7 @@ function bracketLayout(t2, matches, results = true, resultNumbers = false) {
     left = halves[0] ? branch(halves[0], -1, { y: 42 }) : player(final.left, -1, 42);
     const rightSegments = segments.length, rightCaptions = captions.length;
     right = halves[1] ? branch(halves[1], 1, { y: 42 }) : player(final.right, 1, 42);
-    const offset = left.y - right.y;
+    const offset2 = left.y - right.y;
     const shift = (fromSegment, fromCaption, dy) => {
       for (let i = fromSegment; i < segments.length; i++) {
         segments[i].y1 += dy;
@@ -59891,15 +60314,15 @@ function bracketLayout(t2, matches, results = true, resultNumbers = false) {
       }
       for (let i = fromCaption; i < captions.length; i++) captions[i].y += dy;
     };
-    if (offset >= 0) {
-      shift(rightSegments, rightCaptions, offset);
-      right.y += offset;
+    if (offset2 >= 0) {
+      shift(rightSegments, rightCaptions, offset2);
+      right.y += offset2;
     } else {
-      shift(0, 0, -offset);
-      shift(rightSegments, rightCaptions, offset);
-      left.y -= offset;
+      shift(0, 0, -offset2);
+      shift(rightSegments, rightCaptions, offset2);
+      left.y -= offset2;
     }
-    height = Math.max((halves[0] ? players(halves[0]) : 1) * pitch + Math.max(0, -offset), (halves[1] ? players(halves[1]) : 1) * pitch + Math.max(0, offset)) + 60;
+    height = Math.max((halves[0] ? players(halves[0]) : 1) * pitch + Math.max(0, -offset2), (halves[1] ? players(halves[1]) : 1) * pitch + Math.max(0, offset2)) + 60;
   } else {
     left = player(final.left, -1, 65);
     right = player(final.right, 1, 65);
@@ -60201,10 +60624,10 @@ var padStart = function(value, length, padChar) {
   }
   return padding + value;
 };
-var copyStringIntoBuffer = function(str, buffer2, offset) {
+var copyStringIntoBuffer = function(str, buffer2, offset2) {
   var length = str.length;
   for (var idx = 0; idx < length; idx++) {
-    buffer2[offset++] = str.charCodeAt(idx);
+    buffer2[offset2++] = str.charCodeAt(idx);
   }
   return length;
 };
@@ -60343,11 +60766,11 @@ var mergeIntoTypedArray = function() {
     totalSize += arrays[idx].length;
   }
   var merged = new Uint8Array(totalSize);
-  var offset = 0;
+  var offset2 = 0;
   for (var arrIdx = 0; arrIdx < arrayCount; arrIdx++) {
     var arr = typedArrays[arrIdx];
     for (var byteIdx = 0, arrLen = arr.length; byteIdx < arrLen; byteIdx++) {
-      merged[offset++] = arr[byteIdx];
+      merged[offset2++] = arr[byteIdx];
     }
   }
   return merged;
@@ -60358,11 +60781,11 @@ var mergeUint8Arrays = function(arrays) {
     totalSize += arrays[idx].length;
   }
   var mergedBuffer = new Uint8Array(totalSize);
-  var offset = 0;
+  var offset2 = 0;
   for (var idx = 0, len2 = arrays.length; idx < len2; idx++) {
     var array = arrays[idx];
-    mergedBuffer.set(array, offset);
-    offset += array.length;
+    mergedBuffer.set(array, offset2);
+    offset2 += array.length;
   }
   return mergedBuffer;
 };
@@ -61517,23 +61940,23 @@ var PDFHeader = (
     PDFHeader2.prototype.sizeInBytes = function() {
       return 12 + this.major.length + this.minor.length;
     };
-    PDFHeader2.prototype.copyBytesInto = function(buffer2, offset) {
-      var initialOffset = offset;
-      buffer2[offset++] = CharCodes_default.Percent;
-      buffer2[offset++] = CharCodes_default.P;
-      buffer2[offset++] = CharCodes_default.D;
-      buffer2[offset++] = CharCodes_default.F;
-      buffer2[offset++] = CharCodes_default.Dash;
-      offset += copyStringIntoBuffer(this.major, buffer2, offset);
-      buffer2[offset++] = CharCodes_default.Period;
-      offset += copyStringIntoBuffer(this.minor, buffer2, offset);
-      buffer2[offset++] = CharCodes_default.Newline;
-      buffer2[offset++] = CharCodes_default.Percent;
-      buffer2[offset++] = 129;
-      buffer2[offset++] = 129;
-      buffer2[offset++] = 129;
-      buffer2[offset++] = 129;
-      return offset - initialOffset;
+    PDFHeader2.prototype.copyBytesInto = function(buffer2, offset2) {
+      var initialOffset = offset2;
+      buffer2[offset2++] = CharCodes_default.Percent;
+      buffer2[offset2++] = CharCodes_default.P;
+      buffer2[offset2++] = CharCodes_default.D;
+      buffer2[offset2++] = CharCodes_default.F;
+      buffer2[offset2++] = CharCodes_default.Dash;
+      offset2 += copyStringIntoBuffer(this.major, buffer2, offset2);
+      buffer2[offset2++] = CharCodes_default.Period;
+      offset2 += copyStringIntoBuffer(this.minor, buffer2, offset2);
+      buffer2[offset2++] = CharCodes_default.Newline;
+      buffer2[offset2++] = CharCodes_default.Percent;
+      buffer2[offset2++] = 129;
+      buffer2[offset2++] = 129;
+      buffer2[offset2++] = 129;
+      buffer2[offset2++] = 129;
+      return offset2 - initialOffset;
     };
     PDFHeader2.forVersion = function(major, minor) {
       return new PDFHeader2(major, minor);
@@ -61592,8 +62015,8 @@ var PDFNumber = (
     PDFNumber2.prototype.sizeInBytes = function() {
       return this.stringValue.length;
     };
-    PDFNumber2.prototype.copyBytesInto = function(buffer2, offset) {
-      offset += copyStringIntoBuffer(this.stringValue, buffer2, offset);
+    PDFNumber2.prototype.copyBytesInto = function(buffer2, offset2) {
+      offset2 += copyStringIntoBuffer(this.stringValue, buffer2, offset2);
       return this.stringValue.length;
     };
     PDFNumber2.of = function(value) {
@@ -61692,16 +62115,16 @@ var PDFArray = (
       }
       return size;
     };
-    PDFArray2.prototype.copyBytesInto = function(buffer2, offset) {
-      var initialOffset = offset;
-      buffer2[offset++] = CharCodes_default.LeftSquareBracket;
-      buffer2[offset++] = CharCodes_default.Space;
+    PDFArray2.prototype.copyBytesInto = function(buffer2, offset2) {
+      var initialOffset = offset2;
+      buffer2[offset2++] = CharCodes_default.LeftSquareBracket;
+      buffer2[offset2++] = CharCodes_default.Space;
       for (var idx = 0, len2 = this.size(); idx < len2; idx++) {
-        offset += this.get(idx).copyBytesInto(buffer2, offset);
-        buffer2[offset++] = CharCodes_default.Space;
+        offset2 += this.get(idx).copyBytesInto(buffer2, offset2);
+        buffer2[offset2++] = CharCodes_default.Space;
       }
-      buffer2[offset++] = CharCodes_default.RightSquareBracket;
-      return offset - initialOffset;
+      buffer2[offset2++] = CharCodes_default.RightSquareBracket;
+      return offset2 - initialOffset;
     };
     PDFArray2.prototype.scalePDFNumbers = function(x, y) {
       for (var idx = 0, len2 = this.size(); idx < len2; idx++) {
@@ -61746,19 +62169,19 @@ var PDFBool = (
     PDFBool2.prototype.sizeInBytes = function() {
       return this.value ? 4 : 5;
     };
-    PDFBool2.prototype.copyBytesInto = function(buffer2, offset) {
+    PDFBool2.prototype.copyBytesInto = function(buffer2, offset2) {
       if (this.value) {
-        buffer2[offset++] = CharCodes_default.t;
-        buffer2[offset++] = CharCodes_default.r;
-        buffer2[offset++] = CharCodes_default.u;
-        buffer2[offset++] = CharCodes_default.e;
+        buffer2[offset2++] = CharCodes_default.t;
+        buffer2[offset2++] = CharCodes_default.r;
+        buffer2[offset2++] = CharCodes_default.u;
+        buffer2[offset2++] = CharCodes_default.e;
         return 4;
       } else {
-        buffer2[offset++] = CharCodes_default.f;
-        buffer2[offset++] = CharCodes_default.a;
-        buffer2[offset++] = CharCodes_default.l;
-        buffer2[offset++] = CharCodes_default.s;
-        buffer2[offset++] = CharCodes_default.e;
+        buffer2[offset2++] = CharCodes_default.f;
+        buffer2[offset2++] = CharCodes_default.a;
+        buffer2[offset2++] = CharCodes_default.l;
+        buffer2[offset2++] = CharCodes_default.s;
+        buffer2[offset2++] = CharCodes_default.e;
         return 5;
       }
     };
@@ -61880,8 +62303,8 @@ var PDFName = (
     PDFName2.prototype.sizeInBytes = function() {
       return this.encodedName.length;
     };
-    PDFName2.prototype.copyBytesInto = function(buffer2, offset) {
-      offset += copyStringIntoBuffer(this.encodedName, buffer2, offset);
+    PDFName2.prototype.copyBytesInto = function(buffer2, offset2) {
+      offset2 += copyStringIntoBuffer(this.encodedName, buffer2, offset2);
       return this.encodedName.length;
     };
     PDFName2.of = function(name6) {
@@ -61943,11 +62366,11 @@ var PDFNull = (
     PDFNull2.prototype.sizeInBytes = function() {
       return 4;
     };
-    PDFNull2.prototype.copyBytesInto = function(buffer2, offset) {
-      buffer2[offset++] = CharCodes_default.n;
-      buffer2[offset++] = CharCodes_default.u;
-      buffer2[offset++] = CharCodes_default.l;
-      buffer2[offset++] = CharCodes_default.l;
+    PDFNull2.prototype.copyBytesInto = function(buffer2, offset2) {
+      buffer2[offset2++] = CharCodes_default.n;
+      buffer2[offset2++] = CharCodes_default.u;
+      buffer2[offset2++] = CharCodes_default.l;
+      buffer2[offset2++] = CharCodes_default.l;
       return 4;
     };
     return PDFNull2;
@@ -62060,22 +62483,22 @@ var PDFDict = (
       }
       return size;
     };
-    PDFDict2.prototype.copyBytesInto = function(buffer2, offset) {
-      var initialOffset = offset;
-      buffer2[offset++] = CharCodes_default.LessThan;
-      buffer2[offset++] = CharCodes_default.LessThan;
-      buffer2[offset++] = CharCodes_default.Newline;
+    PDFDict2.prototype.copyBytesInto = function(buffer2, offset2) {
+      var initialOffset = offset2;
+      buffer2[offset2++] = CharCodes_default.LessThan;
+      buffer2[offset2++] = CharCodes_default.LessThan;
+      buffer2[offset2++] = CharCodes_default.Newline;
       var entries = this.entries();
       for (var idx = 0, len2 = entries.length; idx < len2; idx++) {
         var _a2 = entries[idx], key4 = _a2[0], value = _a2[1];
-        offset += key4.copyBytesInto(buffer2, offset);
-        buffer2[offset++] = CharCodes_default.Space;
-        offset += value.copyBytesInto(buffer2, offset);
-        buffer2[offset++] = CharCodes_default.Newline;
+        offset2 += key4.copyBytesInto(buffer2, offset2);
+        buffer2[offset2++] = CharCodes_default.Space;
+        offset2 += value.copyBytesInto(buffer2, offset2);
+        buffer2[offset2++] = CharCodes_default.Newline;
       }
-      buffer2[offset++] = CharCodes_default.GreaterThan;
-      buffer2[offset++] = CharCodes_default.GreaterThan;
-      return offset - initialOffset;
+      buffer2[offset2++] = CharCodes_default.GreaterThan;
+      buffer2[offset2++] = CharCodes_default.GreaterThan;
+      return offset2 - initialOffset;
     };
     PDFDict2.withContext = function(context3) {
       return new PDFDict2(/* @__PURE__ */ new Map(), context3);
@@ -62126,33 +62549,33 @@ var PDFStream = (
       streamString += "\nendstream";
       return streamString;
     };
-    PDFStream2.prototype.copyBytesInto = function(buffer2, offset) {
+    PDFStream2.prototype.copyBytesInto = function(buffer2, offset2) {
       this.updateDict();
-      var initialOffset = offset;
-      offset += this.dict.copyBytesInto(buffer2, offset);
-      buffer2[offset++] = CharCodes_default.Newline;
-      buffer2[offset++] = CharCodes_default.s;
-      buffer2[offset++] = CharCodes_default.t;
-      buffer2[offset++] = CharCodes_default.r;
-      buffer2[offset++] = CharCodes_default.e;
-      buffer2[offset++] = CharCodes_default.a;
-      buffer2[offset++] = CharCodes_default.m;
-      buffer2[offset++] = CharCodes_default.Newline;
+      var initialOffset = offset2;
+      offset2 += this.dict.copyBytesInto(buffer2, offset2);
+      buffer2[offset2++] = CharCodes_default.Newline;
+      buffer2[offset2++] = CharCodes_default.s;
+      buffer2[offset2++] = CharCodes_default.t;
+      buffer2[offset2++] = CharCodes_default.r;
+      buffer2[offset2++] = CharCodes_default.e;
+      buffer2[offset2++] = CharCodes_default.a;
+      buffer2[offset2++] = CharCodes_default.m;
+      buffer2[offset2++] = CharCodes_default.Newline;
       var contents = this.getContents();
       for (var idx = 0, len2 = contents.length; idx < len2; idx++) {
-        buffer2[offset++] = contents[idx];
+        buffer2[offset2++] = contents[idx];
       }
-      buffer2[offset++] = CharCodes_default.Newline;
-      buffer2[offset++] = CharCodes_default.e;
-      buffer2[offset++] = CharCodes_default.n;
-      buffer2[offset++] = CharCodes_default.d;
-      buffer2[offset++] = CharCodes_default.s;
-      buffer2[offset++] = CharCodes_default.t;
-      buffer2[offset++] = CharCodes_default.r;
-      buffer2[offset++] = CharCodes_default.e;
-      buffer2[offset++] = CharCodes_default.a;
-      buffer2[offset++] = CharCodes_default.m;
-      return offset - initialOffset;
+      buffer2[offset2++] = CharCodes_default.Newline;
+      buffer2[offset2++] = CharCodes_default.e;
+      buffer2[offset2++] = CharCodes_default.n;
+      buffer2[offset2++] = CharCodes_default.d;
+      buffer2[offset2++] = CharCodes_default.s;
+      buffer2[offset2++] = CharCodes_default.t;
+      buffer2[offset2++] = CharCodes_default.r;
+      buffer2[offset2++] = CharCodes_default.e;
+      buffer2[offset2++] = CharCodes_default.a;
+      buffer2[offset2++] = CharCodes_default.m;
+      return offset2 - initialOffset;
     };
     return PDFStream2;
   })(PDFObject_default)
@@ -62218,8 +62641,8 @@ var PDFRef = (
     PDFRef2.prototype.sizeInBytes = function() {
       return this.tag.length;
     };
-    PDFRef2.prototype.copyBytesInto = function(buffer2, offset) {
-      offset += copyStringIntoBuffer(this.tag, buffer2, offset);
+    PDFRef2.prototype.copyBytesInto = function(buffer2, offset2) {
+      offset2 += copyStringIntoBuffer(this.tag, buffer2, offset2);
       return this.tag.length;
     };
     PDFRef2.of = function(objectNumber, generationNumber) {
@@ -62272,19 +62695,19 @@ var PDFOperator = (
       size += this.name.length;
       return size;
     };
-    PDFOperator2.prototype.copyBytesInto = function(buffer2, offset) {
-      var initialOffset = offset;
+    PDFOperator2.prototype.copyBytesInto = function(buffer2, offset2) {
+      var initialOffset = offset2;
       for (var idx = 0, len2 = this.args.length; idx < len2; idx++) {
         var arg = this.args[idx];
         if (arg instanceof PDFObject_default) {
-          offset += arg.copyBytesInto(buffer2, offset);
+          offset2 += arg.copyBytesInto(buffer2, offset2);
         } else {
-          offset += copyStringIntoBuffer(arg, buffer2, offset);
+          offset2 += copyStringIntoBuffer(arg, buffer2, offset2);
         }
-        buffer2[offset++] = CharCodes_default.Space;
+        buffer2[offset2++] = CharCodes_default.Space;
       }
-      offset += copyStringIntoBuffer(this.name, buffer2, offset);
-      return offset - initialOffset;
+      offset2 += copyStringIntoBuffer(this.name, buffer2, offset2);
+      return offset2 - initialOffset;
     };
     PDFOperator2.of = function(name6, args) {
       return new PDFOperator2(name6, args);
@@ -62443,10 +62866,10 @@ var PDFContentStream = (
     };
     PDFContentStream2.prototype.getUnencodedContents = function() {
       var buffer2 = new Uint8Array(this.getUnencodedContentsSize());
-      var offset = 0;
+      var offset2 = 0;
       for (var idx = 0, len2 = this.operators.length; idx < len2; idx++) {
-        offset += this.operators[idx].copyBytesInto(buffer2, offset);
-        buffer2[offset++] = CharCodes_default.Newline;
+        offset2 += this.operators[idx].copyBytesInto(buffer2, offset2);
+        buffer2[offset2++] = CharCodes_default.Newline;
       }
       return buffer2;
     };
@@ -62956,8 +63379,8 @@ var PDFCrossRefSection = (
       this.chunkIdx = 0;
       this.chunkLength = firstEntry ? 1 : 0;
     }
-    PDFCrossRefSection2.prototype.addEntry = function(ref, offset) {
-      this.append({ ref, offset, deleted: false });
+    PDFCrossRefSection2.prototype.addEntry = function(ref, offset2) {
+      this.append({ ref, offset: offset2, deleted: false });
     };
     PDFCrossRefSection2.prototype.addDeletedEntry = function(ref, nextFreeObjectNumber) {
       this.append({ ref, offset: nextFreeObjectNumber, deleted: true });
@@ -62992,44 +63415,44 @@ var PDFCrossRefSection = (
       }
       return size;
     };
-    PDFCrossRefSection2.prototype.copyBytesInto = function(buffer2, offset) {
-      var initialOffset = offset;
-      buffer2[offset++] = CharCodes_default.x;
-      buffer2[offset++] = CharCodes_default.r;
-      buffer2[offset++] = CharCodes_default.e;
-      buffer2[offset++] = CharCodes_default.f;
-      buffer2[offset++] = CharCodes_default.Newline;
-      offset += this.copySubsectionsIntoBuffer(this.subsections, buffer2, offset);
-      return offset - initialOffset;
+    PDFCrossRefSection2.prototype.copyBytesInto = function(buffer2, offset2) {
+      var initialOffset = offset2;
+      buffer2[offset2++] = CharCodes_default.x;
+      buffer2[offset2++] = CharCodes_default.r;
+      buffer2[offset2++] = CharCodes_default.e;
+      buffer2[offset2++] = CharCodes_default.f;
+      buffer2[offset2++] = CharCodes_default.Newline;
+      offset2 += this.copySubsectionsIntoBuffer(this.subsections, buffer2, offset2);
+      return offset2 - initialOffset;
     };
-    PDFCrossRefSection2.prototype.copySubsectionsIntoBuffer = function(subsections, buffer2, offset) {
-      var initialOffset = offset;
+    PDFCrossRefSection2.prototype.copySubsectionsIntoBuffer = function(subsections, buffer2, offset2) {
+      var initialOffset = offset2;
       var length = subsections.length;
       for (var idx = 0; idx < length; idx++) {
         var subsection = this.subsections[idx];
         var firstObjectNumber = String(subsection[0].ref.objectNumber);
-        offset += copyStringIntoBuffer(firstObjectNumber, buffer2, offset);
-        buffer2[offset++] = CharCodes_default.Space;
+        offset2 += copyStringIntoBuffer(firstObjectNumber, buffer2, offset2);
+        buffer2[offset2++] = CharCodes_default.Space;
         var rangeLength = String(subsection.length);
-        offset += copyStringIntoBuffer(rangeLength, buffer2, offset);
-        buffer2[offset++] = CharCodes_default.Newline;
-        offset += this.copyEntriesIntoBuffer(subsection, buffer2, offset);
+        offset2 += copyStringIntoBuffer(rangeLength, buffer2, offset2);
+        buffer2[offset2++] = CharCodes_default.Newline;
+        offset2 += this.copyEntriesIntoBuffer(subsection, buffer2, offset2);
       }
-      return offset - initialOffset;
+      return offset2 - initialOffset;
     };
-    PDFCrossRefSection2.prototype.copyEntriesIntoBuffer = function(entries, buffer2, offset) {
+    PDFCrossRefSection2.prototype.copyEntriesIntoBuffer = function(entries, buffer2, offset2) {
       var length = entries.length;
       for (var idx = 0; idx < length; idx++) {
         var entry = entries[idx];
         var entryOffset = padStart(String(entry.offset), 10, "0");
-        offset += copyStringIntoBuffer(entryOffset, buffer2, offset);
-        buffer2[offset++] = CharCodes_default.Space;
+        offset2 += copyStringIntoBuffer(entryOffset, buffer2, offset2);
+        buffer2[offset2++] = CharCodes_default.Space;
         var entryGen = padStart(String(entry.ref.generationNumber), 5, "0");
-        offset += copyStringIntoBuffer(entryGen, buffer2, offset);
-        buffer2[offset++] = CharCodes_default.Space;
-        buffer2[offset++] = entry.deleted ? CharCodes_default.f : CharCodes_default.n;
-        buffer2[offset++] = CharCodes_default.Space;
-        buffer2[offset++] = CharCodes_default.Newline;
+        offset2 += copyStringIntoBuffer(entryGen, buffer2, offset2);
+        buffer2[offset2++] = CharCodes_default.Space;
+        buffer2[offset2++] = entry.deleted ? CharCodes_default.f : CharCodes_default.n;
+        buffer2[offset2++] = CharCodes_default.Space;
+        buffer2[offset2++] = CharCodes_default.Newline;
       }
       return 20 * length;
     };
@@ -63079,29 +63502,29 @@ var PDFTrailer = (
     PDFTrailer2.prototype.sizeInBytes = function() {
       return 16 + this.lastXRefOffset.length;
     };
-    PDFTrailer2.prototype.copyBytesInto = function(buffer2, offset) {
-      var initialOffset = offset;
-      buffer2[offset++] = CharCodes_default.s;
-      buffer2[offset++] = CharCodes_default.t;
-      buffer2[offset++] = CharCodes_default.a;
-      buffer2[offset++] = CharCodes_default.r;
-      buffer2[offset++] = CharCodes_default.t;
-      buffer2[offset++] = CharCodes_default.x;
-      buffer2[offset++] = CharCodes_default.r;
-      buffer2[offset++] = CharCodes_default.e;
-      buffer2[offset++] = CharCodes_default.f;
-      buffer2[offset++] = CharCodes_default.Newline;
-      offset += copyStringIntoBuffer(this.lastXRefOffset, buffer2, offset);
-      buffer2[offset++] = CharCodes_default.Newline;
-      buffer2[offset++] = CharCodes_default.Percent;
-      buffer2[offset++] = CharCodes_default.Percent;
-      buffer2[offset++] = CharCodes_default.E;
-      buffer2[offset++] = CharCodes_default.O;
-      buffer2[offset++] = CharCodes_default.F;
-      return offset - initialOffset;
+    PDFTrailer2.prototype.copyBytesInto = function(buffer2, offset2) {
+      var initialOffset = offset2;
+      buffer2[offset2++] = CharCodes_default.s;
+      buffer2[offset2++] = CharCodes_default.t;
+      buffer2[offset2++] = CharCodes_default.a;
+      buffer2[offset2++] = CharCodes_default.r;
+      buffer2[offset2++] = CharCodes_default.t;
+      buffer2[offset2++] = CharCodes_default.x;
+      buffer2[offset2++] = CharCodes_default.r;
+      buffer2[offset2++] = CharCodes_default.e;
+      buffer2[offset2++] = CharCodes_default.f;
+      buffer2[offset2++] = CharCodes_default.Newline;
+      offset2 += copyStringIntoBuffer(this.lastXRefOffset, buffer2, offset2);
+      buffer2[offset2++] = CharCodes_default.Newline;
+      buffer2[offset2++] = CharCodes_default.Percent;
+      buffer2[offset2++] = CharCodes_default.Percent;
+      buffer2[offset2++] = CharCodes_default.E;
+      buffer2[offset2++] = CharCodes_default.O;
+      buffer2[offset2++] = CharCodes_default.F;
+      return offset2 - initialOffset;
     };
-    PDFTrailer2.forLastCrossRefSectionOffset = function(offset) {
-      return new PDFTrailer2(offset);
+    PDFTrailer2.forLastCrossRefSectionOffset = function(offset2) {
+      return new PDFTrailer2(offset2);
     };
     return PDFTrailer2;
   })()
@@ -63121,18 +63544,18 @@ var PDFTrailerDict = (
     PDFTrailerDict2.prototype.sizeInBytes = function() {
       return 8 + this.dict.sizeInBytes();
     };
-    PDFTrailerDict2.prototype.copyBytesInto = function(buffer2, offset) {
-      var initialOffset = offset;
-      buffer2[offset++] = CharCodes_default.t;
-      buffer2[offset++] = CharCodes_default.r;
-      buffer2[offset++] = CharCodes_default.a;
-      buffer2[offset++] = CharCodes_default.i;
-      buffer2[offset++] = CharCodes_default.l;
-      buffer2[offset++] = CharCodes_default.e;
-      buffer2[offset++] = CharCodes_default.r;
-      buffer2[offset++] = CharCodes_default.Newline;
-      offset += this.dict.copyBytesInto(buffer2, offset);
-      return offset - initialOffset;
+    PDFTrailerDict2.prototype.copyBytesInto = function(buffer2, offset2) {
+      var initialOffset = offset2;
+      buffer2[offset2++] = CharCodes_default.t;
+      buffer2[offset2++] = CharCodes_default.r;
+      buffer2[offset2++] = CharCodes_default.a;
+      buffer2[offset2++] = CharCodes_default.i;
+      buffer2[offset2++] = CharCodes_default.l;
+      buffer2[offset2++] = CharCodes_default.e;
+      buffer2[offset2++] = CharCodes_default.r;
+      buffer2[offset2++] = CharCodes_default.Newline;
+      offset2 += this.dict.copyBytesInto(buffer2, offset2);
+      return offset2 - initialOffset;
     };
     PDFTrailerDict2.of = function(dict) {
       return new PDFTrailerDict2(dict);
@@ -63176,11 +63599,11 @@ var PDFObjectStream = (
     };
     PDFObjectStream2.prototype.getUnencodedContents = function() {
       var buffer2 = new Uint8Array(this.getUnencodedContentsSize());
-      var offset = copyStringIntoBuffer(this.offsetsString, buffer2, 0);
+      var offset2 = copyStringIntoBuffer(this.offsetsString, buffer2, 0);
       for (var idx = 0, len2 = this.objects.length; idx < len2; idx++) {
         var _a2 = this.objects[idx], object = _a2[1];
-        offset += object.copyBytesInto(buffer2, offset);
-        buffer2[offset++] = CharCodes_default.Newline;
+        offset2 += object.copyBytesInto(buffer2, offset2);
+        buffer2[offset2++] = CharCodes_default.Newline;
       }
       return buffer2;
     };
@@ -63190,18 +63613,18 @@ var PDFObjectStream = (
     PDFObjectStream2.prototype.computeOffsetsString = function() {
       var offsetsString = "";
       for (var idx = 0, len2 = this.offsets.length; idx < len2; idx++) {
-        var _a2 = this.offsets[idx], objectNumber = _a2[0], offset = _a2[1];
-        offsetsString += objectNumber + " " + offset + " ";
+        var _a2 = this.offsets[idx], objectNumber = _a2[0], offset2 = _a2[1];
+        offsetsString += objectNumber + " " + offset2 + " ";
       }
       return offsetsString;
     };
     PDFObjectStream2.prototype.computeObjectOffsets = function() {
-      var offset = 0;
+      var offset2 = 0;
       var offsets = new Array(this.objects.length);
       for (var idx = 0, len2 = this.objects.length; idx < len2; idx++) {
         var _a2 = this.objects[idx], ref = _a2[0], object = _a2[1];
-        offsets[idx] = [ref.objectNumber, offset];
-        offset += object.sizeInBytes() + 1;
+        offsets[idx] = [ref.objectNumber, offset2];
+        offset2 += object.sizeInBytes() + 1;
       }
       return offsets;
     };
@@ -63232,43 +63655,43 @@ var PDFWriter = (
     }
     PDFWriter2.prototype.serializeToBuffer = function() {
       return __awaiter(this, void 0, void 0, function() {
-        var _a2, size, header, indirectObjects, xref, trailerDict, trailer, offset, buffer2, idx, len2, _b2, ref, object, objectNumber, generationNumber, n2;
+        var _a2, size, header, indirectObjects, xref, trailerDict, trailer, offset2, buffer2, idx, len2, _b2, ref, object, objectNumber, generationNumber, n2;
         return __generator(this, function(_c) {
           switch (_c.label) {
             case 0:
               return [4, this.computeBufferSize()];
             case 1:
               _a2 = _c.sent(), size = _a2.size, header = _a2.header, indirectObjects = _a2.indirectObjects, xref = _a2.xref, trailerDict = _a2.trailerDict, trailer = _a2.trailer;
-              offset = 0;
+              offset2 = 0;
               buffer2 = new Uint8Array(size);
-              offset += header.copyBytesInto(buffer2, offset);
-              buffer2[offset++] = CharCodes_default.Newline;
-              buffer2[offset++] = CharCodes_default.Newline;
+              offset2 += header.copyBytesInto(buffer2, offset2);
+              buffer2[offset2++] = CharCodes_default.Newline;
+              buffer2[offset2++] = CharCodes_default.Newline;
               idx = 0, len2 = indirectObjects.length;
               _c.label = 2;
             case 2:
               if (!(idx < len2)) return [3, 5];
               _b2 = indirectObjects[idx], ref = _b2[0], object = _b2[1];
               objectNumber = String(ref.objectNumber);
-              offset += copyStringIntoBuffer(objectNumber, buffer2, offset);
-              buffer2[offset++] = CharCodes_default.Space;
+              offset2 += copyStringIntoBuffer(objectNumber, buffer2, offset2);
+              buffer2[offset2++] = CharCodes_default.Space;
               generationNumber = String(ref.generationNumber);
-              offset += copyStringIntoBuffer(generationNumber, buffer2, offset);
-              buffer2[offset++] = CharCodes_default.Space;
-              buffer2[offset++] = CharCodes_default.o;
-              buffer2[offset++] = CharCodes_default.b;
-              buffer2[offset++] = CharCodes_default.j;
-              buffer2[offset++] = CharCodes_default.Newline;
-              offset += object.copyBytesInto(buffer2, offset);
-              buffer2[offset++] = CharCodes_default.Newline;
-              buffer2[offset++] = CharCodes_default.e;
-              buffer2[offset++] = CharCodes_default.n;
-              buffer2[offset++] = CharCodes_default.d;
-              buffer2[offset++] = CharCodes_default.o;
-              buffer2[offset++] = CharCodes_default.b;
-              buffer2[offset++] = CharCodes_default.j;
-              buffer2[offset++] = CharCodes_default.Newline;
-              buffer2[offset++] = CharCodes_default.Newline;
+              offset2 += copyStringIntoBuffer(generationNumber, buffer2, offset2);
+              buffer2[offset2++] = CharCodes_default.Space;
+              buffer2[offset2++] = CharCodes_default.o;
+              buffer2[offset2++] = CharCodes_default.b;
+              buffer2[offset2++] = CharCodes_default.j;
+              buffer2[offset2++] = CharCodes_default.Newline;
+              offset2 += object.copyBytesInto(buffer2, offset2);
+              buffer2[offset2++] = CharCodes_default.Newline;
+              buffer2[offset2++] = CharCodes_default.e;
+              buffer2[offset2++] = CharCodes_default.n;
+              buffer2[offset2++] = CharCodes_default.d;
+              buffer2[offset2++] = CharCodes_default.o;
+              buffer2[offset2++] = CharCodes_default.b;
+              buffer2[offset2++] = CharCodes_default.j;
+              buffer2[offset2++] = CharCodes_default.Newline;
+              buffer2[offset2++] = CharCodes_default.Newline;
               n2 = object instanceof PDFObjectStream_default ? object.getObjectsCount() : 1;
               if (!this.shouldWaitForTick(n2)) return [3, 4];
               return [4, waitForTick()];
@@ -63280,15 +63703,15 @@ var PDFWriter = (
               return [3, 2];
             case 5:
               if (xref) {
-                offset += xref.copyBytesInto(buffer2, offset);
-                buffer2[offset++] = CharCodes_default.Newline;
+                offset2 += xref.copyBytesInto(buffer2, offset2);
+                buffer2[offset2++] = CharCodes_default.Newline;
               }
               if (trailerDict) {
-                offset += trailerDict.copyBytesInto(buffer2, offset);
-                buffer2[offset++] = CharCodes_default.Newline;
-                buffer2[offset++] = CharCodes_default.Newline;
+                offset2 += trailerDict.copyBytesInto(buffer2, offset2);
+                buffer2[offset2++] = CharCodes_default.Newline;
+                buffer2[offset2++] = CharCodes_default.Newline;
               }
-              offset += trailer.copyBytesInto(buffer2, offset);
+              offset2 += trailer.copyBytesInto(buffer2, offset2);
               return [2, buffer2];
           }
         });
@@ -63374,10 +63797,10 @@ var PDFInvalidObject = (
     PDFInvalidObject2.prototype.sizeInBytes = function() {
       return this.data.length;
     };
-    PDFInvalidObject2.prototype.copyBytesInto = function(buffer2, offset) {
+    PDFInvalidObject2.prototype.copyBytesInto = function(buffer2, offset2) {
       var length = this.data.length;
       for (var idx = 0; idx < length; idx++) {
-        buffer2[offset++] = this.data[idx];
+        buffer2[offset2++] = this.data[idx];
       }
       return length;
     };
@@ -63432,8 +63855,8 @@ var PDFCrossRefStream = (
             entryTuples[idx] = [type, nextFreeObjectNumber, ref.generationNumber];
           }
           if (entry.type === EntryType.Uncompressed) {
-            var type = entry.type, offset = entry.offset, ref = entry.ref;
-            entryTuples[idx] = [type, offset, ref.generationNumber];
+            var type = entry.type, offset2 = entry.offset, ref = entry.ref;
+            entryTuples[idx] = [type, offset2, ref.generationNumber];
           }
           if (entry.type === EntryType.Compressed) {
             var type = entry.type, objectStreamRef = entry.objectStreamRef, index = entry.index;
@@ -63474,9 +63897,9 @@ var PDFCrossRefStream = (
       this.indexCache.invalidate();
       this.contentsCache.invalidate();
     };
-    PDFCrossRefStream2.prototype.addUncompressedEntry = function(ref, offset) {
+    PDFCrossRefStream2.prototype.addUncompressedEntry = function(ref, offset2) {
       var type = EntryType.Uncompressed;
-      this.entries.push({ type, ref, offset });
+      this.entries.push({ type, ref, offset: offset2 });
       this.entryTuplesCache.invalidate();
       this.maxByteWidthsCache.invalidate();
       this.indexCache.invalidate();
@@ -63519,20 +63942,20 @@ var PDFCrossRefStream = (
       var entryTuples = this.entryTuplesCache.access();
       var byteWidths = this.maxByteWidthsCache.access();
       var buffer2 = new Uint8Array(this.getUnencodedContentsSize());
-      var offset = 0;
+      var offset2 = 0;
       for (var entryIdx = 0, entriesLen = entryTuples.length; entryIdx < entriesLen; entryIdx++) {
         var _a2 = entryTuples[entryIdx], first = _a2[0], second = _a2[1], third = _a2[2];
         var firstBytes = reverseArray(bytesFor(first));
         var secondBytes = reverseArray(bytesFor(second));
         var thirdBytes = reverseArray(bytesFor(third));
         for (var idx = byteWidths[0] - 1; idx >= 0; idx--) {
-          buffer2[offset++] = firstBytes[idx] || 0;
+          buffer2[offset2++] = firstBytes[idx] || 0;
         }
         for (var idx = byteWidths[1] - 1; idx >= 0; idx--) {
-          buffer2[offset++] = secondBytes[idx] || 0;
+          buffer2[offset2++] = secondBytes[idx] || 0;
         }
         for (var idx = byteWidths[2] - 1; idx >= 0; idx--) {
-          buffer2[offset++] = thirdBytes[idx] || 0;
+          buffer2[offset2++] = thirdBytes[idx] || 0;
         }
       }
       return buffer2;
@@ -63723,10 +64146,10 @@ var PDFHexString = (
     PDFHexString2.prototype.sizeInBytes = function() {
       return this.value.length + 2;
     };
-    PDFHexString2.prototype.copyBytesInto = function(buffer2, offset) {
-      buffer2[offset++] = CharCodes_default.LessThan;
-      offset += copyStringIntoBuffer(this.value, buffer2, offset);
-      buffer2[offset++] = CharCodes_default.GreaterThan;
+    PDFHexString2.prototype.copyBytesInto = function(buffer2, offset2) {
+      buffer2[offset2++] = CharCodes_default.LessThan;
+      offset2 += copyStringIntoBuffer(this.value, buffer2, offset2);
+      buffer2[offset2++] = CharCodes_default.GreaterThan;
       return this.value.length + 2;
     };
     PDFHexString2.of = function(value) {
@@ -63993,10 +64416,10 @@ var PDFString = (
     PDFString2.prototype.sizeInBytes = function() {
       return this.value.length + 2;
     };
-    PDFString2.prototype.copyBytesInto = function(buffer2, offset) {
-      buffer2[offset++] = CharCodes_default.LeftParen;
-      offset += copyStringIntoBuffer(this.value, buffer2, offset);
-      buffer2[offset++] = CharCodes_default.RightParen;
+    PDFString2.prototype.copyBytesInto = function(buffer2, offset2) {
+      buffer2[offset2++] = CharCodes_default.LeftParen;
+      offset2 += copyStringIntoBuffer(this.value, buffer2, offset2);
+      buffer2[offset2++] = CharCodes_default.RightParen;
       return this.value.length + 2;
     };
     PDFString2.of = function(value) {
@@ -64643,24 +65066,24 @@ UPNG.toRGBA8.decodeImage = function(data2, w, h, out) {
   return bf;
 };
 UPNG.decode = function(buff) {
-  var data2 = new Uint8Array(buff), offset = 8, bin = UPNG._bin, rUs = bin.readUshort, rUi = bin.readUint;
+  var data2 = new Uint8Array(buff), offset2 = 8, bin = UPNG._bin, rUs = bin.readUshort, rUi = bin.readUint;
   var out = { tabs: {}, frames: [] };
   var dd = new Uint8Array(data2.length), doff = 0;
   var fd2, foff = 0;
   var mgck = [137, 80, 78, 71, 13, 10, 26, 10];
   for (var i = 0; i < 8; i++) if (data2[i] != mgck[i]) throw "The input is not a PNG file!";
-  while (offset < data2.length) {
-    var len2 = bin.readUint(data2, offset);
-    offset += 4;
-    var type = bin.readASCII(data2, offset, 4);
-    offset += 4;
+  while (offset2 < data2.length) {
+    var len2 = bin.readUint(data2, offset2);
+    offset2 += 4;
+    var type = bin.readASCII(data2, offset2, 4);
+    offset2 += 4;
     if (type == "IHDR") {
-      UPNG.decode._IHDR(data2, offset, out);
+      UPNG.decode._IHDR(data2, offset2, out);
     } else if (type == "IDAT") {
-      for (var i = 0; i < len2; i++) dd[doff + i] = data2[offset + i];
+      for (var i = 0; i < len2; i++) dd[doff + i] = data2[offset2 + i];
       doff += len2;
     } else if (type == "acTL") {
-      out.tabs[type] = { num_frames: rUi(data2, offset), num_plays: rUi(data2, offset + 4) };
+      out.tabs[type] = { num_frames: rUi(data2, offset2), num_plays: rUi(data2, offset2 + 4) };
       fd2 = new Uint8Array(data2.length);
     } else if (type == "fcTL") {
       if (foff != 0) {
@@ -64668,28 +65091,28 @@ UPNG.decode = function(buff) {
         fr.data = UPNG.decode._decompress(out, fd2.slice(0, foff), fr.rect.width, fr.rect.height);
         foff = 0;
       }
-      var rct = { x: rUi(data2, offset + 12), y: rUi(data2, offset + 16), width: rUi(data2, offset + 4), height: rUi(data2, offset + 8) };
-      var del = rUs(data2, offset + 22);
-      del = rUs(data2, offset + 20) / (del == 0 ? 100 : del);
-      var frm = { rect: rct, delay: Math.round(del * 1e3), dispose: data2[offset + 24], blend: data2[offset + 25] };
+      var rct = { x: rUi(data2, offset2 + 12), y: rUi(data2, offset2 + 16), width: rUi(data2, offset2 + 4), height: rUi(data2, offset2 + 8) };
+      var del = rUs(data2, offset2 + 22);
+      del = rUs(data2, offset2 + 20) / (del == 0 ? 100 : del);
+      var frm = { rect: rct, delay: Math.round(del * 1e3), dispose: data2[offset2 + 24], blend: data2[offset2 + 25] };
       out.frames.push(frm);
     } else if (type == "fdAT") {
-      for (var i = 0; i < len2 - 4; i++) fd2[foff + i] = data2[offset + i + 4];
+      for (var i = 0; i < len2 - 4; i++) fd2[foff + i] = data2[offset2 + i + 4];
       foff += len2 - 4;
     } else if (type == "pHYs") {
-      out.tabs[type] = [bin.readUint(data2, offset), bin.readUint(data2, offset + 4), data2[offset + 8]];
+      out.tabs[type] = [bin.readUint(data2, offset2), bin.readUint(data2, offset2 + 4), data2[offset2 + 8]];
     } else if (type == "cHRM") {
       out.tabs[type] = [];
-      for (var i = 0; i < 8; i++) out.tabs[type].push(bin.readUint(data2, offset + i * 4));
+      for (var i = 0; i < 8; i++) out.tabs[type].push(bin.readUint(data2, offset2 + i * 4));
     } else if (type == "tEXt") {
       if (out.tabs[type] == null) out.tabs[type] = {};
-      var nz = bin.nextZero(data2, offset);
-      var keyw = bin.readASCII(data2, offset, nz - offset);
-      var text2 = bin.readASCII(data2, nz + 1, offset + len2 - nz - 1);
+      var nz = bin.nextZero(data2, offset2);
+      var keyw = bin.readASCII(data2, offset2, nz - offset2);
+      var text2 = bin.readASCII(data2, nz + 1, offset2 + len2 - nz - 1);
       out.tabs[type][keyw] = text2;
     } else if (type == "iTXt") {
       if (out.tabs[type] == null) out.tabs[type] = {};
-      var nz = 0, off3 = offset;
+      var nz = 0, off3 = offset2;
       nz = bin.nextZero(data2, off3);
       var keyw = bin.readASCII(data2, off3, nz - off3);
       off3 = nz + 1;
@@ -64701,30 +65124,30 @@ UPNG.decode = function(buff) {
       nz = bin.nextZero(data2, off3);
       var tkeyw = bin.readUTF8(data2, off3, nz - off3);
       off3 = nz + 1;
-      var text2 = bin.readUTF8(data2, off3, len2 - (off3 - offset));
+      var text2 = bin.readUTF8(data2, off3, len2 - (off3 - offset2));
       out.tabs[type][keyw] = text2;
     } else if (type == "PLTE") {
-      out.tabs[type] = bin.readBytes(data2, offset, len2);
+      out.tabs[type] = bin.readBytes(data2, offset2, len2);
     } else if (type == "hIST") {
       var pl = out.tabs["PLTE"].length / 3;
       out.tabs[type] = [];
-      for (var i = 0; i < pl; i++) out.tabs[type].push(rUs(data2, offset + i * 2));
+      for (var i = 0; i < pl; i++) out.tabs[type].push(rUs(data2, offset2 + i * 2));
     } else if (type == "tRNS") {
-      if (out.ctype == 3) out.tabs[type] = bin.readBytes(data2, offset, len2);
-      else if (out.ctype == 0) out.tabs[type] = rUs(data2, offset);
-      else if (out.ctype == 2) out.tabs[type] = [rUs(data2, offset), rUs(data2, offset + 2), rUs(data2, offset + 4)];
-    } else if (type == "gAMA") out.tabs[type] = bin.readUint(data2, offset) / 1e5;
-    else if (type == "sRGB") out.tabs[type] = data2[offset];
+      if (out.ctype == 3) out.tabs[type] = bin.readBytes(data2, offset2, len2);
+      else if (out.ctype == 0) out.tabs[type] = rUs(data2, offset2);
+      else if (out.ctype == 2) out.tabs[type] = [rUs(data2, offset2), rUs(data2, offset2 + 2), rUs(data2, offset2 + 4)];
+    } else if (type == "gAMA") out.tabs[type] = bin.readUint(data2, offset2) / 1e5;
+    else if (type == "sRGB") out.tabs[type] = data2[offset2];
     else if (type == "bKGD") {
-      if (out.ctype == 0 || out.ctype == 4) out.tabs[type] = [rUs(data2, offset)];
-      else if (out.ctype == 2 || out.ctype == 6) out.tabs[type] = [rUs(data2, offset), rUs(data2, offset + 2), rUs(data2, offset + 4)];
-      else if (out.ctype == 3) out.tabs[type] = data2[offset];
+      if (out.ctype == 0 || out.ctype == 4) out.tabs[type] = [rUs(data2, offset2)];
+      else if (out.ctype == 2 || out.ctype == 6) out.tabs[type] = [rUs(data2, offset2), rUs(data2, offset2 + 2), rUs(data2, offset2 + 4)];
+      else if (out.ctype == 3) out.tabs[type] = data2[offset2];
     } else if (type == "IEND") {
       break;
     }
-    offset += len2;
-    var crc = bin.readUint(data2, offset);
-    offset += 4;
+    offset2 += len2;
+    var crc = bin.readUint(data2, offset2);
+    offset2 += 4;
   }
   if (foff != 0) {
     var fr = out.frames[out.frames.length - 1];
@@ -65091,22 +65514,22 @@ UPNG.decode._paeth = function(a, b, c) {
   else if (pb * pb <= pc * pc) return b;
   return c;
 };
-UPNG.decode._IHDR = function(data2, offset, out) {
+UPNG.decode._IHDR = function(data2, offset2, out) {
   var bin = UPNG._bin;
-  out.width = bin.readUint(data2, offset);
-  offset += 4;
-  out.height = bin.readUint(data2, offset);
-  offset += 4;
-  out.depth = data2[offset];
-  offset++;
-  out.ctype = data2[offset];
-  offset++;
-  out.compress = data2[offset];
-  offset++;
-  out.filter = data2[offset];
-  offset++;
-  out.interlace = data2[offset];
-  offset++;
+  out.width = bin.readUint(data2, offset2);
+  offset2 += 4;
+  out.height = bin.readUint(data2, offset2);
+  offset2 += 4;
+  out.depth = data2[offset2];
+  offset2++;
+  out.ctype = data2[offset2];
+  offset2++;
+  out.compress = data2[offset2];
+  offset2++;
+  out.filter = data2[offset2];
+  offset2++;
+  out.interlace = data2[offset2];
+  offset2++;
 };
 UPNG._bin = {
   nextZero: function(data2, p) {
@@ -65224,7 +65647,7 @@ UPNG.encodeLL = function(bufs, w, h, cc, ac, depth, dels, tabs) {
 UPNG.encode._main = function(nimg, w, h, dels, tabs) {
   if (tabs == null) tabs = {};
   var crc = UPNG.crc.crc, wUi = UPNG._bin.writeUint, wUs = UPNG._bin.writeUshort, wAs = UPNG._bin.writeASCII;
-  var offset = 8, anim = nimg.frames.length > 1, pltAlpha = false;
+  var offset2 = 8, anim = nimg.frames.length > 1, pltAlpha = false;
   var leng = 8 + (16 + 5 + 4) + (anim ? 20 : 0);
   if (tabs["sRGB"] != null) leng += 8 + 1 + 4;
   if (tabs["pHYs"] != null) leng += 8 + 9 + 4;
@@ -65243,138 +65666,138 @@ UPNG.encode._main = function(nimg, w, h, dels, tabs) {
   var data2 = new Uint8Array(leng);
   var wr = [137, 80, 78, 71, 13, 10, 26, 10];
   for (var i = 0; i < 8; i++) data2[i] = wr[i];
-  wUi(data2, offset, 13);
-  offset += 4;
-  wAs(data2, offset, "IHDR");
-  offset += 4;
-  wUi(data2, offset, w);
-  offset += 4;
-  wUi(data2, offset, h);
-  offset += 4;
-  data2[offset] = nimg.depth;
-  offset++;
-  data2[offset] = nimg.ctype;
-  offset++;
-  data2[offset] = 0;
-  offset++;
-  data2[offset] = 0;
-  offset++;
-  data2[offset] = 0;
-  offset++;
-  wUi(data2, offset, crc(data2, offset - 17, 17));
-  offset += 4;
+  wUi(data2, offset2, 13);
+  offset2 += 4;
+  wAs(data2, offset2, "IHDR");
+  offset2 += 4;
+  wUi(data2, offset2, w);
+  offset2 += 4;
+  wUi(data2, offset2, h);
+  offset2 += 4;
+  data2[offset2] = nimg.depth;
+  offset2++;
+  data2[offset2] = nimg.ctype;
+  offset2++;
+  data2[offset2] = 0;
+  offset2++;
+  data2[offset2] = 0;
+  offset2++;
+  data2[offset2] = 0;
+  offset2++;
+  wUi(data2, offset2, crc(data2, offset2 - 17, 17));
+  offset2 += 4;
   if (tabs["sRGB"] != null) {
-    wUi(data2, offset, 1);
-    offset += 4;
-    wAs(data2, offset, "sRGB");
-    offset += 4;
-    data2[offset] = tabs["sRGB"];
-    offset++;
-    wUi(data2, offset, crc(data2, offset - 5, 5));
-    offset += 4;
+    wUi(data2, offset2, 1);
+    offset2 += 4;
+    wAs(data2, offset2, "sRGB");
+    offset2 += 4;
+    data2[offset2] = tabs["sRGB"];
+    offset2++;
+    wUi(data2, offset2, crc(data2, offset2 - 5, 5));
+    offset2 += 4;
   }
   if (tabs["pHYs"] != null) {
-    wUi(data2, offset, 9);
-    offset += 4;
-    wAs(data2, offset, "pHYs");
-    offset += 4;
-    wUi(data2, offset, tabs["pHYs"][0]);
-    offset += 4;
-    wUi(data2, offset, tabs["pHYs"][1]);
-    offset += 4;
-    data2[offset] = tabs["pHYs"][2];
-    offset++;
-    wUi(data2, offset, crc(data2, offset - 13, 13));
-    offset += 4;
+    wUi(data2, offset2, 9);
+    offset2 += 4;
+    wAs(data2, offset2, "pHYs");
+    offset2 += 4;
+    wUi(data2, offset2, tabs["pHYs"][0]);
+    offset2 += 4;
+    wUi(data2, offset2, tabs["pHYs"][1]);
+    offset2 += 4;
+    data2[offset2] = tabs["pHYs"][2];
+    offset2++;
+    wUi(data2, offset2, crc(data2, offset2 - 13, 13));
+    offset2 += 4;
   }
   if (anim) {
-    wUi(data2, offset, 8);
-    offset += 4;
-    wAs(data2, offset, "acTL");
-    offset += 4;
-    wUi(data2, offset, nimg.frames.length);
-    offset += 4;
-    wUi(data2, offset, tabs["loop"] != null ? tabs["loop"] : 0);
-    offset += 4;
-    wUi(data2, offset, crc(data2, offset - 12, 12));
-    offset += 4;
+    wUi(data2, offset2, 8);
+    offset2 += 4;
+    wAs(data2, offset2, "acTL");
+    offset2 += 4;
+    wUi(data2, offset2, nimg.frames.length);
+    offset2 += 4;
+    wUi(data2, offset2, tabs["loop"] != null ? tabs["loop"] : 0);
+    offset2 += 4;
+    wUi(data2, offset2, crc(data2, offset2 - 12, 12));
+    offset2 += 4;
   }
   if (nimg.ctype == 3) {
     var dl = nimg.plte.length;
-    wUi(data2, offset, dl * 3);
-    offset += 4;
-    wAs(data2, offset, "PLTE");
-    offset += 4;
+    wUi(data2, offset2, dl * 3);
+    offset2 += 4;
+    wAs(data2, offset2, "PLTE");
+    offset2 += 4;
     for (var i = 0; i < dl; i++) {
       var ti = i * 3, c = nimg.plte[i], r = c & 255, g = c >>> 8 & 255, b = c >>> 16 & 255;
-      data2[offset + ti + 0] = r;
-      data2[offset + ti + 1] = g;
-      data2[offset + ti + 2] = b;
+      data2[offset2 + ti + 0] = r;
+      data2[offset2 + ti + 1] = g;
+      data2[offset2 + ti + 2] = b;
     }
-    offset += dl * 3;
-    wUi(data2, offset, crc(data2, offset - dl * 3 - 4, dl * 3 + 4));
-    offset += 4;
+    offset2 += dl * 3;
+    wUi(data2, offset2, crc(data2, offset2 - dl * 3 - 4, dl * 3 + 4));
+    offset2 += 4;
     if (pltAlpha) {
-      wUi(data2, offset, dl);
-      offset += 4;
-      wAs(data2, offset, "tRNS");
-      offset += 4;
-      for (var i = 0; i < dl; i++) data2[offset + i] = nimg.plte[i] >>> 24 & 255;
-      offset += dl;
-      wUi(data2, offset, crc(data2, offset - dl - 4, dl + 4));
-      offset += 4;
+      wUi(data2, offset2, dl);
+      offset2 += 4;
+      wAs(data2, offset2, "tRNS");
+      offset2 += 4;
+      for (var i = 0; i < dl; i++) data2[offset2 + i] = nimg.plte[i] >>> 24 & 255;
+      offset2 += dl;
+      wUi(data2, offset2, crc(data2, offset2 - dl - 4, dl + 4));
+      offset2 += 4;
     }
   }
   var fi = 0;
   for (var j = 0; j < nimg.frames.length; j++) {
     var fr = nimg.frames[j];
     if (anim) {
-      wUi(data2, offset, 26);
-      offset += 4;
-      wAs(data2, offset, "fcTL");
-      offset += 4;
-      wUi(data2, offset, fi++);
-      offset += 4;
-      wUi(data2, offset, fr.rect.width);
-      offset += 4;
-      wUi(data2, offset, fr.rect.height);
-      offset += 4;
-      wUi(data2, offset, fr.rect.x);
-      offset += 4;
-      wUi(data2, offset, fr.rect.y);
-      offset += 4;
-      wUs(data2, offset, dels[j]);
-      offset += 2;
-      wUs(data2, offset, 1e3);
-      offset += 2;
-      data2[offset] = fr.dispose;
-      offset++;
-      data2[offset] = fr.blend;
-      offset++;
-      wUi(data2, offset, crc(data2, offset - 30, 30));
-      offset += 4;
+      wUi(data2, offset2, 26);
+      offset2 += 4;
+      wAs(data2, offset2, "fcTL");
+      offset2 += 4;
+      wUi(data2, offset2, fi++);
+      offset2 += 4;
+      wUi(data2, offset2, fr.rect.width);
+      offset2 += 4;
+      wUi(data2, offset2, fr.rect.height);
+      offset2 += 4;
+      wUi(data2, offset2, fr.rect.x);
+      offset2 += 4;
+      wUi(data2, offset2, fr.rect.y);
+      offset2 += 4;
+      wUs(data2, offset2, dels[j]);
+      offset2 += 2;
+      wUs(data2, offset2, 1e3);
+      offset2 += 2;
+      data2[offset2] = fr.dispose;
+      offset2++;
+      data2[offset2] = fr.blend;
+      offset2++;
+      wUi(data2, offset2, crc(data2, offset2 - 30, 30));
+      offset2 += 4;
     }
     var imgd = fr.cimg, dl = imgd.length;
-    wUi(data2, offset, dl + (j == 0 ? 0 : 4));
-    offset += 4;
-    var ioff = offset;
-    wAs(data2, offset, j == 0 ? "IDAT" : "fdAT");
-    offset += 4;
+    wUi(data2, offset2, dl + (j == 0 ? 0 : 4));
+    offset2 += 4;
+    var ioff = offset2;
+    wAs(data2, offset2, j == 0 ? "IDAT" : "fdAT");
+    offset2 += 4;
     if (j != 0) {
-      wUi(data2, offset, fi++);
-      offset += 4;
+      wUi(data2, offset2, fi++);
+      offset2 += 4;
     }
-    data2.set(imgd, offset);
-    offset += dl;
-    wUi(data2, offset, crc(data2, ioff, offset - ioff));
-    offset += 4;
+    data2.set(imgd, offset2);
+    offset2 += dl;
+    wUi(data2, offset2, crc(data2, ioff, offset2 - ioff));
+    offset2 += 4;
   }
-  wUi(data2, offset, 0);
-  offset += 4;
-  wAs(data2, offset, "IEND");
-  offset += 4;
-  wUi(data2, offset, crc(data2, offset - 4, 4));
-  offset += 4;
+  wUi(data2, offset2, 0);
+  offset2 += 4;
+  wAs(data2, offset2, "IEND");
+  offset2 += 4;
+  wUi(data2, offset2, crc(data2, offset2 - 4, 4));
+  offset2 += 4;
   return data2.buffer;
 };
 UPNG.encode.compressPNG = function(out, filter, levelZero) {
@@ -69346,8 +69769,8 @@ var ByteStream = (
       this.bytes = bytes;
       this.length = this.bytes.length;
     }
-    ByteStream2.prototype.moveTo = function(offset) {
-      this.idx = offset;
+    ByteStream2.prototype.moveTo = function(offset2) {
+      this.idx = offset2;
     };
     ByteStream2.prototype.next = function() {
       var byte = this.bytes[this.idx++];
@@ -69371,8 +69794,8 @@ var ByteStream = (
     ByteStream2.prototype.peekAhead = function(steps) {
       return this.bytes[this.idx + steps];
     };
-    ByteStream2.prototype.peekAt = function(offset) {
-      return this.bytes[offset];
+    ByteStream2.prototype.peekAt = function(offset2) {
+      return this.bytes[offset2];
     };
     ByteStream2.prototype.done = function() {
       return this.idx >= this.length;
@@ -69688,7 +70111,7 @@ var PDFObjectStreamParser = (
     }
     PDFObjectStreamParser2.prototype.parseIntoContext = function() {
       return __awaiter(this, void 0, void 0, function() {
-        var offsetsAndObjectNumbers, idx, len2, _a2, objectNumber, offset, object, ref;
+        var offsetsAndObjectNumbers, idx, len2, _a2, objectNumber, offset2, object, ref;
         return __generator(this, function(_b2) {
           switch (_b2.label) {
             case 0:
@@ -69701,8 +70124,8 @@ var PDFObjectStreamParser = (
               _b2.label = 1;
             case 1:
               if (!(idx < len2)) return [3, 4];
-              _a2 = offsetsAndObjectNumbers[idx], objectNumber = _a2.objectNumber, offset = _a2.offset;
-              this.bytes.moveTo(this.firstOffset + offset);
+              _a2 = offsetsAndObjectNumbers[idx], objectNumber = _a2.objectNumber, offset2 = _a2.offset;
+              this.bytes.moveTo(this.firstOffset + offset2);
               object = this.parseObject();
               ref = PDFRef_default.of(objectNumber, 0);
               this.context.assign(ref, object);
@@ -69729,8 +70152,8 @@ var PDFObjectStreamParser = (
         this.skipWhitespaceAndComments();
         var objectNumber = this.parseRawInt();
         this.skipWhitespaceAndComments();
-        var offset = this.parseRawInt();
-        offsetsAndObjectNumbers.push({ objectNumber, offset });
+        var offset2 = this.parseRawInt();
+        offsetsAndObjectNumbers.push({ objectNumber, offset: offset2 });
       }
       return offsetsAndObjectNumbers;
     };
@@ -69793,9 +70216,9 @@ var PDFXRefStreamParser = (
           for (var idx = 0, len2 = typeFieldWidth; idx < len2; idx++) {
             type = type << 8 | this.bytes.next();
           }
-          var offset = 0;
+          var offset2 = 0;
           for (var idx = 0, len2 = offsetFieldWidth; idx < len2; idx++) {
-            offset = offset << 8 | this.bytes.next();
+            offset2 = offset2 << 8 | this.bytes.next();
           }
           var generationNumber = 0;
           for (var idx = 0, len2 = genFieldWidth; idx < len2; idx++) {
@@ -69806,7 +70229,7 @@ var PDFXRefStreamParser = (
           var objectNumber = firstObjectNumber + objIdx;
           var entry = {
             ref: PDFRef_default.of(objectNumber, generationNumber),
-            offset,
+            offset: offset2,
             deleted: type === 0,
             inObjectStream: type === 2
           };
@@ -69851,7 +70274,7 @@ var PDFParser = (
     }
     PDFParser2.prototype.parseDocument = function() {
       return __awaiter(this, void 0, void 0, function() {
-        var prevOffset, offset;
+        var prevOffset, offset2;
         return __generator(this, function(_a2) {
           switch (_a2.label) {
             case 0:
@@ -69866,11 +70289,11 @@ var PDFParser = (
               return [4, this.parseDocumentSection()];
             case 2:
               _a2.sent();
-              offset = this.bytes.offset();
-              if (offset === prevOffset) {
+              offset2 = this.bytes.offset();
+              if (offset2 === prevOffset) {
                 throw new StalledParserError(this.bytes.position());
               }
-              prevOffset = offset;
+              prevOffset = offset2;
               return [3, 1];
             case 3:
               this.maybeRecoverRoot();
@@ -70077,13 +70500,13 @@ var PDFParser = (
       if (!this.matchKeyword(Keywords.startxref))
         return;
       this.skipWhitespaceAndComments();
-      var offset = this.parseRawInt();
+      var offset2 = this.parseRawInt();
       this.skipWhitespace();
       this.matchKeyword(Keywords.eof);
       this.skipWhitespaceAndComments();
       this.matchKeyword(Keywords.eof);
       this.skipWhitespaceAndComments();
-      return PDFTrailer_default.forLastCrossRefSectionOffset(offset);
+      return PDFTrailer_default.forLastCrossRefSectionOffset(offset2);
     };
     PDFParser2.prototype.parseDocumentSection = function() {
       return __awaiter(this, void 0, void 0, function() {
@@ -75366,15 +75789,21 @@ var border = rgb(0.72, 0.75, 0.79);
 var shade = rgb(0.93, 0.95, 0.97);
 var time = (value) => String(Math.floor(value / 60)).padStart(2, "0") + ":" + String(value % 60).padStart(2, "0");
 var status = { waiting: "\u5F85\u6A5F", called: "\u547C\u51FA\u6E08", playing: "\u9032\u884C\u4E2D", completed: "\u7D42\u4E86", bye: "\u514D\u9664" };
-var order = (a, b) => a.time - b.time || (a.queueOrder ?? a.number) - (b.queueOrder ?? b.number);
 function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
   const [w, h] = opts.landscape ? [PageSizes.A4[1], PageSizes.A4[0]] : PageSizes.A4;
   const left = 22, available = w - left * 2;
   const entries = new Map(t2.events.flatMap((e) => e.entries).map((p) => [p.id, p]));
-  const courts = Array.from({ length: t2.courts }, (_2, i) => i + 1);
-  const all = t2.matches.filter((m) => m.status !== "bye").sort(order);
+  const all = scheduleOrder(t2);
   let page2, y = 0, headers = [], widths = [], title2 = "", pageNumber = 0;
-  const width = (s2, size) => font.widthOfTextAtSize(s2, size);
+  const widthsAtUnit = /* @__PURE__ */ new Map();
+  const width = (s2, size) => {
+    let x = widthsAtUnit.get(s2);
+    if (x === void 0) {
+      x = font.widthOfTextAtSize(s2, 1);
+      widthsAtUnit.set(s2, x);
+    }
+    return x * size;
+  };
   const glyphs = new Set(font.getCharacterSet());
   const clean = (s2) => [...s2.replace(/[\r\n\t]/g, " ")].map((c) => glyphs.has(c.codePointAt(0)) ? c : "\u25A1").join("");
   function lines(value, span, base, atomic) {
@@ -75441,69 +75870,147 @@ function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
     widths = [53, 53, 105, (available - 272) / 2, (available - 272) / 2, 61];
     fresh();
     const ms = all.filter((m) => m.court === court);
-    for (const m of ms) row([[{ text: time(m.time), atomic: true }], [{ text: time(m.time + m.duration), atomic: true }], [detail(m)[0]], [{ text: entries.get(m.left)?.name || "\u672A\u78BA\u5B9A" }], [{ text: entries.get(m.right)?.name || "\u672A\u78BA\u5B9A" }], [{ text: status[m.status] }]]);
+    let day = "";
+    for (const m of ms) {
+      const date = plannedDate(t2, m);
+      if (t2.competitionDays && date && date !== day) {
+        day = date;
+        row([[{ text: date }], [], [], [], [], []], true);
+      }
+      row([[{ text: time(m.time), atomic: true }], [{ text: time(m.time + m.duration), atomic: true }], [detail(m)[0]], [{ text: entries.get(m.left)?.name || "\u672A\u78BA\u5B9A" }], [{ text: entries.get(m.right)?.name || "\u672A\u78BA\u5B9A" }], [{ text: status[m.status] }]]);
+    }
     return;
   }
-  const axisWidth = Math.min(50, available * 0.1);
-  const times = /* @__PURE__ */ new Map();
-  const pending = [];
-  for (const m of all) {
-    if (!m.court) {
-      pending.push(m);
-      continue;
-    }
-    const start = times.get(m.time) ?? /* @__PURE__ */ new Map();
-    const matches = start.get(m.court) ?? [];
-    matches.push(m);
-    start.set(m.court, matches);
-    times.set(m.time, start);
-  }
-  const columns = t2.courts + (pending.length ? 1 : 0), colspan = (available - axisWidth) / columns;
-  const rows = [];
-  for (const [minute, at] of [...times].sort((a, b) => a[0] - b[0])) {
-    const repetitions = Math.max(...[...at.values()].map((matches) => matches.length));
-    for (let i = 0; i < repetitions; i++) rows.push({ label: time(minute), matches: [...courts.map((c) => at.get(c)?.[i]), void 0] });
-  }
-  for (let i = 0; i < pending.length; i += columns) rows.push({ label: "\u672A\u5272\u5F53", matches: pending.slice(i, i + columns) });
-  const frameTop = h - 48, frameBottom = 22;
-  const rowHeight = Math.min(54, (frameTop - frameBottom) / Math.max(2, rows.length + 1));
-  const cellLines = 1 + (opts.names ? 2 : 0) + (opts.clubs ? 2 : 0) + (opts.status ? 1 : 0);
-  let smallest = Infinity;
-  page2 = pdf.addPage([w, h]);
-  function fitted(value, x, baseline, span, base, required = false) {
-    const s2 = clean(value);
-    if (!s2) return;
-    const size = Math.min(base, span / Math.max(1e-3, width(s2, 1)));
-    if (required) smallest = Math.min(smallest, size);
-    page2.drawText(s2, { x, y: baseline, size, font, color: ink });
-  }
-  fitted(t2.name + "\u3000\u5168\u30B3\u30FC\u30C8\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB", left, h - 22, available, 13);
-  for (const [i, r] of [{ label: "\u6642\u523B", matches: [] }, ...rows].entries()) {
-    const top = frameTop - i * rowHeight, bottom = top - rowHeight;
-    const box = (x, w2) => page2.drawRectangle({ x, y: bottom, width: w2, height: rowHeight, borderColor: border, borderWidth: Math.min(0.4, rowHeight * 0.08), ...i ? {} : { color: shade } });
-    const padding = Math.min(2, colspan * 0.1);
-    const baseline = top - rowHeight * 0.68;
-    box(left, axisWidth);
-    fitted(r.label, left + padding, baseline, axisWidth - 2 * padding, Math.min(9, rowHeight * 0.65), true);
-    for (let j = 0; j < columns; j++) {
-      const x = left + axisWidth + j * colspan;
-      box(x, colspan);
-      if (!i) {
-        fitted(j < t2.courts ? courts[j] + "\u30B3\u30FC\u30C8" : "\u672A\u5272\u5F53", x + padding, baseline, colspan - 2 * padding, Math.min(9, rowHeight * 0.65), true);
-        continue;
+  const previews = [];
+  for (const part of splitTimetable(t2, opts.split)) {
+    let write4 = function(value, x, baseline, size, span2) {
+      const cleanValue = clean(value);
+      const actual = fitToWidth(cleanValue, size, span2);
+      if (cleanValue) page2.drawText(cleanValue, { x, y: baseline, size: actual, font, color: ink });
+      return actual;
+    };
+    var write3 = write4;
+    const dates = [...new Set(part.fixtures.map((m) => plannedDate(t2, m) ?? "\u65E5\u7A0B\u672A\u6307\u5B9A"))];
+    const events2 = [...new Set(part.fixtures.map((m) => t2.events.find((e) => e.id === m.eventId)?.code ?? t2.events.find((e) => e.id === m.eventId)?.name ?? ""))];
+    const unassigned = part.fixtures.filter((m) => !m.court).length;
+    const columns = dates.length ? Math.max(...dates.map((date) => calendarCourts(t2, date))) : t2.courts;
+    const multi = dates.length > 1;
+    const margin = 16, span = w - 2 * margin, axis = multi ? 57 : 36, cell = (span - axis) / columns;
+    const pad2 = Math.min(1.6, cell * 0.09), inner = cell - 2 * pad2;
+    const rows = timetableRows(t2, part.fixtures, columns);
+    const top = h - 45, bottom = 28;
+    const hasDetails = !!(opts.names || opts.clubs || opts.status);
+    const wrapTo = (text2, size, limit = inner) => {
+      const result2 = [];
+      let line = "";
+      for (const ch of text2) {
+        if (line && width(line + ch, size) > limit) {
+          result2.push(line);
+          line = "";
+        }
+        line += ch;
       }
-      const match = r.matches[j];
-      if (!match) continue;
-      const pitch = rowHeight / (cellLines + 0.6), base = Math.min(10, pitch * 0.77);
-      for (const [k, item] of detail(match).entries()) fitted(item.text, x + padding, top - pitch * (k + 1), colspan - 2 * padding, base, true);
+      if (line) result2.push(line);
+      return result2;
+    };
+    const fields = rows.map((r) => r.cells.map((m) => m ? detail(m).map((item) => clean(item.text)) : void 0));
+    const clubIndex = 1 + (opts.names ? 2 : 0), clubCounts = /* @__PURE__ */ new Map(), key4 = /* @__PURE__ */ new Map();
+    if (opts.clubs) {
+      for (const row2 of fields) for (const item of row2) if (item)
+        for (const value of item.slice(clubIndex, clubIndex + 2)) clubCounts.set(value, (clubCounts.get(value) ?? 0) + 1);
     }
+    const legendColumns = w > 700 ? 3 : 2, keyWidth = span / legendColumns, legendSize = 6.5;
+    const legend = [];
+    for (const [value, count] of [...clubCounts].sort((a, b) => b[1] - a[1])) {
+      if (count < 2 || width(value, 6) < inner * 2) continue;
+      const ref = "\u6240\u5C5E" + (key4.size + 1), group = wrapTo(ref + " " + value, legendSize, keyWidth - 5);
+      if (legend.flat().length + group.length > legendColumns * 7) continue;
+      key4.set(value, ref);
+      legend.push(group);
+    }
+    if (key4.size) {
+      for (const row2 of fields) for (const item of row2) if (item)
+        for (let i = clubIndex; i < clubIndex + 2; i++) item[i] = key4.get(item[i]) ?? item[i];
+    }
+    const keyRows = Array.from({ length: Math.ceil(legend.length / legendColumns) }, (_2, i) => legend.slice(i * legendColumns, (i + 1) * legendColumns));
+    const legendHeight = keyRows.reduce((total, r) => total + Math.max(...r.map((lines2) => lines2.length)) * 8 + 2, 0);
+    const budget = top - bottom - 15 - legendHeight;
+    const rowCount = Math.max(1, rows.length);
+    const idealNumbers = hasDetails ? 7 : 9;
+    const numbers = Math.min(idealNumbers, budget / rowCount / (hasDetails ? 1.95 : 1.4));
+    const numHeight = numbers * 1.32;
+    const gap = Math.min(1, budget / rowCount * 0.06);
+    const extra = Math.max(0.01, budget - (numHeight + gap) * rows.length);
+    const fitToWidth = (value, sz, limit) => Math.min(sz, limit / Math.max(1e-3, width(value, 1)));
+    const ideal = fields.map((r) => Math.max(0, ...r.map((item) => item?.slice(1).flatMap((text2) => wrapTo(text2, 7)).length ?? 0)) * 8.7);
+    const totalIdeal = ideal.reduce((a, b) => a + b, 0);
+    const rowDetail = ideal.map((h2) => Math.min(h2, totalIdeal ? extra * h2 / totalIdeal : 0));
+    const fittedCells = fields.map((r, i) => r.map((item) => {
+      if (!item) return void 0;
+      const [id, ...texts] = item, budget2 = rowDetail[i];
+      if (!texts.length) return { id, lines: [], size: 0 };
+      let lo = 0, hi = 7;
+      for (let j = 0; j < 12; j++) {
+        const mid2 = (lo + hi) / 2, count = texts.reduce((n2, s2) => n2 + wrapTo(s2, mid2).length, 0);
+        if (count * mid2 * 1.24 <= budget2) lo = mid2;
+        else hi = mid2;
+      }
+      const size = Math.max(Number.EPSILON, lo);
+      return { id, lines: texts.flatMap((s2) => wrapTo(s2, size)), size };
+    }));
+    let minNumber = numbers, minDetail = Infinity;
+    page2 = pdf.addPage([w, h]);
+    write4(t2.name + "\u3000\u5168\u30B3\u30FC\u30C8\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB", margin, h - 19, 13, span);
+    write4(part.title + (dates.length === 1 ? "\u3000" + dates[0] : ""), margin, h - 34, 9, span);
+    const linesX = Array.from({ length: columns + 1 }, (_2, i) => margin + axis + i * cell);
+    const rule = (y3) => page2.drawLine({ start: { x: margin, y: y3 }, end: { x: w - margin, y: y3 }, color: border, thickness: 0.28 });
+    page2.drawRectangle({ x: margin, y: top - 15, width: span, height: 15, color: shade });
+    write4("\u6642\u523B", margin + 2, top - 11, 8, axis - 4);
+    for (const [j, x] of linesX.slice(0, -1).entries()) write4(j + 1 + "\u30B3\u30FC\u30C8", x + pad2, top - 11, 8, inner);
+    let y2 = top - 15;
+    rule(top);
+    rule(y2);
+    for (const [i, r] of rows.entries()) {
+      const startLabel = (multi ? r.date + " " : "") + (r.time === void 0 ? "\u672A\u5272\u5F53" : clockText(r.time));
+      write4(startLabel, margin + 1, y2 - numbers, Math.min(8, numbers), axis - 2);
+      for (const [j, item] of fittedCells[i].entries()) {
+        if (!item) continue;
+        const x = linesX[j] + pad2;
+        minNumber = Math.min(minNumber, write4(item.id, x, y2 - numbers, numbers, inner));
+        item.lines.forEach((s2, k) => {
+          const baseline = y2 - numHeight - (k + 1) * item.size * 1.24;
+          minDetail = Math.min(minDetail, write4(s2, x, baseline, item.size, inner));
+        });
+      }
+      y2 -= numHeight + gap + rowDetail[i];
+      rule(y2);
+    }
+    for (const x of [margin, ...linesX]) page2.drawLine({ start: { x, y: top }, end: { x, y: y2 }, color: border, thickness: 0.28 });
+    let keyY = y2 - 2;
+    for (const r of keyRows) {
+      r.forEach((lines2, i) => lines2.forEach((s2, j) => write4(s2, margin + i * keyWidth, keyY - (j + 1) * 8, legendSize, keyWidth - 4)));
+      keyY -= Math.max(...r.map((lines2) => lines2.length)) * 8 + 2;
+    }
+    const warning = Math.min(minNumber, minDetail) < 6 ? "\u4E00\u90E8\u306E\u6587\u5B57\u304C6pt\u672A\u6E80\u3067\u3059\u3002\u7C21\u6613\u7248\u3001A4\u6A2A\u3001\u5206\u5272\u3001\u307E\u305F\u306F\u30B3\u30FC\u30C8\u5225\u3092\u304A\u8A66\u3057\u304F\u3060\u3055\u3044\u3002" : "";
+    if (warning) {
+      write4(warning, margin, 16, 7, span - 32);
+      opts.warn?.(warning);
+    }
+    write4(String(pdf.getPageCount()), w - 32, 16, 8, 16);
+    previews.push({
+      title: part.title,
+      count: part.fixtures.length,
+      dates,
+      events: events2,
+      range: part.fixtures.length ? String(matchNumber(part.fixtures[0], t2)) + " \u301C " + String(matchNumber(part.fixtures.at(-1), t2)) : "\u306A\u3057",
+      unassigned,
+      minNumber,
+      minDetail: Number.isFinite(minDetail) ? minDetail : 0,
+      warning
+    });
   }
-  const warning = smallest < 6 ? opts.landscape ? "\u4E00\u90E8\u306E\u8868\u793A\u304C6pt\u672A\u6E80\u3067\u3059\u3002\u8868\u793A\u9805\u76EE\u3092\u7D5E\u308B\u304B\u30B3\u30FC\u30C8\u5225\u4E88\u5B9A\u8868\u3092\u4F75\u7528\u3057\u3066\u304F\u3060\u3055\u3044\u3002" : "\u4E00\u90E8\u306E\u8868\u793A\u304C6pt\u672A\u6E80\u3067\u3059\u3002A4\u6A2A\u307E\u305F\u306F\u8868\u793A\u9805\u76EE\u306E\u7D5E\u308A\u8FBC\u307F\u3092\u304A\u8A66\u3057\u304F\u3060\u3055\u3044\u3002" : "";
-  if (warning) {
-    fitted(warning, left, 16, available, 7);
-    opts.warn?.(warning);
-  }
-  return warning;
+  opts.preview?.(previews);
+  return previews.map((p) => p.warning).find(Boolean);
 }
 
 // src/reports.ts
@@ -75692,7 +76199,7 @@ var base64Js = {
   toByteArray: toByteArray_1,
   fromByteArray: fromByteArray_1
 };
-var read = function read2(buffer2, offset, isLE, mLen, nBytes) {
+var read = function read2(buffer2, offset2, isLE, mLen, nBytes) {
   var e, m;
   var eLen = nBytes * 8 - mLen - 1;
   var eMax = (1 << eLen) - 1;
@@ -75700,17 +76207,17 @@ var read = function read2(buffer2, offset, isLE, mLen, nBytes) {
   var nBits = -7;
   var i = isLE ? nBytes - 1 : 0;
   var d = isLE ? -1 : 1;
-  var s2 = buffer2[offset + i];
+  var s2 = buffer2[offset2 + i];
   i += d;
   e = s2 & (1 << -nBits) - 1;
   s2 >>= -nBits;
   nBits += eLen;
-  for (; nBits > 0; e = e * 256 + buffer2[offset + i], i += d, nBits -= 8) {
+  for (; nBits > 0; e = e * 256 + buffer2[offset2 + i], i += d, nBits -= 8) {
   }
   m = e & (1 << -nBits) - 1;
   e >>= -nBits;
   nBits += mLen;
-  for (; nBits > 0; m = m * 256 + buffer2[offset + i], i += d, nBits -= 8) {
+  for (; nBits > 0; m = m * 256 + buffer2[offset2 + i], i += d, nBits -= 8) {
   }
   if (e === 0) {
     e = 1 - eBias;
@@ -75722,7 +76229,7 @@ var read = function read2(buffer2, offset, isLE, mLen, nBytes) {
   }
   return (s2 ? -1 : 1) * m * Math.pow(2, e - mLen);
 };
-var write = function write2(buffer2, value, offset, isLE, mLen, nBytes) {
+var write = function write2(buffer2, value, offset2, isLE, mLen, nBytes) {
   var e, m, c;
   var eLen = nBytes * 8 - mLen - 1;
   var eMax = (1 << eLen) - 1;
@@ -75761,13 +76268,13 @@ var write = function write2(buffer2, value, offset, isLE, mLen, nBytes) {
       e = 0;
     }
   }
-  for (; mLen >= 8; buffer2[offset + i] = m & 255, i += d, m /= 256, mLen -= 8) {
+  for (; mLen >= 8; buffer2[offset2 + i] = m & 255, i += d, m /= 256, mLen -= 8) {
   }
   e = e << mLen | m;
   eLen += mLen;
-  for (; eLen > 0; buffer2[offset + i] = e & 255, i += d, e /= 256, eLen -= 8) {
+  for (; eLen > 0; buffer2[offset2 + i] = e & 255, i += d, e /= 256, eLen -= 8) {
   }
-  buffer2[offset + i - d] |= s2 * 128;
+  buffer2[offset2 + i - d] |= s2 * 128;
 };
 var ieee754 = {
   read,
@@ -76343,9 +76850,9 @@ var buffer = createCommonjsModule(function(module, exports) {
   Buffer3.prototype.lastIndexOf = function lastIndexOf(val3, byteOffset, encoding) {
     return bidirectionalIndexOf(this, val3, byteOffset, encoding, false);
   };
-  function hexWrite(buf, string, offset, length) {
-    offset = Number(offset) || 0;
-    var remaining = buf.length - offset;
+  function hexWrite(buf, string, offset2, length) {
+    offset2 = Number(offset2) || 0;
+    var remaining = buf.length - offset2;
     if (!length) {
       length = remaining;
     } else {
@@ -76361,36 +76868,36 @@ var buffer = createCommonjsModule(function(module, exports) {
     for (var i = 0; i < length; ++i) {
       var parsed = parseInt(string.substr(i * 2, 2), 16);
       if (numberIsNaN3(parsed)) return i;
-      buf[offset + i] = parsed;
+      buf[offset2 + i] = parsed;
     }
     return i;
   }
-  function utf8Write(buf, string, offset, length) {
-    return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length);
+  function utf8Write(buf, string, offset2, length) {
+    return blitBuffer(utf8ToBytes(string, buf.length - offset2), buf, offset2, length);
   }
-  function asciiWrite(buf, string, offset, length) {
-    return blitBuffer(asciiToBytes(string), buf, offset, length);
+  function asciiWrite(buf, string, offset2, length) {
+    return blitBuffer(asciiToBytes(string), buf, offset2, length);
   }
-  function latin1Write(buf, string, offset, length) {
-    return asciiWrite(buf, string, offset, length);
+  function latin1Write(buf, string, offset2, length) {
+    return asciiWrite(buf, string, offset2, length);
   }
-  function base64Write(buf, string, offset, length) {
-    return blitBuffer(base64ToBytes(string), buf, offset, length);
+  function base64Write(buf, string, offset2, length) {
+    return blitBuffer(base64ToBytes(string), buf, offset2, length);
   }
-  function ucs2Write(buf, string, offset, length) {
-    return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length);
+  function ucs2Write(buf, string, offset2, length) {
+    return blitBuffer(utf16leToBytes(string, buf.length - offset2), buf, offset2, length);
   }
-  Buffer3.prototype.write = function write3(string, offset, length, encoding) {
-    if (offset === void 0) {
+  Buffer3.prototype.write = function write3(string, offset2, length, encoding) {
+    if (offset2 === void 0) {
       encoding = "utf8";
       length = this.length;
-      offset = 0;
-    } else if (length === void 0 && typeof offset === "string") {
-      encoding = offset;
+      offset2 = 0;
+    } else if (length === void 0 && typeof offset2 === "string") {
+      encoding = offset2;
       length = this.length;
-      offset = 0;
-    } else if (isFinite(offset)) {
-      offset = offset >>> 0;
+      offset2 = 0;
+    } else if (isFinite(offset2)) {
+      offset2 = offset2 >>> 0;
       if (isFinite(length)) {
         length = length >>> 0;
         if (encoding === void 0) encoding = "utf8";
@@ -76401,9 +76908,9 @@ var buffer = createCommonjsModule(function(module, exports) {
     } else {
       throw new Error("Buffer.write(string, encoding, offset[, length]) is no longer supported");
     }
-    var remaining = this.length - offset;
+    var remaining = this.length - offset2;
     if (length === void 0 || length > remaining) length = remaining;
-    if (string.length > 0 && (length < 0 || offset < 0) || offset > this.length) {
+    if (string.length > 0 && (length < 0 || offset2 < 0) || offset2 > this.length) {
       throw new RangeError("Attempt to write outside buffer bounds");
     }
     if (!encoding) encoding = "utf8";
@@ -76411,22 +76918,22 @@ var buffer = createCommonjsModule(function(module, exports) {
     for (; ; ) {
       switch (encoding) {
         case "hex":
-          return hexWrite(this, string, offset, length);
+          return hexWrite(this, string, offset2, length);
         case "utf8":
         case "utf-8":
-          return utf8Write(this, string, offset, length);
+          return utf8Write(this, string, offset2, length);
         case "ascii":
-          return asciiWrite(this, string, offset, length);
+          return asciiWrite(this, string, offset2, length);
         case "latin1":
         case "binary":
-          return latin1Write(this, string, offset, length);
+          return latin1Write(this, string, offset2, length);
         case "base64":
-          return base64Write(this, string, offset, length);
+          return base64Write(this, string, offset2, length);
         case "ucs2":
         case "ucs-2":
         case "utf16le":
         case "utf-16le":
-          return ucs2Write(this, string, offset, length);
+          return ucs2Write(this, string, offset2, length);
         default:
           if (loweredCase) throw new TypeError("Unknown encoding: " + encoding);
           encoding = ("" + encoding).toLowerCase();
@@ -76575,332 +77082,332 @@ var buffer = createCommonjsModule(function(module, exports) {
     Object.setPrototypeOf(newBuf, Buffer3.prototype);
     return newBuf;
   };
-  function checkOffset(offset, ext, length) {
-    if (offset % 1 !== 0 || offset < 0) throw new RangeError("offset is not uint");
-    if (offset + ext > length) throw new RangeError("Trying to access beyond buffer length");
+  function checkOffset(offset2, ext, length) {
+    if (offset2 % 1 !== 0 || offset2 < 0) throw new RangeError("offset is not uint");
+    if (offset2 + ext > length) throw new RangeError("Trying to access beyond buffer length");
   }
-  Buffer3.prototype.readUIntLE = function readUIntLE(offset, byteLength3, noAssert) {
-    offset = offset >>> 0;
+  Buffer3.prototype.readUIntLE = function readUIntLE(offset2, byteLength3, noAssert) {
+    offset2 = offset2 >>> 0;
     byteLength3 = byteLength3 >>> 0;
-    if (!noAssert) checkOffset(offset, byteLength3, this.length);
-    var val3 = this[offset];
+    if (!noAssert) checkOffset(offset2, byteLength3, this.length);
+    var val3 = this[offset2];
     var mul = 1;
     var i = 0;
     while (++i < byteLength3 && (mul *= 256)) {
-      val3 += this[offset + i] * mul;
+      val3 += this[offset2 + i] * mul;
     }
     return val3;
   };
-  Buffer3.prototype.readUIntBE = function readUIntBE(offset, byteLength3, noAssert) {
-    offset = offset >>> 0;
+  Buffer3.prototype.readUIntBE = function readUIntBE(offset2, byteLength3, noAssert) {
+    offset2 = offset2 >>> 0;
     byteLength3 = byteLength3 >>> 0;
     if (!noAssert) {
-      checkOffset(offset, byteLength3, this.length);
+      checkOffset(offset2, byteLength3, this.length);
     }
-    var val3 = this[offset + --byteLength3];
+    var val3 = this[offset2 + --byteLength3];
     var mul = 1;
     while (byteLength3 > 0 && (mul *= 256)) {
-      val3 += this[offset + --byteLength3] * mul;
+      val3 += this[offset2 + --byteLength3] * mul;
     }
     return val3;
   };
-  Buffer3.prototype.readUInt8 = function readUInt8(offset, noAssert) {
-    offset = offset >>> 0;
-    if (!noAssert) checkOffset(offset, 1, this.length);
-    return this[offset];
+  Buffer3.prototype.readUInt8 = function readUInt8(offset2, noAssert) {
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkOffset(offset2, 1, this.length);
+    return this[offset2];
   };
-  Buffer3.prototype.readUInt16LE = function readUInt16LE(offset, noAssert) {
-    offset = offset >>> 0;
-    if (!noAssert) checkOffset(offset, 2, this.length);
-    return this[offset] | this[offset + 1] << 8;
+  Buffer3.prototype.readUInt16LE = function readUInt16LE(offset2, noAssert) {
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkOffset(offset2, 2, this.length);
+    return this[offset2] | this[offset2 + 1] << 8;
   };
-  Buffer3.prototype.readUInt16BE = function readUInt16BE(offset, noAssert) {
-    offset = offset >>> 0;
-    if (!noAssert) checkOffset(offset, 2, this.length);
-    return this[offset] << 8 | this[offset + 1];
+  Buffer3.prototype.readUInt16BE = function readUInt16BE(offset2, noAssert) {
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkOffset(offset2, 2, this.length);
+    return this[offset2] << 8 | this[offset2 + 1];
   };
-  Buffer3.prototype.readUInt32LE = function readUInt32LE(offset, noAssert) {
-    offset = offset >>> 0;
-    if (!noAssert) checkOffset(offset, 4, this.length);
-    return (this[offset] | this[offset + 1] << 8 | this[offset + 2] << 16) + this[offset + 3] * 16777216;
+  Buffer3.prototype.readUInt32LE = function readUInt32LE(offset2, noAssert) {
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkOffset(offset2, 4, this.length);
+    return (this[offset2] | this[offset2 + 1] << 8 | this[offset2 + 2] << 16) + this[offset2 + 3] * 16777216;
   };
-  Buffer3.prototype.readUInt32BE = function readUInt32BE(offset, noAssert) {
-    offset = offset >>> 0;
-    if (!noAssert) checkOffset(offset, 4, this.length);
-    return this[offset] * 16777216 + (this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3]);
+  Buffer3.prototype.readUInt32BE = function readUInt32BE(offset2, noAssert) {
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkOffset(offset2, 4, this.length);
+    return this[offset2] * 16777216 + (this[offset2 + 1] << 16 | this[offset2 + 2] << 8 | this[offset2 + 3]);
   };
-  Buffer3.prototype.readIntLE = function readIntLE(offset, byteLength3, noAssert) {
-    offset = offset >>> 0;
+  Buffer3.prototype.readIntLE = function readIntLE(offset2, byteLength3, noAssert) {
+    offset2 = offset2 >>> 0;
     byteLength3 = byteLength3 >>> 0;
-    if (!noAssert) checkOffset(offset, byteLength3, this.length);
-    var val3 = this[offset];
+    if (!noAssert) checkOffset(offset2, byteLength3, this.length);
+    var val3 = this[offset2];
     var mul = 1;
     var i = 0;
     while (++i < byteLength3 && (mul *= 256)) {
-      val3 += this[offset + i] * mul;
+      val3 += this[offset2 + i] * mul;
     }
     mul *= 128;
     if (val3 >= mul) val3 -= Math.pow(2, 8 * byteLength3);
     return val3;
   };
-  Buffer3.prototype.readIntBE = function readIntBE(offset, byteLength3, noAssert) {
-    offset = offset >>> 0;
+  Buffer3.prototype.readIntBE = function readIntBE(offset2, byteLength3, noAssert) {
+    offset2 = offset2 >>> 0;
     byteLength3 = byteLength3 >>> 0;
-    if (!noAssert) checkOffset(offset, byteLength3, this.length);
+    if (!noAssert) checkOffset(offset2, byteLength3, this.length);
     var i = byteLength3;
     var mul = 1;
-    var val3 = this[offset + --i];
+    var val3 = this[offset2 + --i];
     while (i > 0 && (mul *= 256)) {
-      val3 += this[offset + --i] * mul;
+      val3 += this[offset2 + --i] * mul;
     }
     mul *= 128;
     if (val3 >= mul) val3 -= Math.pow(2, 8 * byteLength3);
     return val3;
   };
-  Buffer3.prototype.readInt8 = function readInt8(offset, noAssert) {
-    offset = offset >>> 0;
-    if (!noAssert) checkOffset(offset, 1, this.length);
-    if (!(this[offset] & 128)) return this[offset];
-    return (255 - this[offset] + 1) * -1;
+  Buffer3.prototype.readInt8 = function readInt8(offset2, noAssert) {
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkOffset(offset2, 1, this.length);
+    if (!(this[offset2] & 128)) return this[offset2];
+    return (255 - this[offset2] + 1) * -1;
   };
-  Buffer3.prototype.readInt16LE = function readInt16LE(offset, noAssert) {
-    offset = offset >>> 0;
-    if (!noAssert) checkOffset(offset, 2, this.length);
-    var val3 = this[offset] | this[offset + 1] << 8;
+  Buffer3.prototype.readInt16LE = function readInt16LE(offset2, noAssert) {
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkOffset(offset2, 2, this.length);
+    var val3 = this[offset2] | this[offset2 + 1] << 8;
     return val3 & 32768 ? val3 | 4294901760 : val3;
   };
-  Buffer3.prototype.readInt16BE = function readInt16BE(offset, noAssert) {
-    offset = offset >>> 0;
-    if (!noAssert) checkOffset(offset, 2, this.length);
-    var val3 = this[offset + 1] | this[offset] << 8;
+  Buffer3.prototype.readInt16BE = function readInt16BE(offset2, noAssert) {
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkOffset(offset2, 2, this.length);
+    var val3 = this[offset2 + 1] | this[offset2] << 8;
     return val3 & 32768 ? val3 | 4294901760 : val3;
   };
-  Buffer3.prototype.readInt32LE = function readInt32LE(offset, noAssert) {
-    offset = offset >>> 0;
-    if (!noAssert) checkOffset(offset, 4, this.length);
-    return this[offset] | this[offset + 1] << 8 | this[offset + 2] << 16 | this[offset + 3] << 24;
+  Buffer3.prototype.readInt32LE = function readInt32LE(offset2, noAssert) {
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkOffset(offset2, 4, this.length);
+    return this[offset2] | this[offset2 + 1] << 8 | this[offset2 + 2] << 16 | this[offset2 + 3] << 24;
   };
-  Buffer3.prototype.readInt32BE = function readInt32BE(offset, noAssert) {
-    offset = offset >>> 0;
-    if (!noAssert) checkOffset(offset, 4, this.length);
-    return this[offset] << 24 | this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3];
+  Buffer3.prototype.readInt32BE = function readInt32BE(offset2, noAssert) {
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkOffset(offset2, 4, this.length);
+    return this[offset2] << 24 | this[offset2 + 1] << 16 | this[offset2 + 2] << 8 | this[offset2 + 3];
   };
-  Buffer3.prototype.readFloatLE = function readFloatLE(offset, noAssert) {
-    offset = offset >>> 0;
-    if (!noAssert) checkOffset(offset, 4, this.length);
-    return ieee754.read(this, offset, true, 23, 4);
+  Buffer3.prototype.readFloatLE = function readFloatLE(offset2, noAssert) {
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkOffset(offset2, 4, this.length);
+    return ieee754.read(this, offset2, true, 23, 4);
   };
-  Buffer3.prototype.readFloatBE = function readFloatBE(offset, noAssert) {
-    offset = offset >>> 0;
-    if (!noAssert) checkOffset(offset, 4, this.length);
-    return ieee754.read(this, offset, false, 23, 4);
+  Buffer3.prototype.readFloatBE = function readFloatBE(offset2, noAssert) {
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkOffset(offset2, 4, this.length);
+    return ieee754.read(this, offset2, false, 23, 4);
   };
-  Buffer3.prototype.readDoubleLE = function readDoubleLE(offset, noAssert) {
-    offset = offset >>> 0;
-    if (!noAssert) checkOffset(offset, 8, this.length);
-    return ieee754.read(this, offset, true, 52, 8);
+  Buffer3.prototype.readDoubleLE = function readDoubleLE(offset2, noAssert) {
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkOffset(offset2, 8, this.length);
+    return ieee754.read(this, offset2, true, 52, 8);
   };
-  Buffer3.prototype.readDoubleBE = function readDoubleBE(offset, noAssert) {
-    offset = offset >>> 0;
-    if (!noAssert) checkOffset(offset, 8, this.length);
-    return ieee754.read(this, offset, false, 52, 8);
+  Buffer3.prototype.readDoubleBE = function readDoubleBE(offset2, noAssert) {
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkOffset(offset2, 8, this.length);
+    return ieee754.read(this, offset2, false, 52, 8);
   };
-  function checkInt(buf, value, offset, ext, max3, min) {
+  function checkInt(buf, value, offset2, ext, max3, min) {
     if (!Buffer3.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance');
     if (value > max3 || value < min) throw new RangeError('"value" argument is out of bounds');
-    if (offset + ext > buf.length) throw new RangeError("Index out of range");
+    if (offset2 + ext > buf.length) throw new RangeError("Index out of range");
   }
-  Buffer3.prototype.writeUIntLE = function writeUIntLE(value, offset, byteLength3, noAssert) {
+  Buffer3.prototype.writeUIntLE = function writeUIntLE(value, offset2, byteLength3, noAssert) {
     value = +value;
-    offset = offset >>> 0;
+    offset2 = offset2 >>> 0;
     byteLength3 = byteLength3 >>> 0;
     if (!noAssert) {
       var maxBytes = Math.pow(2, 8 * byteLength3) - 1;
-      checkInt(this, value, offset, byteLength3, maxBytes, 0);
+      checkInt(this, value, offset2, byteLength3, maxBytes, 0);
     }
     var mul = 1;
     var i = 0;
-    this[offset] = value & 255;
+    this[offset2] = value & 255;
     while (++i < byteLength3 && (mul *= 256)) {
-      this[offset + i] = value / mul & 255;
+      this[offset2 + i] = value / mul & 255;
     }
-    return offset + byteLength3;
+    return offset2 + byteLength3;
   };
-  Buffer3.prototype.writeUIntBE = function writeUIntBE(value, offset, byteLength3, noAssert) {
+  Buffer3.prototype.writeUIntBE = function writeUIntBE(value, offset2, byteLength3, noAssert) {
     value = +value;
-    offset = offset >>> 0;
+    offset2 = offset2 >>> 0;
     byteLength3 = byteLength3 >>> 0;
     if (!noAssert) {
       var maxBytes = Math.pow(2, 8 * byteLength3) - 1;
-      checkInt(this, value, offset, byteLength3, maxBytes, 0);
+      checkInt(this, value, offset2, byteLength3, maxBytes, 0);
     }
     var i = byteLength3 - 1;
     var mul = 1;
-    this[offset + i] = value & 255;
+    this[offset2 + i] = value & 255;
     while (--i >= 0 && (mul *= 256)) {
-      this[offset + i] = value / mul & 255;
+      this[offset2 + i] = value / mul & 255;
     }
-    return offset + byteLength3;
+    return offset2 + byteLength3;
   };
-  Buffer3.prototype.writeUInt8 = function writeUInt8(value, offset, noAssert) {
+  Buffer3.prototype.writeUInt8 = function writeUInt8(value, offset2, noAssert) {
     value = +value;
-    offset = offset >>> 0;
-    if (!noAssert) checkInt(this, value, offset, 1, 255, 0);
-    this[offset] = value & 255;
-    return offset + 1;
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkInt(this, value, offset2, 1, 255, 0);
+    this[offset2] = value & 255;
+    return offset2 + 1;
   };
-  Buffer3.prototype.writeUInt16LE = function writeUInt16LE(value, offset, noAssert) {
+  Buffer3.prototype.writeUInt16LE = function writeUInt16LE(value, offset2, noAssert) {
     value = +value;
-    offset = offset >>> 0;
-    if (!noAssert) checkInt(this, value, offset, 2, 65535, 0);
-    this[offset] = value & 255;
-    this[offset + 1] = value >>> 8;
-    return offset + 2;
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkInt(this, value, offset2, 2, 65535, 0);
+    this[offset2] = value & 255;
+    this[offset2 + 1] = value >>> 8;
+    return offset2 + 2;
   };
-  Buffer3.prototype.writeUInt16BE = function writeUInt16BE(value, offset, noAssert) {
+  Buffer3.prototype.writeUInt16BE = function writeUInt16BE(value, offset2, noAssert) {
     value = +value;
-    offset = offset >>> 0;
-    if (!noAssert) checkInt(this, value, offset, 2, 65535, 0);
-    this[offset] = value >>> 8;
-    this[offset + 1] = value & 255;
-    return offset + 2;
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkInt(this, value, offset2, 2, 65535, 0);
+    this[offset2] = value >>> 8;
+    this[offset2 + 1] = value & 255;
+    return offset2 + 2;
   };
-  Buffer3.prototype.writeUInt32LE = function writeUInt32LE(value, offset, noAssert) {
+  Buffer3.prototype.writeUInt32LE = function writeUInt32LE(value, offset2, noAssert) {
     value = +value;
-    offset = offset >>> 0;
-    if (!noAssert) checkInt(this, value, offset, 4, 4294967295, 0);
-    this[offset + 3] = value >>> 24;
-    this[offset + 2] = value >>> 16;
-    this[offset + 1] = value >>> 8;
-    this[offset] = value & 255;
-    return offset + 4;
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkInt(this, value, offset2, 4, 4294967295, 0);
+    this[offset2 + 3] = value >>> 24;
+    this[offset2 + 2] = value >>> 16;
+    this[offset2 + 1] = value >>> 8;
+    this[offset2] = value & 255;
+    return offset2 + 4;
   };
-  Buffer3.prototype.writeUInt32BE = function writeUInt32BE(value, offset, noAssert) {
+  Buffer3.prototype.writeUInt32BE = function writeUInt32BE(value, offset2, noAssert) {
     value = +value;
-    offset = offset >>> 0;
-    if (!noAssert) checkInt(this, value, offset, 4, 4294967295, 0);
-    this[offset] = value >>> 24;
-    this[offset + 1] = value >>> 16;
-    this[offset + 2] = value >>> 8;
-    this[offset + 3] = value & 255;
-    return offset + 4;
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkInt(this, value, offset2, 4, 4294967295, 0);
+    this[offset2] = value >>> 24;
+    this[offset2 + 1] = value >>> 16;
+    this[offset2 + 2] = value >>> 8;
+    this[offset2 + 3] = value & 255;
+    return offset2 + 4;
   };
-  Buffer3.prototype.writeIntLE = function writeIntLE(value, offset, byteLength3, noAssert) {
+  Buffer3.prototype.writeIntLE = function writeIntLE(value, offset2, byteLength3, noAssert) {
     value = +value;
-    offset = offset >>> 0;
+    offset2 = offset2 >>> 0;
     if (!noAssert) {
       var limit = Math.pow(2, 8 * byteLength3 - 1);
-      checkInt(this, value, offset, byteLength3, limit - 1, -limit);
+      checkInt(this, value, offset2, byteLength3, limit - 1, -limit);
     }
     var i = 0;
     var mul = 1;
     var sub = 0;
-    this[offset] = value & 255;
+    this[offset2] = value & 255;
     while (++i < byteLength3 && (mul *= 256)) {
-      if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+      if (value < 0 && sub === 0 && this[offset2 + i - 1] !== 0) {
         sub = 1;
       }
-      this[offset + i] = (value / mul >> 0) - sub & 255;
+      this[offset2 + i] = (value / mul >> 0) - sub & 255;
     }
-    return offset + byteLength3;
+    return offset2 + byteLength3;
   };
-  Buffer3.prototype.writeIntBE = function writeIntBE(value, offset, byteLength3, noAssert) {
+  Buffer3.prototype.writeIntBE = function writeIntBE(value, offset2, byteLength3, noAssert) {
     value = +value;
-    offset = offset >>> 0;
+    offset2 = offset2 >>> 0;
     if (!noAssert) {
       var limit = Math.pow(2, 8 * byteLength3 - 1);
-      checkInt(this, value, offset, byteLength3, limit - 1, -limit);
+      checkInt(this, value, offset2, byteLength3, limit - 1, -limit);
     }
     var i = byteLength3 - 1;
     var mul = 1;
     var sub = 0;
-    this[offset + i] = value & 255;
+    this[offset2 + i] = value & 255;
     while (--i >= 0 && (mul *= 256)) {
-      if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+      if (value < 0 && sub === 0 && this[offset2 + i + 1] !== 0) {
         sub = 1;
       }
-      this[offset + i] = (value / mul >> 0) - sub & 255;
+      this[offset2 + i] = (value / mul >> 0) - sub & 255;
     }
-    return offset + byteLength3;
+    return offset2 + byteLength3;
   };
-  Buffer3.prototype.writeInt8 = function writeInt8(value, offset, noAssert) {
+  Buffer3.prototype.writeInt8 = function writeInt8(value, offset2, noAssert) {
     value = +value;
-    offset = offset >>> 0;
-    if (!noAssert) checkInt(this, value, offset, 1, 127, -128);
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkInt(this, value, offset2, 1, 127, -128);
     if (value < 0) value = 255 + value + 1;
-    this[offset] = value & 255;
-    return offset + 1;
+    this[offset2] = value & 255;
+    return offset2 + 1;
   };
-  Buffer3.prototype.writeInt16LE = function writeInt16LE(value, offset, noAssert) {
+  Buffer3.prototype.writeInt16LE = function writeInt16LE(value, offset2, noAssert) {
     value = +value;
-    offset = offset >>> 0;
-    if (!noAssert) checkInt(this, value, offset, 2, 32767, -32768);
-    this[offset] = value & 255;
-    this[offset + 1] = value >>> 8;
-    return offset + 2;
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkInt(this, value, offset2, 2, 32767, -32768);
+    this[offset2] = value & 255;
+    this[offset2 + 1] = value >>> 8;
+    return offset2 + 2;
   };
-  Buffer3.prototype.writeInt16BE = function writeInt16BE(value, offset, noAssert) {
+  Buffer3.prototype.writeInt16BE = function writeInt16BE(value, offset2, noAssert) {
     value = +value;
-    offset = offset >>> 0;
-    if (!noAssert) checkInt(this, value, offset, 2, 32767, -32768);
-    this[offset] = value >>> 8;
-    this[offset + 1] = value & 255;
-    return offset + 2;
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkInt(this, value, offset2, 2, 32767, -32768);
+    this[offset2] = value >>> 8;
+    this[offset2 + 1] = value & 255;
+    return offset2 + 2;
   };
-  Buffer3.prototype.writeInt32LE = function writeInt32LE(value, offset, noAssert) {
+  Buffer3.prototype.writeInt32LE = function writeInt32LE(value, offset2, noAssert) {
     value = +value;
-    offset = offset >>> 0;
-    if (!noAssert) checkInt(this, value, offset, 4, 2147483647, -2147483648);
-    this[offset] = value & 255;
-    this[offset + 1] = value >>> 8;
-    this[offset + 2] = value >>> 16;
-    this[offset + 3] = value >>> 24;
-    return offset + 4;
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkInt(this, value, offset2, 4, 2147483647, -2147483648);
+    this[offset2] = value & 255;
+    this[offset2 + 1] = value >>> 8;
+    this[offset2 + 2] = value >>> 16;
+    this[offset2 + 3] = value >>> 24;
+    return offset2 + 4;
   };
-  Buffer3.prototype.writeInt32BE = function writeInt32BE(value, offset, noAssert) {
+  Buffer3.prototype.writeInt32BE = function writeInt32BE(value, offset2, noAssert) {
     value = +value;
-    offset = offset >>> 0;
-    if (!noAssert) checkInt(this, value, offset, 4, 2147483647, -2147483648);
+    offset2 = offset2 >>> 0;
+    if (!noAssert) checkInt(this, value, offset2, 4, 2147483647, -2147483648);
     if (value < 0) value = 4294967295 + value + 1;
-    this[offset] = value >>> 24;
-    this[offset + 1] = value >>> 16;
-    this[offset + 2] = value >>> 8;
-    this[offset + 3] = value & 255;
-    return offset + 4;
+    this[offset2] = value >>> 24;
+    this[offset2 + 1] = value >>> 16;
+    this[offset2 + 2] = value >>> 8;
+    this[offset2 + 3] = value & 255;
+    return offset2 + 4;
   };
-  function checkIEEE754(buf, value, offset, ext, max3, min) {
-    if (offset + ext > buf.length) throw new RangeError("Index out of range");
-    if (offset < 0) throw new RangeError("Index out of range");
+  function checkIEEE754(buf, value, offset2, ext, max3, min) {
+    if (offset2 + ext > buf.length) throw new RangeError("Index out of range");
+    if (offset2 < 0) throw new RangeError("Index out of range");
   }
-  function writeFloat(buf, value, offset, littleEndian, noAssert) {
+  function writeFloat(buf, value, offset2, littleEndian, noAssert) {
     value = +value;
-    offset = offset >>> 0;
+    offset2 = offset2 >>> 0;
     if (!noAssert) {
-      checkIEEE754(buf, value, offset, 4);
+      checkIEEE754(buf, value, offset2, 4);
     }
-    ieee754.write(buf, value, offset, littleEndian, 23, 4);
-    return offset + 4;
+    ieee754.write(buf, value, offset2, littleEndian, 23, 4);
+    return offset2 + 4;
   }
-  Buffer3.prototype.writeFloatLE = function writeFloatLE(value, offset, noAssert) {
-    return writeFloat(this, value, offset, true, noAssert);
+  Buffer3.prototype.writeFloatLE = function writeFloatLE(value, offset2, noAssert) {
+    return writeFloat(this, value, offset2, true, noAssert);
   };
-  Buffer3.prototype.writeFloatBE = function writeFloatBE(value, offset, noAssert) {
-    return writeFloat(this, value, offset, false, noAssert);
+  Buffer3.prototype.writeFloatBE = function writeFloatBE(value, offset2, noAssert) {
+    return writeFloat(this, value, offset2, false, noAssert);
   };
-  function writeDouble(buf, value, offset, littleEndian, noAssert) {
+  function writeDouble(buf, value, offset2, littleEndian, noAssert) {
     value = +value;
-    offset = offset >>> 0;
+    offset2 = offset2 >>> 0;
     if (!noAssert) {
-      checkIEEE754(buf, value, offset, 8);
+      checkIEEE754(buf, value, offset2, 8);
     }
-    ieee754.write(buf, value, offset, littleEndian, 52, 8);
-    return offset + 8;
+    ieee754.write(buf, value, offset2, littleEndian, 52, 8);
+    return offset2 + 8;
   }
-  Buffer3.prototype.writeDoubleLE = function writeDoubleLE(value, offset, noAssert) {
-    return writeDouble(this, value, offset, true, noAssert);
+  Buffer3.prototype.writeDoubleLE = function writeDoubleLE(value, offset2, noAssert) {
+    return writeDouble(this, value, offset2, true, noAssert);
   };
-  Buffer3.prototype.writeDoubleBE = function writeDoubleBE(value, offset, noAssert) {
-    return writeDouble(this, value, offset, false, noAssert);
+  Buffer3.prototype.writeDoubleBE = function writeDoubleBE(value, offset2, noAssert) {
+    return writeDouble(this, value, offset2, false, noAssert);
   };
   Buffer3.prototype.copy = function copy(target, targetStart, start, end) {
     if (!Buffer3.isBuffer(target)) throw new TypeError("argument should be a Buffer");
@@ -77066,10 +77573,10 @@ var buffer = createCommonjsModule(function(module, exports) {
   function base64ToBytes(str) {
     return base64Js.toByteArray(base64clean(str));
   }
-  function blitBuffer(src2, dst, offset, length) {
+  function blitBuffer(src2, dst, offset2, length) {
     for (var i = 0; i < length; ++i) {
-      if (i + offset >= dst.length || i >= src2.length) break;
-      dst[i + offset] = src2[i];
+      if (i + offset2 >= dst.length || i >= src2.length) break;
+      dst[i + offset2] = src2[i];
     }
     return i;
   }
@@ -89544,20 +90051,20 @@ var extendNode = function extendNode2(iconv) {
       return iconv.decode(this.slice(start, end), encoding);
     };
     original.SlowBufferWrite = SlowBuffer.prototype.write;
-    SlowBuffer.prototype.write = function(string, offset, length, encoding) {
-      if (isFinite(offset)) {
+    SlowBuffer.prototype.write = function(string, offset2, length, encoding) {
+      if (isFinite(offset2)) {
         if (!isFinite(length)) {
           encoding = length;
           length = void 0;
         }
       } else {
         var swap2 = encoding;
-        encoding = offset;
-        offset = length;
+        encoding = offset2;
+        offset2 = length;
         length = swap2;
       }
-      offset = +offset || 0;
-      var remaining = this.length - offset;
+      offset2 = +offset2 || 0;
+      var remaining = this.length - offset2;
       if (!length) {
         length = remaining;
       } else {
@@ -89567,11 +90074,11 @@ var extendNode = function extendNode2(iconv) {
         }
       }
       encoding = String(encoding || "utf8").toLowerCase();
-      if (Buffer$7.isNativeEncoding(encoding)) return original.SlowBufferWrite.call(this, string, offset, length, encoding);
-      if (string.length > 0 && (length < 0 || offset < 0)) throw new RangeError("attempt to write beyond buffer bounds");
+      if (Buffer$7.isNativeEncoding(encoding)) return original.SlowBufferWrite.call(this, string, offset2, length, encoding);
+      if (string.length > 0 && (length < 0 || offset2 < 0)) throw new RangeError("attempt to write beyond buffer bounds");
       var buf = iconv.encode(string, encoding);
       if (buf.length < length) length = buf.length;
-      buf.copy(this, offset, 0, length);
+      buf.copy(this, offset2, 0, length);
       return length;
     };
     original.BufferIsEncoding = Buffer$7.isEncoding;
@@ -89593,23 +90100,23 @@ var extendNode = function extendNode2(iconv) {
       return iconv.decode(this.slice(start, end), encoding);
     };
     original.BufferWrite = Buffer$7.prototype.write;
-    Buffer$7.prototype.write = function(string, offset, length, encoding) {
-      var _offset = offset, _length = length, _encoding = encoding;
-      if (isFinite(offset)) {
+    Buffer$7.prototype.write = function(string, offset2, length, encoding) {
+      var _offset = offset2, _length = length, _encoding = encoding;
+      if (isFinite(offset2)) {
         if (!isFinite(length)) {
           encoding = length;
           length = void 0;
         }
       } else {
         var swap2 = encoding;
-        encoding = offset;
-        offset = length;
+        encoding = offset2;
+        offset2 = length;
         length = swap2;
       }
       encoding = String(encoding || "utf8").toLowerCase();
       if (Buffer$7.isNativeEncoding(encoding)) return original.BufferWrite.call(this, string, _offset, _length, _encoding);
-      offset = +offset || 0;
-      var remaining = this.length - offset;
+      offset2 = +offset2 || 0;
+      var remaining = this.length - offset2;
       if (!length) {
         length = remaining;
       } else {
@@ -89618,10 +90125,10 @@ var extendNode = function extendNode2(iconv) {
           length = remaining;
         }
       }
-      if (string.length > 0 && (length < 0 || offset < 0)) throw new RangeError("attempt to write beyond buffer bounds");
+      if (string.length > 0 && (length < 0 || offset2 < 0)) throw new RangeError("attempt to write beyond buffer bounds");
       var buf = iconv.encode(string, encoding);
       if (buf.length < length) length = buf.length;
-      buf.copy(this, offset, 0, length);
+      buf.copy(this, offset2, 0, length);
       return length;
     };
     if (iconv.supportsStreams) {
@@ -90875,9 +91382,9 @@ var Pointer = createCommonjsModule(function(module, exports) {
         }, ctx);
       };
       Pointer3.prototype.decode = function(stream2, ctx) {
-        var c, decodeValue, offset, ptr2, relative, val3;
-        offset = this.offsetType.decode(stream2, ctx);
-        if (offset === this.options.nullValue && this.options.allowNull) {
+        var c, decodeValue, offset2, ptr2, relative, val3;
+        offset2 = this.offsetType.decode(stream2, ctx);
+        if (offset2 === this.options.nullValue && this.options.allowNull) {
           return null;
         }
         relative = (function() {
@@ -90899,7 +91406,7 @@ var Pointer = createCommonjsModule(function(module, exports) {
         if (this.options.relativeTo) {
           relative += this.relativeToGetter(ctx);
         }
-        ptr2 = offset + relative;
+        ptr2 = offset2 + relative;
         if (this.type != null) {
           val3 = null;
           decodeValue = /* @__PURE__ */ (function(_this) {
@@ -92148,25 +92655,25 @@ var CFFIndex = /* @__PURE__ */ (function() {
       return size2;
     }
     var type = this.type || new restructure.Buffer();
-    var offset = 1;
+    var offset2 = 1;
     for (var i = 0; i < arr.length; i++) {
       var item = arr[i];
-      offset += type.size(item, parent);
+      offset2 += type.size(item, parent);
     }
     var offsetType;
-    if (offset <= 255) {
+    if (offset2 <= 255) {
       offsetType = restructure.uint8;
-    } else if (offset <= 65535) {
+    } else if (offset2 <= 65535) {
       offsetType = restructure.uint16;
-    } else if (offset <= 16777215) {
+    } else if (offset2 <= 16777215) {
       offsetType = restructure.uint24;
-    } else if (offset <= 4294967295) {
+    } else if (offset2 <= 4294967295) {
       offsetType = restructure.uint32;
     } else {
       throw new Error("Bad offset in CFFIndex");
     }
     size2 += 1 + offsetType.size() * (arr.length + 1);
-    size2 += offset - 1;
+    size2 += offset2 - 1;
     return size2;
   };
   _proto.encode = function encode(stream2, arr, parent) {
@@ -92176,32 +92683,32 @@ var CFFIndex = /* @__PURE__ */ (function() {
     }
     var type = this.type || new restructure.Buffer();
     var sizes = [];
-    var offset = 1;
+    var offset2 = 1;
     for (var _iterator = _createForOfIteratorHelperLoose$1(arr), _step; !(_step = _iterator()).done; ) {
       var item = _step.value;
       var s2 = type.size(item, parent);
       sizes.push(s2);
-      offset += s2;
+      offset2 += s2;
     }
     var offsetType;
-    if (offset <= 255) {
+    if (offset2 <= 255) {
       offsetType = restructure.uint8;
-    } else if (offset <= 65535) {
+    } else if (offset2 <= 65535) {
       offsetType = restructure.uint16;
-    } else if (offset <= 16777215) {
+    } else if (offset2 <= 16777215) {
       offsetType = restructure.uint24;
-    } else if (offset <= 4294967295) {
+    } else if (offset2 <= 4294967295) {
       offsetType = restructure.uint32;
     } else {
       throw new Error("Bad offset in CFFIndex");
     }
     stream2.writeUInt8(offsetType.size());
-    offset = 1;
-    offsetType.encode(stream2, offset);
+    offset2 = 1;
+    offsetType.encode(stream2, offset2);
     for (var _i = 0, _sizes = sizes; _i < _sizes.length; _i++) {
       var size = _sizes[_i];
-      offset += size;
-      offsetType.encode(stream2, offset);
+      offset2 += size;
+      offsetType.encode(stream2, offset2);
     }
     for (var _iterator2 = _createForOfIteratorHelperLoose$1(arr), _step2; !(_step2 = _iterator2()).done; ) {
       var _item = _step2.value;
@@ -98104,9 +98611,9 @@ var AATMorxProcessor = (_class$2 = /* @__PURE__ */ (function() {
         var action = actions.getItem(actionIndex++);
         last2 = !!(action & LAST_MASK);
         var store = !!(action & STORE_MASK);
-        var offset = (action & OFFSET_MASK) << 2 >> 2;
-        offset += this.glyphs[componentGlyph].id;
-        var component = components.getItem(offset);
+        var offset2 = (action & OFFSET_MASK) << 2 >> 2;
+        offset2 += this.glyphs[componentGlyph].id;
+        var component = components.getItem(offset2);
         ligatureIndex += component;
         if (last2 || store) {
           var ligatureEntry = ligatureList.getItem(ligatureIndex);
@@ -101973,16 +102480,16 @@ var TTFGlyph = /* @__PURE__ */ (function(_Glyph) {
     }
     return;
   };
-  _proto2._decodeComposite = function _decodeComposite(glyph2, stream2, offset) {
-    if (offset === void 0) {
-      offset = 0;
+  _proto2._decodeComposite = function _decodeComposite(glyph2, stream2, offset2) {
+    if (offset2 === void 0) {
+      offset2 = 0;
     }
     glyph2.components = [];
     var haveInstructions = false;
     var flags2 = MORE_COMPONENTS;
     while (flags2 & MORE_COMPONENTS) {
       flags2 = stream2.readUInt16BE();
-      var gPos = stream2.pos - offset;
+      var gPos = stream2.pos - offset2;
       var glyphID = stream2.readUInt16BE();
       if (!haveInstructions) {
         haveInstructions = (flags2 & WE_HAVE_INSTRUCTIONS) !== 0;
@@ -102869,17 +103376,17 @@ var GlyphVariationProcessor = /* @__PURE__ */ (function() {
     if (gid >= gvar2.glyphCount) {
       return;
     }
-    var offset = gvar2.offsets[gid];
-    if (offset === gvar2.offsets[gid + 1]) {
+    var offset2 = gvar2.offsets[gid];
+    if (offset2 === gvar2.offsets[gid + 1]) {
       return;
     }
     var stream2 = this.font.stream;
-    stream2.pos = offset;
+    stream2.pos = offset2;
     if (stream2.pos >= stream2.length) {
       return;
     }
     var tupleCount = stream2.readUInt16BE();
-    var offsetToData = offset + stream2.readUInt16BE();
+    var offsetToData = offset2 + stream2.readUInt16BE();
     if (tupleCount & TUPLES_SHARE_POINT_NUMBERS) {
       var here = stream2.pos;
       stream2.pos = offsetToData;
@@ -104825,24 +105332,24 @@ var BrotliBuildHuffmanTable = function BrotliBuildHuffmanTable2(root_table, tabl
   var total_size;
   var sorted;
   var count = new Int32Array(MAX_LENGTH + 1);
-  var offset = new Int32Array(MAX_LENGTH + 1);
+  var offset2 = new Int32Array(MAX_LENGTH + 1);
   sorted = new Int32Array(code_lengths_size);
   for (symbol = 0; symbol < code_lengths_size; symbol++) {
     count[code_lengths[symbol]]++;
   }
-  offset[1] = 0;
+  offset2[1] = 0;
   for (len2 = 1; len2 < MAX_LENGTH; len2++) {
-    offset[len2 + 1] = offset[len2] + count[len2];
+    offset2[len2 + 1] = offset2[len2] + count[len2];
   }
   for (symbol = 0; symbol < code_lengths_size; symbol++) {
     if (code_lengths[symbol] !== 0) {
-      sorted[offset[code_lengths[symbol]]++] = symbol;
+      sorted[offset2[code_lengths[symbol]]++] = symbol;
     }
   }
   table_bits = root_bits;
   table_size = 1 << table_bits;
   total_size = table_size;
-  if (offset[MAX_LENGTH] === 1) {
+  if (offset2[MAX_LENGTH] === 1) {
     for (key4 = 0; key4 < total_size; ++key4) {
       root_table[table10 + key4] = new HuffmanCode(0, sorted[0] & 65535);
     }
@@ -106705,8 +107212,8 @@ var context = {
   lookup: lookup$2,
   lookupOffsets
 };
-function PrefixCodeRange(offset, nbits) {
-  this.offset = offset;
+function PrefixCodeRange(offset2, nbits) {
+  this.offset = offset2;
   this.nbits = nbits;
 }
 var kBlockLengthPrefixCode = [new PrefixCodeRange(1, 2), new PrefixCodeRange(5, 2), new PrefixCodeRange(9, 2), new PrefixCodeRange(13, 2), new PrefixCodeRange(17, 3), new PrefixCodeRange(25, 3), new PrefixCodeRange(33, 3), new PrefixCodeRange(41, 3), new PrefixCodeRange(49, 4), new PrefixCodeRange(65, 4), new PrefixCodeRange(81, 4), new PrefixCodeRange(97, 4), new PrefixCodeRange(113, 5), new PrefixCodeRange(145, 5), new PrefixCodeRange(177, 5), new PrefixCodeRange(209, 5), new PrefixCodeRange(241, 6), new PrefixCodeRange(305, 6), new PrefixCodeRange(369, 7), new PrefixCodeRange(497, 8), new PrefixCodeRange(753, 9), new PrefixCodeRange(1265, 10), new PrefixCodeRange(2289, 11), new PrefixCodeRange(4337, 12), new PrefixCodeRange(8433, 13), new PrefixCodeRange(16625, 24)];
@@ -107464,13 +107971,13 @@ function BrotliDecompress(input3, output) {
         if (distance_code >= num_direct_distance_codes) {
           var nbits;
           var postfix;
-          var offset;
+          var offset2;
           distance_code -= num_direct_distance_codes;
           postfix = distance_code & distance_postfix_mask;
           distance_code >>= distance_postfix_bits;
           nbits = (distance_code >> 1) + 1;
-          offset = (2 + (distance_code & 1) << nbits) - 4;
-          distance_code = num_direct_distance_codes + (offset + br.readBits(nbits) << distance_postfix_bits) + postfix;
+          offset2 = (2 + (distance_code & 1) << nbits) - 4;
+          distance_code = num_direct_distance_codes + (offset2 + br.readBits(nbits) << distance_postfix_bits) + postfix;
         }
       }
       distance = TranslateShortCodes(distance_code, dist_rb, dist_rb_idx);
@@ -107485,15 +107992,15 @@ function BrotliDecompress(input3, output) {
       copy_dst = pos & ringbuffer_mask;
       if (distance > max_distance) {
         if (copy_length >= dictionary.minDictionaryWordLength && copy_length <= dictionary.maxDictionaryWordLength) {
-          var offset = dictionary.offsetsByLength[copy_length];
+          var offset2 = dictionary.offsetsByLength[copy_length];
           var word_id = distance - max_distance - 1;
           var shift = dictionary.sizeBitsByLength[copy_length];
           var mask = (1 << shift) - 1;
           var word_idx = word_id & mask;
           var transform_idx = word_id >> shift;
-          offset += word_idx * copy_length;
+          offset2 += word_idx * copy_length;
           if (transform_idx < transform.kNumTransforms) {
-            var len2 = transform.transformDictionaryWord(ringbuffer, copy_dst, offset, copy_length, transform_idx);
+            var len2 = transform.transformDictionaryWord(ringbuffer, copy_dst, offset2, copy_length, transform_idx);
             copy_dst += len2;
             pos += len2;
             meta_block_remaining_len -= len2;
@@ -107872,9 +108379,9 @@ var TrueTypeCollection = /* @__PURE__ */ (function() {
   var _proto = TrueTypeCollection2.prototype;
   _proto.getFont = function getFont(name6) {
     for (var _iterator = _createForOfIteratorHelperLoose$s(this.header.offsets), _step; !(_step = _iterator()).done; ) {
-      var offset = _step.value;
+      var offset2 = _step.value;
       var stream2 = new restructure.DecodeStream(this.stream.buffer);
-      stream2.pos = offset;
+      stream2.pos = offset2;
       var font = new TTFFont(stream2);
       if (font.postscriptName === name6) {
         return font;
@@ -107887,9 +108394,9 @@ var TrueTypeCollection = /* @__PURE__ */ (function() {
     get: function get() {
       var fonts = [];
       for (var _iterator2 = _createForOfIteratorHelperLoose$s(this.header.offsets), _step2; !(_step2 = _iterator2()).done; ) {
-        var offset = _step2.value;
+        var offset2 = _step2.value;
         var stream2 = new restructure.DecodeStream(this.stream.buffer);
-        stream2.pos = offset;
+        stream2.pos = offset2;
         fonts.push(new TTFFont(stream2));
       }
       return fonts;
@@ -108121,24 +108628,24 @@ async function generateReportPdf(t2, fontBytes, selection) {
     const size = 8.5, cw = (width - margin * 2) / heads.length;
     const draw2 = (row, header = false) => {
       const cells = heads.map((_2, i) => wrap(font, safeText(font, row[i]), size, cw - 8)), count = Math.max(1, ...cells.map((c) => c.length));
-      let offset = 0;
-      while (offset < count) {
+      let offset2 = 0;
+      while (offset2 < count) {
         if (y < 59) {
           fresh();
           if (!header) draw2(heads, true);
         }
         const capacity = Math.floor((y - 35 - 6) / 12);
         ensure(capacity >= 1, "PDF\u306E\u898B\u51FA\u3057\u304C\u9577\u3059\u304E\u307E\u3059");
-        const take = Math.min(count - offset, capacity), rh = Math.max(18, take * 12 + 6);
+        const take = Math.min(count - offset2, capacity), rh = Math.max(18, take * 12 + 6);
         cells.forEach((all, i) => {
-          const lines = all.slice(offset, offset + take);
-          if (offset && i === 0 && !lines.length) lines.push(wrap(font, safeText(font, String(row[0]) + "\uFF08\u7D9A\uFF09"), size, cw - 8)[0]);
+          const lines = all.slice(offset2, offset2 + take);
+          if (offset2 && i === 0 && !lines.length) lines.push(wrap(font, safeText(font, String(row[0]) + "\uFF08\u7D9A\uFF09"), size, cw - 8)[0]);
           page2.drawRectangle({ x: margin + i * cw, y: y - rh, width: cw, height: rh, borderColor: LINE, borderWidth: 0.4, ...header ? { color: rgb(0.96, 0.94, 0.95) } : {} });
           lines.forEach((text2, j) => page2.drawText(text2, { x: margin + i * cw + 4, y: y - 12 - j * 12, size, font, color: INK }));
         });
         y -= rh;
-        offset += take;
-        if (offset < count) {
+        offset2 += take;
+        if (offset2 < count) {
           fresh();
           if (!header) draw2(heads, true);
         }
@@ -108196,7 +108703,7 @@ async function generateReportPdf(t2, fontBytes, selection) {
       pdf.removePage(0);
     } else if (kind === "results") list(t2.matches.filter((m) => m.eventId === eventId), "\u7A2E\u76EE\u5225\u8A66\u5408\u7D50\u679C");
     else if (kind === "court") {
-      ensure(Number.isInteger(court) && court >= 1 && court <= t2.courts, "\u30B3\u30FC\u30C8\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+      ensure(Number.isInteger(court) && court >= 1 && court <= Math.max(t2.courts, ...(t2.competitionDays ?? []).map((d) => d.courts)), "\u30B3\u30FC\u30C8\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
       schedule(court);
     } else schedule();
     return pdf.save();
@@ -108229,7 +108736,7 @@ async function generateReportPdf(t2, fontBytes, selection) {
   }
   list(t2.matches, "\u8A66\u5408\u7D50\u679C\u4E00\u89A7");
   schedule();
-  for (let court = 1; court <= t2.courts; court++) if (t2.matches.some((m) => m.court === court && m.status !== "bye")) schedule(court);
+  for (let court = 1; court <= Math.max(t2.courts, ...(t2.competitionDays ?? []).map((d) => calendarCourts(t2, d.date))); court++) if (t2.matches.some((m) => m.court === court && m.status !== "bye")) schedule(court);
   const players = /* @__PURE__ */ new Map();
   for (const m of t2.matches.filter((m2) => m2.status !== "bye")) for (const p of [m.left, m.right].flatMap((id) => entryOf(t2, id)?.players || [])) {
     const ns = players.get(p) || [];
@@ -108348,7 +108855,7 @@ async function generateScoreSheetsPdf(t2, matchIds, fontBytes, templates) {
     field2(t2.name, 96, 25, 114, 15, 10, false, 2);
     field2(String(matchNumber(m, t2)), 96, 43, 114, 14, 10);
     field2(m.court ? String(m.court) : "", 96, 60, 114, 14, 10);
-    field2(t2.date, 96, 77, 114, 14, 10);
+    field2(plannedDate(t2, m) ?? t2.date, 96, 77, 114, 14, 10);
     field2(m.court ? String(Math.floor(m.time / 60)).padStart(2, "0") + ":" + String(m.time % 60).padStart(2, "0") : "", 96, 94, 114, 14, 10);
     const names = [...side2(left, 248, 235), ...side2(right, 488, 499)];
     const rowHeight = kind === "singles" ? 31.2 : 15.6;
@@ -108446,7 +108953,7 @@ function archiveInto(t2, sids, reason2) {
   t2.matches = t2.matches.filter((m) => !ids.has(m.stageId));
   for (const r of t2.rulings || []) if (!t2.stages.some((s2) => s2.groups.some((g) => g.id === r.groupId))) r.cancelled = (/* @__PURE__ */ new Date()).toISOString();
 }
-function adjudicateInto(t2, gid, order2, reason2) {
+function adjudicateInto(t2, gid, order, reason2) {
   ensure(reason2.trim(), "\u88C1\u5B9A\u7406\u7531\u304C\u5FC5\u8981\u3067\u3059");
   const s2 = t2.stages.find((s3) => s3.groups.some((g) => g.id === gid));
   ensure(s2 && s2.kind === "league", "\u30EA\u30FC\u30B0\u306A\u3057");
@@ -108454,11 +108961,11 @@ function adjudicateInto(t2, gid, order2, reason2) {
   ensure(t2.matches.filter((m) => m.groupId === gid).every(finished), "\u30EA\u30FC\u30B0\u3092\u7D42\u4E86\u3057\u3066\u304F\u3060\u3055\u3044");
   const rows = standings(t2, gid, false);
   ensure(rows.some((r) => r.tied), "\u540C\u9806\u4F4D\u304C\u3042\u308A\u307E\u305B\u3093");
-  ensure(order2.length === rows.length && new Set(order2).size === rows.length && order2.every((id) => rows.some((r) => r.id === id)), "\u5168\u53C2\u52A0\u8005\u3092\u91CD\u8907\u306A\u304F\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
-  const positions = order2.map((id) => rows.find((r) => r.id === id).rank);
+  ensure(order.length === rows.length && new Set(order).size === rows.length && order.every((id) => rows.some((r) => r.id === id)), "\u5168\u53C2\u52A0\u8005\u3092\u91CD\u8907\u306A\u304F\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+  const positions = order.map((id) => rows.find((r) => r.id === id).rank);
   ensure(positions.every((r, i) => !i || r >= positions[i - 1]), "\u540C\u9806\u4F4D\u4EE5\u5916\u306E\u9806\u4F4D\u3092\u5909\u66F4\u3067\u304D\u307E\u305B\u3093");
   for (const r of t2.rulings || []) if (r.groupId === gid && !r.cancelled) r.cancelled = (/* @__PURE__ */ new Date()).toISOString();
-  (t2.rulings ??= []).push({ id: uid(), groupId: gid, order: [...order2], basis: rankingSignature(t2, gid, rows), reason: reason2, at: (/* @__PURE__ */ new Date()).toISOString() });
+  (t2.rulings ??= []).push({ id: uid(), groupId: gid, order: [...order], basis: rankingSignature(t2, gid, rows), reason: reason2, at: (/* @__PURE__ */ new Date()).toISOString() });
   audit(t2, "\u9806\u4F4D\u88C1\u5B9A\uFF1A" + reason2);
 }
 function revokeRulingInto(t2, gid, reason2) {
@@ -108524,8 +109031,8 @@ function cancelFinals(t2, sid2, reason2, acknowledgedResults = false) {
 function archive(t2, sids, reason2) {
   return atomicMutation(t2, (d) => archiveInto(d, sids, reason2));
 }
-function adjudicate(t2, gid, order2, reason2) {
-  return atomicMutation(t2, (d) => adjudicateInto(d, gid, order2, reason2));
+function adjudicate(t2, gid, order, reason2) {
+  return atomicMutation(t2, (d) => adjudicateInto(d, gid, order, reason2));
 }
 function revokeRuling(t2, gid, reason2) {
   return atomicMutation(t2, (d) => revokeRulingInto(d, gid, reason2));
@@ -108673,51 +109180,38 @@ function leagueForm(t2, gid) {
   };
 }
 var clock = (m) => String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
-function courtColumns(t2) {
-  const columns = Array.from({ length: t2.courts }, () => []);
-  const scheduled = t2.matches.filter((m) => m.status !== "bye").sort((a, b) => (a.queueOrder ?? a.number) - (b.queueOrder ?? b.number) || a.number - b.number);
-  const assigned = scheduled.filter((m) => m.court >= 1 && m.court <= t2.courts);
-  for (const m of assigned) columns[m.court - 1].push(m);
-  for (const c of columns) c.sort((a, b) => a.time - b.time || (a.queueOrder ?? a.number) - (b.queueOrder ?? b.number));
-  for (const m of scheduled.filter((m2) => m2.court < 1 || m2.court > t2.courts)) {
-    const min = Math.min(...columns.map((c) => c.length));
-    columns[columns.findIndex((c) => c.length === min)].push(m);
-  }
-  return columns;
-}
-var rowCount = (columns) => Math.max(0, ...columns.map((c) => c.length));
-function courtRows(t2) {
-  const columns = courtColumns(t2);
-  return Array.from({ length: rowCount(columns) }, (_2, i) => columns.map((c) => c[i]));
-}
+var maxCourts = (t2, date) => date ? calendarCourts(t2, date) : Math.max(t2.courts, ...(t2.competitionDays ?? []).map((d) => d.courts));
 var virtualHeight = 52;
 var windowRows = 56;
-function timetableWindow(t2, columns, progress, first, count, virtual) {
-  const total = rowCount(columns), last2 = Math.min(first + count, total);
-  const spacer = (n2) => n2 ? '<tr aria-hidden="true"><td class="virtual-gap" colspan="' + (t2.courts + 1) + '" style="height:' + n2 * virtualHeight + 'px"></td></tr>' : "";
+var visibleRows = (t2, date) => timetableRows(t2, date ? t2.matches.filter((m) => plannedDate(t2, m) === date) : t2.matches, maxCourts(t2, date));
+function timetableWindow(t2, rows, columns, progress, first, count, virtual) {
+  const last2 = Math.min(first + count, rows.length);
+  const spacer = (n2) => n2 ? '<tr aria-hidden="true"><td class="virtual-gap" colspan="' + (columns + 1) + '" style="height:' + n2 * virtualHeight + 'px"></td></tr>' : "";
   let html = virtual ? spacer(first) : "";
   for (let i = first; i < last2; i++) {
-    html += '<tr aria-rowindex="' + (i + 2) + '"><th>' + (i + 1) + "</th>" + columns.map((c) => c[i]).map((m) => m ? '<td class="fixture-cell ' + (progress ? stateClass(m) : "waiting") + '"><button data-act="matchEdit" data-id="' + escapeHtml(m.id) + '" title="' + escapeHtml((m.court ? "\u5272\u5F53\u6E08 " : "\u4EEE\u914D\u7F6E ") + clock(m.time) + " " + m.status) + '">' + escapeHtml(label(m, t2)) + (m.court ? "" : '<sup aria-label="\u672A\u5272\u5F53">\u2020</sup>') + "</button></td>" : "<td></td>").join("") + "</tr>";
+    const row = rows[i];
+    const time2 = (t2.competitionDays ? row.date + " " : "") + (row.time === void 0 ? "\u672A\u5272\u5F53" : clockText(row.time));
+    html += '<tr aria-rowindex="' + (i + 2) + '"><th>' + escapeHtml(time2) + "</th>" + row.cells.map((m) => m ? '<td class="fixture-cell ' + (progress ? stateClass(m) : "waiting") + '"><button data-act="matchEdit" data-id="' + escapeHtml(m.id) + '" title="' + escapeHtml((m.court ? "\u5272\u5F53\u6E08 " : "\u4EEE\u914D\u7F6E ") + clock(m.time) + " " + m.status) + '">' + escapeHtml(label(m, t2)) + (m.court ? "" : '<sup aria-label="\u672A\u5272\u5F53">\u2020</sup>') + "</button></td>" : "<td></td>").join("") + "</tr>";
   }
-  return html + (virtual ? spacer(total - last2) : "");
+  return html + (virtual ? spacer(rows.length - last2) : "");
 }
-function timetable(t2, progress) {
-  const columns = courtColumns(t2), rows = rowCount(columns), virtual = rows > 100;
-  return '<div class="table compact-courts' + (virtual ? " virtual-courts" : "") + '" tabindex="0" aria-label="\u5168\u8A66\u5408\u306E\u30B3\u30FC\u30C8\u5225\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB"><table aria-rowcount="' + (rows + 1) + '"><thead><tr><th>\u9806</th>' + Array.from({ length: t2.courts }, (_2, i) => "<th>" + (i + 1) + "\u30B3\u30FC\u30C8</th>").join("") + "</tr></thead><tbody>" + timetableWindow(t2, columns, progress, 0, virtual ? windowRows : rows, virtual) + "</tbody></table></div>";
+function timetable(t2, progress, date) {
+  const rows = visibleRows(t2, date), columns = maxCourts(t2, date), virtual = rows.length > 100;
+  return '<div class="table compact-courts' + (virtual ? " virtual-courts" : "") + '" tabindex="0" aria-label="\u5168\u8A66\u5408\u306E\u30B3\u30FC\u30C8\u5225\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB"><table aria-rowcount="' + (rows.length + 1) + '"><thead><tr><th>\u958B\u59CB\u4E88\u5B9A</th>' + Array.from({ length: columns }, (_2, i) => "<th>" + (i + 1) + "\u30B3\u30FC\u30C8</th>").join("") + "</tr></thead><tbody>" + timetableWindow(t2, rows, columns, progress, 0, virtual ? windowRows : rows.length, virtual) + "</tbody></table></div>";
 }
-function mountVirtualTimetable(host, t2, progress) {
+function mountVirtualTimetable(host, t2, progress, date) {
   const scroller = host.querySelector(".virtual-courts");
   if (!scroller) return;
-  const columns = courtColumns(t2), total = rowCount(columns), body = scroller.querySelector("tbody");
+  const rows = visibleRows(t2, date), columns = maxCourts(t2, date), body = scroller.querySelector("tbody");
   let first = 0, frame;
   scroller.addEventListener("scroll", () => {
     if (frame !== void 0) return;
     frame = requestAnimationFrame(() => {
       frame = void 0;
-      const next = Math.max(0, Math.min(total - windowRows, Math.floor(scroller.scrollTop / virtualHeight) - 12));
+      const next = Math.max(0, Math.min(rows.length - windowRows, Math.floor(scroller.scrollTop / virtualHeight) - 12));
       if (next !== first) {
         first = next;
-        body.innerHTML = timetableWindow(t2, columns, progress, first, windowRows, true);
+        body.innerHTML = timetableWindow(t2, rows, columns, progress, first, windowRows, true);
       }
     });
   }, { passive: true });
@@ -108837,9 +109331,11 @@ async function formsWorkbook(t2) {
     }
   }
   const ws = sheet("\u30B3\u30FC\u30C8\u5225\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB");
-  grid2(ws, ["\u9806", ...Array.from({ length: t2.courts }, (_2, i) => i + 1 + "\u30B3\u30FC\u30C8")]);
-  courtRows(t2).forEach((r, i) => {
-    grid2(ws, [i + 1, ...r.map((m) => m ? label(m, t2) : "")]);
+  const columns = Math.max(t2.courts, ...(t2.competitionDays ?? []).map((d) => d.courts));
+  grid2(ws, ["\u958B\u59CB\u4E88\u5B9A", ...Array.from({ length: columns }, (_2, i) => i + 1 + "\u30B3\u30FC\u30C8")]);
+  timetableRows(t2, t2.matches, columns).forEach((row, i) => {
+    const r = row.cells;
+    grid2(ws, [(t2.competitionDays ? row.date + " " : "") + (row.time === void 0 ? "\u672A\u5272\u5F53" : clockText(row.time)), ...r.map((m) => m ? label(m, t2) : "")]);
     r.forEach((m, j) => {
       if (m) {
         const cell = ws.getCell(i + 3, j + 2);
@@ -109765,10 +110261,10 @@ async function advancedAction(c, act2, b) {
   switch (act2) {
     case "xAdjudicate": {
       const gid = b.dataset.group, g = t2.stages.flatMap((s3) => s3.groups).find((g2) => g2.id === gid);
-      const order2 = g.entries.map((id) => ({ id, rank: n("rank-" + id) })).sort((a, b2) => a.rank - b2.rank);
-      ensure(new Set(order2.map((x) => x.rank)).size === order2.length, "\u9806\u4F4D\u3092\u91CD\u8907\u306A\u304F\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+      const order = g.entries.map((id) => ({ id, rank: n("rank-" + id) })).sort((a, b2) => a.rank - b2.rank);
+      ensure(new Set(order.map((x) => x.rank)).size === order.length, "\u9806\u4F4D\u3092\u91CD\u8907\u306A\u304F\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
       const r = reason("\u88C1\u5B9A\u7406\u7531\uFF08\u5927\u4F1A\u898F\u5B9A\u30FB\u6C7A\u5B9A\u65B9\u6CD5\uFF09");
-      await c.save("\u9806\u4F4D\u624B\u52D5\u88C1\u5B9A", (x) => adjudicate(x, gid, order2.map((x2) => x2.id), r));
+      await c.save("\u9806\u4F4D\u624B\u52D5\u88C1\u5B9A", (x) => adjudicate(x, gid, order.map((x2) => x2.id), r));
       break;
     }
     case "xRevoke": {
@@ -110091,6 +110587,8 @@ function rememberMatches() {
   returnScroll = { x: scrollX, y: scrollY, tableX: table10?.scrollLeft || 0, tableY: table10?.scrollTop || 0 };
 }
 var expandedRegistration = /* @__PURE__ */ new Set();
+var scheduleDay = "";
+var calendarTour = "";
 var registrationTeam = "";
 var registrationPlayer = "";
 var registrationPage = 0;
@@ -110111,10 +110609,10 @@ function visualDraftPreview() {
     return `<div class="bracket-overview"><div class="bracket-round"><h4>1\u56DE\u6226\uFF08\u7A7A\u6B04\u304B\u3089\u914D\u7F6E\uFF09</h4>${Array.from({ length: d.slots.length / 2 }, (_2, i) => `<div class="bracket-game">${picker(i * 2)}${picker(i * 2 + 1)}</div>`).join("")}</div></div>`;
   }
   const q = Math.floor(e.entries.length / d.count), r = e.entries.length % d.count;
-  let offset = 0;
+  let offset2 = 0;
   return Array.from({ length: d.count }, (_2, i) => {
-    const size = q + (i < r ? 1 : 0), start = offset;
-    offset += size;
+    const size = q + (i < r ? 1 : 0), start = offset2;
+    offset2 += size;
     return `<h3>${i + 1}\u7D44</h3>${table9(["\u67A0", "\u9078\u624B", ...Array.from({ length: size }, (_3, j) => String(j + 1))], Array.from({ length: size }, (_3, j) => [j + 1, picker(start + j), ...Array.from({ length: size }, (_4, k) => j === k ? "\u2014" : "\u25CB")]))}`;
   }).join("");
 }
@@ -110188,6 +110686,24 @@ function renderScore(m, rubber = -1) {
   }).join("");
   return `<div class="match"><strong>${name5(m.left)}</strong><span>VS</span><strong>${name5(m.right)}</strong></div><label>\u52DD\u8005\u5074\uFF08\u5148\u306B\u9078\u629E\u53EF\u30FB\u5F97\u70B9\u3068\u306E\u4E00\u81F4\u3092\u78BA\u8A8D\uFF09<select id="winnerChoice"><option value="">\u5F97\u70B9\u304B\u3089\u81EA\u52D5\u5224\u5B9A</option><option value="left">\u5DE6\u306E\u52DD\u3061</option><option value="right">\u53F3\u306E\u52DD\u3061</option></select></label><p>\u8A66\u5408 ${esc(label(m, t))} \xB7 ${r.base}\u70B9 / \u4E0A\u9650${r.cap} / ${r.wins}\u30B2\u30FC\u30E0\u5148\u53D6</p>${panels}<p id="${rubber >= 0 ? "rubber" + rubber + "Preview" : "scorePreview"}" aria-live="polite"></p><div class="actions">${button3("\u5F97\u70B9\u3092\u4FDD\u5B58", rubber >= 0 ? "rubberScore" : "saveScore", rubber >= 0 ? `data-index="${rubber}"` : "")}${rubber >= 0 ? button3("\u3053\u306E\u5185\u8A33\u3092\u53D6\u6D88", "rubberCancel", `data-index="${rubber}"`) : ""}${button3("\u623B\u308B", "back")}</div>${rubber < 0 ? `<div class="actions">${button3("\u5DE6\u306E\u4E0D\u6226\u52DD", "walkover", 'data-side="left"')}${button3("\u53F3\u306E\u4E0D\u6226\u52DD", "walkover", 'data-side="right"')}${button3("\u68C4\u6A29\u30FB\u9014\u4E2D\u68C4\u6A29", "termination")}${button3("\u7D50\u679C\u30FB\u9032\u884C\u3092\u53D6\u6D88", "cancel")}</div><label>\u8A02\u6B63\u7406\u7531\uFF08\u65E2\u5B58\u7D50\u679C\u306E\u5909\u66F4\u6642\u306B\u5FC5\u9808\uFF09<input id="reason"></label>` : ""}`;
 }
+function rangeGuide(t2) {
+  return `<details><summary>\u7A2E\u76EE\u30FB\u7BC4\u56F2\u306E\u6307\u5B9A\u4F8B</summary><p>1\u884C\u5185\u306E\u8907\u6570\u6761\u4EF6\u306F ; \u3067\u533A\u5207\u308A\u307E\u3059\u3002* \u306F\u5168\u7A2E\u76EE\u3067\u3059\u3002\u5165\u529B\u4F8B BS:best:8; GS:round:2\u3002\u6E96\u3005\u6C7A\u52DD\u304B\u3089\u306F BS:after-best:8 \u306E\u3088\u3046\u306B\u6307\u5B9A\u3002\u6C7A\u52DD\u306E\u4E88\u5B9A\u7BC4\u56F2\u306F *:finals\u3001\u6B8B\u308A\u3059\u3079\u3066\u306F *:all\u3002\u8A66\u5408\u306E\u6307\u5B9A\u306F BS:through-match:BS-41\u3001\u307E\u305F\u306F BS:matches:BS-1,BS-3\u3002</p>
+ ${table9(["\u7A2E\u76EE", "\u5229\u7528\u3067\u304D\u308B\u30E9\u30A6\u30F3\u30C9\u4F8B", "\u30B9\u30C6\u30FC\u30B8\u5225\u306E\u6307\u5B9A"], t2.events.map((e) => {
+    const code3 = e.code ?? e.id;
+    const stages = t2.stages.filter((s2) => s2.eventId === e.id), matches = t2.matches.filter((m) => m.eventId === e.id && m.status !== "bye");
+    const max3 = Math.max(0, ...matches.map((m) => m.round));
+    const best = stages.some((s2) => s2.kind === "bracket") ? [32, 16, 8, 4, 2].filter((n2) => n2 < 2 ** max3).map((n2) => code3 + ":best:" + n2) : [];
+    return [esc(code3), esc([...best, ...Array.from({ length: max3 }, (_2, i) => code3 + ":round:" + (i + 1))].join(" / ")), stages.map((s2) => esc(s2.name + " " + code3 + ":stage:" + s2.id + " \u307E\u305F\u306F " + code3 + ":through-stage:" + s2.id)).join("<br>")];
+  }))}<p>\u30D9\u30B9\u30C88\u6C7A\u5B9A\u307E\u3067\u306B\u306F\u6E96\u3005\u6C7A\u52DD\u306F\u542B\u307E\u308C\u307E\u305B\u3093\u3002\u6E96\u3005\u6C7A\u52DD\u7D42\u4E86\u307E\u3067\u306B\u306F\u30D9\u30B9\u30C84\u6C7A\u5B9A\u307E\u3067\u3092\u6307\u5B9A\u3057\u307E\u3059\u3002</p></details>`;
+}
+function calendarPanel(t2) {
+  const code3 = t2.events[0]?.code || "*";
+  return `<details><summary>\u8907\u6570\u65E5\u306E\u958B\u50AC\u65E5\u7A0B\u3092\u8A2D\u5B9A</summary>
+ <p>1\u884C\u306B\u3064\u304D1\u65E5\u3002\u65E5\u4ED8 | \u958B\u59CB | \u7D42\u4E86 | \u30B3\u30FC\u30C8\u6570 | \u4F11\u61A9\u5206 | \u5BFE\u8C61\u7BC4\u56F2\u3002\u65E5\u4ED8\u9806\u3067\u6700\u521D\u306B\u8A72\u5F53\u3059\u308B\u958B\u50AC\u65E5\u306B\u5272\u308A\u5F53\u3066\u307E\u3059\u3002\u6700\u7D42\u65E5\u3092 *:all \u3068\u3059\u308B\u3068\u6B8B\u308A\u3092\u5BFE\u8C61\u306B\u3067\u304D\u307E\u3059\u3002\u4F11\u61A9\u306F\u9078\u624B\u306E\u6700\u4F4E\u9593\u9694\u3067\u3059\u3002\u5168\u30B3\u30FC\u30C8\u3092\u4F7F\u308F\u306A\u3044\u6642\u9593\u306F\u4EFB\u610F\u306E7\u5217\u76EE\u306B 12:00-13:00 \u306E\u3088\u3046\u306B\u6307\u5B9A\u3057\u307E\u3059\u3002</p>
+ <label for="competitionDays">\u958B\u50AC\u65E5\u3054\u3068\u306E\u8A2D\u5B9A</label><textarea id="competitionDays" rows="4" placeholder="${esc(t2.date + " | 09:00 | 17:00 | " + t2.courts + " | 10 | " + code3 + ":best:8")}">${esc(formatDays(t2, t2.competitionDays ?? []))}</textarea>
+ ${button3("\u958B\u50AC\u65E5\u7A0B\u3092\u4FDD\u5B58", "calendarSave")}${button3("\u30D9\u30B9\u30C88\u307E\u3067\u30FB\u6E96\u3005\u6C7A\u52DD\u304B\u3089\u306E2\u65E5\u9593\u4F8B", "calendarExample")}${rangeGuide(t2)}
+ ${t2.competitionDays?.length ? select2("\u7E70\u308A\u8D8A\u3059\u8A66\u5408", "calendarMatch", t2.matches.filter((m) => m.status === "waiting").map((m) => ({ id: m.id, name: label(m, t2) + " " + (plannedDate(t2, m) ?? "\u65E5\u7A0B\u672A\u6307\u5B9A") }))) + select2("\u79FB\u52D5\u5148\u306E\u958B\u50AC\u65E5", "calendarDestination", t2.competitionDays.map((d) => ({ id: d.date, name: d.date }))) + button3("\u9078\u629E\u3057\u305F\u8A66\u5408\u3092\u958B\u50AC\u65E5\u306B\u79FB\u52D5", "calendarMove") : ""}</details>`;
+}
 function registrationPanel(t2) {
   if (registrationTournament !== t2.id) {
     registrationTournament = t2.id;
@@ -110197,6 +110713,7 @@ function registrationPanel(t2) {
     registrationPage = 0;
   }
   const { teams, players } = registrationView(t2);
+  const withRoster = { ...t2, roster: players };
   const evs = t2.events;
   const teamList = [{ id: "", name: "\u5168\u6240\u5C5E" }, ...teams];
   const shown = players.filter((p) => !registrationTeam || p.teamId === registrationTeam).sort((a, b) => a.club.localeCompare(b.club, "ja") || (a.teamRank ?? Infinity) - (b.teamRank ?? Infinity) || a.name.localeCompare(b.name, "ja"));
@@ -110213,6 +110730,8 @@ function registrationPanel(t2) {
  ${input2("\u6C0F\u540D", "regName", selected?.name ?? "")}${input2("\u3075\u308A\u304C\u306A", "regKana", selected?.kana ?? "")}
  ${input2("\u30C1\u30FC\u30E0\u5185\u9806\u4F4D\uFF08\u7A7A\u6B04\u306F\u672B\u5C3E\uFF09", "regRank", selected?.teamRank ?? "", "number")}
  <details><summary>\u4EFB\u610F\u306E\u53C2\u52A0\u8CC7\u683C\u60C5\u5831</summary>${input2("\u6027\u5225", "regGender", selected?.gender ?? "")}${input2("\u5E74\u9F62", "regAge", selected?.age ?? "", "number")}${input2("\u5B66\u5E74", "regGrade", selected?.grade ?? "")}</details>
+ ${teams.length ? `<details data-reg-panel="bulk" ${expandedRegistration.has("bulk") ? "open" : ""}><summary>\u30C1\u30FC\u30E0\u5185\u9078\u624B\u306E\u4E00\u62EC\u767B\u9332</summary>
+ ${select2("\u4E00\u62EC\u767B\u9332\u3059\u308B\u6240\u5C5E", "bulkTeam", teams, team)}<label for="bulkMembers">1\u884C1\u4EBA\u3002\u6C0F\u540D\u306E\u307F\u3001\u307E\u305F\u306F\u6C0F\u540D\u30FB\u3075\u308A\u304C\u306A\u3092\u30BF\u30D6\uFF0F\u30AB\u30F3\u30DE\u3067\u533A\u5207\u3063\u3066\u8CBC\u308A\u4ED8\u3051</label><textarea id="bulkMembers" rows="5"></textarea>${button3("\u767B\u9332\u524D\u30D7\u30EC\u30D3\u30E5\u30FC", "bulkPreview")}</details>` : ""}
  ${button3(edit ? "\u53C2\u52A0\u8005\u3092\u66F4\u65B0" : "\u53C2\u52A0\u8005\u3092\u8FFD\u52A0", "regPersonSave")}${edit ? button3("\u65B0\u898F\u767B\u9332\u306B\u623B\u308B", "regEdit") : ""}
  <p>\u30A8\u30F3\u30C8\u30EA\u30FC\u306F\u7A2E\u76EE\u3054\u3068\u306B\u5207\u308A\u66FF\u3048\u307E\u3059\u3002\u30C0\u30D6\u30EB\u30B9\u306F\u540C\u3058\u756A\u53F7\u306E2\u540D\u30671\u7D44\u3067\u3059\u3002\u7D44\u5408\u305B\u78BA\u5B9A\u5F8C\u306F\u5909\u66F4\u3067\u304D\u307E\u305B\u3093\u3002</p>
  ${table9(["\u6C0F\u540D\u30FB\u3075\u308A\u304C\u306A", "\u6240\u5C5E\u30FB\u9806\u4F4D", ...evs.map((e) => e.code ?? e.name)], people.map((p) => [
@@ -110221,7 +110740,7 @@ function registrationPanel(t2) {
     ...evs.map((e) => {
       const entry = e.entries.find((x) => x.players.includes(p.id)), draft = e.pairDrafts?.find((x) => x.players.includes(p.id));
       const active = !!entry || !!draft;
-      return button3(e.type !== "doubles" ? active ? "\u25CB" : "\u672A\u9078\u629E" : entry ? entry.pairNo?.toString() ?? "\u767B\u9332\u6E08" : draft ? draft.number + "\uFF08\u6B20\u54E1\uFF09" : "\u672A\u9078\u629E", "regToggle", `data-id="${esc(p.id)}" data-event="${esc(e.id)}" data-active="${active}" aria-pressed="${active}" ${locked(e.id) ? "disabled data-fixed-disabled" : ""}`);
+      return button3(e.type !== "doubles" ? active ? "\u25CB" : "\u672A\u9078\u629E" : entry ? String(pairDisplay(withRoster, e, { number: entry.pairNo ?? 0, players: entry.players, pairRank: entry.pairRank, id: entry.id })) : draft ? pairDisplay(withRoster, e, draft) + "\uFF08\u6B20\u54E1\uFF09" : "\u672A\u9078\u629E", "regToggle", `data-id="${esc(p.id)}" data-event="${esc(e.id)}" data-active="${active}" aria-pressed="${active}" ${locked(e.id) ? "disabled data-fixed-disabled" : ""}`);
     })
   ]))}
  <div class="actions">${registrationPage > 0 ? button3("\u524D\u306E50\u540D", "regPrevious") : ""}${shown.length > (registrationPage + 1) * 50 ? button3("\u6B21\u306E50\u540D", "regNext") : ""}</div>
@@ -110230,7 +110749,11 @@ function registrationPanel(t2) {
  ${evs.map((e) => `<details data-reg-panel="${e.id}" ${expandedRegistration.has(e.id) ? "open" : ""}><summary>${esc(e.code ?? e.name)} ${e.entries.length}\u67A0</summary>
  ${locked(e.id) ? "<p>\u7D44\u5408\u305B\u304C\u3042\u308B\u305F\u3081\u5909\u66F4\u306B\u306F\u4FDD\u7BA1\u30FB\u53D6\u6D88\u304C\u5FC5\u8981\u3067\u3059\u3002</p>" : ""}
  ${!locked(e.id) ? `<div class="row">${input2("\u6027\u5225\u6761\u4EF6\uFF08\u4EFB\u610F\u30FB\u5B8C\u5168\u4E00\u81F4\uFF09", "regGender" + e.id, e.entryEligibility?.gender ?? "")}${input2("\u5B66\u5E74\u6761\u4EF6\uFF08\u4EFB\u610F\u30FB\u5B8C\u5168\u4E00\u81F4\uFF09", "regGrade" + e.id, e.entryEligibility?.grade ?? "")}${input2("\u6700\u5C0F\u5E74\u9F62", "regMin" + e.id, e.entryEligibility?.minAge ?? "", "number")}${input2("\u6700\u5927\u5E74\u9F62", "regMax" + e.id, e.entryEligibility?.maxAge ?? "", "number")}</div>${button3("\u53C2\u52A0\u8CC7\u683C\u3092\u4FDD\u5B58", "regEligibility", `data-event="${e.id}"`)}` : ""}
- ${e.type === "doubles" ? [...e.entries.map((x) => ({ number: x.pairNo, id: x.id, players: x.players })), ...(e.pairDrafts ?? []).map((x) => ({ ...x, id: void 0 }))].map((x) => `<p>${esc(x.number ?? "\u65E7\u30DA\u30A2")} \xB7 ${x.players.map((id) => esc(players.find((p) => p.id === id)?.name ?? id)).join(" \uFF0F ")}${x.players.length === 1 ? " \uFF0F \u6B20\u54E1" : ""}</p>${!locked(e.id) ? button3("\u30DA\u30A2\u69CB\u6210\u3092\u7DE8\u96C6", "regPair", `data-event="${e.id}" data-pair="${x.number ?? ""}" data-id="${x.id ?? ""}"`) : ""}`).join("") : ""}
+ ${e.type === "doubles" ? pairSlots(e).map((x) => {
+    const teamId = pairScope({ ...t2, roster: players }, x.players), teamName = teamId === "@mixed" ? "\u7570\u6240\u5C5E" : teams.find((team2) => team2.id === teamId)?.name ?? "\u6240\u5C5E\u306A\u3057";
+    const rank = pairDisplay({ ...t2, roster: players }, e, x);
+    return `<p>${esc(teamName)} ${rank} \xB7 ${x.players.map((id) => esc(players.find((p) => p.id === id)?.name ?? id)).join(" \uFF0F ")}${x.players.length === 1 ? " \uFF0F \u6B20\u54E1" : ""}</p>${!locked(e.id) ? button3("\u30DA\u30A2\u69CB\u6210\u3092\u7DE8\u96C6", "regPair", `data-event="${e.id}" data-pair="${x.number || ""}" data-id="${x.id ?? ""}"`) : ""}${x.id && x.number ? input2("\u30C1\u30FC\u30E0\u5185\u30DA\u30A2\u9806\u4F4D", "pairRank" + x.id, rank, "number") + button3("\u30DA\u30A2\u9806\u4F4D\u3092\u4FDD\u5B58", "regPairRank", `data-event="${e.id}" data-pair="${x.number}" data-id="${x.id}"`) : ""}`;
+  }).join("") + (!locked(e.id) ? button3("\u7570\u6240\u5C5E\u30DA\u30A2\u3092\u500B\u5225\u767B\u9332", "regPair", `data-event="${e.id}"`) : "") : ""}
  ${table9(["\u767B\u9332\u9078\u624B\u30FB\u30DA\u30A2", "\u30B7\u30FC\u30C9\uFF080\u306F\u672A\u6307\u5B9A\uFF09"], e.entries.map((x) => [esc(x.name), locked(e.id) ? x.seed : input2("\u9806\u4F4D", "regSeed" + x.id, x.seed, "number") + button3("\u4FDD\u5B58", "regSeed", `data-event="${e.id}" data-id="${x.id}"`)]))}
  </details>`).join("")}
  </details>
@@ -110293,7 +110816,9 @@ async function render() {
     }
   }
   if (page === "draw") {
-    html = section("\u7A2E\u76EE\u30B3\u30FC\u30C9\u3067\u63A1\u756A", input2("\u90E8\u9580\u512A\u5148\u5EA6\uFF08\u7A7A\u6B04\u306F\u53C2\u52A0\u4EBA\u6570\u3001\u5927\u304D\u3044\u307B\u3069\u512A\u5148\uFF09", "eventPriority", currentEvent()?.schedulePriority ?? "", "number") + button3("\u512A\u5148\u5EA6\u3092\u4FDD\u5B58", "eventPriority") + input2("\u7A2E\u76EE\u30B3\u30FC\u30C9\uFF08\u4F8B BS\u3001WD3\uFF09", "eventCode", currentEvent()?.code || "") + button3("\u7A2E\u76EE\u8A18\u53F7\u3092\u9069\u7528", "assignLabels")) + section("\u7D44\u5408\u305B\u4F5C\u6210", eventPicker() + select2("\u65B9\u5F0F", "kind", [{ id: "league", name: "\u30EA\u30FC\u30B0\u30FB\u7DCF\u5F53\u305F\u308A" }, { id: "bracket", name: "\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8" }, { id: "exchange", name: "\u4EA4\u6D41\u6226\u30FB\u7DF4\u7FD2\u8A66\u5408" }]) + input2("\u7D44\u6570\uFF08\u30EA\u30FC\u30B0\u30FB\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\uFF09", "groupCount", 1, "number") + select2("\u632F\u308A\u5206\u3051", "mode", [{ id: "rank", name: "\u30E9\u30F3\u30AF\u512A\u5148\uFF08\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\uFF09" }, { id: "seed", name: "\u30B7\u30FC\u30C9\uFF0B\u30E9\u30F3\u30C0\u30E0" }, { id: "random", name: "\u30E9\u30F3\u30C0\u30E0" }, { id: "manual", name: "\u767B\u9332\u9806\uFF08\u624B\u52D5\uFF09" }]) + `<label><input id="excludeClub" type="checkbox"> \u540C\u30C1\u30FC\u30E0\u5BFE\u6C7A\u3092\u9664\u5916\uFF08\u500B\u4EBA\u30EA\u30FC\u30B0\uFF09</label><details><summary>\u4EA4\u6D41\u6226\u306E\u8A2D\u5B9A</summary>${select2("\u7D44\u5408\u305B", "exchangeMode", [{ id: "all", name: "\u5168\u5BFE\u6226\u6D88\u5316" }, { id: "balanced", name: "\u8A66\u5408\u6570\u5747\u7B49" }])}${input2("\u76EE\u6A19\u8A66\u5408\u6570", "exchangeTarget", 3, "number")}${input2("\u60F3\u5B9A\u8A66\u5408\u6642\u9593\uFF08\u5206\uFF09", "exchangeDuration", 20, "number")}${input2("\u7D42\u4E86\u4E88\u5B9A\u6642\u523B\uFF08\u4EFB\u610F\uFF09", "exchangeEnd", "", "time")}<label><input id="exchangeLevels" type="checkbox"> \u540C\u3058\u30EC\u30D9\u30EB\u540C\u58EB</label><label><input id="exchangeRanked" type="checkbox"> \u9806\u4F4D\u96C6\u8A08</label><p>\u4E8B\u524D\u306B\u767B\u9332\u30FB\u8A2D\u5B9A\u3067\u53C2\u52A0\u8005\u3054\u3068\u306B\u30EC\u30D9\u30EB\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u30C0\u30D6\u30EB\u30B9\u306F\u767B\u9332\u30DA\u30A2\u5358\u4F4D\u3067\u7D44\u307F\u5408\u308F\u305B\u307E\u3059\u3002</p></details>` + button3("\u7A7A\u767D\u306E\u7D44\u5408\u305B\u8868\u3092\u958B\u304F", "draftStart") + button3("\u521D\u671F\u7D44\u5408\u305B\u3092\u4F5C\u6210", "draw") + (visualDraft && visualDraft.eventId === eid ? section("\u7A7A\u767D\u8868\u304B\u3089\u624B\u52D5\u914D\u7F6E\uFF08\u672A\u4FDD\u5B58\uFF09", `<p>\u67A0\u3092\u30BF\u30C3\u30D7\u3057\u3066\u9078\u624B\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u5168\u54E1\u3092\u914D\u7F6E\u3057\u305F\u5F8C\u306B\u78BA\u5B9A\u3057\u307E\u3059\u3002\u9014\u4E2D\u3067\u9589\u3058\u3066\u3082\u65E2\u5B58\u306E\u7D44\u5408\u305B\u306F\u5909\u66F4\u3055\u308C\u307E\u305B\u3093\u3002</p>${visualDraftPreview()}<div class="actions">${button3("\u3053\u306E\u914D\u7F6E\u3067\u7D44\u5408\u305B\u3092\u78BA\u5B9A", "draftCommit")}${button3("\u4E0B\u66F8\u304D\u3092\u7834\u68C4", "draftDiscard")}</div>`) : ""));
+    const current = currentEvent();
+    const seeded = current?.entries.filter((x) => x.seed).sort((a, b) => a.seed - b.seed) ?? [];
+    html = section("\u30B7\u30FC\u30C9\u8A2D\u5B9A\u306E\u78BA\u8A8D", current ? "<p>" + esc(current.name) + " \xB7 " + seeded.length + "\u4EF6" + (seeded.length ? "\uFF1A" + seeded.map((x) => esc(x.seed + " " + x.name)).join(" \uFF0F ") : "\uFF08\u672A\u8A2D\u5B9A\uFF09") + "</p>" + button3("\u3053\u306E\u7A2E\u76EE\u306E\u30B7\u30FC\u30C9\u8A2D\u5B9A\u3078", "seedShortcut") + (t.stages.some((s2) => s2.eventId === current.id) ? button3("\u7D44\u5408\u305B\u306E\u4FDD\u7BA1\u30FB\u53D6\u6D88\u3078", "seedArchiveHelp") : "<p>\u7D44\u5408\u305B\u751F\u6210\u5F8C\u306E\u30B7\u30FC\u30C9\u5909\u66F4\u306B\u306F\u4FDD\u7BA1\u30FB\u53D6\u6D88\u304C\u5FC5\u8981\u3067\u3059\u3002\u30B7\u30FC\u30C9\u306A\u3057\u306E\u4F5C\u6210\u3082\u53EF\u80FD\u3067\u3059\u3002</p>") : "<p>\u7A2E\u76EE\u3092\u4F5C\u6210\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>") + section("\u7A2E\u76EE\u30B3\u30FC\u30C9\u3067\u63A1\u756A", input2("\u90E8\u9580\u512A\u5148\u5EA6\uFF08\u7A7A\u6B04\u306F\u53C2\u52A0\u4EBA\u6570\u3001\u5927\u304D\u3044\u307B\u3069\u512A\u5148\uFF09", "eventPriority", currentEvent()?.schedulePriority ?? "", "number") + button3("\u512A\u5148\u5EA6\u3092\u4FDD\u5B58", "eventPriority") + input2("\u7A2E\u76EE\u30B3\u30FC\u30C9\uFF08\u4F8B BS\u3001WD3\uFF09", "eventCode", currentEvent()?.code || "") + button3("\u7A2E\u76EE\u8A18\u53F7\u3092\u9069\u7528", "assignLabels")) + section("\u7D44\u5408\u305B\u4F5C\u6210", eventPicker() + select2("\u65B9\u5F0F", "kind", [{ id: "league", name: "\u30EA\u30FC\u30B0\u30FB\u7DCF\u5F53\u305F\u308A" }, { id: "bracket", name: "\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8" }, { id: "exchange", name: "\u4EA4\u6D41\u6226\u30FB\u7DF4\u7FD2\u8A66\u5408" }]) + input2("\u7D44\u6570\uFF08\u30EA\u30FC\u30B0\u30FB\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\uFF09", "groupCount", 1, "number") + select2("\u632F\u308A\u5206\u3051", "mode", [{ id: "rank", name: "\u30E9\u30F3\u30AF\u512A\u5148\uFF08\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\uFF09" }, { id: "seed", name: "\u30B7\u30FC\u30C9\uFF0B\u30E9\u30F3\u30C0\u30E0" }, { id: "random", name: "\u30E9\u30F3\u30C0\u30E0" }, { id: "manual", name: "\u767B\u9332\u9806\uFF08\u624B\u52D5\uFF09" }]) + `<label><input id="excludeClub" type="checkbox"> \u540C\u30C1\u30FC\u30E0\u5BFE\u6C7A\u3092\u9664\u5916\uFF08\u500B\u4EBA\u30EA\u30FC\u30B0\uFF09</label><details><summary>\u4EA4\u6D41\u6226\u306E\u8A2D\u5B9A</summary>${select2("\u7D44\u5408\u305B", "exchangeMode", [{ id: "all", name: "\u5168\u5BFE\u6226\u6D88\u5316" }, { id: "balanced", name: "\u8A66\u5408\u6570\u5747\u7B49" }])}${input2("\u76EE\u6A19\u8A66\u5408\u6570", "exchangeTarget", 3, "number")}${input2("\u60F3\u5B9A\u8A66\u5408\u6642\u9593\uFF08\u5206\uFF09", "exchangeDuration", 20, "number")}${input2("\u7D42\u4E86\u4E88\u5B9A\u6642\u523B\uFF08\u4EFB\u610F\uFF09", "exchangeEnd", "", "time")}<label><input id="exchangeLevels" type="checkbox"> \u540C\u3058\u30EC\u30D9\u30EB\u540C\u58EB</label><label><input id="exchangeRanked" type="checkbox"> \u9806\u4F4D\u96C6\u8A08</label><p>\u4E8B\u524D\u306B\u767B\u9332\u30FB\u8A2D\u5B9A\u3067\u53C2\u52A0\u8005\u3054\u3068\u306B\u30EC\u30D9\u30EB\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u30C0\u30D6\u30EB\u30B9\u306F\u767B\u9332\u30DA\u30A2\u5358\u4F4D\u3067\u7D44\u307F\u5408\u308F\u305B\u307E\u3059\u3002</p></details>` + button3("\u7A7A\u767D\u306E\u7D44\u5408\u305B\u8868\u3092\u958B\u304F", "draftStart") + button3("\u521D\u671F\u7D44\u5408\u305B\u3092\u4F5C\u6210", "draw") + (visualDraft && visualDraft.eventId === eid ? section("\u7A7A\u767D\u8868\u304B\u3089\u624B\u52D5\u914D\u7F6E\uFF08\u672A\u4FDD\u5B58\uFF09", `<p>\u67A0\u3092\u30BF\u30C3\u30D7\u3057\u3066\u9078\u624B\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u5168\u54E1\u3092\u914D\u7F6E\u3057\u305F\u5F8C\u306B\u78BA\u5B9A\u3057\u307E\u3059\u3002\u9014\u4E2D\u3067\u9589\u3058\u3066\u3082\u65E2\u5B58\u306E\u7D44\u5408\u305B\u306F\u5909\u66F4\u3055\u308C\u307E\u305B\u3093\u3002</p>${visualDraftPreview()}<div class="actions">${button3("\u3053\u306E\u914D\u7F6E\u3067\u7D44\u5408\u305B\u3092\u78BA\u5B9A", "draftCommit")}${button3("\u4E0B\u66F8\u304D\u3092\u7834\u68C4", "draftDiscard")}</div>`) : ""));
     if (t.stages.length) {
       html += section("\u6C7A\u52DD\u9032\u51FA", stagePicker() + input2("\u5404\u7D44\u306E\u9032\u51FA\u6570\uFF08\u5171\u901A 1\u3001\u7D44\u5225 2,1,3\uFF09", "top", 1) + input2("\u6C7A\u52DD\u30B9\u30C6\u30FC\u30B8\u540D\uFF08\u4F8B\uFF1A\u9806\u4F4D\u6C7A\u5B9A\u6226\uFF09", "finalStageName", "") + select2("\u6C7A\u52DD\u65B9\u5F0F", "finalKind", [{ id: "league", name: "\u6C7A\u52DD\u30EA\u30FC\u30B0" }, { id: "bracket", name: "\u6C7A\u52DD\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8" }, { id: "rank", name: "\u9806\u4F4D\u5225\u6C7A\u52DD\u30EA\u30FC\u30B0" }]) + button3("\u4E88\u9078\u7D50\u679C\u304B\u3089\u6C7A\u52DD\u3092\u4F5C\u6210", "promote"));
       const s2 = t.stages.find((s3) => s3.id === sid);
@@ -110319,10 +110844,18 @@ async function render() {
     }
   }
   if (page === "matches") {
+    if (calendarTour !== t.id) {
+      calendarTour = t.id;
+      scheduleDay = "";
+    }
+    if (!t.competitionDays?.some((d) => d.date === scheduleDay)) scheduleDay = "";
     const progress = new Map(progressStatus(t).map((p) => [p.id, p]));
     const complete = t.matches.filter((m) => m.status === "completed").length, total = t.matches.filter((m) => m.status !== "bye").length;
     html = section("\u5927\u4F1A\u306E\u9032\u884C", `<div class="stats"><div><b>${complete}</b>\u7D42\u4E86</div><div><b>${total - complete}</b>\u672A\u7D42\u4E86</div></div><div class="row">${input2("\u958B\u59CB\u6642\u523B", "start", "09:00", "time")}${input2("\u4E88\u5B9A\u6642\u9593\uFF08\u5206\uFF09", "duration", 20, "number")}${input2("\u9593\u9694\uFF08\u5206\uFF09", "gap", 0, "number") + input2("\u5FC5\u8981\u4F11\u61A9\uFF08\u5206\uFF09", "rest", t.restMinutes || 0, "number") + select2("\u9032\u884C\u65B9\u5F0F", "scheduleMode", [{ id: "flow", name: "\u6D41\u3057\u8FBC\u307F" }, { id: "fixed", name: "\u56FA\u5B9A\u6642\u523B" }], t.scheduleMode || "flow")}</div><div class="actions">${button3("\u4E88\u5B9A\u8868\u3092\u81EA\u52D5\u4F5C\u6210", "schedule") + (!scheduleNumberingLocked(t) ? button3("\u73FE\u5728\u306E\u4E88\u5B9A\u9806\u3067\u518D\u63A1\u756A", "renumberSchedule") : "")}${button3("\u7A7A\u304D\u30B3\u30FC\u30C8\u3078\u81EA\u52D5\u547C\u51FA", "flow")}</div><p class="muted">\u30B3\u30FC\u30C8\u672A\u8A18\u9332\u306E\u7D42\u4E86\u8A66\u5408\u306F\u7D50\u679C\u3092\u4FDD\u3063\u305F\u5C65\u6B74\u3068\u3057\u3066\u6271\u3044\u3001\u4ECA\u5F8C\u306E\u4E88\u5B9A\u3078\u518D\u914D\u7F6E\u3057\u307E\u305B\u3093\u3002\u4E88\u5B9A\u8868\u306F\u52DD\u3061\u4E0A\u304C\u308A\u5019\u88DC\u306E\u91CD\u8907\u3082\u56DE\u907F\u3057\u307E\u3059\u3002\u81EA\u52D5\u547C\u51FA\u306F\u73FE\u5728\u547C\u51FA\u30FB\u8A66\u5408\u4E2D\u306E\u9078\u624B\u3068\u30B3\u30FC\u30C8\u3092\u4FDD\u8B77\u3057\u307E\u3059\u3002</p>`);
-    html += section("\u30B3\u30FC\u30C8\u5225\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB", button3("\u4E88\u5B9A\u8868", "plannedView") + button3("\u9032\u884C\u72B6\u6CC1", "progressView") + timetable(t, showProgress) + "<p>\u300C\u2020\u300D\u306F\u672A\u5272\u5F53\u306E\u4EEE\u8868\u793A\u3067\u3059\u3002\u8A66\u5408\u756A\u53F7\u304B\u3089\u5BFE\u6226\u8A73\u7D30\u30FB\u5B9F\u969B\u306E\u5272\u5F53\u3092\u64CD\u4F5C\u3067\u304D\u307E\u3059\u3002</p>");
+    html += section("\u30B3\u30FC\u30C8\u5225\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB", calendarPanel(t) + (t.competitionDays?.length ? select2("\u8868\u793A\u3059\u308B\u958B\u50AC\u65E5", "scheduleDay", [{ id: "", name: "\u5168\u65E5\u7A0B" }, ...t.competitionDays.map((d, i) => ({ id: d.date, name: i + 1 + "\u65E5\u76EE " + d.date }))], scheduleDay) + table9(["\u958B\u50AC\u65E5", "\u8A66\u5408\u6570", "\u7D42\u4E86", "\u6B8B\u308A"], [...t.competitionDays.map((d) => ({ date: d.date, items: t.matches.filter((m) => m.status !== "bye" && plannedDate(t, m) === d.date) })), { date: "\u65E5\u7A0B\u672A\u6307\u5B9A", items: t.matches.filter((m) => m.status !== "bye" && !plannedDate(t, m)) }].filter((d) => d.items.length || d.date !== "\u65E5\u7A0B\u672A\u6307\u5B9A").map((d) => {
+      const done3 = d.items.filter(finished).length;
+      return [d.date, d.items.length, done3, d.items.length - done3];
+    })) : "") + button3("\u4E88\u5B9A\u8868", "plannedView") + button3("\u9032\u884C\u72B6\u6CC1", "progressView") + timetable(t, showProgress, scheduleDay || void 0) + "<p>\u300C\u2020\u300D\u306F\u672A\u5272\u5F53\u306E\u4EEE\u8868\u793A\u3067\u3059\u3002\u8A66\u5408\u756A\u53F7\u304B\u3089\u5BFE\u6226\u8A73\u7D30\u30FB\u5B9F\u969B\u306E\u5272\u5F53\u3092\u64CD\u4F5C\u3067\u304D\u307E\u3059\u3002</p>");
     if (!t.events.some((e) => e.id === boardEvent)) boardEvent = t.events[0]?.id || "";
     html += section("\u5BFE\u6226\u8868", select2("\u5BFE\u6226\u8868\u306E\u7A2E\u76EE", "boardEvent", t.events.map((e) => ({ id: e.id, name: e.code ? e.code + "\u3000" + e.name : e.name })), boardEvent) + stageForms(t, t.stages.filter((s2) => s2.eventId === boardEvent && !s2.exchange), allBoards ? Infinity : 12) + (!allBoards ? button3("\u5BFE\u6226\u8868\u3092\u5168\u4EF6\u8868\u793A", "boardExpand") : ""));
     const filtered = t.matches.filter((m) => m.status !== "bye" && (!matchEvent || m.eventId === matchEvent) && (!matchSearch || label(m, t).includes(matchSearch) || [m.left, m.right].some((id) => (lookupEntry(id)?.name || "").includes(matchSearch))));
@@ -110379,7 +110912,16 @@ async function render() {
   }
   if (page === "results") html += section(
     "\u500B\u5225PDF\u51FA\u529B",
-    select2("\u5E33\u7968", "pdfKind", [{ id: "draw", name: "\u9078\u629E\u7A2E\u76EE\u306E\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u7D44\u5408\u305B" }, { id: "bracket", name: "\u9078\u629E\u7A2E\u76EE\u306E\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u7D50\u679C" }, { id: "results", name: "\u9078\u629E\u7A2E\u76EE\u306E\u8A66\u5408\u7D50\u679C\u4E00\u89A7" }, { id: "all-courts", name: "\u5168\u30B3\u30FC\u30C8\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB" }, { id: "court", name: "\u30B3\u30FC\u30C8\u5225\u4E88\u5B9A\u8868" }]) + select2("\u30B3\u30FC\u30C8\u5225\u4E88\u5B9A\u8868\u306E\u30B3\u30FC\u30C8", "pdfCourt", Array.from({ length: t.courts }, (_2, i) => ({ id: String(i + 1), name: i + 1 + "\u30B3\u30FC\u30C8" }))) + select2("\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB\u306E\u7528\u7D19", "pdfOrientation", [{ id: "portrait", name: "A4\u7E26" }, { id: "landscape", name: "A4\u6A2A" }]) + `<div class="actions"><label><input type="checkbox" id="pdfNames"> \u9078\u624B\u540D</label><label><input type="checkbox" id="pdfClubs"> \u6240\u5C5E</label><label><input type="checkbox" id="pdfStatus"> \u9032\u884C\u72B6\u614B</label></div>` + button3("\u9078\u629E\u3057\u305FPDF\u3092\u4F5C\u6210", "preparePdf")
+    select2("\u5E33\u7968", "pdfKind", [{ id: "draw", name: "\u9078\u629E\u7A2E\u76EE\u306E\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u7D44\u5408\u305B" }, { id: "bracket", name: "\u9078\u629E\u7A2E\u76EE\u306E\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u7D50\u679C" }, { id: "results", name: "\u9078\u629E\u7A2E\u76EE\u306E\u8A66\u5408\u7D50\u679C\u4E00\u89A7" }, { id: "all-courts", name: "\u5168\u30B3\u30FC\u30C8\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB" }, { id: "court", name: "\u30B3\u30FC\u30C8\u5225\u4E88\u5B9A\u8868" }]) + select2("\u30B3\u30FC\u30C8\u5225\u4E88\u5B9A\u8868\u306E\u30B3\u30FC\u30C8", "pdfCourt", Array.from({ length: Math.max(t.courts, ...(t.competitionDays ?? []).map((d) => d.courts)) }, (_2, i) => ({ id: String(i + 1), name: i + 1 + "\u30B3\u30FC\u30C8" }))) + select2("\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB\u306E\u7528\u7D19", "pdfOrientation", [{ id: "portrait", name: "A4\u7E26" }, { id: "landscape", name: "A4\u6A2A" }]) + select2("\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB\u306E\u5185\u5BB9", "pdfPreset", [{ id: "simple", name: "\u7C21\u6613\u7248 \xB7 \u8A66\u5408\u756A\u53F7\u3068\u6642\u523B" }, { id: "standard", name: "\u6A19\u6E96\u7248 \xB7 \u9078\u624B\u540D\u3082\u8868\u793A" }, { id: "detail", name: "\u8A73\u7D30\u7248 \xB7 \u9078\u624B\u540D\u30FB\u6240\u5C5E\u30FB\u9032\u884C\u72B6\u614B" }, { id: "custom", name: "\u30AB\u30B9\u30BF\u30E0" }]) + select2("\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB\u306E\u5206\u5272", "pdfSplit", [
+      { id: "one", name: "\u5168\u65E5\u7A0B\u30921\u30DA\u30FC\u30B8" },
+      { id: "days", name: "\u958B\u50AC\u65E5\u3054\u3068" },
+      { id: "boundaries", name: "\u8A66\u5408\u756A\u53F7\u304B\u3089\u65B0\u30DA\u30FC\u30B8" },
+      { id: "events", name: "\u7A2E\u76EE\u3054\u3068" },
+      { id: "stages", name: "\u30B9\u30C6\u30FC\u30B8\u3054\u3068" },
+      { id: "rounds", name: "\u30E9\u30A6\u30F3\u30C9\u3054\u3068" },
+      { id: "times", name: "\u6307\u5B9A\u65E5\u6642\u304B\u3089\u65B0\u30DA\u30FC\u30B8" },
+      { id: "ranges", name: "\u30DA\u30FC\u30B8\u3054\u3068\u306B\u7BC4\u56F2\u30FB\u8A66\u5408\u3092\u6307\u5B9A" }
+    ], t.printSplit?.kind ?? "one") + `<label for="pdfSplitText">\u5206\u5272\u306E\u8A73\u7D30</label><textarea id="pdfSplitText" rows="3">${esc(formatPrintSplit(t, t.printSplit))}</textarea><p>\u8A66\u5408\u756A\u53F7\u6307\u5B9A\u306F BS-41 \u306E\u3088\u3046\u306B\u6307\u5B9A\u3057\u3001\u8907\u6570\u5883\u754C\u306F1\u884C\u305A\u3064\u5165\u529B\u3002\u65E5\u6642\u306F YYYY-MM-DD HH:MM\u3002\u7BC4\u56F2\u306F\u300C\u30DA\u30FC\u30B8\u898B\u51FA\u3057 | BS:best:8; GS:matches:GS-1,GS-3\u300D\u30921\u884C\u305A\u3064\u3002\u672A\u6307\u5B9A\u306F\u5225\u30DA\u30FC\u30B8\u306B\u6B8B\u3057\u307E\u3059\u3002</p>` + rangeGuide(t) + button3("PDF\u5206\u5272\u8A2D\u5B9A\u3092\u4FDD\u5B58", "savePdfSplit") + `<div class="actions"><label><input type="checkbox" id="pdfNames"> \u9078\u624B\u540D</label><label><input type="checkbox" id="pdfClubs"> \u6240\u5C5E</label><label><input type="checkbox" id="pdfStatus"> \u9032\u884C\u72B6\u614B</label></div>` + button3("\u9078\u629E\u3057\u305FPDF\u3092\u4F5C\u6210", "preparePdf")
   );
   if (page === "results") {
     const sheets2 = t.matches.filter((m) => m.eventId === eid && m.left && m.right && m.status !== "bye" && eventOf(t, m.eventId).type !== "team");
@@ -110400,7 +110942,7 @@ async function render() {
     html = section("\u5916\u90E8\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7", `<p>\u5185\u90E8\u30B9\u30CA\u30C3\u30D7\u30B7\u30E7\u30C3\u30C8\u306F\u76F4\u8FD120\u4E16\u4EE3\u3067\u3059\u3002\u7AEF\u672B\u6545\u969C\u30FB\u30D6\u30E9\u30A6\u30B6\u30C7\u30FC\u30BF\u6D88\u53BB\u306B\u306F\u5916\u90E8\u30D5\u30A1\u30A4\u30EB\u304C\u5FC5\u8981\u3067\u3059\u3002</p><div class="actions">${button3("\u5927\u4F1A\u30D5\u30A1\u30A4\u30EB\u3092\u4F5C\u6210", "export")}${button3("\u8A3A\u65AD\u30ED\u30B0\u51FA\u529B", "logs")}${button3("\u4FDD\u5B58\u9818\u57DF\u306E\u72B6\u614B", "storageInfo")}${button3("\u4FDD\u5B58\u3092\u518D\u8A66\u884C", "retry", retry ? "" : "disabled")}</div><div id="downloadArea"></div><p id="storageInfo"></p>`) + section("\u5FA9\u5143\u30FB\u30E1\u30A4\u30F3\u30B5\u30D6\u7167\u5408", `<input type="file" id="importFile" accept=".bdmt"><div class="actions">${button3("\u5225\u5927\u4F1A\u3068\u3057\u3066\u5FA9\u5143", "import")}${button3("\u73FE\u5728\u306E\u5927\u4F1A\u3068\u7167\u5408", "compare")}</div><div id="comparison"></div>`) + section("\u5185\u90E8\u30B9\u30CA\u30C3\u30D7\u30B7\u30E7\u30C3\u30C8", '<ul class="snapshot-list">' + snapshots.map((s2) => `<li><strong>${esc(t.name)}</strong><span>\u66F4\u65B0 ${s2.revision}\u3000${esc(new Date(s2.savedAt).toLocaleString("ja-JP"))}</span>${button3("\u5225\u5927\u4F1A\u3078\u5FA9\u5143", "snapshot", `data-id="${esc(s2.id)}"`)}</li>`).join("") + "</ul>") + section("\u524A\u9664\u6E08\u307F\u5927\u4F1A\u306E\u6551\u51FA", button3("\u524A\u9664\u6E08\u307F\u4E00\u89A7\u3092\u8868\u793A", "trash") + '<div id="trashList"></div>');
   }
   $2("main").innerHTML = heading + html;
-  if (page === "matches") mountVirtualTimetable($2("main"), t, showProgress);
+  if (page === "matches") mountVirtualTimetable($2("main"), t, showProgress, scheduleDay || void 0);
   mountBracketZoom($2("main"), bracketViews);
   await restoreDraft();
   syncGamePickers();
@@ -110518,6 +111060,92 @@ async function act(action, b) {
     return;
   }
   switch (action) {
+    case "bulkPreview": {
+      const team = val2("bulkTeam"), text2 = val2("bulkMembers"), original = t;
+      const copy = structuredClone(original);
+      initializeRegistration(copy);
+      const preview = previewTeamBatch(copy, team, text2);
+      const invalid = preview.result.some((r) => r.error), dup2 = preview.result.some((r) => r.duplicate);
+      const panel = document.createElement("dialog");
+      panel.className = "player-picker";
+      panel.innerHTML = "<h2>\u4E00\u62EC\u767B\u9332\u30D7\u30EC\u30D3\u30E5\u30FC</h2><p>" + esc(preview.team.name) + " \xB7 " + preview.result.length + '\u540D</p><div class="picker-options">' + table9(["\u9806\u4F4D", "\u6C0F\u540D", "\u3075\u308A\u304C\u306A", "\u78BA\u8A8D"], preview.result.map((r) => [r.rank, esc(r.name), esc(r.kana), esc(r.error || (r.duplicate ? "\u540C\u540D\u5019\u88DC" : ""))])) + "</div>" + (dup2 ? '<label><input type="checkbox" data-duplicates> \u540C\u540D\u5019\u88DC\u3092\u78BA\u8A8D\u3057\u3001\u5225\u306E\u9078\u624B\u3068\u3057\u3066\u767B\u9332\u3059\u308B</label>' : "") + "<button data-commit " + (invalid ? "disabled" : "") + ">\u9078\u624B\u3092\u4E00\u62EC\u767B\u9332</button><button data-close>\u623B\u3063\u3066\u4FEE\u6B63</button>";
+      document.body.append(panel);
+      panel.addEventListener("close", () => panel.remove());
+      panel.querySelector("[data-close]").addEventListener("click", () => panel.close());
+      panel.querySelector("[data-commit]").addEventListener("click", async () => {
+        try {
+          ensure(t?.id === original.id && t.revision === original.revision, "\u5927\u4F1A\u304C\u5909\u308F\u308A\u307E\u3057\u305F\u3002\u518D\u5EA6\u30D7\u30EC\u30D3\u30E5\u30FC\u3057\u3066\u304F\u3060\u3055\u3044");
+          const accepted = !!panel.querySelector("[data-duplicates]")?.checked;
+          ensure(!dup2 || accepted, "\u540C\u540D\u5019\u88DC\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
+          panel.close();
+          await mutate("\u30C1\u30FC\u30E0\u5185\u9078\u624B\u3092\u4E00\u62EC\u767B\u9332", (c) => commitTeamBatch(c, team, text2, accepted));
+        } catch (error2) {
+          notice(String(error2), true);
+        }
+      });
+      panel.showModal();
+      break;
+    }
+    case "regPairRank":
+      await mutate("\u30C1\u30FC\u30E0\u5185\u30DA\u30A2\u9806\u4F4D\u3092\u4FDD\u5B58", (c) => {
+        initializeRegistration(c);
+        rankPair(c, b.dataset.event, Number(b.dataset.pair), num("pairRank" + b.dataset.id));
+      });
+      break;
+    case "calendarExample": {
+      const first = t.date, base = Date.parse(first);
+      ensure(Number.isFinite(base), "\u958B\u50AC\u65E5\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
+      const second = new Date(base + 864e5).toISOString().slice(0, 10);
+      $2("competitionDays").value = first + " | 09:00 | 17:00 | " + t.courts + " | 10 | *:best:8\n" + second + " | 09:00 | 17:00 | " + t.courts + " | 10 | *:all";
+      notice("2\u65E5\u9593\u306E\u5165\u529B\u4F8B\u3067\u3059\u3002\u65E5\u4ED8\u3068\u5BFE\u8C61\u3092\u8ABF\u6574\u3057\u3066\u304B\u3089\u4FDD\u5B58\u3057\u3066\u304F\u3060\u3055\u3044");
+      break;
+    }
+    case "calendarSave": {
+      const days2 = parseDays(t, val2("competitionDays"));
+      ensure(new Set(days2.map((d) => d.date)).size === days2.length, "\u958B\u50AC\u65E5\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
+      if (t.matches.some((m) => m.court) && !confirm("\u958B\u50AC\u65E5\u304C\u5909\u308F\u308B\u672A\u958B\u59CB\u8A66\u5408\u306E\u5272\u5F53\u3092\u89E3\u9664\u3057\u307E\u3059\u3002\u7D9A\u3051\u307E\u3059\u304B\uFF1F")) break;
+      await mutate("\u958B\u50AC\u65E5\u7A0B\u3092\u4FDD\u5B58", (c) => configureCalendar(c, days2));
+      break;
+    }
+    case "calendarMove": {
+      const id = val2("calendarMatch"), date = val2("calendarDestination");
+      ensure(id && date, "\u8A66\u5408\u3068\u79FB\u52D5\u5148\u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+      if (!confirm("\u9078\u629E\u3057\u305F\u8A66\u5408\u3092\u79FB\u52D5\u3057\u3001\u30B3\u30FC\u30C8\u30FB\u6642\u523B\u3092\u672A\u5272\u5F53\u306B\u3057\u307E\u3059\u3002\u8A66\u5408\u756A\u53F7\u3068\u7D44\u5408\u305B\u306F\u4FDD\u6301\u3057\u307E\u3059\u3002")) break;
+      await mutate("\u8A66\u5408\u306E\u958B\u50AC\u65E5\u3092\u79FB\u52D5", (c) => moveFixture(c, id, date));
+      break;
+    }
+    case "seedShortcut":
+      if (registrationTournament !== t.id) {
+        registrationTournament = t.id;
+        expandedRegistration.clear();
+        registrationTeam = "";
+        registrationPlayer = "";
+        registrationPage = 0;
+      }
+      expandedRegistration.add("seeds");
+      expandedRegistration.add(eid);
+      page = "manage";
+      await render();
+      document.querySelector('details[data-reg-panel="' + eid + '"]')?.scrollIntoView();
+      break;
+    case "seedArchiveHelp":
+      page = "tools";
+      await render();
+      document.querySelector('[data-act="xClearEventDraws"]')?.closest("details")?.setAttribute("open", "");
+      document.querySelector('[data-act="xClearEventDraws"]')?.scrollIntoView();
+      break;
+    case "savePdfSplit": {
+      const split = parsePrintSplit(t, val2("pdfSplit"), val2("pdfSplitText"));
+      splitTimetable(t, split);
+      const controls = ["pdfKind", "pdfCourt", "pdfOrientation", "pdfPreset"].map((id) => [id, val2(id)]);
+      const checkboxes = ["pdfNames", "pdfClubs", "pdfStatus"].map((id) => [id, checked(id)]);
+      await mutate("PDF\u5206\u5272\u8A2D\u5B9A\u3092\u4FDD\u5B58", (c) => {
+        c.printSplit = split;
+      });
+      for (const [id, value] of controls) $2(id).value = value;
+      for (const [id, value] of checkboxes) $2(id).checked = value;
+      break;
+    }
     case "regFilter":
       registrationTeam = val2("regFilter");
       registrationPage = 0;
@@ -110594,8 +111222,12 @@ async function act(action, b) {
               n2 = allocatePair(ev);
               old.pairNo = n2;
             }
-            ensure(n2 !== null, "\u30DA\u30A2\u304C\u3042\u308A\u307E\u305B\u3093");
-            changePair(c, id, n2, ids);
+            if (n2 === null) {
+              ensure(pairScope(c, ids) === "@mixed", "\u7570\u306A\u308B\u6240\u5C5E\u306E\u9078\u624B\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+              ensure(!ev.pairDrafts?.some((p2) => p2.players.some((id2) => ids.includes(id2))), "\u5148\u306B\u65E2\u5B58\u306E\u6B20\u54E1\u67A0\u3092\u89E3\u9664\u3057\u3066\u304F\u3060\u3055\u3044");
+              ensure(!c.stages.some((s2) => s2.eventId === id), "\u7D44\u5408\u305B\u5F8C\u306F\u5909\u66F4\u3067\u304D\u307E\u305B\u3093");
+              addPair(c, ev, allocatePair(ev), ids);
+            } else changePair(c, id, n2, ids);
           });
         } catch (e2) {
           notice(String(e2), true);
@@ -110695,30 +111327,30 @@ async function act(action, b) {
       ensure(visualDraft && visualDraft.eventId === eid, "\u7A7A\u767D\u8868\u3092\u958B\u304D\u76F4\u3057\u3066\u304F\u3060\u3055\u3044");
       const d = visualDraft, entries = eventOf(t, eid).entries;
       ensure(d.slots.filter(Boolean).length === entries.length && new Set(d.slots.filter(Boolean)).size === entries.length, "\u767B\u9332\u9078\u624B\u3092\u91CD\u8907\u306A\u304F\u5168\u54E1\u914D\u7F6E\u3057\u3066\u304F\u3060\u3055\u3044");
-      let order2;
+      let order;
       if (d.kind === "bracket") {
         ensure(d.slots.every((id, i) => i % 2 === 1 || id || d.slots[i + 1]), "\u4E21\u5074\u304C\u7A7A\u6B04\u306E\u8A66\u5408\u306F\u4F5C\u308C\u307E\u305B\u3093");
         const positions = rankPositions(d.slots.length).map((n2) => n2 - 1);
-        order2 = Array(entries.length).fill("");
-        for (let i = 0; i < positions.length; i++) if (positions[i] < entries.length) order2[positions[i]] = d.slots[i];
-        ensure(order2.every(Boolean), "BYE\u306E\u4F4D\u7F6E\u3092\u5909\u66F4\u3059\u308B\u5834\u5408\u306F\u3001\u6A19\u6E96\u306E\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u751F\u6210\u5F8C\u306B\u67A0\u3092\u8ABF\u6574\u3057\u3066\u304F\u3060\u3055\u3044");
+        order = Array(entries.length).fill("");
+        for (let i = 0; i < positions.length; i++) if (positions[i] < entries.length) order[positions[i]] = d.slots[i];
+        ensure(order.every(Boolean), "BYE\u306E\u4F4D\u7F6E\u3092\u5909\u66F4\u3059\u308B\u5834\u5408\u306F\u3001\u6A19\u6E96\u306E\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u751F\u6210\u5F8C\u306B\u67A0\u3092\u8ABF\u6574\u3057\u3066\u304F\u3060\u3055\u3044");
       } else {
         const q = Math.floor(entries.length / d.count), r = entries.length % d.count;
         const groups = [];
-        let offset = 0;
+        let offset2 = 0;
         for (let i = 0; i < d.count; i++) {
           const size = q + (i < r ? 1 : 0);
-          groups.push(d.slots.slice(offset, offset + size));
-          offset += size;
+          groups.push(d.slots.slice(offset2, offset2 + size));
+          offset2 += size;
         }
-        order2 = [];
-        for (let row = 0; order2.length < entries.length; row++) for (let col = 0; col < d.count; col++) {
+        order = [];
+        for (let row = 0; order.length < entries.length; row++) for (let col = 0; col < d.count; col++) {
           const g = row % 2 ? d.count - 1 - col : col;
-          if (groups[g][row]) order2.push(groups[g][row]);
+          if (groups[g][row]) order.push(groups[g][row]);
         }
       }
       await mutate("\u7A7A\u767D\u8868\u304B\u3089\u7D44\u5408\u305B\u3092\u78BA\u5B9A", (c) => {
-        sid = draw(c, eid, d.kind, d.count, "manual", order2, void 0, void 0, !!d.excludeClub).id;
+        sid = draw(c, eid, d.kind, d.count, "manual", order, void 0, void 0, !!d.excludeClub).id;
       });
       visualDraft = void 0;
       break;
@@ -111033,12 +111665,13 @@ async function act(action, b) {
       await mutate("\u30E9\u30F3\u30AF\u672A\u5165\u529B\u3060\u3051\u518D\u62BD\u9078", (c) => redrawUnranked(c, sid));
       break;
     case "draw":
+      if (val2("mode") === "seed" && !currentEvent()?.entries.some((p) => p.seed) && !confirm("\u3053\u306E\u7A2E\u76EE\u306B\u306F\u30B7\u30FC\u30C9\u304C\u3042\u308A\u307E\u305B\u3093\u3002\u30B7\u30FC\u30C9\u306A\u3057\u3067\u7D44\u5408\u305B\u3092\u4F5C\u6210\u3057\u307E\u3059\u304B\uFF1F")) break;
       await mutate("\u7D44\u5408\u305B\u4F5C\u6210", (c) => {
         if (val2("kind") === "exchange") {
-          const [hour, minute] = val2("exchangeEnd").split(":").map(Number);
+          const [hour, minute2] = val2("exchangeEnd").split(":").map(Number);
           const byLevel = checked("exchangeLevels");
           ensure(!byLevel || eventOf(c, eid).entries.every((p) => p.level?.trim()), "\u30EC\u30D9\u30EB\u5225\u306E\u5834\u5408\u306F\u5168\u53C2\u52A0\u8005\u306E\u30EC\u30D9\u30EB\u3092\u767B\u9332\u3057\u3066\u304F\u3060\u3055\u3044");
-          sid = exchangeSetup(c, eid, { mode: val2("exchangeMode"), target: num("exchangeTarget"), byLevel, ranked: checked("exchangeRanked"), end: val2("exchangeEnd") ? hour * 60 + minute : 0, duration: num("exchangeDuration"), created: Date.now(), inactive: [] });
+          sid = exchangeSetup(c, eid, { mode: val2("exchangeMode"), target: num("exchangeTarget"), byLevel, ranked: checked("exchangeRanked"), end: val2("exchangeEnd") ? hour * 60 + minute2 : 0, duration: num("exchangeDuration"), created: Date.now(), inactive: [] });
         } else sid = draw(c, eid, val2("kind"), num("groupCount"), val2("mode"), void 0, void 0, void 0, val2("kind") === "league" && checked("excludeClub")).id;
       });
       break;
@@ -111134,7 +111767,7 @@ async function act(action, b) {
       const m = t.matches.find((m2) => m2.id === b.dataset.id);
       const panel = document.createElement("dialog");
       panel.className = "player-picker schedule-picker";
-      const opts = Array.from({ length: Math.max(1, t.courts) }, (_2, i) => `<option value="${i + 1}" ${m.court === i + 1 ? "selected" : ""}>${i + 1}\u30B3\u30FC\u30C8</option>`).join("");
+      const opts = Array.from({ length: calendarCourts(t, plannedDate(t, m)) }, (_2, i) => `<option value="${i + 1}" ${m.court === i + 1 ? "selected" : ""}>${i + 1}\u30B3\u30FC\u30C8</option>`).join("");
       panel.innerHTML = `<form method="dialog"><h2>${esc(label(m, t))} \u8A66\u5408\u8A73\u7D30</h2><p>${name5(m.left)}\uFF08${esc(lookupEntry(m.left)?.club)}\uFF09 \u5BFE ${name5(m.right)}\uFF08${esc(lookupEntry(m.right)?.club)}\uFF09</p><p>\u72B6\u614B ${esc(terminationName(m) || m.status)}\u3000\u5F97\u70B9 ${esc((m.retirementGames ?? m.games).map((g) => g.join("-")).join(" / ") || "\u2014")}</p><label>\u30B3\u30FC\u30C8<select name="court"><option value="0" ${!m.court ? "selected" : ""}>\u672A\u5272\u5F53</option>${opts}</select></label><label>\u8868\u793A\u8A66\u5408\u756A\u53F7<input name="displayNumber" type="text" maxlength="48" required value="${esc(label(m, t))}"></label><label>\u8A66\u5408\u9806<input name="order" type="number" min="1" step="1" required value="${m.queueOrder ?? m.number}"></label><label>\u958B\u59CB\u4E88\u5B9A\u6642\u523B<input name="time" type="time" value="${String(Math.floor(m.time / 60)).padStart(2, "0")}:${String(m.time % 60).padStart(2, "0")}"></label><label>\u6240\u8981\u6642\u9593\uFF08\u5206\uFF09<input name="duration" type="number" min="1" step="1" required value="${m.duration}"></label><div class="actions"><button type="button" data-score ${m.left && m.right ? "" : "disabled"}>\u5F97\u70B9\u5165\u529B\u3078</button>${m.status === "waiting" && m.left && m.right ? '<button type="button" data-call>\u3053\u306E\u8A66\u5408\u3092\u547C\u51FA</button>' : m.status === "called" ? '<button type="button" data-start>\u8A66\u5408\u958B\u59CB</button>' : ""}${m.status === "waiting" && t.stages.some((s2) => s2.id === m.stageId && s2.exchange) && (m.court || m.queueOrder) ? '<button type="button" data-unpin>\u4E88\u5B9A\u30FB\u624B\u52D5\u9806\u3092\u89E3\u9664</button>' : ""}<button type="button" data-cancel>\u30AD\u30E3\u30F3\u30BB\u30EB</button><button type="submit" value="save" ${m.status === "waiting" ? "" : "disabled"}>\u5909\u66F4\u3092\u4FDD\u5B58</button></div></form>`;
       document.body.append(panel);
       panel.querySelector("[data-score]").addEventListener("click", async () => {
@@ -111177,14 +111810,14 @@ async function act(action, b) {
         panel.remove();
         if (!save) return;
         try {
-          const displayNumber = String(data2.get("displayNumber") || "").trim(), order2 = Number(data2.get("order")), court = Number(data2.get("court")), duration = Number(data2.get("duration")), timeText = String(data2.get("time") || "");
+          const displayNumber = String(data2.get("displayNumber") || "").trim(), order = Number(data2.get("order")), court = Number(data2.get("court")), duration = Number(data2.get("duration")), timeText = String(data2.get("time") || "");
           ensure(/^\d{2}:\d{2}$/.test(timeText), "\u958B\u59CB\u4E88\u5B9A\u6642\u523B\u304C\u4E0D\u6B63\u3067\u3059");
           const [hh, mm] = timeText.split(":").map(Number);
           ensure(hh >= 0 && hh < 24 && mm >= 0 && mm < 60, "\u958B\u59CB\u4E88\u5B9A\u6642\u523B\u306F00:00\u301C23:59\u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
           ensure(displayNumber.length > 0 && displayNumber.length <= 48, "\u8868\u793A\u8A66\u5408\u756A\u53F7\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
-          ensure(Number.isInteger(order2) && order2 > 0 && Number.isInteger(court) && court >= 0 && Number.isInteger(duration) && duration > 0, "\u6570\u5024\u304C\u4E0D\u6B63\u3067\u3059");
+          ensure(Number.isInteger(order) && order > 0 && Number.isInteger(court) && court >= 0 && Number.isInteger(duration) && duration > 0, "\u6570\u5024\u304C\u4E0D\u6B63\u3067\u3059");
           const effectiveLabel = displayNumber === label(m, t) ? m.displayNumber : displayNumber;
-          await mutate("\u8A66\u5408\u9806\u5E8F\u30FB\u30B3\u30FC\u30C8\u7DE8\u96C6", (c) => editSchedule(c, m.id, { queueOrder: order2, displayNumber: effectiveLabel, court, time: hh * 60 + mm, duration }));
+          await mutate("\u8A66\u5408\u9806\u5E8F\u30FB\u30B3\u30FC\u30C8\u7DE8\u96C6", (c) => editSchedule(c, m.id, { queueOrder: order, displayNumber: effectiveLabel, court, time: hh * 60 + mm, duration }));
         } catch (err2) {
           notice(String(err2), true);
         } finally {
@@ -111405,10 +112038,38 @@ async function act(action, b) {
       const kinds = ["draw", "bracket", "results", "all-courts", "court"];
       const kind = kinds.find((x) => x === val2("pdfKind"));
       ensure(kind, "\u5E33\u7968\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
-      let warning = "";
-      const bytes = await generateReportPdf(t, await loadPdfFont(), { kind, eventId: eid, court: num("pdfCourt"), schedule: { landscape: kind === "all-courts" && val2("pdfOrientation") === "landscape", names: checked("pdfNames"), clubs: checked("pdfClubs"), status: checked("pdfStatus"), warn: (message) => warning = message } });
-      offerPdf(bytes, "\u5927\u4F1A\u5E33\u7968-" + kind + ".pdf");
-      notice(warning || "PDF\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F\u3002\u4FDD\u5B58\u5148\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044", !!warning);
+      let warning = "", pages = [];
+      const split = kind === "all-courts" ? parsePrintSplit(t, val2("pdfSplit"), val2("pdfSplitText")) : void 0;
+      const bytes = await generateReportPdf(t, await loadPdfFont(), { kind, eventId: eid, court: num("pdfCourt"), schedule: { landscape: kind === "all-courts" && val2("pdfOrientation") === "landscape", names: checked("pdfNames"), clubs: checked("pdfClubs"), status: checked("pdfStatus"), split, warn: (message) => warning = message, preview: (value) => pages = value } });
+      const deliver = () => {
+        offerPdf(bytes, "\u5927\u4F1A\u5E33\u7968-" + kind + ".pdf");
+        notice(warning || "PDF\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F\u3002\u4FDD\u5B58\u5148\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044", !!warning);
+      };
+      if (!pages.length) {
+        deliver();
+        break;
+      }
+      const panel = document.createElement("dialog");
+      panel.className = "player-picker";
+      panel.innerHTML = "<h2>\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB\u51FA\u529B\u30D7\u30EC\u30D3\u30E5\u30FC</h2><p>" + pages.length + "\u30DA\u30FC\u30B8 \xB7 \u8A66\u5408\u91CD\u8907\u306A\u3057</p>" + (warning ? '<p class="error">' + esc(warning) + "</p>" : "") + '<div class="picker-options">' + table9(["\u9801\u30FB\u5BFE\u8C61", "\u65E5\u7A0B\u30FB\u7A2E\u76EE", "\u8A66\u5408\u756A\u53F7\u306E\u7BC4\u56F2", "\u8A66\u5408\u6570 / \u672A\u5272\u5F53", "\u6587\u5B57\u30B5\u30A4\u30BA"], pages.map((r, i) => [
+        esc(i + 1 + " " + r.title),
+        esc([...r.dates, ...r.events].join(" \uFF0F ")),
+        esc(r.range),
+        r.count + " / " + r.unassigned,
+        "\u756A\u53F7 " + r.minNumber.toFixed(1) + "pt" + (r.minDetail ? " / \u8A73\u7D30 " + r.minDetail.toFixed(1) + "pt" : "")
+      ])) + "</div><button data-confirm>\u3053\u306E\u5185\u5BB9\u3067\u51FA\u529B</button><button data-edit>\u8A2D\u5B9A\u3078\u623B\u308B</button>";
+      document.body.append(panel);
+      panel.addEventListener("close", () => panel.remove());
+      panel.querySelector("[data-confirm]").addEventListener("click", () => {
+        panel.close();
+        deliver();
+      });
+      panel.querySelector("[data-edit]").addEventListener("click", () => {
+        panel.close();
+        notice("\u51FA\u529B\u8A2D\u5B9A\u3092\u8ABF\u6574\u3067\u304D\u307E\u3059");
+      });
+      panel.showModal();
+      notice(warning || "\u51FA\u529B\u7BC4\u56F2\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044", !!warning);
       break;
     }
     case "print":
@@ -111478,6 +112139,19 @@ document.addEventListener("change", async (e) => {
   const el = e.target;
   syncChosenGame(e);
   updateScorePreview();
+  if (el.id === "scheduleDay") {
+    scheduleDay = el.value;
+    await render();
+    return;
+  }
+  if (el.id === "pdfPreset") {
+    const v2 = el.value;
+    for (const [id, on2] of [["pdfNames", v2 === "standard" || v2 === "detail"], ["pdfClubs", v2 === "detail"], ["pdfStatus", v2 === "detail"]]) {
+      if (v2 !== "custom") $2(id).checked = on2;
+    }
+  } else if (["pdfNames", "pdfClubs", "pdfStatus"].includes(el.id)) {
+    $2("pdfPreset").value = "custom";
+  }
   if (el.id === "boardEvent") {
     boardEvent = el.value;
     await render();
