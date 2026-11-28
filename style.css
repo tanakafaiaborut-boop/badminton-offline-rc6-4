@@ -69,3 +69,20 @@ button.rc5-num{background:#fff;border:1px solid #94a3b8;min-height:44px;white-sp
 .game-columns label{min-width:0;margin:0}
 .game-columns select{width:100%;min-width:0;min-height:44px;font-size:16px}
 select[hidden]{display:none!important}
+
+.order-rubber{min-width:0;margin:.75rem 0;padding:.65rem;border:1px solid #e0dadd;border-radius:.55rem}
+.order-rubber legend{font-weight:700;color:#a72135}
+.order-teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}
+.order-teams>div{min-width:0;overflow-wrap:anywhere}
+.order-teams select{display:block;width:100%;min-width:0;margin:.25rem 0 .6rem}
+.order-teams strong{display:block;padding:.35rem 0}
+.board-league-controls{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+
+.cm-panel{min-width:0;overflow-wrap:anywhere}
+.cm-panel ul,.cm-panel ol{padding-inline-start:1.35rem}
+.cm-panel li{margin:.25rem 0}
+.cm-panel select,.cm-panel textarea{max-width:100%}
+.cm-checks{display:grid;gap:.3rem;grid-template-columns:repeat(auto-fit,minmax(min(11rem,100%),1fr));margin:.5rem 0}
+.cm-check{display:flex;align-items:center;gap:.55rem;min-height:2.3rem}
+.cm-check input{width:auto;min-width:1.15rem;flex:none}
+.cm-dialog [data-error]{color:#a72135}

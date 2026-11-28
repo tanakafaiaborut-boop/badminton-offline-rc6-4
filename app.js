@@ -23915,14 +23915,14 @@ var require_trees = __commonJS({
       s2.pending_buf[s2.pending++] = w & 255;
       s2.pending_buf[s2.pending++] = w >>> 8 & 255;
     }
-    function send_bits(s2, value, length) {
+    function send_bits(s2, value2, length) {
       if (s2.bi_valid > Buf_size - length) {
-        s2.bi_buf |= value << s2.bi_valid & 65535;
+        s2.bi_buf |= value2 << s2.bi_valid & 65535;
         put_short(s2, s2.bi_buf);
-        s2.bi_buf = value >> Buf_size - s2.bi_valid;
+        s2.bi_buf = value2 >> Buf_size - s2.bi_valid;
         s2.bi_valid += length - Buf_size;
       } else {
-        s2.bi_buf |= value << s2.bi_valid & 65535;
+        s2.bi_buf |= value2 << s2.bi_valid & 65535;
         s2.bi_valid += length;
       }
     }
@@ -25531,7 +25531,7 @@ var require_deflate = __commonJS({
       var wrap2;
       var avail;
       var next;
-      var input3;
+      var input4;
       var tmpDict;
       if (!strm || !strm.state) {
         return Z_STREAM_ERROR;
@@ -25559,7 +25559,7 @@ var require_deflate = __commonJS({
       }
       avail = strm.avail_in;
       next = strm.next_in;
-      input3 = strm.input;
+      input4 = strm.input;
       strm.avail_in = dictLength;
       strm.next_in = 0;
       strm.input = dictionary2;
@@ -25584,7 +25584,7 @@ var require_deflate = __commonJS({
       s2.match_length = s2.prev_length = MIN_MATCH - 1;
       s2.match_available = 0;
       strm.next_in = next;
-      strm.input = input3;
+      strm.input = input4;
       strm.avail_in = avail;
       s2.wrap = wrap2;
       return Z_OK;
@@ -25901,23 +25901,23 @@ var require_deflate2 = __commonJS({
       this.err = status2;
       this.msg = this.strm.msg;
     };
-    function deflate(input3, options2) {
+    function deflate(input4, options2) {
       var deflator = new Deflate(options2);
-      deflator.push(input3, true);
+      deflator.push(input4, true);
       if (deflator.err) {
         throw deflator.msg || msg[deflator.err];
       }
       return deflator.result;
     }
-    function deflateRaw(input3, options2) {
+    function deflateRaw(input4, options2) {
       options2 = options2 || {};
       options2.raw = true;
-      return deflate(input3, options2);
+      return deflate(input4, options2);
     }
-    function gzip(input3, options2) {
+    function gzip(input4, options2) {
       options2 = options2 || {};
       options2.gzip = true;
-      return deflate(input3, options2);
+      return deflate(input4, options2);
     }
     exports.Deflate = Deflate;
     exports.deflate = deflate;
@@ -25956,10 +25956,10 @@ var require_inffast = __commonJS({
       var dist;
       var from;
       var from_source;
-      var input3, output;
+      var input4, output;
       state = strm.state;
       _in = strm.next_in;
-      input3 = strm.input;
+      input4 = strm.input;
       last2 = _in + (strm.avail_in - 5);
       _out = strm.next_out;
       output = strm.output;
@@ -25979,9 +25979,9 @@ var require_inffast = __commonJS({
       top:
         do {
           if (bits4 < 15) {
-            hold += input3[_in++] << bits4;
+            hold += input4[_in++] << bits4;
             bits4 += 8;
-            hold += input3[_in++] << bits4;
+            hold += input4[_in++] << bits4;
             bits4 += 8;
           }
           here = lcode[hold & lmask];
@@ -25998,7 +25998,7 @@ var require_inffast = __commonJS({
                 op &= 15;
                 if (op) {
                   if (bits4 < op) {
-                    hold += input3[_in++] << bits4;
+                    hold += input4[_in++] << bits4;
                     bits4 += 8;
                   }
                   len2 += hold & (1 << op) - 1;
@@ -26006,9 +26006,9 @@ var require_inffast = __commonJS({
                   bits4 -= op;
                 }
                 if (bits4 < 15) {
-                  hold += input3[_in++] << bits4;
+                  hold += input4[_in++] << bits4;
                   bits4 += 8;
-                  hold += input3[_in++] << bits4;
+                  hold += input4[_in++] << bits4;
                   bits4 += 8;
                 }
                 here = dcode[hold & dmask];
@@ -26022,10 +26022,10 @@ var require_inffast = __commonJS({
                       dist = here & 65535;
                       op &= 15;
                       if (bits4 < op) {
-                        hold += input3[_in++] << bits4;
+                        hold += input4[_in++] << bits4;
                         bits4 += 8;
                         if (bits4 < op) {
-                          hold += input3[_in++] << bits4;
+                          hold += input4[_in++] << bits4;
                           bits4 += 8;
                         }
                       }
@@ -26304,8 +26304,8 @@ var require_inftrees = __commonJS({
       64,
       64
     ];
-    module.exports = function inflate_table(type, lens, lens_index, codes, table10, table_index, work, opts) {
-      var bits4 = opts.bits;
+    module.exports = function inflate_table(type, lens, lens_index, codes, table10, table_index, work, opts2) {
+      var bits4 = opts2.bits;
       var len2 = 0;
       var sym = 0;
       var min = 0, max3 = 0;
@@ -26346,7 +26346,7 @@ var require_inftrees = __commonJS({
       if (max3 === 0) {
         table10[table_index++] = 1 << 24 | 64 << 16 | 0;
         table10[table_index++] = 1 << 24 | 64 << 16 | 0;
-        opts.bits = 1;
+        opts2.bits = 1;
         return 0;
       }
       for (min = 1; min < max3; min++) {
@@ -26465,7 +26465,7 @@ var require_inftrees = __commonJS({
       if (huff !== 0) {
         table10[next + huff] = len2 - drop << 24 | 64 << 16 | 0;
       }
-      opts.bits = root;
+      opts2.bits = root;
       return 0;
     };
   }
@@ -26721,7 +26721,7 @@ var require_inflate = __commonJS({
     }
     function inflate2(strm, flush) {
       var state;
-      var input3, output;
+      var input4, output;
       var next;
       var put;
       var have, left;
@@ -26737,7 +26737,7 @@ var require_inflate = __commonJS({
       var len2;
       var ret;
       var hbuf = new utils3.Buf8(4);
-      var opts;
+      var opts2;
       var n2;
       var order = (
         /* permutation of code lengths */
@@ -26754,7 +26754,7 @@ var require_inflate = __commonJS({
       output = strm.output;
       left = strm.avail_out;
       next = strm.next_in;
-      input3 = strm.input;
+      input4 = strm.input;
       have = strm.avail_in;
       hold = state.hold;
       bits4 = state.bits;
@@ -26774,7 +26774,7 @@ var require_inflate = __commonJS({
                   break inf_leave;
                 }
                 have--;
-                hold += input3[next++] << bits4;
+                hold += input4[next++] << bits4;
                 bits4 += 8;
               }
               if (state.wrap & 2 && hold === 35615) {
@@ -26824,7 +26824,7 @@ var require_inflate = __commonJS({
                   break inf_leave;
                 }
                 have--;
-                hold += input3[next++] << bits4;
+                hold += input4[next++] << bits4;
                 bits4 += 8;
               }
               state.flags = hold;
@@ -26856,7 +26856,7 @@ var require_inflate = __commonJS({
                   break inf_leave;
                 }
                 have--;
-                hold += input3[next++] << bits4;
+                hold += input4[next++] << bits4;
                 bits4 += 8;
               }
               if (state.head) {
@@ -26879,7 +26879,7 @@ var require_inflate = __commonJS({
                   break inf_leave;
                 }
                 have--;
-                hold += input3[next++] << bits4;
+                hold += input4[next++] << bits4;
                 bits4 += 8;
               }
               if (state.head) {
@@ -26902,7 +26902,7 @@ var require_inflate = __commonJS({
                     break inf_leave;
                   }
                   have--;
-                  hold += input3[next++] << bits4;
+                  hold += input4[next++] << bits4;
                   bits4 += 8;
                 }
                 state.length = hold;
@@ -26935,7 +26935,7 @@ var require_inflate = __commonJS({
                     }
                     utils3.arraySet(
                       state.head.extra,
-                      input3,
+                      input4,
                       next,
                       // extra field is limited to 65536 bytes
                       // - no need for additional size check
@@ -26945,7 +26945,7 @@ var require_inflate = __commonJS({
                     );
                   }
                   if (state.flags & 512) {
-                    state.check = crc32(state.check, input3, copy, next);
+                    state.check = crc32(state.check, input4, copy, next);
                   }
                   have -= copy;
                   next += copy;
@@ -26965,13 +26965,13 @@ var require_inflate = __commonJS({
                 }
                 copy = 0;
                 do {
-                  len2 = input3[next + copy++];
+                  len2 = input4[next + copy++];
                   if (state.head && len2 && state.length < 65536) {
                     state.head.name += String.fromCharCode(len2);
                   }
                 } while (len2 && copy < have);
                 if (state.flags & 512) {
-                  state.check = crc32(state.check, input3, copy, next);
+                  state.check = crc32(state.check, input4, copy, next);
                 }
                 have -= copy;
                 next += copy;
@@ -26991,13 +26991,13 @@ var require_inflate = __commonJS({
                 }
                 copy = 0;
                 do {
-                  len2 = input3[next + copy++];
+                  len2 = input4[next + copy++];
                   if (state.head && len2 && state.length < 65536) {
                     state.head.comment += String.fromCharCode(len2);
                   }
                 } while (len2 && copy < have);
                 if (state.flags & 512) {
-                  state.check = crc32(state.check, input3, copy, next);
+                  state.check = crc32(state.check, input4, copy, next);
                 }
                 have -= copy;
                 next += copy;
@@ -27016,7 +27016,7 @@ var require_inflate = __commonJS({
                     break inf_leave;
                   }
                   have--;
-                  hold += input3[next++] << bits4;
+                  hold += input4[next++] << bits4;
                   bits4 += 8;
                 }
                 if (hold !== (state.check & 65535)) {
@@ -27040,7 +27040,7 @@ var require_inflate = __commonJS({
                   break inf_leave;
                 }
                 have--;
-                hold += input3[next++] << bits4;
+                hold += input4[next++] << bits4;
                 bits4 += 8;
               }
               strm.adler = state.check = zswap32(hold);
@@ -27078,7 +27078,7 @@ var require_inflate = __commonJS({
                   break inf_leave;
                 }
                 have--;
-                hold += input3[next++] << bits4;
+                hold += input4[next++] << bits4;
                 bits4 += 8;
               }
               state.last = hold & 1;
@@ -27115,7 +27115,7 @@ var require_inflate = __commonJS({
                   break inf_leave;
                 }
                 have--;
-                hold += input3[next++] << bits4;
+                hold += input4[next++] << bits4;
                 bits4 += 8;
               }
               if ((hold & 65535) !== (hold >>> 16 ^ 65535)) {
@@ -27146,7 +27146,7 @@ var require_inflate = __commonJS({
                 if (copy === 0) {
                   break inf_leave;
                 }
-                utils3.arraySet(output, input3, next, copy, put);
+                utils3.arraySet(output, input4, next, copy, put);
                 have -= copy;
                 next += copy;
                 left -= copy;
@@ -27162,7 +27162,7 @@ var require_inflate = __commonJS({
                   break inf_leave;
                 }
                 have--;
-                hold += input3[next++] << bits4;
+                hold += input4[next++] << bits4;
                 bits4 += 8;
               }
               state.nlen = (hold & 31) + 257;
@@ -27189,7 +27189,7 @@ var require_inflate = __commonJS({
                     break inf_leave;
                   }
                   have--;
-                  hold += input3[next++] << bits4;
+                  hold += input4[next++] << bits4;
                   bits4 += 8;
                 }
                 state.lens[order[state.have++]] = hold & 7;
@@ -27201,9 +27201,9 @@ var require_inflate = __commonJS({
               }
               state.lencode = state.lendyn;
               state.lenbits = 7;
-              opts = { bits: state.lenbits };
-              ret = inflate_table(CODES, state.lens, 0, 19, state.lencode, 0, state.work, opts);
-              state.lenbits = opts.bits;
+              opts2 = { bits: state.lenbits };
+              ret = inflate_table(CODES, state.lens, 0, 19, state.lencode, 0, state.work, opts2);
+              state.lenbits = opts2.bits;
               if (ret) {
                 strm.msg = "invalid code lengths set";
                 state.mode = BAD;
@@ -27226,7 +27226,7 @@ var require_inflate = __commonJS({
                     break inf_leave;
                   }
                   have--;
-                  hold += input3[next++] << bits4;
+                  hold += input4[next++] << bits4;
                   bits4 += 8;
                 }
                 if (here_val < 16) {
@@ -27241,7 +27241,7 @@ var require_inflate = __commonJS({
                         break inf_leave;
                       }
                       have--;
-                      hold += input3[next++] << bits4;
+                      hold += input4[next++] << bits4;
                       bits4 += 8;
                     }
                     hold >>>= here_bits;
@@ -27262,7 +27262,7 @@ var require_inflate = __commonJS({
                         break inf_leave;
                       }
                       have--;
-                      hold += input3[next++] << bits4;
+                      hold += input4[next++] << bits4;
                       bits4 += 8;
                     }
                     hold >>>= here_bits;
@@ -27278,7 +27278,7 @@ var require_inflate = __commonJS({
                         break inf_leave;
                       }
                       have--;
-                      hold += input3[next++] << bits4;
+                      hold += input4[next++] << bits4;
                       bits4 += 8;
                     }
                     hold >>>= here_bits;
@@ -27307,9 +27307,9 @@ var require_inflate = __commonJS({
                 break;
               }
               state.lenbits = 9;
-              opts = { bits: state.lenbits };
-              ret = inflate_table(LENS, state.lens, 0, state.nlen, state.lencode, 0, state.work, opts);
-              state.lenbits = opts.bits;
+              opts2 = { bits: state.lenbits };
+              ret = inflate_table(LENS, state.lens, 0, state.nlen, state.lencode, 0, state.work, opts2);
+              state.lenbits = opts2.bits;
               if (ret) {
                 strm.msg = "invalid literal/lengths set";
                 state.mode = BAD;
@@ -27317,9 +27317,9 @@ var require_inflate = __commonJS({
               }
               state.distbits = 6;
               state.distcode = state.distdyn;
-              opts = { bits: state.distbits };
-              ret = inflate_table(DISTS, state.lens, state.nlen, state.ndist, state.distcode, 0, state.work, opts);
-              state.distbits = opts.bits;
+              opts2 = { bits: state.distbits };
+              ret = inflate_table(DISTS, state.lens, state.nlen, state.ndist, state.distcode, 0, state.work, opts2);
+              state.distbits = opts2.bits;
               if (ret) {
                 strm.msg = "invalid distances set";
                 state.mode = BAD;
@@ -27346,7 +27346,7 @@ var require_inflate = __commonJS({
                 output = strm.output;
                 left = strm.avail_out;
                 next = strm.next_in;
-                input3 = strm.input;
+                input4 = strm.input;
                 have = strm.avail_in;
                 hold = state.hold;
                 bits4 = state.bits;
@@ -27368,7 +27368,7 @@ var require_inflate = __commonJS({
                   break inf_leave;
                 }
                 have--;
-                hold += input3[next++] << bits4;
+                hold += input4[next++] << bits4;
                 bits4 += 8;
               }
               if (here_op && (here_op & 240) === 0) {
@@ -27387,7 +27387,7 @@ var require_inflate = __commonJS({
                     break inf_leave;
                   }
                   have--;
-                  hold += input3[next++] << bits4;
+                  hold += input4[next++] << bits4;
                   bits4 += 8;
                 }
                 hold >>>= last_bits;
@@ -27423,7 +27423,7 @@ var require_inflate = __commonJS({
                     break inf_leave;
                   }
                   have--;
-                  hold += input3[next++] << bits4;
+                  hold += input4[next++] << bits4;
                   bits4 += 8;
                 }
                 state.length += hold & (1 << state.extra) - 1;
@@ -27447,7 +27447,7 @@ var require_inflate = __commonJS({
                   break inf_leave;
                 }
                 have--;
-                hold += input3[next++] << bits4;
+                hold += input4[next++] << bits4;
                 bits4 += 8;
               }
               if ((here_op & 240) === 0) {
@@ -27466,7 +27466,7 @@ var require_inflate = __commonJS({
                     break inf_leave;
                   }
                   have--;
-                  hold += input3[next++] << bits4;
+                  hold += input4[next++] << bits4;
                   bits4 += 8;
                 }
                 hold >>>= last_bits;
@@ -27493,7 +27493,7 @@ var require_inflate = __commonJS({
                     break inf_leave;
                   }
                   have--;
-                  hold += input3[next++] << bits4;
+                  hold += input4[next++] << bits4;
                   bits4 += 8;
                 }
                 state.offset += hold & (1 << state.extra) - 1;
@@ -27564,7 +27564,7 @@ var require_inflate = __commonJS({
                     break inf_leave;
                   }
                   have--;
-                  hold |= input3[next++] << bits4;
+                  hold |= input4[next++] << bits4;
                   bits4 += 8;
                 }
                 _out -= left;
@@ -27592,7 +27592,7 @@ var require_inflate = __commonJS({
                     break inf_leave;
                   }
                   have--;
-                  hold += input3[next++] << bits4;
+                  hold += input4[next++] << bits4;
                   bits4 += 8;
                 }
                 if (hold !== (state.total & 4294967295)) {
@@ -27931,18 +27931,18 @@ var require_inflate2 = __commonJS({
       this.err = status2;
       this.msg = this.strm.msg;
     };
-    function inflate2(input3, options2) {
+    function inflate2(input4, options2) {
       var inflator = new Inflate2(options2);
-      inflator.push(input3, true);
+      inflator.push(input4, true);
       if (inflator.err) {
         throw inflator.msg || msg[inflator.err];
       }
       return inflator.result;
     }
-    function inflateRaw(input3, options2) {
+    function inflateRaw(input4, options2) {
       options2 = options2 || {};
       options2.raw = true;
-      return inflate2(input3, options2);
+      return inflate2(input4, options2);
     }
     exports.Inflate = Inflate2;
     exports.inflate = inflate2;
@@ -30560,6 +30560,8 @@ function validate(t2) {
   if (t2.scheduleNumbersLocked !== void 0) ensure(typeof t2.scheduleNumbersLocked === "boolean", "\u63A1\u756A\u30ED\u30C3\u30AF\u304C\u4E0D\u6B63");
   for (const e of t2.events) for (const p of e.entries) ensure(p.registrationTeamId === void 0 || e.type === "team" && teamIds.has(p.registrationTeamId), "\u56E3\u4F53\u306E\u30C1\u30FC\u30E0\u53C2\u7167\u304C\u4E0D\u6B63");
   const masterIds = new Set(t2.roster?.map((p) => p.id)), members = new Map((t2.roster ?? []).map((p) => [p.id, p.teamId ?? ""]));
+  const rosterLinks = (t2.roster ?? []).flatMap((p) => p.masterId === void 0 ? [] : [p.masterId]);
+  ensure(new Set(rosterLinks).size === rosterLinks.length && rosterLinks.every((id) => typeof id === "string" && id.length > 0 && id.length <= 120), "\u5171\u901A\u540D\u7C3F\u53C2\u7167\u304C\u4E0D\u6B63\u3067\u3059");
   for (const p of t2.roster ?? []) ensure((p.teamId === void 0 || teamIds.has(p.teamId)) && (p.teamRank === void 0 || Number.isSafeInteger(p.teamRank) && p.teamRank > 0) && (p.age === void 0 || Number.isInteger(p.age) && p.age >= 0 && p.age <= 120) && [p.kana, p.grade, p.gender].every((x) => x === void 0 || typeof x === "string" && x.length <= 120), "\u53C2\u52A0\u8005\u5C5E\u6027\u304C\u4E0D\u6B63");
   for (const e of t2.events) {
     if (e.entryEligibility) {
@@ -30710,8 +30712,8 @@ function matchNumber(m, t2) {
   return m.displayNumber || code3 + "-" + (m.exchangeSequence ?? eventOrdinals(t2).ordinals.get(m.id) ?? m.number);
 }
 var terminationName = (m) => m.termination === "retirement" ? "\u9014\u4E2D\u68C4\u6A29" : m.termination === "withdrawal" ? "\u68C4\u6A29" : m.walkover ? "\u4E0D\u6226\u52DD" : "";
-function setEventCode(t2, eventId, value) {
-  const e = eventOf(t2, eventId), code3 = value.normalize("NFKC").trim().toUpperCase();
+function setEventCode(t2, eventId, value2) {
+  const e = eventOf(t2, eventId), code3 = value2.normalize("NFKC").trim().toUpperCase();
   ensure(code3.length <= 12 && eventCodePattern.test(code3), "\u7A2E\u76EE\u8A18\u53F7\u306F\u65E5\u672C\u8A9E\u30FB\u82F1\u6570\u5B57\u30FB\u4E2D\u9593\u30CF\u30A4\u30D5\u30F3\u30671\u301C12\u6587\u5B57");
   ensure(!t2.events.some((x) => x.id !== eventId && x.code === code3), "\u7A2E\u76EE\u8A18\u53F7\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
   const matches = t2.matches.filter((m) => m.eventId === eventId), ordinals = eventOrdinals(t2).ordinals;
@@ -30728,8 +30730,8 @@ function setEventCode(t2, eventId, value) {
   for (const m of matches) if (m.displayNumber && /^(?:No\.)?\d+$/.test(m.displayNumber)) delete m.displayNumber;
   e.code = code3;
 }
-function renameStage(t2, id, value) {
-  const stage = t2.stages.find((s2) => s2.id === id), next = value.trim();
+function renameStage(t2, id, value2) {
+  const stage = t2.stages.find((s2) => s2.id === id), next = value2.trim();
   ensure(stage, "\u30B9\u30C6\u30FC\u30B8\u304C\u3042\u308A\u307E\u305B\u3093");
   ensure(next.length > 0 && next.length <= 120, "\u30B9\u30C6\u30FC\u30B8\u540D\u306F1\u301C120\u6587\u5B57");
   const old = stage.name;
@@ -30738,6 +30740,65 @@ function renameStage(t2, id, value) {
     if (group.name === old) group.name = next;
     else if (group.name.startsWith(old + " ")) group.name = next + group.name.slice(old.length);
   }
+}
+
+// src/display.ts
+var matchStateName = {
+  waiting: "\u5F85\u6A5F",
+  called: "\u547C\u51FA\u6E08",
+  playing: "\u8A66\u5408\u4E2D",
+  completed: "\u7D42\u4E86",
+  bye: "\u521D\u6226\u514D\u9664"
+};
+function playerDirectory(t2) {
+  const people = /* @__PURE__ */ new Map();
+  for (const p of t2.roster ?? []) if (p.id !== p.name || !/^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i.test(p.id)) people.set(p.id, p);
+  for (const e of t2.events) for (const entry of e.entries) {
+    if (e.type === "team") continue;
+    const names = entry.name.split(/[／/]/).map((name6) => name6.trim());
+    entry.players.forEach((id, i) => {
+      if (!people.has(id) && (entry.players.length === 1 || names.length === entry.players.length))
+        people.set(id, { id, name: names[i], club: entry.club });
+    });
+  }
+  return people;
+}
+function playerText(directory, id, teamPlayers = []) {
+  const player = directory.get(id);
+  if (player) return player.name;
+  if (id.startsWith("TEAM-PENDING-")) return "\u9078\u624B\u672A\u767B\u9332";
+  if (/^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i.test(id))
+    return teamPlayers.includes(id) ? "\u6C0F\u540D\u672A\u767B\u9332\uFF08\u767B\u9332\u9806 " + (teamPlayers.indexOf(id) + 1) + "\uFF09" : "\u6C0F\u540D\u672A\u767B\u9332";
+  return id || "\u672A\u9078\u629E";
+}
+function playerMatchRows(t2) {
+  const directory = playerDirectory(t2), rows = /* @__PURE__ */ new Map();
+  const events2 = new Map(t2.events.map((e) => [e.id, e])), entries = new Map(t2.events.flatMap((e) => e.entries).map((e) => [e.id, e]));
+  for (const m of t2.matches) {
+    if (m.status === "bye") continue;
+    for (const side of ["left", "right"]) {
+      const entry = entries.get(m[side]), event = events2.get(m.eventId);
+      if (!entry || !event) continue;
+      const team = event.type === "team";
+      const ids = team ? [...new Set(m.rubbers?.flatMap((r) => r[side]) ?? [])] : entry.players;
+      for (const id of ids) {
+        const p = directory.get(id);
+        const row = rows.get(id) ?? { name: playerText(directory, id, entry.players), club: p?.club || entry.club || (team ? entry.name : ""), numbers: /* @__PURE__ */ new Set() };
+        row.numbers.add(String(matchNumber(m, t2)) + (team ? "\uFF08\u78BA\u5B9A\u30AA\u30FC\u30C0\u30FC\uFF09" : ""));
+        rows.set(id, row);
+      }
+    }
+  }
+  return [...rows.values()].map((row) => [row.name, row.club, [...row.numbers].join(" / ")]);
+}
+function rubberReportRows(t2, m, directory = playerDirectory(t2)) {
+  return (m.rubbers ?? []).map((r, i) => [
+    i + 1 + "\u672C\u76EE " + (r.left.length === 2 ? "\u30C0\u30D6\u30EB\u30B9" : "\u30B7\u30F3\u30B0\u30EB\u30B9"),
+    r.left.map((id) => playerText(directory, id, entryOf(t2, m.left)?.players)).join(" \uFF0F "),
+    r.right.map((id) => playerText(directory, id, entryOf(t2, m.right)?.players)).join(" \uFF0F "),
+    r.games.map((g) => g.join("-")).join("/"),
+    r.winner ? entryOf(t2, r.winner === "left" ? m.left : m.right)?.name || (r.winner === "left" ? "\u5DE6\u5074" : "\u53F3\u5074") : "\u672A\u78BA\u5B9A"
+  ]);
 }
 
 // src/atomic.ts
@@ -30753,7 +30814,7 @@ function reconcile(target, source) {
     const out = target && typeof target === "object" && !Array.isArray(target) ? target : {};
     const row = source;
     for (const key4 of Object.keys(out)) if (!Object.hasOwn(row, key4)) delete out[key4];
-    for (const [key4, value] of Object.entries(row)) Object.defineProperty(out, key4, { value: reconcile(Object.hasOwn(out, key4) ? out[key4] : void 0, value), writable: true, enumerable: true, configurable: true });
+    for (const [key4, value2] of Object.entries(row)) Object.defineProperty(out, key4, { value: reconcile(Object.hasOwn(out, key4) ? out[key4] : void 0, value2), writable: true, enumerable: true, configurable: true });
     return out;
   }
   return source;
@@ -30796,9 +30857,9 @@ function rangeMatches(t2, m, r) {
   return false;
 }
 function rangeProblems(t2, r) {
-  if (r.eventId && !t2.events.some((e) => e.id === r.eventId)) return "\u7A2E\u76EE\u304C\u524A\u9664\u3055\u308C\u3066\u3044\u307E\u3059\uFF1A" + r.eventId;
-  if ((r.kind === "stage" || r.kind === "through-stage") && !t2.stages.some((m) => m.id === r.id)) return "\u30B9\u30C6\u30FC\u30B8\u304C\u524A\u9664\u3055\u308C\u3066\u3044\u307E\u3059\uFF1A" + r.id;
-  if (r.kind === "through-match" && !t2.matches.some((m) => m.id === r.id && m.status !== "bye")) return "\u5206\u5272\u5BFE\u8C61\u8A66\u5408\u304C\u524A\u9664\u3055\u308C\u3066\u3044\u307E\u3059\uFF1A" + r.id;
+  if (r.eventId && !t2.events.some((e) => e.id === r.eventId)) return "\u5BFE\u8C61\u7A2E\u76EE\u304C\u524A\u9664\u3055\u308C\u3066\u3044\u307E\u3059";
+  if ((r.kind === "stage" || r.kind === "through-stage") && !t2.stages.some((m) => m.id === r.id)) return "\u5BFE\u8C61\u30B9\u30C6\u30FC\u30B8\u304C\u524A\u9664\u3055\u308C\u3066\u3044\u307E\u3059";
+  if (r.kind === "through-match" && !t2.matches.some((m) => m.id === r.id && m.status !== "bye")) return "\u5206\u5272\u5BFE\u8C61\u8A66\u5408\u304C\u524A\u9664\u3055\u308C\u3066\u3044\u307E\u3059";
   if (r.kind === "matches" && r.ids.some((id) => !t2.matches.some((m) => m.id === id && m.status !== "bye"))) return "\u624B\u52D5\u6307\u5B9A\u306B\u5931\u52B9\u3057\u305F\u8A66\u5408\u304C\u3042\u308A\u307E\u3059";
   return "";
 }
@@ -30809,6 +30870,7 @@ function plannedDate(t2, m) {
 }
 var dayConfig = (t2, date) => t2.competitionDays?.find((d) => d.date === date);
 var calendarCourts = (t2, date) => dayConfig(t2, date)?.courts ?? t2.courts;
+var timetableCourts = (t2) => t2.competitionDays?.length ? Math.max(...t2.competitionDays.map((day) => day.courts)) : t2.courts;
 var protectedFixture = (m) => m.status !== "waiting" && m.status !== "bye" || m.startedAt !== void 0 || !!m.rubbers?.some((r) => r.games.length);
 function moveFixture(t2, id, date) {
   return atomicMutation(t2, (d) => moveFixtureInto(d, id, date));
@@ -30906,8 +30968,8 @@ function timetableRows(t2, fixtures = t2.matches, columns = t2.courts) {
 }
 function splitTimetable(t2, split = { kind: "one" }) {
   const all = scheduleOrder(t2), pages = [];
-  const add = (title2, fixtures) => {
-    if (fixtures.length) pages.push({ title: title2, fixtures });
+  const add = (title3, fixtures) => {
+    if (fixtures.length) pages.push({ title: title3, fixtures });
   };
   if (split.kind === "one") pages.push({ title: "\u5168\u65E5\u7A0B", fixtures: all });
   else if (split.kind === "boundaries") {
@@ -30937,8 +30999,8 @@ function splitTimetable(t2, split = { kind: "one" }) {
     const groups = /* @__PURE__ */ new Map();
     for (const m of all) {
       const e = t2.events.find((e2) => e2.id === m.eventId), stage = t2.stages.find((s2) => s2.id === m.stageId);
-      const [key4, title2] = split.kind === "days" ? [plannedDate(t2, m) ?? "\u672A\u6307\u5B9A", plannedDate(t2, m) ?? "\u65E5\u7A0B\u672A\u6307\u5B9A"] : split.kind === "events" ? [e.id, e.name] : split.kind === "stages" ? [stage.id, e.name + " " + stage.name] : [stage.id + ":" + m.round, e.name + " " + stage.name + " \u7B2C" + m.round + "\u30E9\u30A6\u30F3\u30C9"];
-      const g = groups.get(key4) ?? { title: title2, fixtures: [] };
+      const [key4, title3] = split.kind === "days" ? [plannedDate(t2, m) ?? "\u672A\u6307\u5B9A", plannedDate(t2, m) ?? "\u65E5\u7A0B\u672A\u6307\u5B9A"] : split.kind === "events" ? [e.id, e.name] : split.kind === "stages" ? [stage.id, e.name + " " + stage.name] : [stage.id + ":" + m.round, e.name + " " + stage.name + " \u7B2C" + m.round + "\u30E9\u30A6\u30F3\u30C9"];
+      const g = groups.get(key4) ?? { title: title3, fixtures: [] };
       g.fixtures.push(m);
       groups.set(key4, g);
     }
@@ -30950,92 +31012,1690 @@ function splitTimetable(t2, split = { kind: "one" }) {
   return pages.length ? pages : [{ title: "\u5168\u65E5\u7A0B", fixtures: [] }];
 }
 
-// src/calendar-input.ts
-function fixtureId(t2, text2) {
-  const match = t2.matches.find((m) => m.status !== "bye" && (m.id === text2 || String(matchNumber(m, t2)) === text2));
-  ensure(match, "\u6307\u5B9A\u3055\u308C\u305F\u8A66\u5408\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093\uFF1A" + text2);
-  return match.id;
+// src/roster.ts
+function collectRoster(t2) {
+  const players = new Map((t2.roster ?? []).map((p) => [p.id, p]));
+  const clubs = new Set(t2.clubs ?? []);
+  for (const e of t2.events) for (const entry of e.entries) {
+    if (entry.club.trim() && !(e.type === "doubles" && entry.pairNo !== void 0 && entry.club.includes("\uFF0F"))) clubs.add(entry.club.trim());
+    const separator = /[／/\n]/;
+    const names = entry.name.split(separator.test(entry.name) ? separator : /・/).map((n2) => n2.trim());
+    entry.players.forEach((id, i) => {
+      if (id.startsWith("TEAM-PENDING-")) return;
+      const name6 = e.type === "singles" ? entry.name : e.type === "doubles" && names.length === 2 ? names[i] : id;
+      const old = players.get(id);
+      if (!old || e.type === "singles" && !old.teamId) players.set(id, { ...old, id, name: name6, club: entry.club, kana: old?.kana ?? entry.kana, gender: old?.gender ?? entry.gender, grade: old?.grade ?? entry.grade });
+      else if (!old.club && entry.club) players.set(id, { ...old, club: entry.club });
+    });
+  }
+  return { players: [...players.values()], clubs: [...clubs] };
 }
-function minute(text2, allowEnd = false) {
-  ensure(/^\d\d:\d\d$/.test(text2), "\u6642\u523B\u306FHH:MM\u3067\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
-  const [h, m] = text2.split(":").map(Number);
-  ensure(m < 60 && (h < 24 || allowEnd && h === 24 && m === 0), "\u6642\u523B\u304C\u4E0D\u6B63\u3067\u3059\uFF1A" + text2);
-  return h * 60 + m;
+function preserveRoster(t2) {
+  const { players, clubs } = collectRoster(t2);
+  if (players.length || t2.roster) t2.roster = players;
+  if (clubs.length || t2.clubs) t2.clubs = clubs;
 }
-var eventCode = (t2, id) => id ? t2.events.find((e) => e.id === id)?.code ?? id : "*";
-function parseRanges(t2, value) {
-  return value.split(";").map((s2) => s2.trim()).filter(Boolean).map((s2) => {
-    const [code3, kind, arg] = s2.split(":");
-    const e = t2.events.find((e2) => e2.code === code3 || e2.id === code3);
-    ensure(code3 === "*" || e, "\u7A2E\u76EE\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093\uFF1A" + code3);
-    const eventId = e?.id;
-    let r;
-    if (kind === "all" || kind === "finals") r = { kind, eventId };
-    else if (kind === "best" || kind === "round" || kind === "after-best" || kind === "after-round") {
-      const value2 = Number(arg);
-      ensure(kind.endsWith("best") ? [2, 4, 8, 16, 32, 64, 128, 256].includes(value2) : Number.isInteger(value2) && value2 >= 1 && value2 <= 32, "\u30E9\u30A6\u30F3\u30C9\u306E\u6307\u5B9A\u304C\u4E0D\u6B63\uFF1A" + s2);
-      r = { kind, eventId, value: value2 };
-    } else if (kind === "stage" || kind === "through-stage") {
-      r = { kind, eventId, id: arg };
-    } else if (kind === "through-match") r = { kind, eventId, id: fixtureId(t2, arg) };
-    else if (kind === "matches") {
-      ensure(arg, "\u624B\u52D5\u8A66\u5408\u304C\u7A7A\u6B04\u3067\u3059");
-      const ids = arg.split(",").map((x) => fixtureId(t2, x.trim()));
-      r = { kind, eventId, ids };
-    } else throw Error("\u7BC4\u56F2\u306E\u6307\u5B9A\u304C\u4E0D\u6B63\uFF1A" + s2);
-    const error2 = rangeProblems(t2, r);
-    ensure(!error2, error2);
-    return r;
+function deletionSummary(t2, id) {
+  const event = eventOf(t2, id), matches = t2.matches.filter((m) => m.eventId === id && m.status !== "bye");
+  return { name: event.name, entrants: event.entries.length, players: new Set(event.entries.flatMap((p) => p.players).filter((p) => !p.startsWith("TEAM-PENDING-"))).size, matches: matches.length, results: matches.filter((m) => m.status === "completed" || m.rubbers?.some((r) => r.games.length)).length };
+}
+function deleteEvent(t2, id) {
+  return atomicMutation(t2, (d) => {
+    eventOf(d, id);
+    preserveRoster(d);
+    const stages = new Set(d.stages.filter((s2) => s2.eventId === id).map((s2) => s2.id));
+    const groups = new Set(d.stages.filter((s2) => stages.has(s2.id)).flatMap((s2) => s2.groups.map((g) => g.id)));
+    const removed = new Set(d.matches.filter((m) => m.eventId === id).map((m) => m.id));
+    for (const a of d.archives ?? []) {
+      for (const s2 of a.stages.filter((s3) => s3.eventId === id)) s2.groups.forEach((g) => groups.add(g.id));
+      for (const m of a.matches.filter((m2) => m2.eventId === id)) removed.add(m.id);
+      a.stages = a.stages.filter((s2) => s2.eventId !== id);
+      a.matches = a.matches.filter((m) => m.eventId !== id);
+      if (a.events) a.events = a.events.filter((e) => e.id !== id);
+    }
+    ensure(d.matches.every((m) => m.eventId === id || m.deps.every((x) => !removed.has(x))), "\u4ED6\u7A2E\u76EE\u306E\u8A66\u5408\u304C\u5BFE\u8C61\u7A2E\u76EE\u3092\u53C2\u7167\u3057\u3066\u3044\u307E\u3059");
+    d.events = d.events.filter((e) => e.id !== id);
+    d.stages = d.stages.filter((s2) => !stages.has(s2.id));
+    d.matches = d.matches.filter((m) => !removed.has(m.id));
+    if (d.rulings) d.rulings = d.rulings.filter((r) => !groups.has(r.groupId));
+    if (d.corrections) d.corrections = d.corrections.filter((c) => !removed.has(c.matchId));
+    if (d.archives) d.archives = d.archives.filter((a) => a.stages.length || a.matches.length || a.events?.length);
   });
 }
-function formatRanges(t2, ranges) {
-  return ranges.map((r) => {
-    const base = eventCode(t2, r.eventId) + ":" + r.kind;
-    if ("ids" in r) return base + ":" + r.ids.join(",");
-    if ("id" in r) return base + ":" + r.id;
-    if ("value" in r) return base + ":" + r.value;
-    return base;
-  }).join("; ");
+
+// src/registration.ts
+var key = (s2) => s2.normalize("NFKC").trim().replace(/\s+/g, " ").toLowerCase();
+function registrationView(t2) {
+  const { players, clubs } = collectRoster(t2);
+  const teams = [...t2.registrationTeams ?? []];
+  for (const name6 of clubs) if (name6.trim() && name6.length <= 120 && !teams.some((x) => key(x.name) === key(name6))) {
+    let n2 = teams.length + 1;
+    while (teams.some((x) => x.id === "legacy-club-" + n2)) n2++;
+    teams.push({ id: "legacy-club-" + n2, name: name6 });
+  }
+  const byClub = new Map(teams.map((x) => [key(x.name), x.id]));
+  return { teams, players: players.map((p) => ({ ...p, teamId: p.teamId ?? byClub.get(key(p.club)) })) };
 }
-function parseDays(t2, text2) {
-  return text2.split(/\r?\n/).map((x) => x.trim()).filter(Boolean).map((line) => {
-    const parts = line.split("|").map((s2) => s2.trim());
-    const [date, start, end, courts, rest, ranges, pauses] = parts;
-    ensure((parts.length === 6 || parts.length === 7) && validDay(date), "\u958B\u50AC\u65E5\u306E\u5F62\u5F0F\u304C\u4E0D\u6B63\uFF1A" + line);
-    const breaks = pauses ? pauses.split(",").map((item) => {
-      const [start2, end2] = item.trim().split("-");
-      return { start: minute(start2), end: minute(end2, true) };
-    }).sort((a, b) => a.start - b.start) : void 0;
-    return { date, start: minute(start), end: minute(end, true), courts: Number(courts), rest: Number(rest), ranges: parseRanges(t2, ranges), breaks };
+function initializeRegistration(t2) {
+  const { teams, players } = registrationView(t2);
+  t2.registrationTeams = teams;
+  t2.roster = players;
+}
+function registerTeam(t2, name6) {
+  const normalized = name6.trim();
+  ensure(normalized && normalized.length <= 120, "\u6240\u5C5E\u30C1\u30FC\u30E0\u540D\u306F1\u301C120\u6587\u5B57\u3067\u3059");
+  const found = t2.registrationTeams.find((x) => key(x.name) === key(normalized));
+  if (found) return found;
+  const team = { id: uid(), name: normalized };
+  t2.registrationTeams.push(team);
+  return team;
+}
+function nextTeamRank(t2, teamId) {
+  return Math.max(0, ...(t2.roster ?? []).filter((p) => p.teamId === teamId).map((p) => p.teamRank ?? 0)) + 1;
+}
+function putParticipant(t2, input4, id) {
+  const name6 = input4.name.trim(), team = t2.registrationTeams.find((x) => x.id === input4.teamId);
+  ensure(name6 && name6.length <= 120 && team, "\u6C0F\u540D\u3068\u6240\u5C5E\u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+  const p = t2.roster.find((x) => x.id === id);
+  ensure(!id || p, "\u9078\u624BID\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
+  ensure(!p || p.teamId === team.id || !t2.events.some((e) => e.entries.some((x) => x.players.includes(p.id)) || e.pairDrafts?.some((x) => x.players.includes(p.id))), "\u51FA\u5834\u4E2D\u306E\u9078\u624B\u306E\u6240\u5C5E\u5909\u66F4\u306F\u5148\u306B\u30A8\u30F3\u30C8\u30EA\u30FC\u3092\u89E3\u9664\u3057\u3066\u304F\u3060\u3055\u3044");
+  const peers = t2.roster.filter((x) => x.id !== id && x.teamId === team.id && x.teamRank !== void 0);
+  const value2 = { ...input4, id: p?.id ?? uid(), name: name6, club: team.name, teamRank: input4.teamRank ?? p?.teamRank ?? nextTeamRank(t2, team.id) };
+  if (p && p.teamId === team.id && p.teamRank !== void 0 && value2.teamRank !== p.teamRank) {
+    const old = p.teamRank, next = value2.teamRank;
+    for (const peer of peers) {
+      const rank = peer.teamRank;
+      if (next < old && rank >= next && rank < old) peer.teamRank = rank + 1;
+      if (next > old && rank <= next && rank > old) peer.teamRank = rank - 1;
+    }
+  } else ensure(!peers.some((x) => x.teamRank === value2.teamRank), "\u540C\u3058\u30C1\u30FC\u30E0\u5185\u9806\u4F4D\u304C\u767B\u9332\u6E08\u307F\u3067\u3059");
+  if (p) Object.assign(p, value2);
+  else t2.roster.push(value2);
+  for (const e of t2.events.filter((e2) => !t2.stages.some((s2) => s2.eventId === e2.id))) {
+    if (e.entries.some((entry) => entry.players.includes(value2.id)) || e.pairDrafts?.some((x) => x.players.includes(value2.id))) eligible(e, value2);
+    for (const entry of e.entries.filter((e2) => e2.players.includes(value2.id))) {
+      if (e.type === "singles") Object.assign(entry, { name: value2.name, club: value2.club, kana: value2.kana, gender: value2.gender, grade: value2.grade });
+      if (e.type === "doubles" && entry.pairNo !== void 0) Object.assign(entry, pairDetails(t2, entry.players));
+    }
+  }
+  return value2;
+}
+function eligible(e, p) {
+  const q = e.entryEligibility;
+  ensure(
+    !q || (!q.gender || q.gender === p.gender) && (!q.grade || q.grade === p.grade) && (q.minAge === void 0 || p.age !== void 0 && p.age >= q.minAge) && (q.maxAge === void 0 || p.age !== void 0 && p.age <= q.maxAge),
+    e.name + " \u306E\u53C2\u52A0\u8CC7\u683C\u3092\u6E80\u305F\u3057\u307E\u305B\u3093\uFF1A" + p.name
+  );
+}
+function editable(t2, id) {
+  const e = eventOf(t2, id);
+  ensure(!t2.stages.some((s2) => s2.eventId === id), "\u7D44\u5408\u305B\u4F5C\u6210\u5F8C\u306F\u5909\u66F4\u3067\u304D\u307E\u305B\u3093\u3002\u7D44\u5408\u305B\u3092\u4FDD\u7BA1\u30FB\u53D6\u6D88\u3057\u3066\u304F\u3060\u3055\u3044");
+  return e;
+}
+function pairDetails(t2, players) {
+  const names = players.map((id) => {
+    const p = t2.roster.find((x) => x.id === id);
+    ensure(p, "\u30DA\u30A2\u306E\u9078\u624B\u304C\u3042\u308A\u307E\u305B\u3093");
+    return p;
+  });
+  const clubs = [...new Set(names.map((p) => p.club))];
+  return { name: names.map((p) => p.name).join("\uFF0F"), club: clubs.length === 1 ? clubs[0] : clubs.join("\uFF0F") };
+}
+function addPair(t2, e, number, players, rank) {
+  ensure(players.length === 2 && players.every(Boolean) && new Set(players).size === 2 && !e.entries.some((p) => p.players.some((id) => players.includes(id))), "\u30C0\u30D6\u30EB\u30B9\u306E\u69CB\u6210\u307E\u305F\u306F\u91CD\u8907\u304C\u4E0D\u6B63\u3067\u3059");
+  for (const id of players) {
+    const p = t2.roster.find((x) => x.id === id);
+    ensure(p, "\u9078\u624B\u672A\u767B\u9332");
+    eligible(e, p);
+  }
+  ensure(!e.entries.some((p) => p.pairNo === number), "\u30DA\u30A2\u756A\u53F7\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
+  if (rank === void 0) rank = nextPairRank(t2, e, players);
+  e.entries.push({ id: uid(), seed: 0, players, pairNo: number, ...rank === void 0 ? {} : { pairRank: rank }, ...pairDetails(t2, players) });
+  e.pairCounter = Math.max(e.pairCounter ?? 1, number + 1);
+}
+function setRegistration(t2, eventId, playerId, selected2) {
+  const e = editable(t2, eventId), p = t2.roster.find((x) => x.id === playerId);
+  ensure(p, "\u5927\u4F1A\u540D\u7C3F\u306B\u9078\u624B\u304C\u3042\u308A\u307E\u305B\u3093");
+  const existing = e.entries.find((x) => x.players.includes(playerId));
+  const drafts = e.pairDrafts ?? (e.pairDrafts = []);
+  const pending = drafts.findIndex((d) => d.players.includes(playerId));
+  if (e.type === "team") {
+    if (selected2 && !existing) {
+      eligible(e, p);
+      const team = t2.registrationTeams.find((x) => x.id === p.teamId);
+      ensure(team, "\u56E3\u4F53\u6226\u3067\u306F\u6240\u5C5E\u30C1\u30FC\u30E0\u3092\u767B\u9332\u3057\u3066\u304F\u3060\u3055\u3044");
+      const row = e.entries.find((r) => r.registrationTeamId === team.id) ?? e.entries.find((r) => key(r.club || r.name) === key(team.name));
+      if (row) {
+        row.registrationTeamId = team.id;
+        row.players = row.players.filter((id) => !id.startsWith("TEAM-PENDING-"));
+        row.players.push(p.id);
+      } else e.entries.push({ id: uid(), name: team.name, club: team.name, seed: 0, players: [p.id], registrationTeamId: team.id });
+    }
+    if (!selected2 && existing) {
+      existing.players = existing.players.filter((id) => id !== p.id);
+      if (!existing.players.length) e.entries = e.entries.filter((x) => x !== existing);
+    }
+    return;
+  }
+  if (e.type === "singles") {
+    if (selected2 && !existing) {
+      eligible(e, p);
+      e.entries.push({ id: uid(), players: [p.id], name: p.name, club: p.club, seed: 0, kana: p.kana, gender: p.gender, grade: p.grade });
+    }
+    if (!selected2 && existing) e.entries = e.entries.filter((x) => x !== existing);
+    return;
+  }
+  if (!selected2) {
+    if (existing) {
+      const n2 = existing.pairNo ?? allocatePair(e);
+      const currentRank = pairDisplay(t2, e, { number: existing.pairNo ?? 0, id: existing.id, players: existing.players, pairRank: existing.pairRank });
+      e.entries = e.entries.filter((x) => x !== existing);
+      drafts.push({ number: n2, players: existing.players.filter((id) => id !== playerId), pairRank: pairScope(t2, existing.players) === "@mixed" ? nextPairRank(t2, e, [existing.players.find((id) => id !== playerId)]) : currentRank });
+    } else if (pending >= 0) drafts.splice(pending, 1);
+  } else if (!existing && pending < 0) {
+    eligible(e, p);
+    const candidates2 = drafts.filter((d) => pairScope(t2, d.players) === pairScope(t2, [playerId]));
+    if (candidates2.length) {
+      const first = candidates2.sort((a, b) => a.number - b.number)[0];
+      drafts.splice(drafts.indexOf(first), 1);
+      addPair(t2, e, first.number, [...first.players, playerId], first.pairRank);
+    } else drafts.push({ number: allocatePair(e), players: [playerId], pairRank: nextPairRank(t2, e, [playerId]) });
+  }
+}
+function allocatePair(e) {
+  const n2 = Math.max(e.pairCounter ?? 1, ...e.entries.map((x) => (x.pairNo ?? 0) + 1), ...(e.pairDrafts ?? []).map((x) => x.number + 1));
+  e.pairCounter = n2 + 1;
+  return n2;
+}
+function changePair(t2, eventId, number, ids) {
+  const e = editable(t2, eventId);
+  ensure(e.type === "doubles" && ids.length === 2 && ids.every(Boolean) && new Set(ids).size === 2, "\u5225\u3005\u306E2\u540D\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+  const old = e.entries.find((p) => p.pairNo === number);
+  const draft = e.pairDrafts?.find((p) => p.number === number);
+  ensure(old || draft, "\u30DA\u30A2\u304C\u3042\u308A\u307E\u305B\u3093");
+  ensure(!e.entries.some((p) => p !== old && p.players.some((id) => ids.includes(id))) && !e.pairDrafts?.some((p) => p !== draft && p.players.some((id) => ids.includes(id))), "\u5225\u306E\u30DA\u30A2\u306B\u767B\u9332\u6E08\u307F\u306E\u9078\u624B\u306F\u5148\u306B\u89E3\u9664\u3057\u3066\u304F\u3060\u3055\u3044");
+  if (old && ids.every((id) => old.players.includes(id))) {
+    Object.assign(old, { players: ids, ...pairDetails(t2, ids) });
+    return;
+  }
+  if (old) e.entries = e.entries.filter((p) => p !== old);
+  if (draft) e.pairDrafts = e.pairDrafts.filter((p) => p !== draft);
+  addPair(t2, e, number, ids, pairScope(t2, old?.players ?? draft.players) === pairScope(t2, ids) ? old?.pairRank ?? draft?.pairRank : void 0);
+}
+function setRegistrationSeed(t2, eventId, entryId, seed) {
+  const e = eventOf(t2, eventId);
+  ensure(!t2.stages.some((s2) => s2.eventId === eventId), "\u7D44\u5408\u305B\u4F5C\u6210\u5F8C\u306F\u30B7\u30FC\u30C9\u5909\u66F4\u3067\u304D\u307E\u305B\u3093\u3002\u5148\u306B\u4FDD\u7BA1\u30FB\u53D6\u6D88\u3057\u3066\u304F\u3060\u3055\u3044");
+  const entry = e.entries.find((p) => p.id === entryId);
+  ensure(entry && Number.isSafeInteger(seed) && seed >= 0 && !e.entries.some((p) => p !== entry && seed > 0 && p.seed === seed), "\u30B7\u30FC\u30C9\u9806\u4F4D\u304C\u4E0D\u6B63\u3001\u307E\u305F\u306F\u540C\u4E00\u7A2E\u76EE\u5185\u3067\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
+  entry.seed = seed;
+}
+function assertNoPendingPairs(e) {
+  ensure(!e.pairDrafts?.length, "\u30C0\u30D6\u30EB\u30B9\u30DA\u30A2\u306B\u6B20\u54E1\u304C\u3042\u308A\u307E\u3059\u30022\u540D\u305A\u3064\u767B\u9332\u3057\u3066\u304B\u3089\u7D44\u5408\u305B\u3092\u4F5C\u6210\u3057\u3066\u304F\u3060\u3055\u3044");
+}
+function pairScope(t2, players) {
+  const byId = new Map((t2.roster ?? []).map((p) => [p.id, p]));
+  const teams = [...new Set(players.map((id) => byId.get(id)?.teamId ?? ""))];
+  return teams.length === 1 ? teams[0] : "@mixed";
+}
+function pairSlots(e) {
+  return [...e.entries.map((p) => ({ number: p.pairNo ?? 0, players: p.players, pairRank: p.pairRank, id: p.id })), ...e.pairDrafts ?? []].sort((a, b) => a.number - b.number);
+}
+function pairDisplay(t2, e, slot) {
+  const team = pairScope(t2, slot.players);
+  const slots = pairSlots(e).filter((p) => pairScope(t2, p.players) === team);
+  const reserved = new Set(slots.flatMap((p) => p.pairRank ? [p.pairRank] : []));
+  let candidate = 0;
+  for (const p of slots) {
+    if (p.pairRank) {
+      if (p.id ? slot.id === p.id : slot.number === p.number) return p.pairRank;
+    } else {
+      do {
+        candidate++;
+      } while (reserved.has(candidate));
+      if (p.id ? slot.id === p.id : slot.number === p.number) return candidate;
+    }
+  }
+  return candidate + 1;
+}
+function rankPair(t2, eid2, number, rank) {
+  const e = eventOf(t2, eid2);
+  const target = e.entries.find((p) => p.pairNo === number);
+  ensure(target && Number.isSafeInteger(rank) && rank > 0, "\u30DA\u30A2\u3068\u9806\u4F4D\u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+  const scope = pairScope(t2, target.players), peers = pairSlots(e).filter((p) => pairScope(t2, p.players) === scope);
+  ensure(rank <= peers.length, "\u30DA\u30A2\u9806\u4F4D\u306F1\u301C" + peers.length + "\u3067\u3059");
+  const ordered2 = peers.sort((a, b) => pairDisplay(t2, e, a) - pairDisplay(t2, e, b));
+  const index = ordered2.findIndex((p) => p.number === number);
+  const [moved] = ordered2.splice(index, 1);
+  ordered2.splice(rank - 1, 0, moved);
+  for (const [i, p] of ordered2.entries()) {
+    const row = p.id ? e.entries.find((x) => x.id === p.id) : e.pairDrafts?.find((x) => x.number === p.number);
+    if (row) row.pairRank = i + 1;
+  }
+}
+function nextPairRank(t2, e, players) {
+  const scope = pairScope(t2, players);
+  return Math.max(0, ...pairSlots(e).filter((p) => pairScope(t2, p.players) === scope).map((p) => pairDisplay(t2, e, p))) + 1;
+}
+
+// src/exchange.ts
+var clubKey = (s2) => s2.normalize("NFKC").trim().replace(/\s+/g, " ").toLowerCase();
+function opposing(a, b) {
+  const x = clubKey(a.club), y = clubKey(b.club);
+  return a.id !== b.id && !a.players.some((p) => b.players.includes(p)) && (!x || !y || x !== y);
+}
+var pairKey = (a, b) => JSON.stringify(a < b ? [a, b] : [b, a]);
+function exchangeSetup(t2, eventId, options2) {
+  return atomicMutation(t2, (d) => {
+    const e = eventOf(d, eventId);
+    assertNoPendingPairs(e);
+    ensure(e.type !== "team" && e.entries.length >= 2 && e.entries.length <= 512, "\u4EA4\u6D41\u6226\u306F\u500B\u4EBA\u6226\u306E2\u301C512\u67A0\u3067\u3059");
+    ensure(!options2.byLevel || e.entries.every((p) => p.level?.trim()), "\u4EA4\u6D41\u6226\u306E\u5168\u53C2\u52A0\u8005\u306B\u30EC\u30D9\u30EB\u3092\u8A2D\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+    ensure(!d.stages.some((s3) => s3.eventId === eventId), "\u3053\u306E\u7A2E\u76EE\u306B\u306F\u7D44\u5408\u305B\u304C\u3042\u308A\u307E\u3059");
+    ensure(new Set(e.entries.flatMap((p) => p.players)).size === e.entries.reduce((n2, p) => n2 + p.players.length, 0), "\u540C\u4E00\u9078\u624B\u304C\u8907\u6570\u67A0\u306B\u3044\u307E\u3059");
+    const id = uid(), s2 = { id, eventId, name: "\u4EA4\u6D41\u6226\u30FB\u7DF4\u7FD2\u8A66\u5408", kind: "league", excludeClub: true, exchange: structuredClone(options2), groups: [{ id: uid(), name: "\u4EA4\u6D41\u6226", entries: e.entries.map((p) => p.id) }] };
+    d.stages.push(s2);
+    plan(d, s2);
+    return id;
   });
 }
-function formatDays(t2, days2) {
-  return days2.map((d) => [d.date, clockText(d.start), clockText(d.end), d.courts, d.rest, formatRanges(t2, d.ranges), ...d.breaks?.length ? [d.breaks.map((b) => clockText(b.start) + "-" + clockText(b.end)).join(",")] : []].join(" | ")).join("\n");
+function allowed(s2, a, b) {
+  return opposing(a, b) && (!s2.exchange.byLevel || (a.level ?? "") === (b.level ?? ""));
 }
-function parsePrintSplit(t2, kind, text2) {
-  const lines = text2.split(/\r?\n/).map((s2) => s2.trim()).filter(Boolean);
-  if (kind === "boundaries" || kind === "times" || kind === "ranges") ensure(lines.length, "\u5206\u5272\u4F4D\u7F6E\u307E\u305F\u306F\u7BC4\u56F2\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
-  if (kind === "boundaries") return { kind, ids: lines.flatMap((l) => l.split(",").map((v2) => fixtureId(t2, v2.trim()))) };
-  if (kind === "times") return { kind, starts: lines.map((l) => {
-    const [date, time2] = l.split(/\s+/);
-    ensure(validDay(date), "\u5883\u754C\u65E5\u306F YYYY-MM-DD HH:MM \u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
-    return { date, time: minute(time2) };
-  }) };
-  if (kind === "ranges") return { kind, pages: lines.map((l) => {
-    const [title2, text3] = l.split("|");
-    ensure(title2?.trim() && text3?.trim(), "\u30DA\u30FC\u30B8\u540D | \u7BC4\u56F2 \u3067\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
-    return { title: title2.trim(), ranges: parseRanges(t2, text3) };
-  }) };
-  return { kind };
+function canRemove(m) {
+  return m.status === "waiting" && !m.manualSchedule && !m.queueOrder && !m.startedAt && !m.games.length;
 }
-function formatPrintSplit(t2, s2) {
-  if (s2?.kind === "boundaries") return s2.ids.map((id) => {
-    const m = t2.matches.find((m2) => m2.id === id);
-    return m ? String(matchNumber(m, t2)) : id;
-  }).join("\n");
-  if (s2?.kind === "times") return s2.starts.map((b) => b.date + " " + clockText(b.time)).join("\n");
-  if (s2?.kind === "ranges") return s2.pages.map((p) => p.title + " | " + formatRanges(t2, p.ranges)).join("\n");
-  return "";
+function fixture(s2, a, b, number, duration) {
+  const options2 = s2.exchange;
+  options2.sequence = (options2.sequence ?? 0) + 1;
+  return { id: uid(), exchangeSequence: options2.sequence, eventId: s2.eventId, stageId: s2.id, groupId: s2.groups[0].id, number, round: 1, left: a.id, right: b.id, deps: [], games: [], winner: "", status: "waiting", court: 0, time: 0, duration };
+}
+function plan(t2, s2) {
+  const options2 = s2.exchange, entries = eventOf(t2, s2.eventId).entries.filter((p) => !options2.inactive.includes(p.id));
+  const existing = t2.matches.filter((m) => m.stageId === s2.id);
+  const used = new Set(existing.map((m) => pairKey(m.left, m.right))), counts = new Map(entries.map((p) => [p.id, 0]));
+  for (const m of existing) for (const id of [m.left, m.right]) if (counts.has(id)) counts.set(id, counts.get(id) + 1);
+  const choices = entries.flatMap((a, i) => entries.slice(i + 1).filter((b) => allowed(s2, a, b) && !used.has(pairKey(a.id, b.id))).map((b) => [a, b]));
+  const capacity = new Map(entries.map((p) => [p.id, 0]));
+  for (const [a, b] of choices) {
+    capacity.set(a.id, capacity.get(a.id) + 1);
+    capacity.set(b.id, capacity.get(b.id) + 1);
+  }
+  let number = t2.matches.reduce((n2, m) => Math.max(n2, m.number), 0);
+  const append = (a, b) => {
+    ensure(t2.matches.length < 5e4, "\u8A66\u5408\u6570\u4E0A\u9650\uFF0850,000\u4EF6\uFF09\u3092\u8D85\u3048\u307E\u3059");
+    t2.matches.push(fixture(s2, a, b, ++number, options2.duration));
+    for (const p of [a, b]) counts.set(p.id, counts.get(p.id) + 1);
+  };
+  if (options2.mode === "all") {
+    for (const [a, b] of choices) append(a, b);
+    return;
+  }
+  const selected2 = /* @__PURE__ */ new Map();
+  function select4(a, b) {
+    selected2.set(pairKey(a.id, b.id), [a, b]);
+    for (const p of [a, b]) counts.set(p.id, counts.get(p.id) + 1);
+  }
+  const viable = choices.filter(([a, b]) => counts.get(a.id) < options2.target && counts.get(b.id) < options2.target);
+  const neighbours = new Map(entries.map((e) => [e.id, /* @__PURE__ */ new Set()]));
+  for (const [a, b] of viable) {
+    neighbours.get(a.id).add(b);
+    neighbours.get(b.id).add(a);
+  }
+  const order = (a, b) => counts.get(a.id) - counts.get(b.id) || neighbours.get(a.id).size - neighbours.get(b.id).size || capacity.get(a.id) - capacity.get(b.id);
+  function remove(a, b) {
+    neighbours.get(a.id).delete(b);
+    neighbours.get(b.id).delete(a);
+  }
+  while (true) {
+    const a = entries.filter((p) => neighbours.get(p.id).size).sort(order)[0];
+    if (!a) break;
+    const b = [...neighbours.get(a.id)].sort(order)[0];
+    select4(a, b);
+    remove(a, b);
+    for (const p of [a, b]) if (counts.get(p.id) >= options2.target) for (const q of neighbours.get(p.id)) remove(p, q);
+  }
+  const eligible2 = new Set(choices.map(([a, b]) => pairKey(a.id, b.id)));
+  for (const [key4, [a, b]] of [...selected2]) {
+    const under = entries.filter((p) => counts.get(p.id) < options2.target).sort(order);
+    if (!under.length) break;
+    const edges = (from) => under.filter((p) => {
+      if (p === a || p === b) return false;
+      const id = pairKey(from.id, p.id);
+      return eligible2.has(id) && !selected2.has(id);
+    });
+    const first = edges(a), second = edges(b);
+    const u = first.find((p) => second.some((q) => p !== q || counts.get(p.id) + 2 <= options2.target));
+    const v2 = u && second.find((q) => q !== u || counts.get(u.id) + 2 <= options2.target);
+    if (!u || !v2) continue;
+    selected2.delete(key4);
+    for (const p of [a, b]) counts.set(p.id, counts.get(p.id) - 1);
+    select4(a, u);
+    select4(b, v2);
+  }
+  ensure(t2.matches.length + selected2.size <= 5e4, "\u8A66\u5408\u6570\u4E0A\u9650\uFF0850,000\u4EF6\uFF09\u3092\u8D85\u3048\u307E\u3059");
+  for (const [a, b] of selected2.values()) t2.matches.push(fixture(s2, a, b, ++number, options2.duration));
+}
+function exchangeOf(t2, id) {
+  const s2 = t2.stages.find((x) => x.id === id);
+  ensure(s2?.exchange, "\u4EA4\u6D41\u6226\u304C\u3042\u308A\u307E\u305B\u3093");
+  return s2;
+}
+function addExchangeEntry(t2, id, input4) {
+  return atomicMutation(t2, (d) => {
+    const s2 = exchangeOf(d, id), e = eventOf(d, s2.eventId);
+    ensure(e.entries.length < 512 && input4.players.every((p2) => !e.entries.some((x) => x.players.includes(p2))), "\u9078\u624BID\u304C\u91CD\u8907\u307E\u305F\u306F\u53C2\u52A0\u4E0A\u9650\u3067\u3059");
+    ensure(!s2.exchange.byLevel || input4.level?.trim(), "\u30EC\u30D9\u30EB\u5225\u4EA4\u6D41\u6226\u306B\u306F\u30EC\u30D9\u30EB\u304C\u5FC5\u8981\u3067\u3059");
+    const p = { ...input4, id: uid(), seed: 0, joinedAt: Date.now() };
+    e.entries.push(p);
+    s2.groups[0].entries.push(p.id);
+    plan(d, s2);
+  });
+}
+function leaveExchange(t2, id, entrant) {
+  return atomicMutation(t2, (d) => {
+    const s2 = exchangeOf(d, id);
+    ensure(s2.groups[0].entries.includes(entrant) && !s2.exchange.inactive.includes(entrant), "\u53C2\u52A0\u4E2D\u306E\u9078\u624B\u30FB\u7D44\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+    const affected = d.matches.filter((m) => m.stageId === id && (m.left === entrant || m.right === entrant));
+    ensure(!affected.some((m) => ["called", "playing"].includes(m.status)), "\u547C\u51FA\u6E08\u307F\u30FB\u9032\u884C\u4E2D\u306E\u8A66\u5408\u3092\u5148\u306B\u51E6\u7406\u3057\u3066\u304F\u3060\u3055\u3044");
+    ensure(!affected.some((m) => m.status === "waiting" && !canRemove(m)), "\u4E88\u5B9A\u6E08\u307F\u30FB\u624B\u52D5\u8A2D\u5B9A\u6E08\u307F\u306E\u8A66\u5408\u3092\u5148\u306B\u89E3\u9664\u3057\u3066\u304F\u3060\u3055\u3044");
+    s2.exchange.inactive.push(entrant);
+    const remove = new Set(affected.filter((m) => canRemove(m)).map((m) => m.id));
+    d.matches = d.matches.filter((m) => !remove.has(m.id));
+    plan(d, s2);
+  });
+}
+function addExchangeMatch(t2, id, left, right) {
+  return atomicMutation(t2, (d) => {
+    const s2 = exchangeOf(d, id), e = eventOf(d, s2.eventId), a = e.entries.find((p) => p.id === left), b = e.entries.find((p) => p.id === right);
+    ensure(a && b && allowed(s2, a, b) && ![left, right].some((p) => s2.exchange.inactive.includes(p)), "\u540C\u6240\u5C5E\u30FB\u96E2\u8131\u6E08\u307F\u30FB\u30EC\u30D9\u30EB\u9055\u3044\u306E\u5BFE\u6226\u306F\u8FFD\u52A0\u3067\u304D\u307E\u305B\u3093");
+    ensure(!d.matches.some((m) => m.stageId === id && pairKey(m.left, m.right) === pairKey(left, right)), "\u4E88\u5B9A\u6E08\u307F\u307E\u305F\u306F\u5BFE\u6226\u6E08\u307F\u3067\u3059");
+    ensure(d.matches.length < 5e4, "\u8A66\u5408\u6570\u4E0A\u9650\uFF0850,000\u4EF6\uFF09\u3092\u8D85\u3048\u307E\u3059");
+    d.matches.push(fixture(s2, a, b, d.matches.reduce((n2, m) => Math.max(n2, m.number), 0) + 1, s2.exchange.duration));
+  });
+}
+function exchangeStats(t2, id, now = Date.now()) {
+  const s2 = exchangeOf(t2, id), rows = new Map(eventOf(t2, s2.eventId).entries.map((p) => [p.id, { entry: p, planned: 0, done: 0, status: "\u5F85\u6A5F", last: 0, wait: 0 }]));
+  for (const m of t2.matches) if (m.stageId === id) for (const key4 of [m.left, m.right]) {
+    const r = rows.get(key4);
+    if (!r) continue;
+    r.planned++;
+    if (m.status === "completed") {
+      r.done++;
+      r.last = Math.max(r.last, m.finishedAt ?? 0);
+    }
+    if (m.status === "called" || m.status === "playing") r.status = m.status === "called" ? "\u547C\u51FA\u6E08" : "\u8A66\u5408\u4E2D";
+  }
+  for (const r of rows.values()) {
+    if (s2.exchange.inactive.includes(r.entry.id)) r.status = "\u96E2\u8131";
+    else if (r.status === "\u5F85\u6A5F" && r.planned === r.done && r.planned > 0) r.status = "\u7D42\u4E86";
+    if (r.status === "\u5F85\u6A5F") r.wait = Math.max(0, Math.floor((now - (r.last || r.entry.joinedAt || s2.exchange.created)) / 6e4));
+  }
+  return [...rows.values()];
+}
+function releaseExchangeBooking(t2, id) {
+  return atomicMutation(t2, (d) => {
+    const m = d.matches.find((m2) => m2.id === id);
+    ensure(m && d.stages.some((s2) => s2.id === m.stageId && s2.exchange) && m.status === "waiting" && !m.startedAt && !m.games.length, "\u672A\u958B\u59CB\u306E\u4EA4\u6D41\u6226\u3060\u3051\u4E88\u5B9A\u3092\u89E3\u9664\u3067\u304D\u307E\u3059");
+    m.court = 0;
+    m.time = 0;
+    delete m.queueOrder;
+    delete m.manualSchedule;
+  });
+}
+
+// src/bracket-layout.ts
+function bracketLayout(t2, matches, results = true, resultNumbers = false) {
+  const segments = [], captions = [];
+  const index = new Map(matches.map((m) => [m.id, m]));
+  const used = new Set(matches.flatMap((m) => m.deps));
+  const final = matches.find((m) => !used.has(m.id));
+  if (!final) return { width: 680, height: 100, segments, captions };
+  const entries = new Map(t2.events.flatMap((e) => e.entries.map((p) => [p.id, p])));
+  const step = 120, edge = 200, center = edge + step * final.round, w = 2 * center;
+  const team = t2.events.find((e) => e.id === final.eventId)?.team;
+  const leaves = new Set(matches.flatMap((m) => [m.left, m.right]).filter(Boolean));
+  const labelHeight = Math.max(32, ...[...leaves].map((id) => {
+    const entry = entries.get(id);
+    return [entry?.name, entry?.club].filter(Boolean).reduce((height2, text2) => height2 + 16 * Math.ceil([...text2].length / 12), 0);
+  }));
+  const padding = Math.max(42, labelHeight / 2 + 8);
+  const pitch = Math.max(resultNumbers ? 78 : 64, (team?.rubbers ?? 0) * 16 + 16, labelHeight + 14);
+  function line(x1, y1, x2, y2, red = false) {
+    if (x1 !== x2 || y1 !== y2) segments.push({ x1, y1, x2, y2, red });
+  }
+  function players(m) {
+    return [0, 1].reduce((n2, i) => {
+      const child = index.get(feeder(m, i));
+      return n2 + (child ? players(child) : Number(!!(i ? m.right : m.left)));
+    }, 0);
+  }
+  function player(id, side, y2) {
+    const entry = entries.get(id), x = side < 0 ? edge : w - edge;
+    if (entry) captions.push({
+      x: x + side * 10,
+      y: y2,
+      align: side < 0 ? "end" : "start",
+      kind: "player",
+      lines: [entry.name, entry.club].filter(Boolean)
+    });
+    return { x, y: y2, red: false };
+  }
+  function games2(m) {
+    if (m.rubbers?.length) return m.rubbers.map((r, i) => i + 1 + "\u672C " + r.games.map((g) => g.join("-")).join("/"));
+    return (m.retirementGames ?? m.games).map((g) => (m.winner === m.right ? [g[1], g[0]] : g).join("-"));
+  }
+  function counts(m) {
+    return [0, 1].map((i) => {
+      if (m.walkover) return m.winner === (i === 0 ? m.left : m.right) ? "" : "\xD7";
+      return String(m.rubbers?.length ? m.rubbers.filter((r) => r.winner === (i === 0 ? "left" : "right")).length : m.games.filter((g) => g[i] > g[1 - i]).length);
+    });
+  }
+  function caption(m, x, y2, side) {
+    const done3 = results && m.status === "completed", score2 = done3 ? games2(m) : [];
+    if (done3 && m.walkover && !score2.length && !resultNumbers) return;
+    captions.push({
+      x: x + side * 9,
+      y: y2 + (side === 0 ? 17 : done3 ? -8 * Math.max(1, score2.length + (resultNumbers ? 1 : 0)) : -8),
+      align: side < 0 ? "end" : side > 0 ? "start" : "middle",
+      kind: done3 ? "score" : "number",
+      lines: done3 ? resultNumbers ? [String(matchNumber(m, t2)), ...score2] : score2.length ? score2 : ["\u7D50\u679C\u3092\u78BA\u8A8D"] : [String(matchNumber(m, t2))],
+      match: m
+    });
+  }
+  function branch(m, side, cursor) {
+    const leaf = (id) => {
+      const p = player(id, side, cursor.y);
+      cursor.y += cursor.pitch;
+      return p;
+    };
+    if (m.status === "bye" && !m.deps.length) return leaf(m.left || m.right);
+    const [a, b] = [0, 1].map((i) => {
+      const child = index.get(feeder(m, i));
+      return child ? branch(child, side, cursor) : leaf(i ? m.right : m.left);
+    });
+    const x = center + side * step * (final.round - m.round), y2 = (a.y + b.y) / 2;
+    const done3 = results && m.status === "completed";
+    [a, b].forEach((p, i) => {
+      const won = done3 && !!m.winner && m.winner === (i === 0 ? m.left : m.right);
+      line(p.x, p.y, x, p.y, done3 ? won : p.red);
+      line(x, p.y, x, y2, won);
+      if (done3) {
+        const text2 = counts(m)[i];
+        if (text2) captions.push({ x: x - side * 6, y: p.y, align: side < 0 ? "start" : "end", kind: "count", lines: [text2], match: m.walkover ? m : void 0 });
+      }
+    });
+    caption(m, x, y2, side);
+    return { x, y: y2, red: done3 && !!m.winner };
+  }
+  const halves = [0, 1].map((i) => index.get(feeder(final, i)));
+  let height = 145;
+  let left, right;
+  if (halves.some(Boolean)) {
+    const counts2 = halves.map((half2) => half2 ? players(half2) : 1);
+    const span = (Math.max(2, ...counts2) - 1) * pitch;
+    const half = (i) => {
+      const side = i === 0 ? -1 : 1;
+      return halves[i] ? branch(halves[i], side, { y: padding + (counts2[i] === 1 ? span / 2 : 0), pitch: span / Math.max(1, counts2[i] - 1) }) : player(i === 0 ? final.left : final.right, side, padding + span / 2);
+    };
+    left = half(0);
+    right = half(1);
+    height = span + padding * 2 + 26;
+  } else {
+    const row = Math.max(65, padding);
+    left = player(final.left, -1, row);
+    right = player(final.right, 1, row);
+    height = Math.max(height, 2 * row + 30);
+  }
+  const y = halves.some(Boolean) ? (height - 26) / 2 : (left.y + right.y) / 2, finished4 = results && final.status === "completed";
+  [left, right].forEach((p, i) => {
+    const won = finished4 && !!final.winner && final.winner === (i === 0 ? final.left : final.right);
+    const rail = center + (i === 0 ? -1 : 1) * 48, red = finished4 ? won : p.red;
+    line(p.x, p.y, rail, p.y, red);
+    line(rail, p.y, rail, y, red);
+    line(rail, y, center, y, red);
+    const count = finished4 ? counts(final)[i] : "";
+    if (count) captions.push({ x: center + (i === 0 ? -1 : 1) * 20, y: y - 10, align: "middle", kind: "count", lines: [count], match: final.walkover ? final : void 0 });
+  });
+  line(center, y, center, y - 35, finished4 && !!final.winner);
+  caption(final, center, y, 0);
+  return { width: w, height, segments, captions };
+}
+
+// src/print-bracket.ts
+function printableBrackets(t2, matches, results, resultNumbers = false) {
+  const used = new Set(matches.flatMap((m) => m.deps)), root = matches.find((m) => !used.has(m.id));
+  if (!root) return [];
+  const index = new Map(matches.map((m) => [m.id, m]));
+  const collect = (m) => [m, ...m.deps.flatMap((id) => index.has(id) ? collect(index.get(id)) : [])];
+  const pages = [];
+  function section2(m) {
+    const tree = collect(m), layout = bracketLayout(t2, tree, results, resultNumbers);
+    if (layout.height / layout.width <= 1.62 && tree.length <= 31) {
+      pages.push({ title: "\u5BFE\u6226\u56F3 \xB7 " + matchNumber(m, t2), layout });
+      return;
+    }
+    const ids = [0, 1].map((i) => feeder(m, i));
+    for (const id of ids) {
+      const child = index.get(id);
+      if (child) section2(child);
+    }
+    const event = t2.events.find((e) => e.id === m.eventId);
+    const extra = ids.flatMap((id, i) => {
+      const x = index.get(id);
+      const side = i ? "right" : "left";
+      if (!x || m[side]) return [];
+      return [{ id: "print-source-" + i, name: String(matchNumber(x, t2)) + " \u306E\u52DD\u8005", club: "", seed: 0, players: [] }];
+    });
+    const resolved = {
+      ...m,
+      left: m.left || (ids[0] ? "print-source-0" : ""),
+      right: m.right || (ids[1] ? "print-source-1" : ""),
+      feeds: void 0,
+      deps: [],
+      round: 1,
+      displayNumber: String(matchNumber(m, t2))
+    };
+    const local = { ...t2, events: t2.events.map((e) => e === event ? { ...e, entries: [...e.entries, ...extra] } : e) };
+    pages.push({ title: "\u63A5\u7D9A \xB7 " + matchNumber(m, t2), layout: bracketLayout(local, [resolved], results, resultNumbers) });
+  }
+  section2(root);
+  return pages;
+}
+
+// src/planning.ts
+function possiblePlayers(t2, id, seen = /* @__PURE__ */ new Set()) {
+  ensure(!seen.has(id), "\u4F9D\u5B58\u5FAA\u74B0");
+  seen.add(id);
+  const m = t2.matches.find((m2) => m2.id === id);
+  ensure(m, "\u4F9D\u5B58\u8A66\u5408\u306A\u3057");
+  const p = (side, i) => m[side] ? entryOf(t2, m[side]).players : feeder(m, i) ? possiblePlayers(t2, feeder(m, i), new Set(seen)) : [];
+  return [.../* @__PURE__ */ new Set([...p("left", 0), ...p("right", 1)])];
+}
+var localDay = (epoch2) => {
+  const d = new Date(epoch2);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+var actualDateAllowed = (t2, epoch2, date) => dayMinute(t2, epoch2, date) !== void 0 || !!t2.competitionDays && !!dayConfig(t2, localDay(epoch2));
+var actualEndAllowed = (t2, m, date) => {
+  const end = m.finishedAt;
+  if (end === void 0 || !Number.isSafeInteger(end)) return false;
+  if (actualDateAllowed(t2, end, date)) return true;
+  const start = m.startedAt, planned = plannedDate(t2, m);
+  return start !== void 0 && planned === localDay(start) && end >= start && dayOffset(localDay(end)) - dayOffset(planned) === 1440;
+};
+var restFor = (t2, id, date) => t2.playerRest?.find((x) => x.id === id)?.minutes ?? dayConfig(t2, date)?.rest ?? t2.restMinutes ?? 0;
+function dayMinute(t2, epoch2, date = t2.date) {
+  if (epoch2 === void 0 || !Number.isFinite(epoch2) || localDay(epoch2) !== date) return void 0;
+  const d = new Date(epoch2);
+  return d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60 + d.getMilliseconds() / 6e4;
+}
+function relativeMinute(t2, epoch2, date) {
+  if (epoch2 === void 0 || !Number.isFinite(epoch2) || !date) return void 0;
+  const day = localDay(epoch2);
+  return dayOffset(day) - dayOffset(date) + (dayMinute(t2, epoch2, day) ?? 0);
+}
+function reservation(t2, m, now) {
+  const date = plannedDate(t2, m);
+  const start = dayMinute(t2, m.startedAt, date);
+  if (start === void 0) return m;
+  let end = m.status === "completed" ? relativeMinute(t2, m.finishedAt, date) : void 0;
+  if (end === void 0) {
+    end = start + m.duration;
+    const minute2 = relativeMinute(t2, now, date);
+    if (m.status === "playing" && minute2 !== void 0 && minute2 >= end) end = minute2 + m.duration;
+  }
+  ensure(end >= start, "\u5B9F\u7D42\u4E86\u65E5\u6642\u304C\u5B9F\u958B\u59CB\u524D\u3067\u3059");
+  return { ...m, time: start, duration: Math.max(1, end - start) };
+}
+var offset = (t2, m) => t2.competitionDays?.length ? dayOffset(plannedDate(t2, m) ?? t2.date) : 0;
+var absolute = (t2, m, now) => {
+  const slot = reservation(t2, m, now);
+  return { ...slot, time: slot.time + offset(t2, m) };
+};
+function progressStatus(t2, now = Date.now()) {
+  return t2.matches.map((m) => {
+    const date = plannedDate(t2, m), minute2 = dayMinute(t2, now, date);
+    const actualStart = ["playing", "completed"].includes(m.status) ? dayMinute(t2, m.startedAt, date) : void 0, rawEnd = m.status === "completed" && actualStart !== void 0 && m.finishedAt !== void 0 ? relativeMinute(t2, m.finishedAt, date) : void 0, actualEnd = rawEnd !== void 0 && rawEnd >= actualStart ? rawEnd : void 0;
+    const delayMinutes = Math.max(0, actualStart !== void 0 ? actualStart - m.time : m.status === "called" && minute2 !== void 0 && m.court > 0 ? minute2 - m.time : 0);
+    const overrunMinutes = m.status === "playing" && actualStart !== void 0 ? Math.max(0, (relativeMinute(t2, now, date) ?? actualStart) - (actualStart + m.duration)) : actualEnd !== void 0 && actualStart !== void 0 ? Math.max(0, actualEnd - (actualStart + m.duration)) : 0;
+    return { id: m.id, number: m.number, status: m.status, scheduledStart: m.time, startedAt: m.startedAt, finishedAt: m.finishedAt, actualTimingKnown: actualStart !== void 0 && (m.status !== "completed" || actualEnd !== void 0), delayMinutes: Math.floor(delayMinutes), overrunMinutes: Math.floor(overrunMinutes) };
+  });
+}
+function startMatch(t2, id, now = Date.now()) {
+  return atomicMutation(t2, (d) => {
+    const m = d.matches.find((m2) => m2.id === id);
+    const date = m && plannedDate(d, m);
+    ensure(m && m.status === "called" && m.court >= 1 && m.court <= calendarCourts(d, date) && m.left && m.right, "\u547C\u51FA\u6E08\u307F\u30FB\u30B3\u30FC\u30C8\u5272\u5F53\u6E08\u307F\u306E\u8A66\u5408\u3060\u3051\u958B\u59CB\u3067\u304D\u307E\u3059");
+    ensure(Number.isSafeInteger(now) && now >= 0 && localDay(now) === date, "\u5927\u4F1A\u958B\u50AC\u65E5\u3068\u958B\u59CB\u65E5\u6642\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
+    ensure(m.deps.every((id2) => {
+      const dep = d.matches.find((x) => x.id === id2);
+      return !!dep && finished(dep);
+    }), "\u9032\u51FA\u5143\u304C\u5B58\u5728\u3057\u306A\u3044\u304B\u672A\u5B8C\u4E86\u3067\u3059");
+    const stage = d.stages.find((s2) => s2.id === m.stageId);
+    ensure(stage, "\u8A66\u5408\u306E\u30B9\u30C6\u30FC\u30B8\u304C\u5B58\u5728\u3057\u307E\u305B\u3093");
+    ensure(!stage.source || d.matches.filter((x) => x.stageId === stage.source).every(finished), "\u4E88\u9078\u304C\u672A\u5B8C\u4E86\u3067\u3059");
+    const players = new Set(possiblePlayers(d, id));
+    for (const other of d.matches) {
+      if (other.id === id) continue;
+      if (other.status === "completed" && other.court === m.court && other.finishedAt !== void 0 && dayMinute(d, other.finishedAt, date) !== void 0) ensure(now >= other.finishedAt, "\u7AEF\u672B\u6642\u8A08\u304C\u30B3\u30FC\u30C8\u306E\u5B9F\u7D42\u4E86\u65E5\u6642\u3088\u308A\u524D\u3067\u3059");
+      if (["called", "playing"].includes(other.status)) {
+        ensure(other.court !== m.court, "\u30B3\u30FC\u30C8\u304C\u4F7F\u7528\u4E2D\u3067\u3059");
+        ensure(!possiblePlayers(d, other.id).some((p) => players.has(p)), "\u9078\u624B\u304C\u547C\u51FA\u30FB\u8A66\u5408\u4E2D\u3067\u3059");
+      }
+      if (other.status === "completed" && other.finishedAt !== void 0 && Number.isSafeInteger(other.finishedAt) && actualEndAllowed(d, other, date) && (other.startedAt === void 0 || !actualDateAllowed(d, other.startedAt, date) || other.finishedAt >= other.startedAt) && possiblePlayers(d, other.id).some((p) => players.has(p) && now - other.finishedAt < restFor(d, p, date) * 6e4)) throw Error("\u4F11\u61A9\u4E0D\u8DB3\u3067\u3059");
+    }
+    m.status = "playing";
+    m.startedAt = now;
+    m.finishedAt = void 0;
+  });
+}
+function validateSchedule(t2) {
+  for (const m of t2.matches) {
+    const date = plannedDate(t2, m), day = dayConfig(t2, date);
+    ensure(Number.isInteger(m.court) && m.court >= 0 && m.court <= calendarCourts(t2, date), "\u30B3\u30FC\u30C8\u756A\u53F7\u304C\u4E0D\u6B63");
+    ensure(Number.isInteger(m.time) && m.time >= 0 && m.time < 1440 && Number.isInteger(m.duration) && m.duration > 0 && m.time + m.duration <= 1440, "\u4E88\u5B9A\u6642\u523B\u304C\u4E0D\u6B63");
+    if (t2.competitionDays?.length && m.court && m.status !== "bye") {
+      ensure(day, "\u958B\u50AC\u65E5\u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+      if (m.status === "waiting" && !partialProgress(m)) {
+        ensure(m.time >= day.start && m.time + m.duration <= day.end, "\u8A66\u5408\u304C\u958B\u50AC\u65E5\u306E\u5229\u7528\u6642\u9593\u5916\u3067\u3059");
+        ensure(!day.breaks?.some((b) => m.time < b.end && m.time + m.duration > b.start), "\u4F11\u5834\u6642\u9593\u3068\u91CD\u306A\u3063\u3066\u3044\u307E\u3059");
+      }
+    }
+  }
+  const slots = t2.matches.filter((m) => m.court > 0 && m.status !== "bye").map((m) => absolute(t2, m));
+  const end = new Map(slots.map((m) => [m.id, m.time + m.duration]));
+  const courts = /* @__PURE__ */ new Map(), players = /* @__PURE__ */ new Map();
+  for (const m of slots) {
+    const local = m.time - offset(t2, m), date = plannedDate(t2, m);
+    ensure(Number.isFinite(local) && local >= 0 && Number.isFinite(m.duration), "\u5B9F\u7E3E\u6642\u523B\u304C\u4E0D\u6B63");
+    const overlaps = (x) => m.time < x.time + x.duration && x.time < m.time + m.duration;
+    const cs = courts.get(m.court) || [];
+    ensure(!cs.some(overlaps), "\u4E88\u5B9A\u306E\u30B3\u30FC\u30C8\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
+    cs.push(m);
+    courts.set(m.court, cs);
+    for (const p of possiblePlayers(t2, m.id)) {
+      const ps = players.get(p) || [];
+      ensure(!ps.some((x) => m.time < x.time + x.duration + restFor(t2, p, plannedDate(t2, x)) && x.time < m.time + m.duration + restFor(t2, p, date)), "\u9078\u624B\u30FB\u52DD\u3061\u4E0A\u304C\u308A\u5019\u88DC\u306E\u4E88\u5B9A\u307E\u305F\u306F\u4F11\u61A9\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
+      ps.push(m);
+      players.set(p, ps);
+    }
+    const s2 = t2.stages.find((s3) => s3.id === m.stageId);
+    const deps = [...m.deps, ...t2.matches.filter((x) => x.stageId === s2.source && x.status !== "bye").map((x) => x.id)];
+    for (const id of deps) {
+      const dep = t2.matches.find((x) => x.id === id);
+      ensure(dep, "\u4E88\u5B9A\u306E\u4F9D\u5B58\u8A66\u5408\u304C\u5B58\u5728\u3057\u307E\u305B\u3093");
+      if (dep.status !== "bye" && !(dep.status === "completed" && dep.court === 0)) ensure(end.has(id) && end.get(id) <= m.time, "\u4E88\u9078\u30FB\u52DD\u3061\u4E0A\u304C\u308A\u5143\u306E\u7D42\u4E86\u524D\u3067\u3059");
+    }
+  }
+  return true;
+}
+var partialProgress = (m) => m.status === "waiting" && (m.startedAt !== void 0 || !!m.rubbers?.some((r) => r.games.length));
+function scheduleNumberingLocked(t2) {
+  return !!t2.scheduleNumbersLocked || t2.matches.some((m) => m.status !== "bye" && (m.status !== "waiting" || m.startedAt !== void 0 || m.rubbers?.some((r) => r.games.length))) || !!t2.corrections?.length;
+}
+function numberBySchedule(t2) {
+  return atomicMutation(t2, (d) => applyScheduleNumbers(d));
+}
+function applyScheduleNumbers(t2) {
+  ensure(!scheduleNumberingLocked(t2), "\u5927\u4F1A\u9032\u884C\u958B\u59CB\u5F8C\u306F\u8A66\u5408\u756A\u53F7\u3092\u5909\u66F4\u3067\u304D\u307E\u305B\u3093");
+  validateSchedule(t2);
+  const counters = /* @__PURE__ */ new Map();
+  const order = scheduleOrder(t2);
+  for (const m of order) {
+    const next = (counters.get(m.eventId) ?? 0) + 1;
+    counters.set(m.eventId, next);
+    m.scheduleOrdinal = next;
+    delete m.displayNumber;
+  }
+  invalidateMatchNumbers(t2);
+}
+function replan(t2, start, duration, gap, mode, rest, now = Date.now(), numbering = false) {
+  ensure(Number.isInteger(start) && start >= 0 && start < 1440 && Number.isInteger(duration) && duration > 0 && duration <= 600 && Number.isInteger(gap) && gap >= 0 && gap <= 120 && Number.isInteger(rest) && rest >= 0 && rest <= 120 && ["fixed", "flow"].includes(mode), "\u4E88\u5B9A\u6761\u4EF6\u304C\u4E0D\u6B63");
+  const copy = structuredClone(t2);
+  copy.restMinutes = rest;
+  copy.scheduleMode = mode;
+  const today = localDay(now);
+  for (const d of copy.competitionDays ?? []) for (const r of d.ranges) ensure(!rangeProblems(copy, r), rangeProblems(copy, r));
+  if (copy.competitionDays) for (const m of copy.matches) {
+    if (m.status === "bye") continue;
+    const date = plannedDate(copy, m);
+    ensure(date, "\u958B\u50AC\u65E5\u304C\u672A\u6307\u5B9A\u306E\u8A66\u5408\u304C\u3042\u308A\u307E\u3059");
+    m.scheduledDate = date;
+  }
+  ensure(!copy.matches.some((m) => ["called", "playing"].includes(m.status) && !m.court), "\u547C\u51FA\u30FB\u8A66\u5408\u4E2D\u306E\u30B3\u30FC\u30C8\u304C\u672A\u5272\u5F53\u3067\u3059");
+  const placed = copy.matches.filter((m) => (m.status !== "waiting" || (partialProgress(m) || m.manualSchedule)) && m.status !== "bye" && m.court > 0).map((m) => absolute(copy, m, now));
+  const ready = new Set(copy.matches.filter((m) => m.status !== "waiting" || partialProgress(m) || m.manualSchedule && m.court > 0).map((m) => m.id));
+  copy.matches.filter((m) => m.status === "bye").forEach((m) => ready.add(m.id));
+  const playerMap = new Map(copy.matches.map((m) => [m.id, new Set(possiblePlayers(copy, m.id))]));
+  const actualNow = copy.matches.some((x) => dayMinute(copy, x.startedAt, today) !== void 0) ? dayMinute(copy, now, today) : void 0;
+  const unavailable = new Map(copy.stages.filter((s2) => s2.exchange).map((s2) => [s2.id, new Set(s2.exchange.inactive)]));
+  const pending = copy.matches.filter((m) => m.status === "waiting" && !partialProgress(m) && !(m.manualSchedule && m.court > 0) && ![m.left, m.right].some((id) => unavailable.get(m.stageId)?.has(id)));
+  const weights = new Map(copy.events.map((e) => [e.id, e.schedulePriority ?? e.entries.length]));
+  const assigned = /* @__PURE__ */ new Map();
+  const priority = (m) => (assigned.get(m.eventId) || 0) / Math.max(1, weights.get(m.eventId) || 1);
+  const stages = new Map(copy.stages.map((s2) => [s2.id, s2]));
+  const remaining = /* @__PURE__ */ new Map();
+  for (const m of pending) remaining.set(m.stageId, (remaining.get(m.stageId) || 0) + 1);
+  for (const m of pending) m.court = 0;
+  const byCourt = /* @__PURE__ */ new Map(), byPlayer = /* @__PURE__ */ new Map();
+  const indexPlaced = (m) => {
+    const cs = byCourt.get(m.court) || [];
+    cs.push(m);
+    byCourt.set(m.court, cs);
+    for (const p of playerMap.get(m.id)) {
+      const ps = byPlayer.get(p) || [];
+      ps.push(m);
+      byPlayer.set(p, ps);
+    }
+  };
+  placed.forEach(indexPlaced);
+  while (pending.length) {
+    let index = -1;
+    for (const [i, m2] of pending.entries()) {
+      const stage2 = stages.get(m2.stageId);
+      if (!m2.deps.every((id) => ready.has(id)) || stage2.source && remaining.get(stage2.source)) continue;
+      const best = pending[index];
+      if (!best || priority(m2) < priority(best) || priority(m2) === priority(best) && ((weights.get(m2.eventId) || 0) > (weights.get(best.eventId) || 0) || m2.eventId === best.eventId && (m2.queueOrder ?? m2.number) < (best.queueOrder ?? best.number))) index = i;
+    }
+    ensure(index >= 0, "\u4E88\u5B9A\u306E\u4F9D\u5B58\u95A2\u4FC2\u3092\u89E3\u6C7A\u3067\u304D\u307E\u305B\u3093");
+    const m = pending.splice(index, 1)[0], stage = copy.stages.find((s2) => s2.id === m.stageId);
+    const deps = [...m.deps, ...copy.matches.filter((x) => x.stageId === stage.source).map((x) => x.id)];
+    const date = plannedDate(copy, m), day = dayConfig(copy, date), base = offset(copy, m), open = (day?.start ?? start) + base;
+    const earliest = Math.ceil(Math.max(open, date === today && actualNow !== void 0 ? base + actualNow : open, ...deps.map((id) => {
+      const n2 = copy.matches.find((m2) => m2.id === id);
+      if (copy.competitionDays && n2.status !== "bye") ensure(plannedDate(copy, n2) <= date, "\u4F9D\u5B58\u5143\u3088\u308A\u524D\u306E\u958B\u50AC\u65E5\u306B\u914D\u7F6E\u3067\u304D\u307E\u305B\u3093");
+      if (n2.status === "bye" || n2.status === "completed" && n2.court === 0) return open;
+      const slot = placed.find((p) => p.id === id);
+      ensure(slot, "\u4E88\u9078\u30FB\u52DD\u3061\u4E0A\u304C\u308A\u5143\u306E\u4E88\u5B9A\u304C\u672A\u5272\u5F53\u3067\u3059");
+      return slot.time + slot.duration;
+    })));
+    assigned.set(m.eventId, (assigned.get(m.eventId) || 0) + 1);
+    const ps = playerMap.get(m.id);
+    let bestTime = Infinity, bestCourt = 0;
+    for (let court = 1; court <= calendarCourts(copy, date); court++) {
+      const blocked = (day?.breaks ?? []).map((b) => ({ start: base + b.start, end: base + b.end }));
+      for (const x of byCourt.get(court) || []) blocked.push({ start: x.time - gap, end: x.time + x.duration + gap });
+      for (const p of ps) for (const x of byPlayer.get(p) || []) blocked.push({ start: x.time - restFor(copy, p, date), end: x.time + x.duration + restFor(copy, p, plannedDate(copy, x)) });
+      blocked.sort((a, b) => a.start - b.start || a.end - b.end);
+      let at = earliest;
+      for (const x of blocked) {
+        if (at + duration <= x.start) break;
+        if (at < x.end && x.start < at + duration) at = Math.ceil(x.end);
+      }
+      if (at < bestTime) {
+        bestTime = at;
+        bestCourt = court;
+      }
+    }
+    ensure(bestTime + duration <= base + (day?.end ?? 1440), (date || "") + " \u5F53\u65E5\u4E2D\u306B\u914D\u7F6E\u3067\u304D\u307E\u305B\u3093");
+    m.court = bestCourt;
+    m.time = bestTime - base;
+    m.duration = duration;
+    const position = { ...m, time: bestTime };
+    placed.push(position);
+    indexPlaced(position);
+    ready.add(m.id);
+    remaining.set(m.stageId, remaining.get(m.stageId) - 1);
+  }
+  validateSchedule(copy);
+  if (numbering && !scheduleNumberingLocked(copy)) {
+    applyScheduleNumbers(copy);
+    validate(copy);
+  }
+  Object.assign(t2, copy);
+}
+function editSchedule(t2, id, patch) {
+  const copy = structuredClone(t2), m = copy.matches.find((m2) => m2.id === id);
+  ensure(m, "\u8A66\u5408\u306A\u3057");
+  ensure(m.status === "waiting" && m.startedAt === void 0 && !m.rubbers?.some((r) => r.games.length), "\u672A\u958B\u59CB\u30FB\u5185\u8A33\u672A\u5165\u529B\u8A66\u5408\u3060\u3051\u4E88\u5B9A\u5909\u66F4\u3067\u304D\u307E\u3059");
+  ensure(patch && typeof patch === "object" && !Array.isArray(patch) && Object.getPrototypeOf(patch) === Object.prototype && Reflect.ownKeys(patch).length > 0 && Reflect.ownKeys(patch).every((k) => typeof k === "string" && ["court", "time", "duration", "number", "displayNumber", "queueOrder"].includes(k)), "\u4E88\u5B9A\u5909\u66F4\u9805\u76EE\u304C\u4E0D\u6B63");
+  const originalNumber = m.number, originalLabel = m.displayNumber;
+  ensure(!copy.scheduleNumbersLocked || (!Object.hasOwn(patch, "number") || patch.number === originalNumber) && (!Object.hasOwn(patch, "displayNumber") || patch.displayNumber === originalLabel), "\u9032\u884C\u958B\u59CB\u5F8C\u306F\u8A66\u5408\u756A\u53F7\u3092\u5909\u66F4\u3067\u304D\u307E\u305B\u3093");
+  Object.assign(m, patch);
+  if (copy.stages.some((s2) => s2.id === m.stageId && s2.exchange)) m.manualSchedule = !!(m.court || m.queueOrder);
+  if (Object.prototype.hasOwnProperty.call(patch, "number") && !Object.prototype.hasOwnProperty.call(patch, "displayNumber") && (originalLabel === void 0 || originalLabel.trim() === String(originalNumber))) m.displayNumber = String(m.number);
+  if (m.displayNumber !== void 0) ensure(typeof m.displayNumber === "string", "\u8868\u793A\u8A66\u5408\u756A\u53F7\u304C\u4E0D\u6B63");
+  if (typeof m.displayNumber === "string") m.displayNumber = m.displayNumber.trim();
+  ensure(Number.isInteger(m.court) && m.court >= 0 && m.court <= calendarCourts(copy, plannedDate(copy, m)) && Number.isInteger(m.time) && m.time >= 0 && m.time < 1440 && Number.isInteger(m.duration) && m.duration > 0 && m.duration <= 1440 && m.time + m.duration <= 1440, "\u30B3\u30FC\u30C8\u30FB\u6642\u9593\u304C\u4E0D\u6B63");
+  ensure(copy.matches.every((x) => Number.isSafeInteger(x.number) && x.number > 0), "\u8A66\u5408\u756A\u53F7\u306F1\u4EE5\u4E0A\u306E\u6574\u6570\u3067\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+  ensure(new Set(copy.matches.map((m2) => m2.number)).size === copy.matches.length, "\u8A66\u5408\u756A\u53F7\u91CD\u8907");
+  ensure(copy.matches.every((x) => x.displayNumber === void 0 || typeof x.displayNumber === "string" && x.displayNumber.trim().length > 0 && x.displayNumber.length <= 48 && !/[\u0000-\u001f]/.test(x.displayNumber)), "\u8868\u793A\u8A66\u5408\u756A\u53F7\u304C\u4E0D\u6B63");
+  ensure(new Set(copy.matches.map((x) => x.displayNumber?.trim() || String(x.number))).size === copy.matches.length, "\u8868\u793A\u8A66\u5408\u756A\u53F7\u304C\u91CD\u8907");
+  validateSchedule(copy);
+  Object.assign(t2, copy);
+}
+function candidates(t2, now = Date.now(), allowEarly = false) {
+  const entries = new Map(t2.events.flatMap((e) => e.entries).map((p) => [p.id, p])), events2 = new Map(t2.events.map((e) => [e.id, e])), matches = new Map(t2.matches.map((m) => [m.id, m])), stages = new Map(t2.stages.map((s2) => [s2.id, s2])), memo = /* @__PURE__ */ new Map();
+  const players = (m, seen = /* @__PURE__ */ new Set()) => {
+    const cached = memo.get(m.id);
+    if (cached) return cached;
+    ensure(!seen.has(m.id), "\u4F9D\u5B58\u5FAA\u74B0");
+    seen.add(m.id);
+    const side = (id, dep) => id ? entries.get(id)?.players || [] : dep && matches.has(dep) ? players(matches.get(dep), new Set(seen)) : [];
+    const result2 = [.../* @__PURE__ */ new Set([...side(m.left, feeder(m, 0)), ...side(m.right, feeder(m, 1))])];
+    memo.set(m.id, result2);
+    return result2;
+  };
+  const today = localDay(now);
+  const workload = /* @__PURE__ */ new Map();
+  const busy2 = /* @__PURE__ */ new Set(), occupied = /* @__PURE__ */ new Set(), courtLast = /* @__PURE__ */ new Map(), last2 = /* @__PURE__ */ new Map(), stageDone = new Map(t2.stages.map((s2) => [s2.id, true]));
+  for (const m of t2.matches) {
+    if (["completed", "called", "playing"].includes(m.status)) players(m).forEach((p) => workload.set(p, (workload.get(p) || 0) + 1));
+    if (!finished(m)) stageDone.set(m.stageId, false);
+    if (["called", "playing"].includes(m.status)) {
+      occupied.add(m.court);
+      players(m).forEach((p) => busy2.add(p));
+    }
+    if (m.status === "completed" && m.finishedAt !== void 0 && Number.isSafeInteger(m.finishedAt) && actualEndAllowed(t2, m, today)) {
+      if (dayMinute(t2, m.finishedAt, today) !== void 0) courtLast.set(m.court, Math.max(courtLast.get(m.court) || 0, m.finishedAt));
+      if (m.startedAt === void 0 || !actualDateAllowed(t2, m.startedAt, today) || m.finishedAt >= m.startedAt) for (const p of players(m)) last2.set(p, Math.max(last2.get(p) || 0, m.finishedAt));
+    }
+  }
+  const day = dayConfig(t2, today);
+  const validClock = Number.isSafeInteger(now) && now >= 0 && (t2.competitionDays ? !!dayConfig(t2, today) : today === t2.date), minute2 = validClock ? new Date(now).getHours() * 60 + new Date(now).getMinutes() : void 0, free = Array.from({ length: calendarCourts(t2, today) }, (_2, i) => i + 1).filter((c) => !occupied.has(c)), safeFree = free.some((c) => (courtLast.get(c) || 0) <= now), fixed2 = t2.scheduleMode === "fixed";
+  return t2.matches.filter((m) => {
+    const stage = stages.get(m.stageId);
+    return m.status === "waiting" && m.left && m.right && m.deps.every((id) => matches.has(id) && finished(matches.get(id))) && stage && (!stage.source || stageDone.get(stage.source));
+  }).sort((a, b) => {
+    const exchangeA = stages.get(a.stageId)?.exchange, exchangeB = stages.get(b.stageId)?.exchange;
+    if (!!exchangeA !== !!exchangeB) return Number(!!exchangeB) - Number(!!exchangeA);
+    if (exchangeA && exchangeB) {
+      const explicit = (m) => !!m.manualSchedule || !!m.queueOrder;
+      const manual = Number(explicit(b)) - Number(explicit(a));
+      if (manual) return manual;
+      if (explicit(a) && explicit(b)) return (a.queueOrder ?? a.number) - (b.queueOrder ?? b.number);
+      const load = (m) => players(m).map((p) => workload.get(p) || 0);
+      const aLoad = load(a), bLoad = load(b);
+      const readySince = (m) => Math.max(...[m.left, m.right].flatMap((id) => {
+        const entry = entries.get(id);
+        return entry.players.map((p) => last2.get(p) || entry.joinedAt || stages.get(m.stageId).exchange.created);
+      }));
+      const fairness = Math.max(...aLoad) - Math.max(...bLoad) || aLoad.reduce((n2, x) => n2 + x, 0) - bLoad.reduce((n2, x) => n2 + x, 0) || readySince(a) - readySince(b);
+      if (fairness) return fairness;
+    }
+    return a.time - b.time || (a.queueOrder ?? a.number) - (b.queueOrder ?? b.number);
+  }).map((m) => {
+    const ps = players(m), lastPlayed = Math.max(0, ...ps.map((p) => last2.get(p) || 0)), assigned = m.court > 0, reason2 = stages.get(m.stageId)?.exchange?.inactive.some((id) => id === m.left || id === m.right) ? "\u53C2\u52A0\u8005\u304C\u96E2\u8131\u6E08\u307F" : events2.get(m.eventId)?.type === "team" && !m.rubbers ? "\u56E3\u4F53\u30AA\u30FC\u30C0\u30FC\u3092\u5148\u306B\u767B\u9332\u3057\u3066\u304F\u3060\u3055\u3044" : !validClock || plannedDate(t2, m) !== today ? "\u5927\u4F1A\u958B\u50AC\u65E5\u3068\u547C\u51FA\u65E5\u6642\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044" : day && minute2 !== void 0 && (minute2 < day.start || minute2 + m.duration > day.end || day.breaks?.some((b) => minute2 < b.end && minute2 + m.duration > b.start)) ? "\u958B\u50AC\u65E5\u306E\u5229\u7528\u6642\u9593\u5916\u3067\u3059" : ps.some((p) => busy2.has(p)) ? "\u9078\u624B\u304C\u8A66\u5408\u4E2D" : lastPlayed > now ? "\u9078\u624B\u306E\u5B9F\u7D42\u4E86\u6642\u523B\u3088\u308A\u7AEF\u672B\u6642\u8A08\u304C\u524D\u3067\u3059" : ps.some((p) => last2.has(p) && now - last2.get(p) < restFor(t2, p, today) * 6e4) ? "\u4F11\u61A9\u4E0D\u8DB3" : stages.get(m.stageId)?.exchange?.end && minute2 !== void 0 && minute2 + m.duration > stages.get(m.stageId).exchange.end ? "\u7D42\u4E86\u4E88\u5B9A\u307E\u3067\u306B\u53CE\u307E\u308A\u307E\u305B\u3093" : fixed2 && (!Number.isInteger(m.court) || m.court < 1 || m.court > calendarCourts(t2, today)) ? "\u30B3\u30FC\u30C8\u304C\u672A\u5272\u5F53\u3067\u3059" : (fixed2 || assigned) && occupied.has(m.court) ? "\u30B3\u30FC\u30C8\u304C\u4F7F\u7528\u4E2D\u3067\u3059" : (fixed2 || assigned) && (courtLast.get(m.court) || 0) > now ? "\u30B3\u30FC\u30C8\u306E\u5B9F\u7D42\u4E86\u6642\u523B\u3088\u308A\u7AEF\u672B\u6642\u8A08\u304C\u524D\u3067\u3059" : !fixed2 && free.length === 0 ? "\u30B3\u30FC\u30C8\u304C\u4F7F\u7528\u4E2D\u3067\u3059" : !fixed2 && !safeFree ? "\u30B3\u30FC\u30C8\u306E\u5B9F\u7D42\u4E86\u6642\u523B\u3088\u308A\u7AEF\u672B\u6642\u8A08\u304C\u524D\u3067\u3059" : !allowEarly && fixed2 && minute2 !== void 0 && m.time > minute2 ? "\u958B\u59CB\u4E88\u5B9A\u524D" : "";
+    const court = reason2 ? void 0 : assigned ? m.court : free.find((c) => (courtLast.get(c) || 0) <= now);
+    return { id: m.id, number: m.number, reason: reason2, court };
+  });
+}
+function callNext(t2, now = Date.now()) {
+  ensure(Number.isSafeInteger(now) && now >= 0 && (t2.competitionDays ? !!dayConfig(t2, localDay(now)) : localDay(now) === t2.date), "\u5927\u4F1A\u958B\u50AC\u65E5\u3068\u547C\u51FA\u65E5\u6642\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
+  return atomicMutation(t2, (d) => {
+    const free = Array.from({ length: calendarCourts(d, localDay(now)) }, (_2, i) => i + 1).filter((c) => !d.matches.some((m) => m.court === c && ["called", "playing"].includes(m.status)));
+    const matches = new Map(d.matches.map((m) => [m.id, m]));
+    const players = (m) => possiblePlayers(d, m.id);
+    const busy2 = new Set(d.matches.filter((m) => ["called", "playing"].includes(m.status)).flatMap(players));
+    for (const c of candidates(d, now)) {
+      if (c.reason) continue;
+      const m = matches.get(c.id);
+      const ps = players(m);
+      if (ps.some((p) => busy2.has(p))) continue;
+      const safeCourt = (court2) => !d.matches.some((x) => x.id !== m.id && x.court === court2 && x.status === "completed" && x.finishedAt !== void 0 && Number.isFinite(x.finishedAt) && dayMinute(d, x.finishedAt, localDay(now)) !== void 0 && x.finishedAt > now);
+      const court = d.scheduleMode === "fixed" || m.court > 0 ? free.find((n2) => n2 === m.court && safeCourt(n2)) : free.find(safeCourt);
+      if (!court) continue;
+      m.court = court;
+      if (d.competitionDays) m.scheduledDate = localDay(now);
+      m.status = "called";
+      ps.forEach((p) => busy2.add(p));
+      free.splice(free.indexOf(court), 1);
+      if (!free.length) break;
+    }
+  });
+}
+function callSelected(t2, id, now = Date.now()) {
+  return atomicMutation(t2, (d) => {
+    const item = candidates(d, now, true).find((c) => c.id === id);
+    ensure(item, "\u672A\u78BA\u5B9A\u307E\u305F\u306F\u547C\u51FA\u3067\u304D\u306A\u3044\u8A66\u5408\u3067\u3059");
+    ensure(!item.reason, item.reason);
+    const match = d.matches.find((m) => m.id === id);
+    if (!match.court) {
+      const court = Array.from({ length: calendarCourts(d, localDay(now)) }, (_2, i) => i + 1).find((c) => !d.matches.some((m) => m.court === c && (["called", "playing"].includes(m.status) || m.status === "completed" && m.finishedAt !== void 0 && dayMinute(d, m.finishedAt, localDay(now)) !== void 0 && m.finishedAt > now)));
+      ensure(court, "\u4F7F\u7528\u53EF\u80FD\u306A\u30B3\u30FC\u30C8\u304C\u3042\u308A\u307E\u305B\u3093");
+      match.court = court;
+    }
+    if (d.competitionDays) match.scheduledDate = localDay(now);
+    match.status = "called";
+  });
+}
+
+// src/rank-draw.ts
+function rankPositions(size) {
+  let order = [1, 2];
+  while (order.length < size) {
+    const complement = 2 * order.length + 1;
+    order = order.flatMap((rank, i) => i % 2 ? [complement - rank, rank] : [rank, complement - rank]);
+  }
+  return order;
+}
+function rankOrder(entries, random = Math.random, useRanks = true) {
+  const seats = Array(entries.length).fill(void 0);
+  const seen = /* @__PURE__ */ new Set(), ranks = /* @__PURE__ */ new Set();
+  for (const e of entries) {
+    if (e.seed) {
+      ensure(Number.isSafeInteger(e.seed) && e.seed >= 1 && e.seed <= entries.length && !seen.has(e.seed), "\u30B7\u30FC\u30C9\u756A\u53F7\u306E\u91CD\u8907\u307E\u305F\u306F\u7BC4\u56F2\u5916\u3067\u3059");
+      seen.add(e.seed);
+      seats[e.seed - 1] = e;
+    }
+    if (useRanks && e.rank !== void 0) {
+      ensure(Number.isSafeInteger(e.rank) && e.rank >= 1 && e.rank <= entries.length, "\u30E9\u30F3\u30AF\u306F\u53C2\u52A0\u4EBA\u6570\u4EE5\u5185\u306E\u6574\u6570\u3067\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+      ensure(!ranks.has(e.rank), "\u30E9\u30F3\u30AF\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059: " + e.rank);
+      ranks.add(e.rank);
+    }
+  }
+  const remaining = entries.filter((e) => !e.seed);
+  const ranked2 = useRanks ? remaining.filter((e) => e.rank !== void 0).sort((a, b) => a.rank - b.rank) : [];
+  const deferred = [];
+  for (const e of ranked2) {
+    if (seats[e.rank - 1]) deferred.push(e);
+    else seats[e.rank - 1] = e;
+  }
+  for (const e of deferred) seats[seats.findIndex((x) => !x)] = e;
+  const randomPool = remaining.filter((e) => !useRanks || e.rank === void 0);
+  for (let i = randomPool.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [randomPool[i], randomPool[j]] = [randomPool[j], randomPool[i]];
+  }
+  let next = 0;
+  return seats.map((e) => e ?? randomPool[next++]);
+}
+
+// src/ranking-basis.ts
+function rankingSignature(t2, gid, rows) {
+  const stage = t2.stages.find((s2) => s2.groups.some((g) => g.id === gid)), group = stage?.groups.find((g) => g.id === gid);
+  const ids = new Set(group?.entries || []);
+  return JSON.stringify({ stats: rows.map(({ id, played, wins, rate, gd, pd, rd }) => ({ id, played, wins, rate, gd, pd, rd })).sort((a, b) => a.id.localeCompare(b.id)), matches: t2.matches.filter((m) => (m.groupId === gid || m.stageId === stage?.source) && ids.has(m.left) && ids.has(m.right)).map((m) => ({ id: m.id, left: m.left, right: m.right, status: m.status, winner: m.winner, games: m.games, rubbers: m.rubbers })).sort((a, b) => a.id.localeCompare(b.id)) });
+}
+
+// src/engine.ts
+function addEvent(t2, name6, type, base = 21, wins = 2, deuce = true, cap = 30) {
+  ensure(name6.trim(), "\u7A2E\u76EE\u540D\u304C\u5FC5\u8981\u3067\u3059");
+  const e = { id: uid(), name: name6, type, rule: { base, wins, deuce, cap: deuce ? cap : base }, entries: [] };
+  t2.events.push(e);
+  return e;
+}
+function addEntry(t2, eid2, name6, club, players, seed = 0) {
+  const e = eventOf(t2, eid2);
+  ensure(!t2.stages.some((s2) => s2.eventId === eid2), "\u7D44\u5408\u305B\u4F5C\u6210\u5F8C\u306E\u53C2\u52A0\u8005\u8FFD\u52A0\u306F\u3067\u304D\u307E\u305B\u3093");
+  ensure(!e.entries.some((p2) => p2.players.length === players.length && p2.players.every((id) => players.includes(id))), "\u540C\u3058\u9078\u624B\u69CB\u6210\u304C\u767B\u9332\u6E08\u307F\u3067\u3059");
+  const p = { id: uid(), name: name6, club, players, seed };
+  e.entries.push(p);
+  return p;
+}
+var shuffle = (a) => {
+  a = [...a];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+function ordered(entries, mode) {
+  return mode === "manual" ? [...entries] : mode === "seed" ? [...entries.filter((e) => e.seed > 0).sort((a, b) => a.seed - b.seed), ...shuffle(entries.filter((e) => !e.seed))] : shuffle(entries);
+}
+function newMatch(t2, s2, gid, left, right, round = 1, deps = []) {
+  ensure(t2.matches.length < 5e4, "\u8A66\u5408\u6570\u304C50,000\u4EF6\u3092\u8D85\u3048\u307E\u3059");
+  const m = { id: uid(), eventId: s2.eventId, stageId: s2.id, groupId: gid, number: (t2.matches.at(-1)?.number || 0) + 1, round, left, right, deps, games: [], winner: "", status: "waiting", court: 0, time: 0, duration: 20 };
+  t2.matches.push(m);
+  return m;
+}
+function drawInto(t2, eid2, kind, count = 1, mode = "seed", entries, source, name6, excludeClub = false) {
+  ensure(!excludeClub || kind === "league" && eventOf(t2, eid2).type !== "team", "\u540C\u30C1\u30FC\u30E0\u9664\u5916\u306F\u500B\u4EBA\u30EA\u30FC\u30B0\u304C\u5BFE\u8C61\u3067\u3059");
+  ensure(["league", "bracket"].includes(kind), "\u7D44\u5408\u305B\u65B9\u5F0F\u304C\u4E0D\u6B63\u3067\u3059");
+  ensure(["manual", "seed", "random", "rank"].includes(mode), "\u632F\u308A\u5206\u3051\u65B9\u6CD5\u304C\u4E0D\u6B63\u3067\u3059");
+  const e = eventOf(t2, eid2);
+  const pool3 = entries ? entries.map((id) => {
+    const p = e.entries.find((p2) => p2.id === id);
+    ensure(p, "\u53C2\u52A0\u8005\u4E0D\u660E");
+    return p;
+  }) : e.entries;
+  ensure(pool3.length >= 2 && pool3.length <= 512, "\u7D44\u5408\u305B\u306F2\u301C512\u7D44\u3067\u3059");
+  ensure(new Set(pool3.map((p) => p.id)).size === pool3.length, "\u53C2\u52A0ID\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
+  ensure(pool3.every((p) => !p.players.some((id) => id.startsWith("TEAM-PENDING-"))), "\u56E3\u4F53\u30E1\u30F3\u30D0\u30FC\u3092\u767B\u9332\u3057\u3066\u304B\u3089\u7D44\u5408\u305B\u3092\u4F5C\u6210\u3057\u3066\u304F\u3060\u3055\u3044");
+  const players = pool3.flatMap((p) => p.players);
+  ensure(new Set(players).size === players.length, "\u540C\u4E00\u9078\u624B\u304C\u8907\u6570\u306E\u53C2\u52A0\u67A0\u306B\u3044\u307E\u3059");
+  ensure(!t2.stages.some((s3) => s3.eventId === eid2 && !source), "\u521D\u671F\u7D44\u5408\u305B\u306F\u4F5C\u6210\u6E08\u307F\u3067\u3059");
+  ensure(Number.isInteger(count) && count >= 1 && count <= Math.floor(pool3.length / 2), "\u5404\u30EA\u30FC\u30B02\u7D44\u4EE5\u4E0A\u306B\u3057\u3066\u304F\u3060\u3055\u3044");
+  if (source) ensure(t2.stages.some((s3) => s3.id === source && s3.eventId === eid2), "\u9032\u51FA\u5143\u30B9\u30C6\u30FC\u30B8\u304C\u4E0D\u6B63\u3067\u3059");
+  if (name6 !== void 0) ensure(typeof name6 === "string" && name6.trim() && name6.length <= 120, "\u30B9\u30C6\u30FC\u30B8\u540D\u304C\u4E0D\u6B63\u3067\u3059");
+  let planned = 0;
+  if (kind === "league" && !excludeClub) {
+    const q = Math.floor(pool3.length / count), r = pool3.length % count;
+    planned = r * (q + 1) * q / 2 + (count - r) * q * (q - 1) / 2;
+  } else if (kind === "bracket") {
+    for (let i = 0; i < count; i++) {
+      const n2 = Math.floor(pool3.length / count) + (i < pool3.length % count ? 1 : 0);
+      planned += n2 - 1;
+    }
+  }
+  ensure(t2.matches.length + planned <= 5e4, "\u8A66\u5408\u6570\u304C50,000\u4EF6\u3092\u8D85\u3048\u307E\u3059\u3002\u30EA\u30FC\u30B0\u3092\u5206\u5272\u3057\u3066\u304F\u3060\u3055\u3044");
+  const s2 = { id: uid(), eventId: eid2, kind, name: name6 || (source ? "\u6C7A\u52DD" : "\u4E88\u9078"), source, groups: [], ...excludeClub ? { excludeClub: true } : {} };
+  t2.stages.push(s2);
+  t2.matches.sort((a, b) => a.number - b.number);
+  const ps = kind === "bracket" && !source && ["rank", "seed"].includes(mode) ? rankOrder(pool3, Math.random, mode === "rank") : ordered(pool3, mode === "rank" ? "seed" : mode);
+  if (kind === "league") {
+    s2.groups = Array.from({ length: count }, (_2, i) => ({ id: uid(), name: `${s2.name} ${i + 1}\u7D44`, entries: [] }));
+    ps.forEach((p, i) => {
+      const row = Math.floor(i / count), col = i % count;
+      s2.groups[row % 2 ? count - 1 - col : col].entries.push(p.id);
+    });
+    for (const g of s2.groups) for (let i = 0; i < g.entries.length; i++) for (let j = i + 1; j < g.entries.length; j++) if (!s2.excludeClub || opposing(entryOf(t2, g.entries[i]), entryOf(t2, g.entries[j]))) newMatch(t2, s2, g.id, g.entries[i], g.entries[j]);
+  } else {
+    s2.groups = Array.from({ length: count }, (_2, i) => ({ id: uid(), name: count === 1 ? s2.name : s2.name + " " + (i + 1) + "\u7D44", entries: [] }));
+    ps.forEach((p, i) => s2.groups[i % count].entries.push(p.id));
+    for (const g of s2.groups) {
+      let size = 2;
+      while (size < g.entries.length) size *= 2;
+      const slots = rankPositions(size).map((n2) => g.entries[n2 - 1] || "");
+      buildBracketGroup(t2, s2, g, slots);
+    }
+    propagate(t2, s2.id);
+    numberBracket(t2, s2.id);
+    if (mode === "rank") s2.rankDraw = true;
+  }
+  return s2;
+}
+function commitDraws(t2, draft) {
+  const stages = new Set(t2.stages.map((s2) => s2.id)), matches = new Map(t2.matches.map((m) => [m.id, m]));
+  t2.stages.push(...draft.stages.filter((s2) => !stages.has(s2.id)));
+  t2.matches = draft.matches.map((m) => matches.get(m.id) || m);
+}
+function draw(t2, eid2, kind, count = 1, mode = "seed", entries, source, name6, excludeClub = false) {
+  validate(t2);
+  assertNoPendingPairs(eventOf(t2, eid2));
+  const draft = structuredClone(t2), stage = drawInto(draft, eid2, kind, count, mode, entries, source, name6, excludeClub);
+  validate(draft);
+  commitDraws(t2, draft);
+  return t2.stages.find((s2) => s2.id === stage.id);
+}
+function numberBracket(t2, sid2) {
+  const matches = t2.matches.filter((m) => m.stageId === sid2).sort((a, b) => a.round - b.round || a.number - b.number);
+  let number = 0;
+  for (const m of matches) {
+    if (m.status === "bye") delete m.bracketNo;
+    else m.bracketNo = ++number;
+  }
+}
+function buildBracketGroup(t2, s2, g, slots) {
+  const old = t2.matches.filter((m) => m.groupId === g.id);
+  const byNode = new Map(old.map((m) => [m.node, m]));
+  const active = /* @__PURE__ */ new Map();
+  const make = [];
+  for (const [i, id] of slots.entries()) if (id) active.set(slots.length + i, { player: id });
+  for (let lane = slots.length / 2, round = 1; lane >= 1; lane /= 2, round++) {
+    for (let node = lane; node < lane * 2; node++) {
+      const a = active.get(node * 2), b = active.get(node * 2 + 1);
+      if (!a || !b) {
+        if (a || b) active.set(node, a || b);
+        continue;
+      }
+      const id = byNode.get(node)?.id ?? uid();
+      make.push({ node, round, left: a.player ?? "", right: b.player ?? "", feeds: [a.match ?? "", b.match ?? ""], id });
+      active.set(node, { match: id });
+    }
+  }
+  const newNodes = new Set(make.map((m) => m.node));
+  ensure(!old.some((m) => (m.court || m.displayNumber) && !newNodes.has(m.node)), "\u5272\u5F53\u6E08\u307F\u30FB\u63A1\u756A\u6E08\u307F\u306E\u67A0\u3092\u89E3\u9664\u3057\u3066\u304B\u3089\u5909\u66F4\u3057\u3066\u304F\u3060\u3055\u3044");
+  let last2 = t2.matches.reduce((max3, m) => Math.max(max3, m.number), 0);
+  t2.matches = t2.matches.filter((m) => m.groupId !== g.id);
+  for (const n2 of make) {
+    const m = byNode.get(n2.node);
+    const existing = m ? { ...m } : void 0;
+    if (existing) delete existing.rubbers;
+    t2.matches.push({
+      ...existing,
+      id: n2.id,
+      eventId: s2.eventId,
+      stageId: s2.id,
+      groupId: g.id,
+      number: m?.number ?? ++last2,
+      round: n2.round,
+      node: n2.node,
+      left: n2.left,
+      right: n2.right,
+      feeds: n2.feeds,
+      deps: n2.feeds.filter(Boolean),
+      games: [],
+      winner: "",
+      status: "waiting",
+      court: m?.court ?? 0,
+      time: m?.time ?? 0,
+      duration: m?.duration ?? 20
+    });
+  }
+  g.slots = [...slots];
+}
+function propagate(t2, sid2) {
+  const matches = t2.matches.filter((m) => m.stageId === sid2);
+  const byId = new Map(matches.map((m) => [m.id, m]));
+  for (const m of matches.sort((a, b) => a.round - b.round)) {
+    for (const side of [0, 1]) {
+      const id = feeder(m, side);
+      if (id) {
+        const d = byId.get(id);
+        m[side === 0 ? "left" : "right"] = finished(d) ? d.winner : "";
+      }
+    }
+    if (!m.feeds && (!m.deps.length || m.deps.every((id) => finished(byId.get(id)))) && !!m.left !== !!m.right) {
+      m.status = "bye";
+      m.winner = m.left || m.right;
+    }
+  }
+}
+function descendants(t2, id) {
+  const out = [];
+  const todo = [id];
+  while (todo.length) {
+    const at = todo.shift();
+    for (const m of t2.matches.filter((m2) => m2.deps.includes(at))) {
+      out.push(m);
+      todo.push(m.id);
+    }
+  }
+  return out;
+}
+function guardCorrection(t2, m, updateFinals = false) {
+  ensure(!descendants(t2, m.id).some((n2) => finished(n2) || ["called", "playing"].includes(n2.status)), "\u52DD\u8005\u304C\u5909\u308F\u308A\u307E\u3059\u3002\u5F8C\u7D9A\u8A66\u5408\u3092\u6C7A\u52DD\u5074\u304B\u3089\u7D50\u679C\u30FB\u9032\u884C\u53D6\u6D88\u3057\u3066\u304B\u3089\u3001\u5143\u306E\u8A66\u5408\u3092\u8A02\u6B63\u3057\u3066\u304F\u3060\u3055\u3044");
+  if (!updateFinals) ensure(!t2.stages.some((s2) => s2.source === m.stageId), "\u6C7A\u52DD\u4F5C\u6210\u5F8C\u306E\u4E88\u9078\u8A02\u6B63\u306F\u4FDD\u8B77\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u53D6\u308A\u6D88\u3057\u3066\u304B\u3089\u8A02\u6B63\u3057\u3066\u304F\u3060\u3055\u3044");
+}
+function updateQualifications(t2, sourceId) {
+  const source = t2.stages.find((s2) => s2.id === sourceId);
+  const stages = t2.stages.filter((s2) => s2.source === sourceId);
+  let changed = false;
+  for (const stage of stages) {
+    const rule = stage.qualification;
+    ensure(rule, "\u65E7\u7248\u306E\u6C7A\u52DD\u306F\u9032\u51FA\u6761\u4EF6\u3092\u518D\u8A08\u7B97\u3067\u304D\u307E\u305B\u3093\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u53D6\u308A\u6D88\u3057\u3066\u304B\u3089\u8A02\u6B63\u3057\u3066\u304F\u3060\u3055\u3044");
+    const next = "slots" in rule ? rule.slots.map((slot) => resolveFinalSlot(t2, slot)) : qualifiedGroups(t2, source).flatMap((rows, i) => {
+      if (rule.place !== void 0) {
+        ensure(!rows.some((r) => r.tied), "\u9032\u51FA\u5883\u754C\u304C\u540C\u9806\u4F4D\u3067\u3059\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u9806\u4F4D\u3092\u88C1\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+        return rows.filter((r) => r.rank === rule.place).map((r) => r.id);
+      }
+      const count = rule.counts[i];
+      ensure(!(rows[count] && rows[count - 1].rank === rows[count].rank), "\u9032\u51FA\u5883\u754C\u304C\u540C\u9806\u4F4D\u3067\u3059\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u9806\u4F4D\u3092\u88C1\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+      return rows.slice(0, count).map((r) => r.id);
+    });
+    ensure(next.length === rule.previous.length && next.every((id) => !!id) && new Set(next).size === next.length, "\u8A02\u6B63\u5F8C\u306E\u9032\u51FA\u8005\u306B\u6B20\u843D\u3084\u91CD\u8907\u304C\u3042\u308A\u307E\u3059\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u67A0\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
+    if (next.every((id, i) => id === rule.previous[i])) continue;
+    const matches = t2.matches.filter((n2) => n2.stageId === stage.id);
+    ensure(!stage.locked && !t2.stages.some((s2) => s2.source === stage.id) && matches.every((n2) => ["waiting", "bye"].includes(n2.status)), "\u6C7A\u52DD\u9032\u51FA\u8005\u304C\u5909\u308F\u308A\u307E\u3059\u3002\u6C7A\u52DD\u5074\u304B\u3089\u7D50\u679C\u30FB\u9032\u884C\u3092\u53D6\u308A\u6D88\u3057\u3066\u304B\u3089\u8A02\u6B63\u3057\u3066\u304F\u3060\u3055\u3044");
+    changed = true;
+    const mapping = new Map(rule.previous.map((id, i) => [id, next[i]]));
+    const replace = (id) => mapping.get(id) ?? id;
+    for (const g of stage.groups) {
+      g.entries = g.entries.map(replace);
+      if (g.slots) g.slots = g.slots.map(replace);
+    }
+    for (const m of matches) {
+      const left = replace(m.left), right = replace(m.right);
+      if (left !== m.left || right !== m.right) delete m.rubbers;
+      m.left = left;
+      m.right = right;
+      m.winner = replace(m.winner);
+    }
+    rule.previous = next;
+  }
+  if (changed && t2.matches.some((m) => m.court > 0)) validateSchedule(t2);
+}
+function scoreInto(t2, id, games2, walkover = "") {
+  const m = t2.matches.find((m2) => m2.id === id);
+  ensure(m && m.left && m.right, "\u5BFE\u6226\u8005\u304C\u672A\u78BA\u5B9A\u3067\u3059");
+  ensure(walkover || eventOf(t2, m.eventId).type !== "team", "\u56E3\u4F53\u6226\u306F\u30AA\u30FC\u30C0\u30FC\u5185\u8A33\u304B\u3089\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+  const win = walkover ? (ensure([m.left, m.right].includes(walkover), "\u4E0D\u6226\u52DD\u8005\u304C\u4E0D\u6B63"), walkover) : m[result(games2, eventOf(t2, m.eventId).rule)];
+  const changed = m.status !== "completed" || m.winner !== win;
+  if (changed) {
+    guardCorrection(t2, m, true);
+    for (const d of descendants(t2, m.id)) delete d.rubbers;
+  }
+  delete m.decision;
+  delete m.termination;
+  delete m.retirementGames;
+  m.draw = false;
+  m.walkover = !!walkover;
+  m.finishedAt = m.status === "completed" && m.finishedAt !== void 0 ? m.finishedAt : Date.now();
+  if (walkover) m.rubbers = void 0;
+  m.games = walkover ? [] : games2;
+  m.winner = win;
+  m.status = "completed";
+  if (walkover) t2.history.push({ at: (/* @__PURE__ */ new Date()).toISOString(), op: uid(), action: "walkover:" + id, revision: t2.revision + 1 });
+  propagate(t2, m.stageId);
+  if (changed) updateQualifications(t2, m.stageId);
+}
+function cancelInto(t2, id) {
+  const m = t2.matches.find((m2) => m2.id === id);
+  ensure(m, "\u8A66\u5408\u306A\u3057");
+  guardCorrection(t2, m);
+  ensure(m.status !== "bye", "BYE\u306F\u53D6\u6D88\u3067\u304D\u307E\u305B\u3093");
+  delete m.decision;
+  delete m.termination;
+  delete m.retirementGames;
+  m.games = [];
+  m.draw = false;
+  m.walkover = false;
+  m.finishedAt = void 0;
+  m.startedAt = void 0;
+  m.winner = "";
+  m.status = "waiting";
+  m.rubbers = void 0;
+  for (const d of descendants(t2, id)) {
+    d.status = "waiting";
+    d.winner = "";
+    d.games = [];
+    delete d.rubbers;
+  }
+  propagate(t2, m.stageId);
+}
+function standings(t2, gid, applyRuling = true) {
+  const s2 = t2.stages.find((s3) => s3.groups.some((g) => g.id === gid));
+  ensure(s2 && s2.kind === "league", "\u30EA\u30FC\u30B0\u306A\u3057");
+  const ids = s2.groups.find((g) => g.id === gid).entries;
+  const pair = (a, b) => [a, b].sort().join("|");
+  const ms = /* @__PURE__ */ new Map();
+  if (s2.source && t2.stages.find((p) => p.id === s2.source)?.kind === "league") t2.matches.filter((m) => m.stageId === s2.source && finished(m) && ids.includes(m.left) && ids.includes(m.right)).forEach((m) => {
+    const k = pair(m.left, m.right);
+    ensure(!ms.has(k), "\u4E88\u9078\u7D50\u679C\u304C\u91CD\u8907");
+    ms.set(k, m);
+  });
+  t2.matches.filter((m) => m.groupId === gid && finished(m)).forEach((m) => ms.set(pair(m.left, m.right), m));
+  const e = eventOf(t2, s2.eventId);
+  const criteria = e.type === "team" ? e.team?.ranking || ["rate", "rubber", "game", "point"] : ["rate", "game", "point"];
+  const rows = ids.map((id) => {
+    let played = 0, wins = 0, draws = 0, gf = 0, ga = 0, pf = 0, pa = 0, rd = 0;
+    for (const m of ms.values()) {
+      if (m.left !== id && m.right !== id) continue;
+      played++;
+      if (m.draw) draws++;
+      else if (m.winner === id) wins++;
+      const left = m.left === id;
+      const rs = (m.rubbers || []).filter((r) => r.winner);
+      rd += rs.reduce((n2, r) => n2 + (r.winner === (left ? "left" : "right") ? 1 : -1), 0);
+      const games2 = e.type === "team" ? rs.flatMap((r) => r.games) : m.games;
+      for (const g of games2) {
+        const a = g[left ? 0 : 1], b = g[left ? 1 : 0];
+        pf += a;
+        pa += b;
+        a > b ? gf++ : ga++;
+      }
+    }
+    return { id, played, wins, draws, losses: played - wins - draws, gf, ga, pf, pa, rate: played ? (wins + draws * (e.team?.drawValue ?? 0.5)) / played : 0, gd: gf - ga, pd: pf - pa, rd, rank: 0, tied: false };
+  });
+  const value2 = (r, key4) => key4 === "rate" ? r.rate : key4 === "rubber" ? r.rd : key4 === "game" ? r.gd : r.pd;
+  const cmp = (a, b) => {
+    for (const k of criteria) {
+      const d = value2(b, k) - value2(a, k);
+      if (d) return d;
+    }
+    return 0;
+  };
+  rows.sort(cmp);
+  rows.forEach((r, i) => {
+    r.rank = i && !cmp(r, rows[i - 1]) ? rows[i - 1].rank : i + 1;
+    r.tied = rows.some((o) => o !== r && !cmp(r, o));
+  });
+  if (applyRuling) {
+    const basis = rankingSignature(t2, gid, rows);
+    const ruling = t2.rulings?.find((r) => r.groupId === gid && !r.cancelled && r.basis === basis);
+    if (ruling) {
+      rows.sort((a, b) => ruling.order.indexOf(a.id) - ruling.order.indexOf(b.id));
+      rows.forEach((r, i) => {
+        r.rank = i + 1;
+        r.tied = false;
+      });
+    }
+  }
+  return rows;
+}
+function qualifiedGroups(t2, s2) {
+  ensure(!s2.exchange, "\u4EA4\u6D41\u6226\u304B\u3089\u306E\u9032\u51FA\u306F\u3067\u304D\u307E\u305B\u3093");
+  const groups = s2.groups.map((g) => {
+    if (s2.kind === "league") {
+      const expected = g.entries.reduce((n2, id, i) => n2 + g.entries.slice(i + 1).filter((other) => !s2.excludeClub || opposing(entryOf(t2, id), entryOf(t2, other))).length, 0);
+      ensure(t2.matches.filter((m) => m.groupId === g.id).length === expected, "\u4E88\u9078\u306E\u8A66\u5408\u304C\u4E0D\u8DB3\u3057\u3066\u3044\u307E\u3059");
+      return standings(t2, g.id);
+    }
+    const ms = t2.matches.filter((m) => m.groupId === g.id && m.status === "completed").sort((a, b) => b.round - a.round);
+    ensure(ms.length && ms.every((m) => m.winner), "\u52DD\u8005\u304C\u78BA\u5B9A\u3057\u3066\u3044\u307E\u305B\u3093");
+    const final = ms[0];
+    return [{ id: final.winner, rank: 1, tied: false }, ...ms.map((m) => ({ id: m.winner === m.left ? m.right : m.left, rank: 2 ** (final.round - m.round) + 1, tied: false }))];
+  });
+  return groups;
+}
+function promoteInto(t2, sid2, top, kind, byRank = false) {
+  ensure(["league", "bracket"].includes(kind) && typeof byRank === "boolean", "\u6C7A\u52DD\u65B9\u5F0F\u304C\u4E0D\u6B63\u3067\u3059");
+  const s2 = t2.stages.find((s3) => s3.id === sid2);
+  ensure(s2 && !s2.exchange, "\u6C7A\u52DD\u306E\u9032\u51FA\u5143\u306B\u4EA4\u6D41\u6226\u306F\u4F7F\u7528\u3067\u304D\u307E\u305B\u3093");
+  ensure(!t2.stages.some((x) => x.source === sid2), "\u6C7A\u52DD\u4F5C\u6210\u6E08\u307F");
+  ensure(s2.groups.length && t2.matches.filter((m) => m.stageId === sid2).every(finished), "\u4E88\u9078\u5168\u8A66\u5408\u3092\u7D42\u4E86\u3057\u3066\u304F\u3060\u3055\u3044");
+  const counts = Array.isArray(top) ? top : s2.groups.map(() => top);
+  ensure(counts.length === s2.groups.length && counts.every((n2) => Number.isInteger(n2) && n2 > 0), "\u9032\u51FA\u6570\u304C\u4E0D\u6B63");
+  const groups = qualifiedGroups(t2, s2);
+  for (const [i, r] of groups.entries()) {
+    const n2 = counts[i];
+    ensure(n2 <= r.length, "\u9032\u51FA\u4EBA\u6570\u304C\u591A\u3059\u304E\u307E\u3059");
+    ensure(byRank ? !r.some((x) => x.tied) : !(r[n2] && r[n2 - 1].rank === r[n2].rank), "\u9032\u51FA\u5883\u754C\u304C\u540C\u9806\u4F4D\u3067\u3059\u3002\u81EA\u52D5\u9032\u51FA\u3092\u505C\u6B62\u3057\u307E\u3057\u305F");
+  }
+  const plans = byRank ? Array.from({ length: Math.max(...groups.map((r) => r.length)) }, (_2, i) => ({ ids: groups.flatMap((r) => r.filter((x) => x.rank === i + 1).map((x) => x.id)), kind: "league", name: `${i + 1}\u4F4D\u6C7A\u52DD`, mode: "manual", place: i + 1 })).filter((p) => p.ids.length >= 2) : [{ ids: groups.flatMap((r, i) => r.slice(0, counts[i]).map((x) => x.id)), kind, name: "\u6C7A\u52DD", mode: "seed" }];
+  ensure(plans.length, "\u751F\u6210\u3067\u304D\u308B\u6C7A\u52DD\u304C\u3042\u308A\u307E\u305B\u3093");
+  let additional = 0;
+  for (const p of plans) {
+    ensure(p.ids.length >= 2 && p.ids.length <= 512 && new Set(p.ids).size === p.ids.length, "\u6C7A\u52DD\u9032\u51FA\u8005\u6570\u30FB\u91CD\u8907\u304C\u4E0D\u6B63");
+    const players = p.ids.flatMap((id) => entryOf(t2, id).players);
+    ensure(new Set(players).size === players.length, "\u6C7A\u52DD\u3067\u540C\u4E00\u9078\u624B\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
+    if (p.kind === "league") additional += p.ids.length * (p.ids.length - 1) / 2;
+    else additional += p.ids.length - 1;
+  }
+  ensure(t2.matches.length + additional <= 5e4, "\u6C7A\u52DD\u5168\u4F53\u306E\u8A66\u5408\u6570\u304C50,000\u4EF6\u3092\u8D85\u3048\u307E\u3059");
+  for (const p of plans) {
+    const stage = drawInto(t2, s2.eventId, p.kind, 1, p.mode, p.ids, sid2, p.name);
+    stage.qualification = { previous: p.ids, counts, place: p.place };
+  }
+}
+function promote(t2, sid2, top, kind, byRank = false) {
+  validate(t2);
+  const draft = structuredClone(t2);
+  promoteInto(draft, sid2, top, kind, byRank);
+  validate(draft);
+  commitDraws(t2, draft);
+}
+function moveEntryInto(t2, sid2, pid, target) {
+  const s2 = t2.stages.find((s3) => s3.id === sid2);
+  ensure(s2 && s2.kind === "league" && !s2.exchange && !s2.locked && !t2.matches.some((m) => m.stageId === sid2 && m.status !== "waiting") && !t2.stages.some((x) => x.source === sid2), "\u958B\u59CB\u524D\u306E\u30EA\u30FC\u30B0\u3060\u3051\u8ABF\u6574\u3067\u304D\u307E\u3059");
+  const dst = s2.groups.find((g) => g.id === target);
+  ensure(dst, "\u79FB\u52D5\u5148\u306A\u3057");
+  const src2 = s2.groups.find((g) => g.entries.includes(pid));
+  ensure(src2 && src2.entries.length > 2 && src2 !== dst, "\u79FB\u52D5\u5143\u306F3\u7D44\u4EE5\u4E0A\u5FC5\u8981\u3067\u3059");
+  src2.entries = src2.entries.filter((x) => x !== pid);
+  dst.entries.push(pid);
+  t2.matches = t2.matches.filter((m) => m.stageId !== sid2).sort((a, b) => a.number - b.number);
+  for (const g of s2.groups) for (let i = 0; i < g.entries.length; i++) for (let j = i + 1; j < g.entries.length; j++) if (!s2.excludeClub || opposing(entryOf(t2, g.entries[i]), entryOf(t2, g.entries[j]))) newMatch(t2, s2, g.id, g.entries[i], g.entries[j]);
+}
+function teamOrderInto(t2, id, orders) {
+  const m = t2.matches.find((m2) => m2.id === id);
+  ensure(m && eventOf(t2, m.eventId).type === "team" && m.left && m.right, "\u56E3\u4F53\u8A66\u5408\u304C\u3042\u308A\u307E\u305B\u3093");
+  ensure(!finished(m) && !["called", "playing"].includes(m.status) && !m.rubbers?.some((r) => r.games.length), "\u5F97\u70B9\u5165\u529B\u6E08\u307F\u30AA\u30FC\u30C0\u30FC\u306F\u5909\u66F4\u3067\u304D\u307E\u305B\u3093");
+  const tr = eventOf(t2, m.eventId).team;
+  if (tr) ensure(orders.length === tr.rubbers, "\u898F\u5B9A\u306E\u5BFE\u6226\u672C\u6570\u3068\u7570\u306A\u308A\u307E\u3059");
+  for (const side of ["left", "right"]) {
+    const counts = /* @__PURE__ */ new Map();
+    orders.forEach((o, i) => {
+      if (tr) ensure(o[side].length === tr.orderSizes[i], "S/D\u306E\u9806\u756A\u304C\u7570\u306A\u308A\u307E\u3059");
+      for (const p of o[side]) {
+        ensure(p, i + 1 + "\u672C\u76EE\u30FB" + (side === "left" ? "\u5DE6" : "\u53F3") + "\u306E\u9078\u624B\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+        checkTeamEligibility(tr, p);
+        const count = (counts.get(p) || 0) + 1;
+        ensure(count <= (tr?.maxAppearances || 9), i + 1 + "\u672C\u76EE\u30FB" + (side === "left" ? "\u5DE6" : "\u53F3") + "\u306E\u30C1\u30FC\u30E0\u3067\u9078\u624B\u304C\u51FA\u5834\u56DE\u6570\u306E\u4E0A\u9650" + (tr?.maxAppearances || 9) + "\u672C\u3092\u8D85\u3048\u3066\u3044\u307E\u3059");
+        counts.set(p, count);
+      }
+    });
+  }
+  ensure(orders.length >= 1 && orders.length <= 9 && (tr || orders.length % 2 === 1), "\u56E3\u4F53\u672C\u6570\u306F\u8A2D\u5B9A\u3057\u305F1\u301C9\u672C\u3067\u3059");
+  m.rubbers = orders.map((o) => {
+    ensure(o.left.length >= 1 && o.left.length <= 2 && o.left.length === o.right.length && new Set(o.left).size === o.left.length && new Set(o.right).size === o.right.length, "\u30AA\u30FC\u30C0\u30FC\u4EBA\u6570\u304C\u4E0D\u6B63");
+    ensure(o.left.every((p) => entryOf(t2, m.left).players.includes(p)) && o.right.every((p) => entryOf(t2, m.right).players.includes(p)), "\u767B\u9332\u9078\u624B\u3092\u9078\u3093\u3067\u304F\u3060\u3055\u3044");
+    return { ...o, games: [], winner: "" };
+  });
+}
+function refreshTeam(t2, m, priorStatus) {
+  const tr = eventOf(t2, m.eventId).team, rs = m.rubbers;
+  const a = rs.filter((r) => r.winner === "left").length, b = rs.filter((r) => r.winner === "right").length;
+  const complete = rs.every((r) => r.winner), tie = complete && a === b, bracket = t2.stages.find((s2) => s2.id === m.stageId)?.kind === "bracket", pending = tie && bracket && tr?.tieBreak === "manual";
+  ensure(!tie || pending || tr?.allowDraw === true, "\u56E3\u4F53\u304C\u540C\u70B9\u3067\u3059\u3002\u5F15\u5206\u3051\u3092\u8A31\u53EF\u3059\u308B\u5927\u4F1A\u898F\u5B9A\u304B\u3001\u5225\u9014\u306E\u6C7A\u7740\u898F\u5B9A\u304C\u5FC5\u8981\u3067\u3059");
+  ensure(!tie || !bracket || pending, "\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u306F\u5F15\u5206\u3051\u3067\u306F\u78BA\u5B9A\u3067\u304D\u307E\u305B\u3093\u3002\u5927\u4F1A\u898F\u5B9A\u306B\u5F93\u3063\u3066\u6C7A\u7740\u5F8C\u306B\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+  const won = (tr?.mode !== "all" || complete) && Math.max(a, b) > rs.length / 2, draw2 = tie && !pending, ended = won || draw2;
+  delete m.decision;
+  m.draw = draw2;
+  m.walkover = false;
+  m.winner = won ? a > b ? m.left : m.right : "";
+  m.status = ended ? "completed" : ["called", "playing"].includes(priorStatus) ? priorStatus : "waiting";
+  m.finishedAt = ended ? priorStatus === "completed" ? m.finishedAt : Date.now() : void 0;
+  propagate(t2, m.stageId);
+}
+function teamScoreInto(t2, id, index, games2) {
+  const m = t2.matches.find((m2) => m2.id === id);
+  ensure(m && eventOf(t2, m.eventId).type === "team" && Number.isInteger(index) && m.rubbers?.[index], "\u30AA\u30FC\u30C0\u30FC\u304C\u3042\u308A\u307E\u305B\u3093");
+  guardCorrection(t2, m);
+  const priorStatus = m.status, w = result(games2, eventOf(t2, m.eventId).rule), tr = eventOf(t2, m.eventId).team;
+  ensure(tr?.mode !== "first" || !m.winner || m.rubbers[index].games.length, "\u5148\u53D6\u5236\u306E\u52DD\u6557\u306F\u78BA\u5B9A\u6E08\u307F\u3067\u3059");
+  m.rubbers[index].games = games2;
+  m.rubbers[index].winner = w;
+  refreshTeam(t2, m, priorStatus);
+}
+function teamCancelRubberInto(t2, id, index) {
+  const m = t2.matches.find((m2) => m2.id === id);
+  ensure(m && eventOf(t2, m.eventId).type === "team" && Number.isInteger(index) && m.rubbers?.[index]?.games.length, "\u53D6\u6D88\u3067\u304D\u308B\u5185\u8A33\u7D50\u679C\u304C\u3042\u308A\u307E\u305B\u3093");
+  guardCorrection(t2, m);
+  const priorStatus = m.status;
+  m.rubbers[index].games = [];
+  m.rubbers[index].winner = "";
+  refreshTeam(t2, m, priorStatus);
+}
+function compare(a, b) {
+  ensure(a.origin === b.origin, "\u5225\u5927\u4F1A\u3067\u3059\uFF08\u7531\u6765ID\u4E0D\u4E00\u81F4\uFF09");
+  const diff = [];
+  const check2 = (item, x, y) => {
+    if (JSON.stringify(x) !== JSON.stringify(y)) diff.push({ item, main: x, sub: y });
+  };
+  check2("\u7DCF\u8A66\u5408\u6570", a.matches.length, b.matches.length);
+  check2("\u9032\u884C\u8A2D\u5B9A", { courts: a.courts, rest: a.restMinutes, mode: a.scheduleMode }, { courts: b.courts, rest: b.restMinutes, mode: b.scheduleMode });
+  check2("\u5165\u529B\u6E08\u307F\u8A66\u5408\u6570", a.matches.filter(finished).length, b.matches.filter(finished).length);
+  for (const id of /* @__PURE__ */ new Set([...a.matches.map((m) => m.id), ...b.matches.map((m) => m.id)])) {
+    const x = a.matches.find((m) => m.id === id), y = b.matches.find((m) => m.id === id);
+    check2(`\u8A66\u5408 ${x?.displayNumber || x?.number || y?.displayNumber || y?.number} / ${id}`, x && { number: x.number, displayNumber: x.displayNumber, left: x.left, right: x.right, winner: x.winner, draw: x.draw || false, decision: x.decision, startedAt: x.startedAt, finishedAt: x.finishedAt, games: x.games, termination: x.termination, retirementGames: x.retirementGames, status: x.status, rubbers: x.rubbers, court: x.court, time: x.time, duration: x.duration }, y && { number: y.number, displayNumber: y.displayNumber, left: y.left, right: y.right, winner: y.winner, draw: y.draw || false, decision: y.decision, startedAt: y.startedAt, finishedAt: y.finishedAt, games: y.games, termination: y.termination, retirementGames: y.retirementGames, status: y.status, rubbers: y.rubbers, court: y.court, time: y.time, duration: y.duration });
+  }
+  check2("\u6C7A\u52DD\u9032\u51FA\u30FB\u7D44\u5408\u305B", a.stages, b.stages);
+  for (const s2 of a.stages.filter((s3) => s3.kind === "league")) for (const g of s2.groups) {
+    if (b.stages.some((s3) => s3.groups.some((x) => x.id === g.id))) check2("\u9806\u4F4D " + g.name, standings(a, g.id), standings(b, g.id));
+  }
+  return diff;
+}
+function terminateMatch(t2, id, winner, kind, played = []) {
+  return atomicMutation(t2, (d) => {
+    scoreInto(d, id, [], winner);
+    const m = d.matches.find((x) => x.id === id);
+    m.termination = kind;
+    if (played.length) m.retirementGames = structuredClone(played);
+  });
+}
+function score(t2, id, games2, walkover = "") {
+  return atomicMutation(t2, (d) => scoreInto(d, id, games2, walkover));
+}
+function cancel(t2, id) {
+  return atomicMutation(t2, (d) => cancelInto(d, id));
+}
+function teamScore(t2, id, index, games2) {
+  return atomicMutation(t2, (d) => teamScoreInto(d, id, index, games2));
+}
+function teamCancelRubber(t2, id, index) {
+  return atomicMutation(t2, (d) => teamCancelRubberInto(d, id, index));
+}
+function teamOrder(t2, id, orders) {
+  return atomicMutation(t2, (d) => teamOrderInto(d, id, orders));
+}
+function moveEntry(t2, sid2, pid, target) {
+  return atomicMutation(t2, (d) => moveEntryInto(d, sid2, pid, target));
+}
+function teamDecideInto(t2, id, winner, reason2) {
+  const m = t2.matches.find((m2) => m2.id === id);
+  ensure(m && eventOf(t2, m.eventId).type === "team" && eventOf(t2, m.eventId).team?.tieBreak === "manual" && t2.stages.find((s2) => s2.id === m.stageId)?.kind === "bracket", "\u624B\u52D5\u6C7A\u7740\u3092\u8A2D\u5B9A\u3057\u305F\u56E3\u4F53\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+  guardCorrection(t2, m);
+  ensure(typeof reason2 === "string" && reason2.trim() && reason2.length <= 1e3, "\u6C7A\u7740\u7406\u7531\u3068\u5927\u4F1A\u898F\u5B9A\u306E\u6839\u62E0\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\uFF081000\u6587\u5B57\u4EE5\u5185\uFF09");
+  ensure(winner === m.left || winner === m.right, "\u6C7A\u7740\u52DD\u8005\u304C\u5BFE\u6226\u8005\u306B\u542B\u307E\u308C\u3066\u3044\u307E\u305B\u3093");
+  const rs = m.rubbers;
+  ensure(rs && rs.length > 0 && rs.every((r) => r.winner) && rs.filter((r) => r.winner === "left").length === rs.filter((r) => r.winner === "right").length, "\u5168\u672C\u304C\u540C\u70B9\u3067\u7D42\u4E86\u3057\u305F\u56E3\u4F53\u8A66\u5408\u306E\u307F\u6C7A\u7740\u3092\u5165\u529B\u3067\u304D\u307E\u3059");
+  const before = structuredClone(m), at = (/* @__PURE__ */ new Date()).toISOString();
+  m.decision = { winner, reason: reason2.trim(), at, basis: JSON.stringify(rs) };
+  m.draw = false;
+  m.walkover = false;
+  m.winner = winner;
+  m.finishedAt = m.status === "completed" ? m.finishedAt : Date.now();
+  m.status = "completed";
+  propagate(t2, m.stageId);
+  (t2.corrections ??= []).push({ at, matchId: id, reason: "\u540C\u70B9\u6C7A\u7740\uFF1A" + reason2.trim(), before, after: structuredClone(m) });
+  t2.history.push({ at, op: uid(), action: "\u56E3\u4F53\u540C\u70B9\u6C7A\u7740\uFF1A" + reason2.trim(), revision: t2.revision + 1 });
+}
+function teamDecide(t2, id, winner, reason2) {
+  return atomicMutation(t2, (d) => teamDecideInto(d, id, winner, reason2));
+}
+function swapEntries(t2, sid2, first, second) {
+  return atomicMutation(t2, (d) => {
+    const s2 = d.stages.find((x) => x.id === sid2);
+    ensure(s2 && s2.kind === "league" && !s2.exchange && !s2.locked && !d.stages.some((x) => x.source === sid2), "\u7DE8\u96C6\u3067\u304D\u308B\u4E88\u9078\u30EA\u30FC\u30B0\u304C\u3042\u308A\u307E\u305B\u3093");
+    ensure(!d.matches.some((m) => m.stageId === sid2 && m.status !== "waiting"), "\u8A66\u5408\u958B\u59CB\u5F8C\u306F\u7DE8\u96C6\u3067\u304D\u307E\u305B\u3093");
+    const a = s2.groups.find((g) => g.entries.includes(first)), b = s2.groups.find((g) => g.entries.includes(second));
+    ensure(a && b && first !== second, "\u4EA4\u63DB\u5BFE\u8C61\u304C\u4E0D\u6B63\u3067\u3059");
+    const ai = a.entries.indexOf(first), bi = b.entries.indexOf(second);
+    a.entries[ai] = second;
+    b.entries[bi] = first;
+    d.matches = d.matches.filter((m) => m.stageId !== sid2);
+    for (const g of s2.groups) for (let i = 0; i < g.entries.length; i++) for (let j = i + 1; j < g.entries.length; j++) if (!s2.excludeClub || opposing(entryOf(d, g.entries[i]), entryOf(d, g.entries[j]))) newMatch(d, s2, g.id, g.entries[i], g.entries[j]);
+  });
+}
+function removeEntry(t2, eid2, id) {
+  return atomicMutation(t2, (d) => {
+    const e = eventOf(d, eid2);
+    ensure(!d.stages.some((s2) => s2.eventId === eid2), "\u7D44\u5408\u305B\u4F5C\u6210\u5F8C\u306E\u524A\u9664\u306F\u4FDD\u8B77\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u5148\u306B\u7D44\u5408\u305B\u3092\u4FDD\u7BA1\u30FB\u53D6\u6D88\u3057\u3066\u304F\u3060\u3055\u3044");
+    ensure(e.entries.some((p) => p.id === id), "\u9078\u624B\u304C\u3042\u308A\u307E\u305B\u3093");
+    e.entries = e.entries.filter((p) => p.id !== id);
+  });
+}
+function promoteMatchSlots(t2, sid2, slots, name6 = "\u6C7A\u52DD\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8") {
+  return atomicMutation(t2, (d) => {
+    const source = d.stages.find((s2) => s2.id === sid2);
+    ensure(source?.kind === "bracket", "\u4E88\u9078\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+    ensure(!d.stages.some((s2) => s2.source === sid2), "\u6C7A\u52DD\u4F5C\u6210\u6E08\u307F");
+    ensure(slots.length >= 2 && slots.length <= 512, "\u6C7A\u52DD\u306E\u53C2\u52A0\u8005\u67A0\u306F2\u301C512\u3067\u3059");
+    const matches = new Map(d.matches.filter((m) => m.stageId === sid2).map((m) => [m.id, m]));
+    ensure([...matches.values()].every(finished), "\u4E88\u9078\u5168\u8A66\u5408\u3092\u7D42\u4E86\u3057\u3066\u304F\u3060\u3055\u3044");
+    const refs = /* @__PURE__ */ new Set();
+    const ids = slots.map(({ matchId, side }) => {
+      ensure(side === "winner" || side === "loser", "\u9032\u51FA\u6761\u4EF6\u304C\u4E0D\u6B63");
+      ensure(!refs.has(matchId + side), "\u540C\u4E00\u306E\u9032\u51FA\u5143\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
+      refs.add(matchId + side);
+      const m = matches.get(matchId);
+      ensure(m?.status === "completed" && m.winner && m.left && m.right, "\u9032\u51FA\u5143\u306E\u5BFE\u6226\u7D50\u679C\u304C\u672A\u78BA\u5B9A\u3067\u3059");
+      return side === "winner" ? m.winner : m.winner === m.left ? m.right : m.left;
+    });
+    ensure(new Set(ids).size === ids.length, "\u540C\u3058\u9078\u624B\u30FB\u30C1\u30FC\u30E0\u304C\u6C7A\u52DD\u306B\u91CD\u8907\u3057\u307E\u3059");
+    let size = 2;
+    while (size < ids.length) size *= 2;
+    const positions = rankPositions(size).map((n2) => n2 - 1);
+    const order = Array(ids.length);
+    positions.filter((i) => i < ids.length).forEach((i, slot) => order[i] = ids[slot]);
+    const stage = drawInto(d, source.eventId, "bracket", 1, "manual", order, sid2, name6);
+    stage.qualification = { previous: ids, slots: structuredClone(slots) };
+    return stage.id;
+  });
+}
+function saveFinalSlots(t2, sid2, slots) {
+  return atomicMutation(t2, (d) => {
+    const stage = d.stages.find((s2) => s2.id === sid2);
+    ensure(stage?.kind === "bracket" && !d.stages.some((s2) => s2.source === sid2), "\u6C7A\u52DD\u751F\u6210\u524D\u306E\u4E88\u9078\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+    stage.finalSlots = slots.map((slot) => ({ ...slot }));
+  });
+}
+function resolveFinalSlot(t2, slot) {
+  const m = t2.matches.find((m2) => m2.id === slot.matchId);
+  if (!m || m.status !== "completed" || !m.winner) return void 0;
+  return slot.side === "winner" ? m.winner : m.winner === m.left ? m.right : m.left;
+}
+
+// src/reports.ts
+var escapeHtml = (v2) => String(v2 ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+var grid = (heads, rows) => `<div class="table"><table class="report-grid"><thead><tr>${heads.map((h) => `<th style="white-space:normal;overflow-wrap:anywhere">${escapeHtml(h)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr style="break-inside:avoid">${r.map((v2) => `<td style="white-space:normal;overflow-wrap:anywhere">${escapeHtml(v2)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+function matchScore(m) {
+  if (m.status === "bye") return "\u521D\u6226\u514D\u9664";
+  if (m.termination) return [terminationName(m), ...(m.retirementGames ?? []).map((g) => g.join("-"))].join(" ");
+  if (m.walkover || m.status === "completed" && m.winner && !m.games.length && !m.rubbers) return "\u4E0D\u6226\u52DD";
+  if (m.rubbers) return m.rubbers.filter((r) => r.winner === "left").length + "-" + m.rubbers.filter((r) => r.winner === "right").length + (m.decision ? "\uFF08\u5F79\u54E1\u6C7A\u7740\uFF09" : !finished(m) ? "\uFF08\u9014\u4E2D\uFF09" : "");
+  return m.games.map((g) => g.join("-")).join("/");
+}
+function leagueCrossTable(t2, gid, pendingNumbers = false) {
+  const stage = t2.stages.find((s2) => s2.groups.some((g) => g.id === gid));
+  ensure(stage?.kind === "league", "\u30EA\u30FC\u30B0\u306A\u3057");
+  const group = stage.groups.find((g) => g.id === gid), ids = group.entries, pair = (a, b) => [a, b].sort().join("|"), selected2 = /* @__PURE__ */ new Map();
+  if (stage.source && t2.stages.find((s2) => s2.id === stage.source)?.kind === "league") for (const m of t2.matches.filter((m2) => m2.stageId === stage.source && finished(m2) && ids.includes(m2.left) && ids.includes(m2.right))) selected2.set(pair(m.left, m.right), m);
+  for (const m of t2.matches.filter((m2) => m2.groupId === gid)) {
+    const key4 = pair(m.left, m.right);
+    if (finished(m) || !selected2.has(key4)) selected2.set(key4, m);
+  }
+  const members = ids.map((id, i) => ({ id, number: i + 1, name: entryOf(t2, id)?.name || "\u672A\u767B\u9332" }));
+  const rows = ids.map((id, i) => [String(i + 1), ...ids.map((other) => {
+    if (id === other) return "\u2014";
+    const m = selected2.get(pair(id, other));
+    if (!m) return stage.excludeClub && !opposing(entryOf(t2, id), entryOf(t2, other)) ? "\xD7" : stage.excludeClub ? "\u5BFE\u8C61\u5916" : "\u672A\u5165\u529B";
+    if (!finished(m)) return pendingNumbers ? String(matchNumber(m, t2)) : "\u672A\u5165\u529B";
+    const left = m.left === id, marker = m.draw ? "\u5206" : m.winner === id ? "\u25CB" : "\u25CF";
+    let score2 = m.walkover ? "\u4E0D\u6226\u52DD" : m.rubbers ? m.rubbers.reduce((n2, r) => n2 + (r.winner === (left ? "left" : "right") ? 1 : 0), 0) + "-" + m.rubbers.reduce((n2, r) => n2 + (r.winner === (left ? "right" : "left") ? 1 : 0), 0) : m.games.map((g) => (left ? g : [g[1], g[0]]).join("-")).join("/");
+    return marker + " " + score2 + (m.stageId !== stage.id ? "\uFF08\u4E88\u9078\uFF09" : "");
+  })]);
+  return { members, headers: ["\u9078\u624B\u756A\u53F7 / \u5BFE\u6226\u76F8\u624B", ...ids.map((_2, i) => String(i + 1))], rows, matches: [...selected2.values()], note: "\u5404\u884C\u304B\u3089\u898B\u305F\u5F97\u70B9\u3002\xD7\u306F\u540C\u6240\u5C5E\u7B49\u306B\u3088\u308B\u9664\u5916\u3001\u2014\u306F\u81EA\u5DF1\u5BFE\u6226\u3002\u4E88\u9078\u7D50\u679C\u306F\u6C7A\u52DD\u306E\u518D\u8A66\u5408\u304C\u78BA\u5B9A\u3059\u308B\u307E\u3067\u63A1\u7528\u3057\u307E\u3059\u3002" };
+}
+function teamLeagueReport(t2, gid) {
+  const stage = t2.stages.find((s2) => s2.groups.some((g) => g.id === gid));
+  ensure(stage, "\u5BFE\u8C61\u30EA\u30FC\u30B0\u304C\u3042\u308A\u307E\u305B\u3093");
+  const cross = leagueCrossTable(t2, gid, true), ranks = new Map(standings(t2, gid).map((row) => [row.id, row]));
+  const decided = cross.matches.length > 0 && cross.matches.every(finished);
+  const title3 = (t2.events.find((e) => e.id === stage.eventId)?.name || "\u56E3\u4F53\u6226") + " / " + stage.name + " / " + stage.groups.find((g) => g.id === gid).name + "\u3000\u56E3\u4F53\u6226\u30EA\u30FC\u30B0\u8868";
+  const pages = [];
+  for (let start = 0; start < cross.members.length; start += 6) {
+    const stop = Math.min(start + 6, cross.members.length);
+    pages.push({
+      heading: title3 + "\uFF08\u5BFE\u6226 " + (start + 1) + "\u301C" + stop + "\uFF09",
+      headers: ["\u756A\u53F7\u30FB\u30C1\u30FC\u30E0", ...cross.members.slice(start, stop).map((m) => m.number + " " + m.name), "\u52DD\uFF0F\u6557", "\u5BFE\u6226\u5DEE", "\u5F97\u5931G", "\u5F97\u5931\u70B9", "\u9806\u4F4D"],
+      rows: cross.members.map((member, index) => {
+        const rank = ranks.get(member.id);
+        return [member.number + " " + member.name, ...cross.rows[index].slice(start + 1, stop + 1).map((cell) => cell === "\u2014" ? "\u2015" : cell), rank.wins + "\uFF0F" + rank.losses, rank.rd, rank.gd, rank.pd, (!decided ? "\u66AB\u5B9A" : rank.tied ? "\u88C1\u5B9A\u5F85\u3061" : "\u78BA\u5B9A") + " " + rank.rank];
+      })
+    });
+  }
+  return pages;
+}
+function diagramReport(t2, sid2) {
+  const stage = t2.stages.find((s2) => s2.id === sid2);
+  return stage.groups.flatMap((g) => printableBrackets(t2, t2.matches.filter((m) => m.groupId === g.id), true).map(({ title: title3, layout }) => {
+    const lines = [...layout.segments].sort((a, b) => Number(a.red) - Number(b.red)).map((p) => `<path d="M ${p.x1} ${p.y1} L ${p.x2} ${p.y2}" stroke="${p.red ? "#c31329" : "#000"}" stroke-width="${p.red ? 3.5 : 1.2}"/>`).join("");
+    const text2 = layout.captions.flatMap((p) => p.lines.map((value2, i) => `<text x="${p.x}" y="${p.y + i * 16}" text-anchor="${p.align}" font-size="14">${escapeHtml(value2)}</text>`)).join("");
+    return `<div class="table"><h4>${escapeHtml(g.name + " " + title3)}</h4><svg role="img" aria-label="\u5BFE\u6226\u8868" viewBox="0 0 ${layout.width} ${layout.height}" width="100%">${lines}${text2}</svg></div>`;
+  })).join("");
+}
+function reportHtml(t2) {
+  validate(t2);
+  const name6 = (id) => entryOf(t2, id)?.name || "\u672A\u78BA\u5B9A", time2 = (n2) => String(Math.floor(n2 / 60)).padStart(2, "0") + ":" + String(n2 % 60).padStart(2, "0");
+  let out = `<style>.report-grid{table-layout:fixed}.report-grid thead{display:table-header-group}h2,h3,h4{break-after:avoid}.certificate{overflow-wrap:anywhere;word-break:normal}@media print{.report-grid tr{break-inside:avoid}svg{break-inside:avoid}}</style><h2>${escapeHtml(t2.name)} \u5E33\u7968</h2>`;
+  for (const s2 of t2.stages) {
+    out += `<h3>${escapeHtml(s2.name)}</h3>`;
+    if (s2.kind === "bracket") out += `<div class="table">${diagramReport(t2, s2.id)}</div>`;
+    else for (const g of s2.groups) {
+      out += `<h4>${escapeHtml(g.name)}</h4>` + (s2.exchange && !s2.exchange.ranked ? "" : grid(["\u9806\u4F4D", "\u9078\u624B", "\u52DD", "\u6557", "\u5206", "\u5BFE\u6226\u5DEE", "\u5F97\u5931G", "\u5F97\u5931\u70B9"], standings(t2, g.id).map((r) => [r.rank, name6(r.id), r.wins, r.losses, r.draws, r.rd, r.gd, r.pd])));
+      const cross = leagueCrossTable(t2, g.id);
+      out += "<h4>\u76F8\u4E92\u5BFE\u6226\u8868</h4><p>" + escapeHtml(cross.note) + "</p>";
+      if (cross.members.length <= 12) out += grid(["\u9078\u624B\u756A\u53F7", "\u9078\u624B\u540D"], cross.members.map((m) => [m.number, m.name])) + grid(cross.headers, cross.rows);
+      else out += "<p>13\u7D44\u4EE5\u4E0A\u306F\u53EF\u8AAD\u6027\u306E\u305F\u3081\u76F8\u4E92\u8868\u3092\u5BFE\u6226\u4E00\u89A7\u306B\u5206\u5272\u3057\u307E\u3059\u3002</p>" + grid(["\u756A\u53F7", "\u5DE6", "\u53F3", "\u5F97\u70B9", "\u7D50\u679C"], cross.matches.map((m) => [matchNumber(m, t2), name6(m.left), name6(m.right), matchScore(m), m.draw ? "\u5F15\u5206\u3051" : m.winner ? name6(m.winner) : "\u672A\u5165\u529B"]));
+    }
+  }
+  out += "<h3>\u8A66\u5408\u7D50\u679C\u4E00\u89A7</h3>" + grid(["\u756A\u53F7", "\u5DE6", "\u53F3", "\u5F97\u70B9", "\u52DD\u8005", "\u72B6\u614B", "\u6C7A\u7740\u7406\u7531"], t2.matches.filter((m) => m.status !== "bye").map((m) => [matchNumber(m, t2), name6(m.left), name6(m.right), matchScore(m), m.draw ? "\u5F15\u5206\u3051" : m.winner ? name6(m.winner) : "", matchStateName[m.status], m.decision ? m.decision.reason + " / " + m.decision.at : ""]));
+  for (let court = 1; court <= timetableCourts(t2); court++) out += `<h3>${court}\u30B3\u30FC\u30C8\u4E88\u5B9A\u8868</h3>` + grid(["\u4E88\u5B9A", "\u5206", "\u756A\u53F7", "\u5DE6", "\u53F3", "\u72B6\u614B"], t2.matches.filter((m) => m.court === court).sort((a, b) => a.time - b.time).map((m) => [time2(m.time), m.duration, matchNumber(m, t2), name6(m.left), name6(m.right), matchStateName[m.status]]));
+  out += "<h3>\u9078\u624B\u5225\u8A66\u5408\u4E00\u89A7</h3>" + grid(["\u9078\u624B\u540D", "\u6240\u5C5E", "\u8A66\u5408\u756A\u53F7"], playerMatchRows(t2));
+  const directory = playerDirectory(t2);
+  for (const m of t2.matches.filter((m2) => m2.rubbers)) out += `<h3>\u56E3\u4F53\u6226 #${escapeHtml(String(matchNumber(m, t2)))} ${escapeHtml(name6(m.left))} \u5BFE ${escapeHtml(name6(m.right))}</h3>` + grid(["\u9806", "\u5DE6\u30AA\u30FC\u30C0\u30FC", "\u53F3\u30AA\u30FC\u30C0\u30FC", "\u5F97\u70B9", "\u52DD\u8005"], rubberReportRows(t2, m, directory));
+  for (const stage of t2.stages.filter((s2) => s2.kind === "league" && t2.events.some((e) => e.id === s2.eventId && e.type === "team")))
+    for (const g of stage.groups) for (const part of teamLeagueReport(t2, g.id)) out += "<h3>" + escapeHtml(part.heading) + "</h3>" + grid(part.headers, part.rows);
+  return out;
+}
+function certificateHtml(t2, sid2) {
+  validate(t2);
+  const s2 = t2.stages.find((s3) => s3.id === sid2);
+  ensure(s2, "\u30B9\u30C6\u30FC\u30B8\u306A\u3057");
+  const matches = t2.matches.filter((m) => m.stageId === sid2);
+  ensure(matches.length && matches.every(finished), "\u5168\u8A66\u5408\u3092\u7D42\u4E86\u3057\u3066\u304F\u3060\u3055\u3044");
+  const ranks = s2.kind === "league" ? s2.groups.flatMap((g) => standings(t2, g.id).filter((r) => r.rank <= 3).map((r) => ({ rank: r.rank, id: r.id }))) : (() => {
+    const final = [...matches].sort((a, b) => b.round - a.round)[0];
+    ensure(final?.winner, "\u6C7A\u52DD\u7D50\u679C\u306A\u3057");
+    return [{ rank: 1, id: final.winner }, { rank: 2, id: final.winner === final.left ? final.right : final.left }];
+  })();
+  const c = t2.certificate || { background: "", x: 0, y: 0, fontSize: 28 };
+  ensure(Number.isFinite(c.x) && Math.abs(c.x) <= 200 && Number.isFinite(c.y) && Math.abs(c.y) <= 300 && c.fontSize >= 12 && c.fontSize <= 80 && (!c.background || /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(c.background)), "\u8CDE\u72B6\u8A2D\u5B9A\u4E0D\u6B63");
+  return ranks.map((r) => `<section class="certificate" style="position:relative;min-height:800px;${c.background ? `background-image:url('${c.background}');background-size:100% 100%;` : ""}"><div style="transform:translate(${c.x}px,${c.y}px);font-size:${c.fontSize}px;overflow-wrap:anywhere;word-break:normal"><h2>\u8CDE \u72B6</h2><p>${escapeHtml(t2.name)} ${escapeHtml(s2.name)}</p><p>\u7B2C ${r.rank} \u4F4D</p><h3>${escapeHtml(entryOf(t2, r.id)?.name)} \u69D8</h3><p>\u3053\u3053\u306B\u305D\u306E\u6804\u8A89\u3092\u79F0\u3048\u8868\u5F70\u3057\u307E\u3059\u3002</p><p>${escapeHtml(t2.date)}\u3000${escapeHtml(t2.organizer || "")}</p></div></section>`).join("");
 }
 
 // node_modules/xlsx/xlsx.mjs
@@ -31139,15 +32799,15 @@ var _getansi = function _ga1(x) {
 var DENSE = null;
 var DIF_XL = true;
 var Base64_map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-function Base64_encode(input3) {
+function Base64_encode(input4) {
   var o = "";
   var c1 = 0, c2 = 0, c3 = 0, e1 = 0, e2 = 0, e3 = 0, e4 = 0;
-  for (var i = 0; i < input3.length; ) {
-    c1 = input3.charCodeAt(i++);
+  for (var i = 0; i < input4.length; ) {
+    c1 = input4.charCodeAt(i++);
     e1 = c1 >> 2;
-    c2 = input3.charCodeAt(i++);
+    c2 = input4.charCodeAt(i++);
     e2 = (c1 & 3) << 4 | c2 >> 4;
-    c3 = input3.charCodeAt(i++);
+    c3 = input4.charCodeAt(i++);
     e3 = (c2 & 15) << 2 | c3 >> 6;
     e4 = c3 & 63;
     if (isNaN(c2)) {
@@ -31159,26 +32819,26 @@ function Base64_encode(input3) {
   }
   return o;
 }
-function Base64_decode(input3) {
+function Base64_decode(input4) {
   var o = "";
   var c1 = 0, c2 = 0, c3 = 0, e1 = 0, e2 = 0, e3 = 0, e4 = 0;
-  if (input3.slice(0, 5) == "data:") {
-    var i = input3.slice(0, 1024).indexOf(";base64,");
+  if (input4.slice(0, 5) == "data:") {
+    var i = input4.slice(0, 1024).indexOf(";base64,");
     if (i > -1)
-      input3 = input3.slice(i + 8);
+      input4 = input4.slice(i + 8);
   }
-  input3 = input3.replace(/[^\w\+\/\=]/g, "");
-  for (var i = 0; i < input3.length; ) {
-    e1 = Base64_map.indexOf(input3.charAt(i++));
-    e2 = Base64_map.indexOf(input3.charAt(i++));
+  input4 = input4.replace(/[^\w\+\/\=]/g, "");
+  for (var i = 0; i < input4.length; ) {
+    e1 = Base64_map.indexOf(input4.charAt(i++));
+    e2 = Base64_map.indexOf(input4.charAt(i++));
     c1 = e1 << 2 | e2 >> 4;
     o += String.fromCharCode(c1);
-    e3 = Base64_map.indexOf(input3.charAt(i++));
+    e3 = Base64_map.indexOf(input4.charAt(i++));
     c2 = (e2 & 15) << 4 | e3 >> 2;
     if (e3 !== 64) {
       o += String.fromCharCode(c2);
     }
-    e4 = Base64_map.indexOf(input3.charAt(i++));
+    e4 = Base64_map.indexOf(input4.charAt(i++));
     c3 = (e3 & 3) << 6 | e4;
     if (e4 !== 64) {
       o += String.fromCharCode(c3);
@@ -31534,14 +33194,14 @@ function SSF_normalize_xl_unsafe(v2) {
   var n2 = s2.indexOf(".") > -1 ? s2.slice(0, s2.slice(0, 2) == "0." ? 17 : 16) : s2.slice(0, 15) + fill("0", s2.length - 15);
   return Number(n2);
 }
-function SSF_parse_date_code(v2, opts, b2) {
+function SSF_parse_date_code(v2, opts2, b2) {
   if (v2 > 2958465 || v2 < 0) return null;
   v2 = SSF_normalize_xl_unsafe(v2);
   var date = v2 | 0, time2 = Math.floor(86400 * (v2 - date)), dow = 0;
   var dout = [];
   var out = { D: date, T: time2, u: 86400 * (v2 - date) - time2, y: 0, m: 0, d: 0, H: 0, M: 0, S: 0, q: 0 };
   if (Math.abs(out.u) < 1e-6) out.u = 0;
-  if (opts && opts.date1904) date += 1462;
+  if (opts2 && opts2.date1904) date += 1462;
   if (out.u > 0.9999) {
     out.u = 0;
     if (++time2 == 86400) {
@@ -31604,7 +33264,7 @@ function SSF_general_num(v2) {
   else o = SSF_large_exp(v2);
   return SSF_strip_decimal(SSF_normalize_exp(o.toUpperCase()));
 }
-function SSF_general(v2, opts) {
+function SSF_general(v2, opts2) {
   switch (typeof v2) {
     case "string":
       return v2;
@@ -31616,7 +33276,7 @@ function SSF_general(v2, opts) {
       return "";
     case "object":
       if (v2 == null) return "";
-      if (v2 instanceof Date) return SSF_format(14, datenum(v2, opts && opts.date1904), opts);
+      if (v2 instanceof Date) return SSF_format(14, datenum(v2, opts2 && opts2.date1904), opts2);
   }
   throw new Error("unsupported value in General format: " + v2);
 }
@@ -32211,7 +33871,7 @@ function fmt_is_date(fmt) {
   }
   return false;
 }
-function eval_fmt(fmt, v2, opts, flen) {
+function eval_fmt(fmt, v2, opts2, flen) {
   var out = [], o = "", i = 0, c = "", lst = "t", dt, j, cc;
   var hr = "H";
   while (i < fmt.length) {
@@ -32243,7 +33903,7 @@ function eval_fmt(fmt, v2, opts, flen) {
       case "b":
         if (fmt.charAt(i + 1) === "1" || fmt.charAt(i + 1) === "2") {
           if (dt == null) {
-            dt = SSF_parse_date_code(v2, opts, fmt.charAt(i + 1) === "2");
+            dt = SSF_parse_date_code(v2, opts2, fmt.charAt(i + 1) === "2");
             if (dt == null) return "";
           }
           out[out.length] = { t: "X", v: fmt.substr(i, 2) };
@@ -32269,7 +33929,7 @@ function eval_fmt(fmt, v2, opts, flen) {
       case "g":
         if (v2 < 0) return "";
         if (dt == null) {
-          dt = SSF_parse_date_code(v2, opts);
+          dt = SSF_parse_date_code(v2, opts2);
           if (dt == null) return "";
         }
         o = c;
@@ -32283,7 +33943,7 @@ function eval_fmt(fmt, v2, opts, flen) {
       case "a":
       case "\u4E0A":
         var q = { t: c, v: c };
-        if (dt == null) dt = SSF_parse_date_code(v2, opts);
+        if (dt == null) dt = SSF_parse_date_code(v2, opts2);
         if (fmt.substr(i, 3).toUpperCase() === "A/P") {
           if (dt != null) q.v = dt.H >= 12 ? fmt.charAt(i + 2) : c;
           q.t = "T";
@@ -32313,7 +33973,7 @@ function eval_fmt(fmt, v2, opts, flen) {
         if (o.slice(-1) !== "]") throw 'unterminated "[" block: |' + o + "|";
         if (o.match(SSF_abstime)) {
           if (dt == null) {
-            dt = SSF_parse_date_code(v2, opts);
+            dt = SSF_parse_date_code(v2, opts2);
             if (dt == null) return "";
           }
           out[out.length] = { t: "Z", v: o.toLowerCase() };
@@ -32525,7 +34185,7 @@ function eval_fmt(fmt, v2, opts, flen) {
         break;
       case "G":
         out[i].t = "t";
-        out[i].v = SSF_general(v2, opts);
+        out[i].v = SSF_general(v2, opts2);
         break;
     }
   }
@@ -33288,8 +34948,8 @@ var CFB = /* @__PURE__ */ (function _CFB() {
       options2
     );
   }
-  function init_cfb(cfb, opts) {
-    var o = opts || {}, root = o.root || "Root Entry";
+  function init_cfb(cfb, opts2) {
+    var o = opts2 || {}, root = o.root || "Root Entry";
     if (!cfb.FullPaths) cfb.FullPaths = [];
     if (!cfb.FileIndex) cfb.FileIndex = [];
     if (cfb.FullPaths.length !== cfb.FileIndex.length) throw new Error("inconsistent CFB structure");
@@ -34405,8 +36065,8 @@ var CFB = /* @__PURE__ */ (function _CFB() {
     return o;
   }
   function write_mad(cfb, options2) {
-    var opts = options2 || {};
-    var boundary = opts.boundary || "SheetJS";
+    var opts2 = options2 || {};
+    var boundary = opts2.boundary || "SheetJS";
     boundary = "------=" + boundary;
     var out = [
       "MIME-Version: 1.0",
@@ -34431,7 +36091,7 @@ var CFB = /* @__PURE__ */ (function _CFB() {
       for (var csl = 0; csl <= L2; ++csl) if ((cc = cstr.charCodeAt(csl)) >= 32 && cc < 128) ++dispcnt;
       var qp = dispcnt >= L2 * 4 / 5;
       out.push(boundary);
-      out.push("Content-Location: " + (opts.root || "file:///C:/SheetJS/") + fp);
+      out.push("Content-Location: " + (opts2.root || "file:///C:/SheetJS/") + fp);
       out.push("Content-Transfer-Encoding: " + (qp ? "quoted-printable" : "base64"));
       out.push("Content-Type: " + get_content_type(fi, fp));
       out.push("");
@@ -34440,13 +36100,13 @@ var CFB = /* @__PURE__ */ (function _CFB() {
     out.push(boundary + "--\r\n");
     return out.join("\r\n");
   }
-  function cfb_new(opts) {
+  function cfb_new(opts2) {
     var o = {};
-    init_cfb(o, opts);
+    init_cfb(o, opts2);
     return o;
   }
-  function cfb_add(cfb, name6, content, opts) {
-    var unsafe = opts && opts.unsafe;
+  function cfb_add(cfb, name6, content, opts2) {
+    var unsafe = opts2 && opts2.unsafe;
     if (!unsafe) init_cfb(cfb);
     var file = !unsafe && CFB.find(cfb, name6);
     if (!file) {
@@ -34463,10 +36123,10 @@ var CFB = /* @__PURE__ */ (function _CFB() {
     }
     file.content = content;
     file.size = content ? content.length : 0;
-    if (opts) {
-      if (opts.CLSID) file.clsid = opts.CLSID;
-      if (opts.mt) file.mt = opts.mt;
-      if (opts.ct) file.ct = opts.ct;
+    if (opts2) {
+      if (opts2.CLSID) file.clsid = opts2.CLSID;
+      if (opts2.mt) file.mt = opts2.mt;
+      if (opts2.ct) file.ct = opts2.ct;
     }
     return file;
   }
@@ -35102,8 +36762,8 @@ var xlml_fixstr = /* @__PURE__ */ (function() {
     return str.replace(entregex, entrepl);
   };
 })();
-function parsexmlbool(value) {
-  switch (value) {
+function parsexmlbool(value2) {
+  switch (value2) {
     case 1:
     case true:
     case "1":
@@ -35227,12 +36887,12 @@ var htmldecode = /* @__PURE__ */ (function() {
 })();
 var vtvregex = /<\/?(?:vt:)?variant>/g;
 var vtmregex = /<(?:vt:)([^<"'>]*)>([\s\S]*)</;
-function parseVector(data2, opts) {
+function parseVector(data2, opts2) {
   var h = parsexmltag(data2);
   var matches = str_match_xml_ns_g(data2, h.baseType) || [];
   var res = [];
   if (matches.length != h.size) {
-    if (opts.WTF) throw new Error("unexpected vector length " + matches.length + " != " + h.size);
+    if (opts2.WTF) throw new Error("unexpected vector length " + matches.length + " != " + h.size);
     return res;
   }
   matches.forEach(function(x) {
@@ -35723,7 +37383,7 @@ function new_buf(sz) {
   prep_blob(o, 0);
   return o;
 }
-function recordhopper(data2, cb, opts) {
+function recordhopper(data2, cb, opts2) {
   if (!data2) return;
   var tmpbyte, cntbyte, length;
   prep_blob(data2, data2.l || 0);
@@ -35736,7 +37396,7 @@ function recordhopper(data2, cb, opts) {
     length = tmpbyte & 127;
     for (cntbyte = 1; cntbyte < 4 && tmpbyte & 128; ++cntbyte) length += ((tmpbyte = data2.read_shift(1)) & 127) << 7 * cntbyte;
     tgt = data2.l + length;
-    var d = R.f && R.f(data2, length, opts);
+    var d = R.f && R.f(data2, length, opts2);
     data2.l = tgt;
     if (cb(d, R, RT)) return;
   }
@@ -35782,7 +37442,7 @@ function buf_array() {
   };
   return { next, push, end, _bufs: bufs, end2 };
 }
-function shift_cell_xls(cell, tgt, opts) {
+function shift_cell_xls(cell, tgt, opts2) {
   var out = dup(cell);
   if (tgt.s) {
     if (out.cRel) out.c += tgt.s.c;
@@ -35791,16 +37451,16 @@ function shift_cell_xls(cell, tgt, opts) {
     if (out.cRel) out.c += tgt.c;
     if (out.rRel) out.r += tgt.r;
   }
-  if (!opts || opts.biff < 12) {
+  if (!opts2 || opts2.biff < 12) {
     while (out.c >= 256) out.c -= 256;
     while (out.r >= 65536) out.r -= 65536;
   }
   return out;
 }
-function shift_range_xls(cell, range3, opts) {
+function shift_range_xls(cell, range3, opts2) {
   var out = dup(cell);
-  out.s = shift_cell_xls(out.s, range3.s, opts);
-  out.e = shift_cell_xls(out.e, range3.s, opts);
+  out.s = shift_cell_xls(out.s, range3.s, opts2);
+  out.e = shift_cell_xls(out.e, range3.s, opts2);
   return out;
 }
 function encode_cell_xls(c, biff) {
@@ -35817,18 +37477,18 @@ function encode_cell_xls(c, biff) {
   if (!c.rRel && c.rRel != null) s2 = fix_row(s2);
   return s2;
 }
-function encode_range_xls(r, opts) {
+function encode_range_xls(r, opts2) {
   if (r.s.r == 0 && !r.s.rRel) {
-    if (r.e.r == (opts.biff >= 12 ? 1048575 : opts.biff >= 8 ? 65536 : 16384) && !r.e.rRel) {
+    if (r.e.r == (opts2.biff >= 12 ? 1048575 : opts2.biff >= 8 ? 65536 : 16384) && !r.e.rRel) {
       return (r.s.cRel ? "" : "$") + encode_col(r.s.c) + ":" + (r.e.cRel ? "" : "$") + encode_col(r.e.c);
     }
   }
   if (r.s.c == 0 && !r.s.cRel) {
-    if (r.e.c == (opts.biff >= 12 ? 16383 : 255) && !r.e.cRel) {
+    if (r.e.c == (opts2.biff >= 12 ? 16383 : 255) && !r.e.cRel) {
       return (r.s.rRel ? "" : "$") + encode_row(r.s.r) + ":" + (r.e.rRel ? "" : "$") + encode_row(r.e.r);
     }
   }
-  return encode_cell_xls(r.s, opts.biff) + ":" + encode_cell_xls(r.e, opts.biff);
+  return encode_cell_xls(r.s, opts2.biff) + ":" + encode_cell_xls(r.e, opts2.biff);
 }
 function decode_row(rowstr) {
   return parseInt(unfix_row(rowstr), 10) - 1;
@@ -35890,8 +37550,8 @@ function encode_range(cs, ce) {
   if (typeof ce !== "string") ce = encode_cell(ce);
   return cs == ce ? cs : cs + ":" + ce;
 }
-function formula_quote_sheet_name(sname, opts) {
-  if (!sname && !(opts && opts.biff <= 5 && opts.biff >= 2)) throw new Error("empty sheet name");
+function formula_quote_sheet_name(sname, opts2) {
+  if (!sname && !(opts2 && opts2.biff <= 5 && opts2.biff >= 2)) throw new Error("empty sheet name");
   if (/[^\w\u4E00-\u9FFF\u3040-\u30FF]/.test(sname)) return "'" + sname.replace(/'/g, "''") + "'";
   return sname;
 }
@@ -35947,20 +37607,20 @@ function format_cell(cell, v2, o) {
   if (v2 == void 0) return safe_format_cell(cell, cell.v);
   return safe_format_cell(cell, v2);
 }
-function sheet_to_workbook(sheet, opts) {
-  var n2 = opts && opts.sheet ? opts.sheet : "Sheet1";
+function sheet_to_workbook(sheet, opts2) {
+  var n2 = opts2 && opts2.sheet ? opts2.sheet : "Sheet1";
   var sheets2 = {};
   sheets2[n2] = sheet;
   return { SheetNames: [n2], Sheets: sheets2 };
 }
-function sheet_new(opts) {
+function sheet_new(opts2) {
   var out = {};
-  var o = opts || {};
+  var o = opts2 || {};
   if (o.dense) out["!data"] = [];
   return out;
 }
-function sheet_add_aoa(_ws, data2, opts) {
-  var o = opts || {};
+function sheet_add_aoa(_ws, data2, opts2) {
+  var o = opts2 || {};
   var dense = _ws ? _ws["!data"] != null : o.dense;
   if (DENSE != null && dense == null) dense = DENSE;
   var ws = _ws || (dense ? { "!data": [] } : {});
@@ -36053,8 +37713,8 @@ function sheet_add_aoa(_ws, data2, opts) {
   if (seen && range3.s.c < 104e5) ws["!ref"] = encode_range(range3);
   return ws;
 }
-function aoa_to_sheet(data2, opts) {
-  return sheet_add_aoa(null, data2, opts);
+function aoa_to_sheet(data2, opts2) {
+  return sheet_add_aoa(null, data2, opts2);
 }
 function parse_Int32LE(data2) {
   return data2.read_shift(4, "i");
@@ -36788,7 +38448,7 @@ function parse_rels(data2, currentFilePath) {
   return rels;
 }
 var CT_ODS = "application/vnd.oasis.opendocument.spreadsheet";
-function parse_manifest(d, opts) {
+function parse_manifest(d, opts2) {
   var str = xlml_normalize(d);
   var Rn;
   var FEtag;
@@ -36807,7 +38467,7 @@ function parse_manifest(d, opts) {
       case "key-derivation":
         throw new Error("Unsupported ODS Encryption");
       default:
-        if (opts && opts.WTF)
+        if (opts2 && opts2.WTF)
           throw Rn;
     }
 }
@@ -36851,13 +38511,13 @@ var EXT_PROPS = [
   ["HeadingPairs", "HeadingPairs", "raw"],
   ["TitlesOfParts", "TitlesOfParts", "raw"]
 ];
-function load_props_pairs(HP, TOP, props, opts) {
+function load_props_pairs(HP, TOP, props, opts2) {
   var v2 = [];
-  if (typeof HP == "string") v2 = parseVector(HP, opts);
+  if (typeof HP == "string") v2 = parseVector(HP, opts2);
   else for (var j = 0; j < HP.length; ++j) v2 = v2.concat(HP[j].map(function(hp) {
     return { v: hp };
   }));
-  var parts = typeof TOP == "string" ? parseVector(TOP, opts).map(function(x) {
+  var parts = typeof TOP == "string" ? parseVector(TOP, opts2).map(function(x) {
     return x.v;
   }) : TOP;
   var idx = 0, len2 = 0;
@@ -36899,7 +38559,7 @@ function load_props_pairs(HP, TOP, props, opts) {
     idx += len2;
   }
 }
-function parse_ext_props(data2, p, opts) {
+function parse_ext_props(data2, p, opts2) {
   var q = {};
   if (!p) p = {};
   data2 = utf8read(data2);
@@ -36918,11 +38578,11 @@ function parse_ext_props(data2, p, opts) {
         break;
     }
   });
-  if (q.HeadingPairs && q.TitlesOfParts) load_props_pairs(q.HeadingPairs, q.TitlesOfParts, p, opts);
+  if (q.HeadingPairs && q.TitlesOfParts) load_props_pairs(q.HeadingPairs, q.TitlesOfParts, p, opts2);
   return p;
 }
 var custregex = /<[^<>]+>[^<]*/g;
-function parse_cust_props(data2, opts) {
+function parse_cust_props(data2, opts2) {
   var p = {}, name6 = "";
   var m = data2.match(custregex);
   if (m) for (var i = 0; i != m.length; ++i) {
@@ -36974,10 +38634,10 @@ function parse_cust_props(data2, opts) {
               break;
             default:
               if (type.slice(-1) == "/") break;
-              if (opts.WTF && typeof console !== "undefined") console.warn("Unexpected", x, type, toks);
+              if (opts2.WTF && typeof console !== "undefined") console.warn("Unexpected", x, type, toks);
           }
         } else if (x.slice(0, 2) === "</") {
-        } else if (opts.WTF) throw new Error(x);
+        } else if (opts2.WTF) throw new Error(x);
     }
   }
   return p;
@@ -37103,7 +38763,7 @@ function parse_ClipboardData(blob) {
   return o;
 }
 function parse_TypedPropertyValue(blob, type, _opts) {
-  var t2 = blob.read_shift(2), ret, opts = _opts || {};
+  var t2 = blob.read_shift(2), ret, opts2 = _opts || {};
   blob.l += 2;
   if (type !== VT_VARIANT) {
     if (t2 !== type && VT_CUSTOM.indexOf(type) === -1 && !((type & 65534) == 4126 && (t2 & 65534) == 4126)) throw new Error("Expected type " + type + " saw " + t2);
@@ -37111,7 +38771,7 @@ function parse_TypedPropertyValue(blob, type, _opts) {
   switch (type === VT_VARIANT ? t2 : type) {
     case 2:
       ret = blob.read_shift(2, "i");
-      if (!opts.raw) blob.l += 2;
+      if (!opts2.raw) blob.l += 2;
       return ret;
     case 3:
       ret = blob.read_shift(4, "i");
@@ -37136,7 +38796,7 @@ function parse_TypedPropertyValue(blob, type, _opts) {
     case 71:
       return parse_ClipboardData(blob);
     case 80:
-      return parse_VtString(blob, t2, !opts.raw).replace(chr0, "");
+      return parse_VtString(blob, t2, !opts2.raw).replace(chr0, "");
     case 81:
       return parse_VtUnalignedString(
         blob,
@@ -37353,20 +39013,20 @@ function parse_Bes(blob) {
   var v2 = blob.read_shift(1), t2 = blob.read_shift(1);
   return t2 === 1 ? v2 : v2 === 1;
 }
-function parse_ShortXLUnicodeString(blob, length, opts) {
-  var cch = blob.read_shift(opts && opts.biff >= 12 ? 2 : 1);
+function parse_ShortXLUnicodeString(blob, length, opts2) {
+  var cch = blob.read_shift(opts2 && opts2.biff >= 12 ? 2 : 1);
   var encoding = "sbcs-cont";
   var cp = current_codepage;
-  if (opts && opts.biff >= 8) current_codepage = 1200;
-  if (!opts || opts.biff == 8) {
+  if (opts2 && opts2.biff >= 8) current_codepage = 1200;
+  if (!opts2 || opts2.biff == 8) {
     var fHighByte = blob.read_shift(1);
     if (fHighByte) {
       encoding = "dbcs-cont";
     }
-  } else if (opts.biff == 12) {
+  } else if (opts2.biff == 12) {
     encoding = "wstr";
   }
-  if (opts.biff >= 2 && opts.biff <= 5) encoding = "cpstr";
+  if (opts2.biff >= 2 && opts2.biff <= 5) encoding = "cpstr";
   var o = cch ? blob.read_shift(cch, encoding) : "";
   current_codepage = cp;
   return o;
@@ -37393,11 +39053,11 @@ function parse_XLUnicodeRichExtendedString(blob) {
   current_codepage = cp;
   return z;
 }
-function parse_XLUnicodeStringNoCch(blob, cch, opts) {
+function parse_XLUnicodeStringNoCch(blob, cch, opts2) {
   var retval;
-  if (opts) {
-    if (opts.biff >= 2 && opts.biff <= 5) return blob.read_shift(cch, "cpstr");
-    if (opts.biff >= 12) return blob.read_shift(cch, "dbcs-cont");
+  if (opts2) {
+    if (opts2.biff >= 2 && opts2.biff <= 5) return blob.read_shift(cch, "cpstr");
+    if (opts2.biff >= 12) return blob.read_shift(cch, "dbcs-cont");
   }
   var fHighByte = blob.read_shift(1);
   if (fHighByte === 0) {
@@ -37407,22 +39067,22 @@ function parse_XLUnicodeStringNoCch(blob, cch, opts) {
   }
   return retval;
 }
-function parse_XLUnicodeString(blob, length, opts) {
-  var cch = blob.read_shift(opts && opts.biff == 2 ? 1 : 2);
+function parse_XLUnicodeString(blob, length, opts2) {
+  var cch = blob.read_shift(opts2 && opts2.biff == 2 ? 1 : 2);
   if (cch === 0) {
     blob.l++;
     return "";
   }
-  return parse_XLUnicodeStringNoCch(blob, cch, opts);
+  return parse_XLUnicodeStringNoCch(blob, cch, opts2);
 }
-function parse_XLUnicodeString2(blob, length, opts) {
-  if (opts.biff > 5) return parse_XLUnicodeString(blob, length, opts);
+function parse_XLUnicodeString2(blob, length, opts2) {
+  if (opts2.biff > 5) return parse_XLUnicodeString(blob, length, opts2);
   var cch = blob.read_shift(1);
   if (cch === 0) {
     blob.l++;
     return "";
   }
-  return blob.read_shift(cch, opts.biff <= 4 || !blob.lens ? "cpstr" : "sbcs-cont");
+  return blob.read_shift(cch, opts2.biff <= 4 || !blob.lens ? "cpstr" : "sbcs-cont");
 }
 function parse_ControlInfo(blob) {
   var flags2 = blob.read_shift(1);
@@ -37511,11 +39171,11 @@ function parse_LongRGB(blob, length) {
   x[3] = 0;
   return x;
 }
-function parse_XLSCell(blob, length, opts) {
+function parse_XLSCell(blob, length, opts2) {
   var rw = blob.read_shift(2);
   var col = blob.read_shift(2);
   var ret = { r: rw, c: col, ixfe: 0 };
-  if (opts && opts.biff == 2 || length == 7) {
+  if (opts2 && opts2.biff == 2 || length == 7) {
     var flags2 = blob.read_shift(1);
     ret.ixfe = flags2 & 63;
     blob.l += 2;
@@ -37528,11 +39188,11 @@ function parse_frtHeader(blob) {
   blob.l += 8;
   return { type: rt, flags: flags2 };
 }
-function parse_OptXLUnicodeString(blob, length, opts) {
-  return length === 0 ? "" : parse_XLUnicodeString2(blob, length, opts);
+function parse_OptXLUnicodeString(blob, length, opts2) {
+  return length === 0 ? "" : parse_XLUnicodeString2(blob, length, opts2);
 }
-function parse_XTI(blob, length, opts) {
-  var w = opts.biff > 8 ? 4 : 2;
+function parse_XTI(blob, length, opts2) {
+  var w = opts2.biff > 8 ? 4 : 2;
   var iSupBook = blob.read_shift(w), itabFirst = blob.read_shift(w, "i"), itabLast = blob.read_shift(w, "i");
   return [iSupBook, itabFirst, itabLast];
 }
@@ -37541,11 +39201,11 @@ function parse_RkRec(blob) {
   var RK = parse_RkNumber(blob);
   return [ixfe, RK];
 }
-function parse_AddinUdf(blob, length, opts) {
+function parse_AddinUdf(blob, length, opts2) {
   blob.l += 4;
   length -= 4;
   var l = blob.l + length;
-  var udfName = parse_ShortXLUnicodeString(blob, length, opts);
+  var udfName = parse_ShortXLUnicodeString(blob, length, opts2);
   var cb = blob.read_shift(2);
   l -= blob.l;
   if (cb !== l) throw new Error("Malformed AddinUdf: padding = " + l + " != " + cb);
@@ -37682,24 +39342,24 @@ function parse_InterfaceHdr(blob, length) {
   }
   return 1200;
 }
-function parse_WriteAccess(blob, length, opts) {
-  if (opts.enc) {
+function parse_WriteAccess(blob, length, opts2) {
+  if (opts2.enc) {
     blob.l += length;
     return "";
   }
   var l = blob.l;
-  var UserName = parse_XLUnicodeString2(blob, 0, opts);
+  var UserName = parse_XLUnicodeString2(blob, 0, opts2);
   blob.read_shift(length + l - blob.l);
   return UserName;
 }
-function parse_WsBool(blob, length, opts) {
-  var flags2 = opts && opts.biff == 8 || length == 2 ? blob.read_shift(2) : (blob.l += length, 0);
+function parse_WsBool(blob, length, opts2) {
+  var flags2 = opts2 && opts2.biff == 8 || length == 2 ? blob.read_shift(2) : (blob.l += length, 0);
   return { fDialog: flags2 & 16, fBelow: flags2 & 64, fRight: flags2 & 128 };
 }
-function parse_BoundSheet8(blob, length, opts) {
+function parse_BoundSheet8(blob, length, opts2) {
   var name6 = "";
-  if (opts.biff == 4) {
-    name6 = parse_ShortXLUnicodeString(blob, 0, opts);
+  if (opts2.biff == 4) {
+    name6 = parse_ShortXLUnicodeString(blob, 0, opts2);
     if (name6.length === 0) name6 = "Sheet1";
     return { name: name6 };
   }
@@ -37720,7 +39380,7 @@ function parse_BoundSheet8(blob, length, opts) {
       dt = "VBAModule";
       break;
   }
-  name6 = parse_ShortXLUnicodeString(blob, 0, opts);
+  name6 = parse_ShortXLUnicodeString(blob, 0, opts2);
   if (name6.length === 0) name6 = "Sheet1";
   return { pos, hs: hidden, dt, name: name6 };
 }
@@ -37766,13 +39426,13 @@ function parse_RecalcId(blob) {
   blob.read_shift(2);
   return blob.read_shift(4);
 }
-function parse_DefaultRowHeight(blob, length, opts) {
+function parse_DefaultRowHeight(blob, length, opts2) {
   var f = 0;
-  if (!(opts && opts.biff == 2)) {
+  if (!(opts2 && opts2.biff == 2)) {
     f = blob.read_shift(2);
   }
   var miyRw = blob.read_shift(2);
-  if (opts && opts.biff == 2) {
+  if (opts2 && opts2.biff == 2) {
     f = 1 - (miyRw >> 15);
     miyRw &= 32767;
   }
@@ -37793,19 +39453,19 @@ function parse_Window1(blob) {
     TabRatio: wTabRatio
   };
 }
-function parse_Window2(blob, length, opts) {
-  if (opts && opts.biff >= 2 && opts.biff < 5) return {};
+function parse_Window2(blob, length, opts2) {
+  if (opts2 && opts2.biff >= 2 && opts2.biff < 5) return {};
   var f = blob.read_shift(2);
   return { RTL: f & 64 };
 }
 function parse_Pane() {
 }
-function parse_Font(blob, length, opts) {
+function parse_Font(blob, length, opts2) {
   var o = {
     dyHeight: blob.read_shift(2),
     fl: blob.read_shift(2)
   };
-  switch (opts && opts.biff || 8) {
+  switch (opts2 && opts2.biff || 8) {
     case 2:
       break;
     case 3:
@@ -37816,31 +39476,31 @@ function parse_Font(blob, length, opts) {
       blob.l += 10;
       break;
   }
-  o.name = parse_ShortXLUnicodeString(blob, 0, opts);
+  o.name = parse_ShortXLUnicodeString(blob, 0, opts2);
   return o;
 }
-function parse_LabelSst(blob, length, opts) {
-  var cell = parse_XLSCell(blob, length, opts);
+function parse_LabelSst(blob, length, opts2) {
+  var cell = parse_XLSCell(blob, length, opts2);
   cell.isst = blob.read_shift(4);
   return cell;
 }
-function parse_Label(blob, length, opts) {
-  if (opts.biffguess && opts.biff == 2) opts.biff = 5;
+function parse_Label(blob, length, opts2) {
+  if (opts2.biffguess && opts2.biff == 2) opts2.biff = 5;
   var target = blob.l + length;
-  var cell = parse_XLSCell(blob, length, opts);
-  var str = parse_XLUnicodeString(blob, target - blob.l, opts);
+  var cell = parse_XLSCell(blob, length, opts2);
+  var str = parse_XLUnicodeString(blob, target - blob.l, opts2);
   cell.val = str;
   return cell;
 }
-function parse_Format(blob, length, opts) {
+function parse_Format(blob, length, opts2) {
   var numFmtId = blob.read_shift(2);
-  var fmtstr = parse_XLUnicodeString2(blob, 0, opts);
+  var fmtstr = parse_XLUnicodeString2(blob, 0, opts2);
   return [numFmtId, fmtstr];
 }
 var parse_BIFF2Format = parse_XLUnicodeString2;
-function parse_Dimensions(blob, length, opts) {
+function parse_Dimensions(blob, length, opts2) {
   var end = blob.l + length;
-  var w = opts.biff == 8 || !opts.biff ? 4 : 2;
+  var w = opts2.biff == 8 || !opts2.biff ? 4 : 2;
   var r = blob.read_shift(w), R = blob.read_shift(w);
   var c = blob.read_shift(2), C = blob.read_shift(2);
   blob.l = end;
@@ -37871,12 +39531,12 @@ function parse_MulBlank(blob, length) {
   if (ixfes.length != lastcol - col + 1) throw new Error("MulBlank length mismatch");
   return { r: rw, c: col, C: lastcol, ixfe: ixfes };
 }
-function parse_CellStyleXF(blob, length, style, opts) {
+function parse_CellStyleXF(blob, length, style, opts2) {
   var o = {};
   var a = blob.read_shift(4), b = blob.read_shift(4);
   var c = blob.read_shift(4), d = blob.read_shift(2);
   o.patternType = XLSFillPattern[c >> 26];
-  if (!opts.cellStyles) return o;
+  if (!opts2.cellStyles) return o;
   o.alc = a & 7;
   o.fWrap = a >> 3 & 1;
   o.alcV = a >> 4 & 7;
@@ -37907,14 +39567,14 @@ function parse_CellStyleXF(blob, length, style, opts) {
   o.fsxButton = d >> 14 & 1;
   return o;
 }
-function parse_XF(blob, length, opts) {
+function parse_XF(blob, length, opts2) {
   var o = {};
   o.ifnt = blob.read_shift(2);
   o.numFmtId = blob.read_shift(2);
   o.flags = blob.read_shift(2);
   o.fStyle = o.flags >> 2 & 1;
   length -= 6;
-  o.data = parse_CellStyleXF(blob, length, o.fStyle, opts);
+  o.data = parse_CellStyleXF(blob, length, o.fStyle, opts2);
   return o;
 }
 function parse_BIFF2XF(blob) {
@@ -37954,26 +39614,26 @@ function parse_Guts(blob) {
   if (out[0] > 7 || out[1] > 7) throw new Error("Bad Gutters: " + out.join("|"));
   return out;
 }
-function parse_BoolErr(blob, length, opts) {
-  var cell = parse_XLSCell(blob, 6, opts);
+function parse_BoolErr(blob, length, opts2) {
+  var cell = parse_XLSCell(blob, 6, opts2);
   var val3 = parse_Bes(blob, 2);
   cell.val = val3;
   cell.t = val3 === true || val3 === false ? "b" : "e";
   return cell;
 }
-function parse_Number(blob, length, opts) {
-  if (opts.biffguess && opts.biff == 2) opts.biff = 5;
-  var cell = parse_XLSCell(blob, 6, opts);
+function parse_Number(blob, length, opts2) {
+  if (opts2.biffguess && opts2.biff == 2) opts2.biff = 5;
+  var cell = parse_XLSCell(blob, 6, opts2);
   var xnum = parse_Xnum(blob, 8);
   cell.val = xnum;
   return cell;
 }
 var parse_XLHeaderFooter = parse_OptXLUnicodeString;
-function parse_SupBook(blob, length, opts) {
+function parse_SupBook(blob, length, opts2) {
   var end = blob.l + length;
   var ctab = blob.read_shift(2);
   var cch = blob.read_shift(2);
-  opts.sbcch = cch;
+  opts2.sbcch = cch;
   if (cch == 1025 || cch == 14849) return [cch, ctab];
   if (cch < 1 || cch > 255) throw new Error("Unexpected SupBook type: " + cch);
   var virtPath = parse_XLUnicodeStringNoCch(blob, cch);
@@ -37981,7 +39641,7 @@ function parse_SupBook(blob, length, opts) {
   while (end > blob.l) rgst.push(parse_XLUnicodeString(blob));
   return [cch, ctab, virtPath, rgst];
 }
-function parse_ExternName(blob, length, opts) {
+function parse_ExternName(blob, length, opts2) {
   var flags2 = blob.read_shift(2);
   var body;
   var o = {
@@ -37993,29 +39653,29 @@ function parse_ExternName(blob, length, opts) {
     cf: flags2 >>> 5 & 1023,
     fIcon: flags2 >>> 15 & 1
   };
-  if (opts.sbcch === 14849) body = parse_AddinUdf(blob, length - 2, opts);
+  if (opts2.sbcch === 14849) body = parse_AddinUdf(blob, length - 2, opts2);
   o.body = body || blob.read_shift(length - 2);
   if (typeof body === "string") o.Name = body;
   return o;
 }
-function parse_Lbl(blob, length, opts) {
+function parse_Lbl(blob, length, opts2) {
   var target = blob.l + length;
   var flags2 = blob.read_shift(2);
   var chKey = blob.read_shift(1);
   var cch = blob.read_shift(1);
-  var cce = blob.read_shift(opts && opts.biff == 2 ? 1 : 2);
+  var cce = blob.read_shift(opts2 && opts2.biff == 2 ? 1 : 2);
   var itab = 0;
-  if (!opts || opts.biff >= 5) {
-    if (opts.biff != 5) blob.l += 2;
+  if (!opts2 || opts2.biff >= 5) {
+    if (opts2.biff != 5) blob.l += 2;
     itab = blob.read_shift(2);
-    if (opts.biff == 5) blob.l += 2;
+    if (opts2.biff == 5) blob.l += 2;
     blob.l += 4;
   }
-  var name6 = parse_XLUnicodeStringNoCch(blob, cch, opts);
+  var name6 = parse_XLUnicodeStringNoCch(blob, cch, opts2);
   if (flags2 & 32) name6 = XLSLblBuiltIn[name6.charCodeAt(0)];
   var npflen = target - blob.l;
-  if (opts && opts.biff == 2) --npflen;
-  var rgce = target == blob.l || cce === 0 || !(npflen > 0) ? [] : parse_NameParsedFormula(blob, npflen, opts, cce);
+  if (opts2 && opts2.biff == 2) --npflen;
+  var rgce = target == blob.l || cce === 0 || !(npflen > 0) ? [] : parse_NameParsedFormula(blob, npflen, opts2, cce);
   return {
     chKey,
     Name: name6,
@@ -38023,40 +39683,40 @@ function parse_Lbl(blob, length, opts) {
     rgce
   };
 }
-function parse_ExternSheet(blob, length, opts) {
-  if (opts.biff < 8) return parse_BIFF5ExternSheet(blob, length, opts);
-  if (!(opts.biff > 8) && length == blob[blob.l] + (blob[blob.l + 1] == 3 ? 1 : 0) + 1) return parse_BIFF5ExternSheet(blob, length, opts);
-  var o = [], target = blob.l + length, len2 = blob.read_shift(opts.biff > 8 ? 4 : 2);
-  while (len2-- !== 0) o.push(parse_XTI(blob, opts.biff > 8 ? 12 : 6, opts));
+function parse_ExternSheet(blob, length, opts2) {
+  if (opts2.biff < 8) return parse_BIFF5ExternSheet(blob, length, opts2);
+  if (!(opts2.biff > 8) && length == blob[blob.l] + (blob[blob.l + 1] == 3 ? 1 : 0) + 1) return parse_BIFF5ExternSheet(blob, length, opts2);
+  var o = [], target = blob.l + length, len2 = blob.read_shift(opts2.biff > 8 ? 4 : 2);
+  while (len2-- !== 0) o.push(parse_XTI(blob, opts2.biff > 8 ? 12 : 6, opts2));
   if (blob.l != target) throw new Error("Bad ExternSheet: " + blob.l + " != " + target);
   return o;
 }
-function parse_BIFF5ExternSheet(blob, length, opts) {
+function parse_BIFF5ExternSheet(blob, length, opts2) {
   if (blob[blob.l + 1] == 3) blob[blob.l]++;
-  var o = parse_ShortXLUnicodeString(blob, length, opts);
+  var o = parse_ShortXLUnicodeString(blob, length, opts2);
   return o.charCodeAt(0) == 3 ? o.slice(1) : o;
 }
-function parse_NameCmt(blob, length, opts) {
-  if (opts.biff < 8) {
+function parse_NameCmt(blob, length, opts2) {
+  if (opts2.biff < 8) {
     blob.l += length;
     return;
   }
   var cchName = blob.read_shift(2);
   var cchComment = blob.read_shift(2);
-  var name6 = parse_XLUnicodeStringNoCch(blob, cchName, opts);
-  var comment = parse_XLUnicodeStringNoCch(blob, cchComment, opts);
+  var name6 = parse_XLUnicodeStringNoCch(blob, cchName, opts2);
+  var comment = parse_XLUnicodeStringNoCch(blob, cchComment, opts2);
   return [name6, comment];
 }
-function parse_ShrFmla(blob, length, opts) {
+function parse_ShrFmla(blob, length, opts2) {
   var ref = parse_RefU(blob, 6);
   blob.l++;
   var cUse = blob.read_shift(1);
   length -= 8;
-  return [parse_SharedParsedFormula(blob, length, opts), cUse, ref];
+  return [parse_SharedParsedFormula(blob, length, opts2), cUse, ref];
 }
-function parse_Array(blob, length, opts) {
+function parse_Array(blob, length, opts2) {
   var ref = parse_Ref(blob, 6);
-  switch (opts.biff) {
+  switch (opts2.biff) {
     case 2:
       blob.l++;
       length -= 7;
@@ -38070,7 +39730,7 @@ function parse_Array(blob, length, opts) {
       blob.l += 6;
       length -= 12;
   }
-  return [ref, parse_ArrayParsedFormula(blob, length, opts, ref)];
+  return [ref, parse_ArrayParsedFormula(blob, length, opts2, ref)];
 }
 function parse_MTRSettings(blob) {
   var fMTREnabled = blob.read_shift(4) !== 0;
@@ -38078,21 +39738,21 @@ function parse_MTRSettings(blob) {
   var cUserThreadCount = blob.read_shift(4);
   return [fMTREnabled, fUserSetThreadCount, cUserThreadCount];
 }
-function parse_NoteSh(blob, length, opts) {
+function parse_NoteSh(blob, length, opts2) {
   var row = blob.read_shift(2), col = blob.read_shift(2);
   var flags2 = blob.read_shift(2), idObj = blob.read_shift(2);
-  var stAuthor = parse_XLUnicodeString2(blob, 0, opts);
+  var stAuthor = parse_XLUnicodeString2(blob, 0, opts2);
   return [{ r: row, c: col }, stAuthor, idObj, flags2];
 }
-function parse_Note(blob, length, opts) {
-  if (opts && opts.biff < 8) {
+function parse_Note(blob, length, opts2) {
+  if (opts2 && opts2.biff < 8) {
     var row = blob.read_shift(2), col = blob.read_shift(2);
     if (row == 65535 || row == -1) return;
     var cch = blob.read_shift(2);
     var cmnt = blob.read_shift(Math.min(cch, 2048), "cpstr");
     return [{ r: row, c: col }, cmnt];
   }
-  return parse_NoteSh(blob, length, opts);
+  return parse_NoteSh(blob, length, opts2);
 }
 function parse_MergeCells(blob, length) {
   var merges = [];
@@ -38100,8 +39760,8 @@ function parse_MergeCells(blob, length) {
   while (cmcs--) merges.push(parse_Ref8U(blob, length));
   return merges;
 }
-function parse_Obj(blob, length, opts) {
-  if (opts && opts.biff < 8) return parse_BIFF5Obj(blob, length, opts);
+function parse_Obj(blob, length, opts2) {
+  if (opts2 && opts2.biff < 8) return parse_BIFF5Obj(blob, length, opts2);
   var cmo = parse_FtCmo(blob, 22);
   var fts = parse_FtArray(blob, length - 22, cmo[1]);
   return { cmo, ft: fts };
@@ -38122,7 +39782,7 @@ var parse_BIFF5OT = {
     return { fmt: cf };
   }
 };
-function parse_BIFF5Obj(blob, length, opts) {
+function parse_BIFF5Obj(blob, length, opts2) {
   blob.l += 4;
   var ot = blob.read_shift(2);
   var id = blob.read_shift(2);
@@ -38139,18 +39799,18 @@ function parse_BIFF5Obj(blob, length, opts) {
   blob.l += 6;
   length -= 36;
   var fts = [];
-  fts.push((parse_BIFF5OT[ot] || parsenoop)(blob, length, opts));
+  fts.push((parse_BIFF5OT[ot] || parsenoop)(blob, length, opts2));
   return { cmo: [id, ot, grbit], ft: fts };
 }
-function parse_TxO(blob, length, opts) {
+function parse_TxO(blob, length, opts2) {
   var s2 = blob.l;
   var texts = "";
   try {
     blob.l += 4;
-    var ot = (opts.lastobj || { cmo: [0, 0] }).cmo[1];
+    var ot = (opts2.lastobj || { cmo: [0, 0] }).cmo[1];
     var controlInfo;
     if ([0, 5, 7, 11, 12, 14].indexOf(ot) == -1) blob.l += 6;
-    else controlInfo = parse_ControlInfo(blob, 6, opts);
+    else controlInfo = parse_ControlInfo(blob, 6, opts2);
     var cchText = blob.read_shift(2);
     blob.read_shift(2);
     parseuint16(blob, 2);
@@ -38213,9 +39873,9 @@ function parse_XFCRC(blob) {
   o.crc = blob.read_shift(4);
   return o;
 }
-function parse_ColInfo(blob, length, opts) {
-  if (!opts.cellStyles) return parsenoop(blob, length);
-  var w = opts && opts.biff >= 12 ? 4 : 2;
+function parse_ColInfo(blob, length, opts2) {
+  if (!opts2.cellStyles) return parsenoop(blob, length);
+  var w = opts2 && opts2.biff >= 12 ? 4 : 2;
   var colFirst = blob.read_shift(w);
   var colLast = blob.read_shift(w);
   var coldx = blob.read_shift(w);
@@ -38223,7 +39883,7 @@ function parse_ColInfo(blob, length, opts) {
   var flags2 = blob.read_shift(2);
   if (w == 2) blob.l += 2;
   var o = { s: colFirst, e: colLast, w: coldx, ixfe, flags: flags2 };
-  if (opts.biff >= 5 || !opts.biff) o.level = flags2 >> 8 & 7;
+  if (opts2.biff >= 5 || !opts2.biff) o.level = flags2 >> 8 & 7;
   return o;
 }
 function parse_Setup(blob, length) {
@@ -38235,9 +39895,9 @@ function parse_Setup(blob, length) {
   blob.l += 2;
   return o;
 }
-function parse_ShtProps(blob, length, opts) {
+function parse_ShtProps(blob, length, opts2) {
   var def = { area: false };
-  if (opts.biff != 5) {
+  if (opts2.biff != 5) {
     blob.l += length;
     return def;
   }
@@ -38257,23 +39917,23 @@ function parse_ImData(blob) {
   blob.l += lcb;
   return o;
 }
-function parse_BIFF2STR(blob, length, opts) {
-  if (opts.biffguess && opts.biff == 5) opts.biff = 2;
-  var cell = parse_XLSCell(blob, 7, opts);
-  var str = parse_XLUnicodeString2(blob, length - 7, opts);
+function parse_BIFF2STR(blob, length, opts2) {
+  if (opts2.biffguess && opts2.biff == 5) opts2.biff = 2;
+  var cell = parse_XLSCell(blob, 7, opts2);
+  var str = parse_XLUnicodeString2(blob, length - 7, opts2);
   cell.t = "str";
   cell.val = str;
   return cell;
 }
-function parse_BIFF2NUM(blob, length, opts) {
-  var cell = parse_XLSCell(blob, 7, opts);
+function parse_BIFF2NUM(blob, length, opts2) {
+  var cell = parse_XLSCell(blob, 7, opts2);
   var num2 = parse_Xnum(blob, 8);
   cell.t = "n";
   cell.val = num2;
   return cell;
 }
-function parse_BIFF2INT(blob, length, opts) {
-  var cell = parse_XLSCell(blob, 7, opts);
+function parse_BIFF2INT(blob, length, opts2) {
+  var cell = parse_XLSCell(blob, 7, opts2);
   var num2 = blob.read_shift(2);
   cell.t = "n";
   cell.val = num2;
@@ -38287,9 +39947,9 @@ function parse_BIFF2STRING(blob) {
   }
   return blob.read_shift(cch, "sbcs-cont");
 }
-function parse_BIFF2BOOLERR(blob, length, opts) {
+function parse_BIFF2BOOLERR(blob, length, opts2) {
   var bestart = blob.l + 7;
-  var cell = parse_XLSCell(blob, 6, opts);
+  var cell = parse_XLSCell(blob, 6, opts2);
   blob.l = bestart;
   var val3 = parse_Bes(blob, 2);
   cell.val = val3;
@@ -38304,11 +39964,11 @@ function parse_BIFF2FONTXTRA(blob, length) {
   blob.l += 1;
   blob.l += length - 13;
 }
-function parse_RString(blob, length, opts) {
+function parse_RString(blob, length, opts2) {
   var end = blob.l + length;
-  var cell = parse_XLSCell(blob, 6, opts);
+  var cell = parse_XLSCell(blob, 6, opts2);
   var cch = blob.read_shift(2);
-  var str = parse_XLUnicodeStringNoCch(blob, cch, opts);
+  var str = parse_XLUnicodeStringNoCch(blob, cch, opts2);
   blob.l = end;
   cell.t = "str";
   cell.val = str;
@@ -38424,10 +40084,10 @@ var DBF = /* @__PURE__ */ (function() {
     203: 1253,
     0: 20127
   });
-  function dbf_to_aoa(buf, opts) {
+  function dbf_to_aoa(buf, opts2) {
     var out = [];
     var d = new_raw_buf(1);
-    switch (opts.type) {
+    switch (opts2.type) {
       case "base64":
         d = s2a(Base64_decode(buf));
         break;
@@ -38487,7 +40147,7 @@ var DBF = /* @__PURE__ */ (function() {
     if (nrow > 1048576) nrow = 1e6;
     if (ft != 2) fpos = d.read_shift(2);
     var rlen = d.read_shift(2);
-    var current_cp = opts.codepage || 1252;
+    var current_cp = opts2.codepage || 1252;
     if (ft != 2) {
       d.l += 16;
       d.read_shift(1);
@@ -38512,12 +40172,12 @@ var DBF = /* @__PURE__ */ (function() {
       if (ft != 2) d.l += l7 ? 13 : 14;
       switch (field.type) {
         case "B":
-          if ((!vfp || field.len != 8) && opts.WTF) console.log("Skipping " + field.name + ":" + field.type);
+          if ((!vfp || field.len != 8) && opts2.WTF) console.log("Skipping " + field.name + ":" + field.type);
           break;
         case "G":
         // General (FoxPro and dBASE L7)
         case "P":
-          if (opts.WTF) console.log("Skipping " + field.name + ":" + field.type);
+          if (opts2.WTF) console.log("Skipping " + field.name + ":" + field.type);
           break;
         case "+":
         // Autoincrement (dBASE L7 only)
@@ -38575,7 +40235,7 @@ var DBF = /* @__PURE__ */ (function() {
           case "D":
             if (s2.length === 8) {
               out[R][C] = new Date(Date.UTC(+s2.slice(0, 4), +s2.slice(4, 6) - 1, +s2.slice(6, 8), 0, 0, 0, 0));
-              if (!(opts && opts.UTC)) {
+              if (!(opts2 && opts2.UTC)) {
                 out[R][C] = utc_to_local(out[R][C]);
               }
             } else out[R][C] = s2;
@@ -38621,7 +40281,7 @@ var DBF = /* @__PURE__ */ (function() {
               var hi = dd.read_shift(4), lo = dd.read_shift(4);
               if (hi == 0 && lo == 0) break;
               out[R][C] = new Date((hi - 2440588) * 864e5 + lo);
-              if (!(opts && opts.UTC)) out[R][C] = utc_to_local(out[R][C]);
+              if (!(opts2 && opts2.UTC)) out[R][C] = utc_to_local(out[R][C]);
             }
             break;
           case "Y":
@@ -38651,12 +40311,12 @@ var DBF = /* @__PURE__ */ (function() {
     if (ft != 2) {
       if (d.l < d.length && d[d.l++] != 26) throw new Error("DBF EOF Marker missing " + (d.l - 1) + " of " + d.length + " " + d[d.l - 1].toString(16));
     }
-    if (opts && opts.sheetRows) out = out.slice(0, opts.sheetRows);
-    opts.DBF = fields;
+    if (opts2 && opts2.sheetRows) out = out.slice(0, opts2.sheetRows);
+    opts2.DBF = fields;
     return out;
   }
-  function dbf_to_sheet(buf, opts) {
-    var o = opts || {};
+  function dbf_to_sheet(buf, opts2) {
+    var o = opts2 || {};
     if (!o.dateNF) o.dateNF = "yyyymmdd";
     var ws = aoa_to_sheet(dbf_to_aoa(buf, o), o);
     ws["!cols"] = o.DBF.map(function(field) {
@@ -38668,20 +40328,20 @@ var DBF = /* @__PURE__ */ (function() {
     delete o.DBF;
     return ws;
   }
-  function dbf_to_workbook(buf, opts) {
+  function dbf_to_workbook(buf, opts2) {
     try {
-      var o = sheet_to_workbook(dbf_to_sheet(buf, opts), opts);
+      var o = sheet_to_workbook(dbf_to_sheet(buf, opts2), opts2);
       o.bookType = "dbf";
       return o;
     } catch (e) {
-      if (opts && opts.WTF) throw e;
+      if (opts2 && opts2.WTF) throw e;
     }
     return { SheetNames: [], Sheets: {} };
   }
   var _RLEN = { "B": 8, "C": 250, "L": 1, "D": 8, "?": 0, "": 0 };
-  function sheet_to_dbf(ws, opts) {
+  function sheet_to_dbf(ws, opts2) {
     if (!ws["!ref"]) throw new Error("Cannot export empty sheet to DBF");
-    var o = opts || {};
+    var o = opts2 || {};
     var old_cp = current_codepage;
     if (+o.codepage >= 0) set_cp(+o.codepage);
     if (o.type == "string") throw new Error("Cannot write DBF to JS string");
@@ -38945,27 +40605,27 @@ var SYLK = /* @__PURE__ */ (function() {
   var encode_sylk_str = function($$) {
     return $$.replace(/\n/g, "\x1B :").replace(/\r/g, "\x1B =");
   };
-  function sylk_to_aoa(d, opts) {
-    switch (opts.type) {
+  function sylk_to_aoa(d, opts2) {
+    switch (opts2.type) {
       case "base64":
-        return sylk_to_aoa_str(Base64_decode(d), opts);
+        return sylk_to_aoa_str(Base64_decode(d), opts2);
       case "binary":
-        return sylk_to_aoa_str(d, opts);
+        return sylk_to_aoa_str(d, opts2);
       case "buffer":
-        return sylk_to_aoa_str(has_buf && Buffer.isBuffer(d) ? d.toString("binary") : a2s(d), opts);
+        return sylk_to_aoa_str(has_buf && Buffer.isBuffer(d) ? d.toString("binary") : a2s(d), opts2);
       case "array":
-        return sylk_to_aoa_str(cc2str(d), opts);
+        return sylk_to_aoa_str(cc2str(d), opts2);
     }
-    throw new Error("Unrecognized type " + opts.type);
+    throw new Error("Unrecognized type " + opts2.type);
   }
-  function sylk_to_aoa_str(str, opts) {
+  function sylk_to_aoa_str(str, opts2) {
     var records = str.split(/[\n\r]+/), R = -1, C = -1, ri = 0, rj = 0, arr = [];
     var formats2 = [];
     var next_cell_format = null;
     var sht = {}, rowinfo = [], colinfo = [], cw = [];
     var Mval = 0, j;
     var wb = { Workbook: { WBProps: {}, Names: [] } };
-    if (+opts.codepage >= 0) set_cp(+opts.codepage);
+    if (+opts2.codepage >= 0) set_cp(+opts2.codepage);
     for (; ri !== records.length; ++ri) {
       Mval = 0;
       var rstr = records[ri].trim().replace(/\x1B([\x20-\x2F])([\x30-\x3F])/g, decode_sylk_char).replace(sylk_char_regex, sylk_char_fn);
@@ -39011,7 +40671,7 @@ var SYLK = /* @__PURE__ */ (function() {
                 nn.Name = record[rj].slice(1);
                 break;
               case "E":
-                nn.Ref = (opts && opts.sheet || "Sheet1") + "!" + rc_to_a1(record[rj].slice(1));
+                nn.Ref = (opts2 && opts2.sheet || "Sheet1") + "!" + rc_to_a1(record[rj].slice(1));
                 break;
             }
             wb.Workbook.Names.push(nn);
@@ -39050,12 +40710,12 @@ var SYLK = /* @__PURE__ */ (function() {
               } else if (!isNaN(fuzzynum(val3))) {
                 val3 = fuzzynum(val3);
                 cell_t = "n";
-                if (next_cell_format !== null && fmt_is_date(next_cell_format) && opts.cellDates) {
+                if (next_cell_format !== null && fmt_is_date(next_cell_format) && opts2.cellDates) {
                   val3 = numdate(wb.Workbook.WBProps.date1904 ? val3 + 1462 : val3);
                   cell_t = typeof val3 == "number" ? "n" : "d";
                 }
               }
-              if (typeof $cptable !== "undefined" && typeof val3 == "string" && (opts || {}).type != "string" && (opts || {}).codepage) val3 = $cptable.utils.decode(opts.codepage, val3);
+              if (typeof $cptable !== "undefined" && typeof val3 == "string" && (opts2 || {}).type != "string" && (opts2 || {}).codepage) val3 = $cptable.utils.decode(opts2.codepage, val3);
               C_seen_K = true;
               break;
             case "E":
@@ -39077,7 +40737,7 @@ var SYLK = /* @__PURE__ */ (function() {
             // case 'P': // ??
             // case 'D': // ??
             default:
-              if (opts && opts.WTF) throw new Error("SYLK bad record " + rstr);
+              if (opts2 && opts2.WTF) throw new Error("SYLK bad record " + rstr);
           }
           if (C_seen_K) {
             if (!arr[R][C]) arr[R][C] = { t: cell_t, v: val3 };
@@ -39086,7 +40746,7 @@ var SYLK = /* @__PURE__ */ (function() {
               arr[R][C].v = val3;
             }
             if (next_cell_format) arr[R][C].z = next_cell_format;
-            if (opts.cellText !== false && next_cell_format) arr[R][C].w = SSF_format(arr[R][C].z, arr[R][C].v, { date1904: wb.Workbook.WBProps.date1904 });
+            if (opts2.cellText !== false && next_cell_format) arr[R][C].w = SSF_format(arr[R][C].z, arr[R][C].v, { date1904: wb.Workbook.WBProps.date1904 });
             next_cell_format = null;
           }
           if (C_seen_S) {
@@ -39158,12 +40818,12 @@ var SYLK = /* @__PURE__ */ (function() {
             // case 'K': // ??
             // case 'E': // ??
             default:
-              if (opts && opts.WTF) throw new Error("SYLK bad record " + rstr);
+              if (opts2 && opts2.WTF) throw new Error("SYLK bad record " + rstr);
           }
           if (F_seen < 1) next_cell_format = null;
           break;
         default:
-          if (opts && opts.WTF) throw new Error("SYLK bad record " + rstr);
+          if (opts2 && opts2.WTF) throw new Error("SYLK bad record " + rstr);
       }
     }
     if (rowinfo.length > 0) sht["!rows"] = rowinfo;
@@ -39171,26 +40831,26 @@ var SYLK = /* @__PURE__ */ (function() {
     colinfo.forEach(function(col) {
       process_col(col);
     });
-    if (opts && opts.sheetRows) arr = arr.slice(0, opts.sheetRows);
+    if (opts2 && opts2.sheetRows) arr = arr.slice(0, opts2.sheetRows);
     return [arr, sht, wb];
   }
-  function sylk_to_workbook(d, opts) {
-    var aoasht = sylk_to_aoa(d, opts);
+  function sylk_to_workbook(d, opts2) {
+    var aoasht = sylk_to_aoa(d, opts2);
     var aoa = aoasht[0], ws = aoasht[1], wb = aoasht[2];
-    var _opts = dup(opts);
+    var _opts = dup(opts2);
     _opts.date1904 = (((wb || {}).Workbook || {}).WBProps || {}).date1904;
     var o = aoa_to_sheet(aoa, _opts);
     keys(ws).forEach(function(k) {
       o[k] = ws[k];
     });
-    var outwb = sheet_to_workbook(o, opts);
+    var outwb = sheet_to_workbook(o, opts2);
     keys(wb).forEach(function(k) {
       outwb[k] = wb[k];
     });
     outwb.bookType = "sylk";
     return outwb;
   }
-  function write_ws_cell_sylk(cell, ws, R, C, opts, date1904) {
+  function write_ws_cell_sylk(cell, ws, R, C, opts2, date1904) {
     var o = "C;Y" + (R + 1) + ";X" + (C + 1) + ";K";
     switch (cell.t) {
       case "n":
@@ -39240,9 +40900,9 @@ var SYLK = /* @__PURE__ */ (function() {
       if (rec.length > 2) out.push(rec + "R" + (i + 1));
     });
   }
-  function sheet_to_sylk(ws, opts, wb) {
-    if (!opts) opts = {};
-    opts._formats = ["General"];
+  function sheet_to_sylk(ws, opts2, wb) {
+    if (!opts2) opts2 = {};
+    opts2._formats = ["General"];
     var preamble = ["ID;PSheetJS;N;E"], o = [];
     var r = safe_decode_range(ws["!ref"] || "A1"), cell;
     var dense = ws["!data"] != null;
@@ -39268,15 +40928,15 @@ var SYLK = /* @__PURE__ */ (function() {
         cell = dense ? ws["!data"][R][C] : ws[encode_col(C) + encode_row(R)];
         if (!cell || cell.v == null && (!cell.f || cell.F)) continue;
         if ((cell.z || (cell.t == "d" ? table_fmt[14] : "General")) != _lastfmt) {
-          var ifmt = opts._formats.indexOf(cell.z);
+          var ifmt = opts2._formats.indexOf(cell.z);
           if (ifmt == -1) {
-            opts._formats.push(cell.z);
-            ifmt = opts._formats.length - 1;
+            opts2._formats.push(cell.z);
+            ifmt = opts2._formats.length - 1;
             preamble.push("P;P" + cell.z.replace(/;/g, ";;"));
           }
           p.push("F;P" + ifmt + ";Y" + (R + 1) + ";X" + (C + 1));
         }
-        p.push(write_ws_cell_sylk(cell, ws, R, C, opts, d1904));
+        p.push(write_ws_cell_sylk(cell, ws, R, C, opts2, d1904));
       }
       o.push(p.join(RS));
     }
@@ -39285,7 +40945,7 @@ var SYLK = /* @__PURE__ */ (function() {
     if (ws["!rows"]) write_ws_rows_sylk(preamble, ws["!rows"]);
     if (ws["!ref"]) preamble.push("B;Y" + (r.e.r - r.s.r + 1) + ";X" + (r.e.c - r.s.c + 1) + ";D" + [r.s.c, r.s.r, r.e.c, r.e.r].join(" "));
     preamble.push("O;L;D;B" + (d1904 ? ";V4" : "") + ";K47;G100 0.001");
-    delete opts._formats;
+    delete opts2._formats;
     return preamble.join(RS) + RS + o.join(RS) + RS + "E" + RS;
   }
   return {
@@ -39294,20 +40954,20 @@ var SYLK = /* @__PURE__ */ (function() {
   };
 })();
 var DIF = /* @__PURE__ */ (function() {
-  function dif_to_aoa(d, opts) {
-    switch (opts.type) {
+  function dif_to_aoa(d, opts2) {
+    switch (opts2.type) {
       case "base64":
-        return dif_to_aoa_str(Base64_decode(d), opts);
+        return dif_to_aoa_str(Base64_decode(d), opts2);
       case "binary":
-        return dif_to_aoa_str(d, opts);
+        return dif_to_aoa_str(d, opts2);
       case "buffer":
-        return dif_to_aoa_str(has_buf && Buffer.isBuffer(d) ? d.toString("binary") : a2s(d), opts);
+        return dif_to_aoa_str(has_buf && Buffer.isBuffer(d) ? d.toString("binary") : a2s(d), opts2);
       case "array":
-        return dif_to_aoa_str(cc2str(d), opts);
+        return dif_to_aoa_str(cc2str(d), opts2);
     }
-    throw new Error("Unrecognized type " + opts.type);
+    throw new Error("Unrecognized type " + opts2.type);
   }
-  function dif_to_aoa_str(str, opts) {
+  function dif_to_aoa_str(str, opts2) {
     var records = str.split("\n"), R = -1, C = -1, ri = 0, arr = [];
     for (; ri !== records.length; ++ri) {
       if (records[ri].trim() === "BOT") {
@@ -39317,7 +40977,7 @@ var DIF = /* @__PURE__ */ (function() {
       }
       if (R < 0) continue;
       var metadata = records[ri].trim().split(",");
-      var type = metadata[0], value = metadata[1];
+      var type = metadata[0], value2 = metadata[1];
       ++ri;
       var data2 = records[ri] || "";
       while ((data2.match(/["]/g) || []).length & 1 && ri < records.length - 1) data2 += "\n" + records[++ri];
@@ -39333,13 +40993,13 @@ var DIF = /* @__PURE__ */ (function() {
         case 0:
           if (data2 === "TRUE") arr[R][C] = true;
           else if (data2 === "FALSE") arr[R][C] = false;
-          else if (!isNaN(fuzzynum(value))) arr[R][C] = fuzzynum(value);
-          else if (!isNaN(fuzzydate(value).getDate())) {
-            arr[R][C] = parseDate(value);
-            if (!(opts && opts.UTC)) {
+          else if (!isNaN(fuzzynum(value2))) arr[R][C] = fuzzynum(value2);
+          else if (!isNaN(fuzzydate(value2).getDate())) {
+            arr[R][C] = parseDate(value2);
+            if (!(opts2 && opts2.UTC)) {
               arr[R][C] = utc_to_local(arr[R][C]);
             }
-          } else arr[R][C] = value;
+          } else arr[R][C] = value2;
           ++C;
           break;
         case 1:
@@ -39351,14 +41011,14 @@ var DIF = /* @__PURE__ */ (function() {
       }
       if (data2 === "EOD") break;
     }
-    if (opts && opts.sheetRows) arr = arr.slice(0, opts.sheetRows);
+    if (opts2 && opts2.sheetRows) arr = arr.slice(0, opts2.sheetRows);
     return arr;
   }
-  function dif_to_sheet(str, opts) {
-    return aoa_to_sheet(dif_to_aoa(str, opts), opts);
+  function dif_to_sheet(str, opts2) {
+    return aoa_to_sheet(dif_to_aoa(str, opts2), opts2);
   }
-  function dif_to_workbook(str, opts) {
-    var o = sheet_to_workbook(dif_to_sheet(str, opts), opts);
+  function dif_to_workbook(str, opts2) {
+    var o = sheet_to_workbook(dif_to_sheet(str, opts2), opts2);
     o.bookType = "dif";
     return o;
   }
@@ -39433,7 +41093,7 @@ var ETH = /* @__PURE__ */ (function() {
   function encode(s2) {
     return s2.replace(/\\/g, "\\b").replace(/:/g, "\\c").replace(/\n/g, "\\n");
   }
-  function eth_to_aoa(str, opts) {
+  function eth_to_aoa(str, opts2) {
     var records = str.split("\n"), R = -1, C = -1, ri = 0, arr = [];
     for (; ri !== records.length; ++ri) {
       var record = records[ri].trim().split(":");
@@ -39466,14 +41126,14 @@ var ETH = /* @__PURE__ */ (function() {
           if (record[2] == "vtf") arr[R][C] = [arr[R][C], _f];
       }
     }
-    if (opts && opts.sheetRows) arr = arr.slice(0, opts.sheetRows);
+    if (opts2 && opts2.sheetRows) arr = arr.slice(0, opts2.sheetRows);
     return arr;
   }
-  function eth_to_sheet(d, opts) {
-    return aoa_to_sheet(eth_to_aoa(d, opts), opts);
+  function eth_to_sheet(d, opts2) {
+    return aoa_to_sheet(eth_to_aoa(d, opts2), opts2);
   }
-  function eth_to_workbook(d, opts) {
-    return sheet_to_workbook(eth_to_sheet(d, opts), opts);
+  function eth_to_workbook(d, opts2) {
+    return sheet_to_workbook(eth_to_sheet(d, opts2), opts2);
   }
   var header = [
     "socialcalc:version:1.5",
@@ -39567,8 +41227,8 @@ var PRN = /* @__PURE__ */ (function() {
     else if (data2.charCodeAt(0) == 35 && RBErr[data2] != null) arr[R][C] = { t: "e", v: RBErr[data2], w: data2 };
     else arr[R][C] = data2;
   }
-  function prn_to_aoa_str(f, opts) {
-    var o = opts || {};
+  function prn_to_aoa_str(f, opts2) {
+    var o = opts2 || {};
     var arr = [];
     if (!f || f.length === 0) return arr;
     var lines = f.split(/[\r\n]/);
@@ -39625,8 +41285,8 @@ var PRN = /* @__PURE__ */ (function() {
     });
     return guess_seps[cc.pop()[1]] || 44;
   }
-  function dsv_to_sheet_str(str, opts) {
-    var o = opts || {};
+  function dsv_to_sheet_str(str, opts2) {
+    var o = opts2 || {};
     var sep = "";
     if (DENSE != null && o.dense == null) o.dense = DENSE;
     var ws = {};
@@ -39738,16 +41398,16 @@ var PRN = /* @__PURE__ */ (function() {
     ws["!ref"] = encode_range(range3);
     return ws;
   }
-  function prn_to_sheet_str(str, opts) {
-    if (!(opts && opts.PRN)) return dsv_to_sheet_str(str, opts);
-    if (opts.FS) return dsv_to_sheet_str(str, opts);
-    if (str.slice(0, 4) == "sep=") return dsv_to_sheet_str(str, opts);
-    if (str.indexOf("	") >= 0 || str.indexOf(",") >= 0 || str.indexOf(";") >= 0) return dsv_to_sheet_str(str, opts);
-    return aoa_to_sheet(prn_to_aoa_str(str, opts), opts);
+  function prn_to_sheet_str(str, opts2) {
+    if (!(opts2 && opts2.PRN)) return dsv_to_sheet_str(str, opts2);
+    if (opts2.FS) return dsv_to_sheet_str(str, opts2);
+    if (str.slice(0, 4) == "sep=") return dsv_to_sheet_str(str, opts2);
+    if (str.indexOf("	") >= 0 || str.indexOf(",") >= 0 || str.indexOf(";") >= 0) return dsv_to_sheet_str(str, opts2);
+    return aoa_to_sheet(prn_to_aoa_str(str, opts2), opts2);
   }
-  function prn_to_sheet(d, opts) {
-    var str = "", bytes = opts.type == "string" ? [0, 0, 0, 0] : firstbyte(d, opts);
-    switch (opts.type) {
+  function prn_to_sheet(d, opts2) {
+    var str = "", bytes = opts2.type == "string" ? [0, 0, 0, 0] : firstbyte(d, opts2);
+    switch (opts2.type) {
       case "base64":
         str = Base64_decode(d);
         break;
@@ -39755,8 +41415,8 @@ var PRN = /* @__PURE__ */ (function() {
         str = d;
         break;
       case "buffer":
-        if (opts.codepage == 65001) str = d.toString("utf8");
-        else if (opts.codepage && typeof $cptable !== "undefined") str = $cptable.utils.decode(opts.codepage, d);
+        if (opts2.codepage == 65001) str = d.toString("utf8");
+        else if (opts2.codepage && typeof $cptable !== "undefined") str = $cptable.utils.decode(opts2.codepage, d);
         else str = has_buf && Buffer.isBuffer(d) ? d.toString("binary") : a2s(d);
         break;
       case "array":
@@ -39766,16 +41426,16 @@ var PRN = /* @__PURE__ */ (function() {
         str = d;
         break;
       default:
-        throw new Error("Unrecognized type " + opts.type);
+        throw new Error("Unrecognized type " + opts2.type);
     }
     if (bytes[0] == 239 && bytes[1] == 187 && bytes[2] == 191) str = utf8read(str.slice(3));
-    else if (opts.type != "string" && opts.type != "buffer" && opts.codepage == 65001) str = utf8read(str);
-    else if (opts.type == "binary" && typeof $cptable !== "undefined" && opts.codepage) str = $cptable.utils.decode(opts.codepage, $cptable.utils.encode(28591, str));
-    if (str.slice(0, 19) == "socialcalc:version:") return ETH.to_sheet(opts.type == "string" ? str : utf8read(str), opts);
-    return prn_to_sheet_str(str, opts);
+    else if (opts2.type != "string" && opts2.type != "buffer" && opts2.codepage == 65001) str = utf8read(str);
+    else if (opts2.type == "binary" && typeof $cptable !== "undefined" && opts2.codepage) str = $cptable.utils.decode(opts2.codepage, $cptable.utils.encode(28591, str));
+    if (str.slice(0, 19) == "socialcalc:version:") return ETH.to_sheet(opts2.type == "string" ? str : utf8read(str), opts2);
+    return prn_to_sheet_str(str, opts2);
   }
-  function prn_to_workbook(d, opts) {
-    return sheet_to_workbook(prn_to_sheet(d, opts), opts);
+  function prn_to_workbook(d, opts2) {
+    return sheet_to_workbook(prn_to_sheet(d, opts2), opts2);
   }
   function sheet_to_prn(ws) {
     var o = [];
@@ -39805,8 +41465,8 @@ var PRN = /* @__PURE__ */ (function() {
     from_sheet: sheet_to_prn
   };
 })();
-function read_wb_ID(d, opts) {
-  var o = opts || {}, OLD_WTF = !!o.WTF;
+function read_wb_ID(d, opts2) {
+  var o = opts2 || {}, OLD_WTF = !!o.WTF;
   o.WTF = true;
   try {
     var out = SYLK.to_workbook(d, o);
@@ -39815,35 +41475,35 @@ function read_wb_ID(d, opts) {
   } catch (e) {
     o.WTF = OLD_WTF;
     if (e.message.indexOf("SYLK bad record ID") == -1 && OLD_WTF) throw e;
-    return PRN.to_workbook(d, opts);
+    return PRN.to_workbook(d, opts2);
   }
 }
 var WK_ = /* @__PURE__ */ (function() {
-  function lotushopper(data2, cb, opts) {
+  function lotushopper(data2, cb, opts2) {
     if (!data2) return;
     prep_blob(data2, data2.l || 0);
-    var Enum2 = opts.Enum || WK1Enum;
+    var Enum2 = opts2.Enum || WK1Enum;
     while (data2.l < data2.length) {
       var RT = data2.read_shift(2);
       var R = Enum2[RT] || Enum2[65535];
       var length = data2.read_shift(2);
       var tgt = data2.l + length;
-      var d = R.f && R.f(data2, length, opts);
+      var d = R.f && R.f(data2, length, opts2);
       data2.l = tgt;
       if (cb(d, R, RT)) return;
     }
   }
-  function lotus_to_workbook(d, opts) {
-    switch (opts.type) {
+  function lotus_to_workbook(d, opts2) {
+    switch (opts2.type) {
       case "base64":
-        return lotus_to_workbook_buf(s2a(Base64_decode(d)), opts);
+        return lotus_to_workbook_buf(s2a(Base64_decode(d)), opts2);
       case "binary":
-        return lotus_to_workbook_buf(s2a(d), opts);
+        return lotus_to_workbook_buf(s2a(d), opts2);
       case "buffer":
       case "array":
-        return lotus_to_workbook_buf(d, opts);
+        return lotus_to_workbook_buf(d, opts2);
     }
-    throw "Unsupported type " + opts.type;
+    throw "Unsupported type " + opts2.type;
   }
   var LOTUS_DATE_FMTS = [
     "mmmm",
@@ -39862,9 +41522,9 @@ var WK_ = /* @__PURE__ */ (function() {
     "hh:mm"
     // 12
   ];
-  function lotus_to_workbook_buf(d, opts) {
+  function lotus_to_workbook_buf(d, opts2) {
     if (!d) return d;
-    var o = opts || {};
+    var o = opts2 || {};
     if (DENSE != null && o.dense == null) o.dense = DENSE;
     var s2 = {}, n2 = "Sheet1", next_n = "", sidx = 0;
     var sheets2 = {}, snames = [], realnames = [], sdata = [];
@@ -39872,7 +41532,7 @@ var WK_ = /* @__PURE__ */ (function() {
     var refguess = { s: { r: 0, c: 0 }, e: { r: 0, c: 0 } };
     var sheetRows = o.sheetRows || 0;
     var lastcell = {};
-    if (d[4] == 81 && d[5] == 80 && d[6] == 87) return qpw_to_workbook_buf(d, opts);
+    if (d[4] == 81 && d[5] == 80 && d[6] == 87) return qpw_to_workbook_buf(d, opts2);
     if (d[2] == 0) {
       if (d[3] == 8 || d[3] == 9) {
         if (d.length >= 16 && d[14] == 5 && d[15] === 108) throw new Error("Unsupported Works 3 for Mac file");
@@ -40037,8 +41697,8 @@ var WK_ = /* @__PURE__ */ (function() {
     }
     return { SheetNames: rnames, Sheets: osheets };
   }
-  function sheet_to_wk1(ws, opts) {
-    var o = opts || {};
+  function sheet_to_wk1(ws, opts2) {
+    var o = opts2 || {};
     if (+o.codepage >= 0) set_cp(+o.codepage);
     if (o.type == "string") throw new Error("Cannot write WK1 to JS string");
     var ba = buf_array();
@@ -40074,8 +41734,8 @@ var WK_ = /* @__PURE__ */ (function() {
     write_biff_rec(ba, 1);
     return ba.end();
   }
-  function book_to_wk3(wb, opts) {
-    var o = opts || {};
+  function book_to_wk3(wb, opts2) {
+    var o = opts2 || {};
     if (+o.codepage >= 0) set_cp(+o.codepage);
     if (o.type == "string") throw new Error("Cannot write WK3 to JS string");
     var ba = buf_array();
@@ -40141,9 +41801,9 @@ var WK_ = /* @__PURE__ */ (function() {
     out.write_shift(4, 0);
     return out;
   }
-  function parse_RANGE(blob, length, opts) {
+  function parse_RANGE(blob, length, opts2) {
     var o = { s: { c: 0, r: 0 }, e: { c: 0, r: 0 } };
-    if (length == 8 && opts.qpro) {
+    if (length == 8 && opts2.qpro) {
       o.s.c = blob.read_shift(1);
       blob.l++;
       o.s.r = blob.read_shift(2);
@@ -40154,10 +41814,10 @@ var WK_ = /* @__PURE__ */ (function() {
     }
     o.s.c = blob.read_shift(2);
     o.s.r = blob.read_shift(2);
-    if (length == 12 && opts.qpro) blob.l += 2;
+    if (length == 12 && opts2.qpro) blob.l += 2;
     o.e.c = blob.read_shift(2);
     o.e.r = blob.read_shift(2);
-    if (length == 12 && opts.qpro) blob.l += 2;
+    if (length == 12 && opts2.qpro) blob.l += 2;
     if (o.s.c == 65535) o.s.c = o.e.c = o.s.r = o.e.r = 0;
     return o;
   }
@@ -40169,14 +41829,14 @@ var WK_ = /* @__PURE__ */ (function() {
     out.write_shift(2, range3.e.r);
     return out;
   }
-  function parse_cell(blob, length, opts) {
+  function parse_cell(blob, length, opts2) {
     var o = [{ c: 0, r: 0 }, { t: "n", v: 0 }, 0, 0];
-    if (opts.qpro && opts.vers != 20768) {
+    if (opts2.qpro && opts2.vers != 20768) {
       o[0].c = blob.read_shift(1);
       o[3] = blob.read_shift(1);
       o[0].r = blob.read_shift(2);
       blob.l += 2;
-    } else if (opts.works) {
+    } else if (opts2.works) {
       o[0].c = blob.read_shift(2);
       o[0].r = blob.read_shift(2);
       o[2] = blob.read_shift(2);
@@ -40193,17 +41853,17 @@ var WK_ = /* @__PURE__ */ (function() {
     }
     return 255;
   }
-  function parse_LABEL(blob, length, opts) {
+  function parse_LABEL(blob, length, opts2) {
     var tgt = blob.l + length;
-    var o = parse_cell(blob, length, opts);
+    var o = parse_cell(blob, length, opts2);
     o[1].t = "s";
-    if ((opts.vers & 65534) == 20768) {
+    if ((opts2.vers & 65534) == 20768) {
       blob.l++;
       var len2 = blob.read_shift(1);
       o[1].v = blob.read_shift(len2, "utf8");
       return o;
     }
-    if (opts.qpro) blob.l++;
+    if (opts2.qpro) blob.l++;
     o[1].v = blob.read_shift(tgt - blob.l, "cstr");
     return o;
   }
@@ -40220,11 +41880,11 @@ var WK_ = /* @__PURE__ */ (function() {
     o.write_shift(1, 0);
     return o;
   }
-  function parse_STRING(blob, length, opts) {
+  function parse_STRING(blob, length, opts2) {
     var tgt = blob.l + length;
-    var o = parse_cell(blob, length, opts);
+    var o = parse_cell(blob, length, opts2);
     o[1].t = "s";
-    if (opts.vers == 20768) {
+    if (opts2.vers == 20768) {
       var len2 = blob.read_shift(1);
       o[1].v = blob.read_shift(len2, "utf8");
       return o;
@@ -40232,8 +41892,8 @@ var WK_ = /* @__PURE__ */ (function() {
     o[1].v = blob.read_shift(tgt - blob.l, "cstr");
     return o;
   }
-  function parse_INTEGER(blob, length, opts) {
-    var o = parse_cell(blob, length, opts);
+  function parse_INTEGER(blob, length, opts2) {
+    var o = parse_cell(blob, length, opts2);
     o[1].v = blob.read_shift(2, "i");
     return o;
   }
@@ -40245,8 +41905,8 @@ var WK_ = /* @__PURE__ */ (function() {
     o.write_shift(2, cell.v, "i");
     return o;
   }
-  function parse_NUMBER(blob, length, opts) {
-    var o = parse_cell(blob, length, opts);
+  function parse_NUMBER(blob, length, opts2) {
+    var o = parse_cell(blob, length, opts2);
     o[1].v = blob.read_shift(8, "f");
     return o;
   }
@@ -40258,11 +41918,11 @@ var WK_ = /* @__PURE__ */ (function() {
     o.write_shift(8, cell.v, "f");
     return o;
   }
-  function parse_FORMULA(blob, length, opts) {
+  function parse_FORMULA(blob, length, opts2) {
     var tgt = blob.l + length;
-    var o = parse_cell(blob, length, opts);
+    var o = parse_cell(blob, length, opts2);
     o[1].v = blob.read_shift(8, "f");
-    if (opts.qpro) blob.l = tgt;
+    if (opts2.qpro) blob.l = tgt;
     else {
       var flen = blob.read_shift(2);
       wk1_fmla_to_csf(blob.slice(blob.l, blob.l + flen), o);
@@ -40632,8 +42292,8 @@ var WK_ = /* @__PURE__ */ (function() {
     while (o.length < len2) o += String.fromCharCode(blob[blob.l++]);
     return o;
   }
-  function parse_SHEETINFOQP(blob, length, opts) {
-    if (!opts.qpro || length < 21) return;
+  function parse_SHEETINFOQP(blob, length, opts2) {
+    if (!opts2.qpro || length < 21) return;
     var id = blob.read_shift(1);
     blob.l += 17;
     blob.l += 1;
@@ -40897,9 +42557,9 @@ var WK_ = /* @__PURE__ */ (function() {
     if (flags2 != 0) throw "unsupported QPW string type " + flags2.toString(16);
     return p.read_shift(cch, "sbcs-cont");
   }
-  function qpw_to_workbook_buf(d, opts) {
+  function qpw_to_workbook_buf(d, opts2) {
     prep_blob(d, 0);
-    var o = opts || {};
+    var o = opts2 || {};
     if (DENSE != null && o.dense == null) o.dense = DENSE;
     var s2 = {};
     if (o.dense) s2["!data"] = [];
@@ -41333,8 +42993,8 @@ var rs_to_html = /* @__PURE__ */ (function parse_rs_factory() {
 })();
 var sitregex = /<(?:\w+:)?t\b[^<>]*>([^<]*)<\/(?:\w+:)?t>/g;
 var sirregex = /<(?:\w+:)?r\b[^<>]*>/;
-function parse_si(x, opts) {
-  var html = opts ? opts.cellHTML : true;
+function parse_si(x, opts2) {
+  var html = opts2 ? opts2.cellHTML : true;
   var z = {};
   if (!x) return { t: "" };
   if (x.match(/^\s*<(?:\w+:)?t[^>]*>/)) {
@@ -41353,14 +43013,14 @@ function parse_si(x, opts) {
 }
 var sstr1 = /<(?:\w+:)?(?:si|sstItem)>/g;
 var sstr2 = /<\/(?:\w+:)?(?:si|sstItem)>/;
-function parse_sst_xml(data2, opts) {
+function parse_sst_xml(data2, opts2) {
   var s2 = [], ss = "";
   if (!data2) return s2;
   var sst = str_match_xml_ns(data2, "sst");
   if (sst) {
     ss = sst[1].replace(sstr1, "").split(sstr2);
     for (var i = 0; i != ss.length; ++i) {
-      var o = parse_si(ss[i].trim(), opts);
+      var o = parse_si(ss[i].trim(), opts2);
       if (o != null) s2[s2.length] = o;
     }
     sst = parsexmltag(sst[0].slice(0, sst[0].indexOf(">")));
@@ -41372,7 +43032,7 @@ function parse_sst_xml(data2, opts) {
 function parse_BrtBeginSst(data2) {
   return [data2.read_shift(4), data2.read_shift(4)];
 }
-function parse_sst_bin(data2, opts) {
+function parse_sst_bin(data2, opts2) {
   var s2 = [];
   var pass = false;
   recordhopper(data2, function hopper_sst(val3, R, RT) {
@@ -41395,7 +43055,7 @@ function parse_sst_bin(data2, opts) {
       default:
         if (R.T) {
         }
-        if (!pass || opts.WTF) throw new Error("Unexpected record 0x" + RT.toString(16));
+        if (!pass || opts2.WTF) throw new Error("Unexpected record 0x" + RT.toString(16));
     }
   });
   return s2;
@@ -41697,11 +43357,11 @@ var crypto_MakeXorDecryptor = function(password) {
     return O[0];
   };
 };
-function parse_XORObfuscation(blob, length, opts, out) {
+function parse_XORObfuscation(blob, length, opts2, out) {
   var o = { key: parseuint16(blob), verificationBytes: parseuint16(blob) };
-  if (opts.password) o.verifier = crypto_CreatePasswordVerifier_Method1(opts.password);
+  if (opts2.password) o.verifier = crypto_CreatePasswordVerifier_Method1(opts2.password);
   out.valid = o.verificationBytes === o.verifier;
-  if (out.valid) out.insitu = crypto_MakeXorDecryptor(opts.password);
+  if (out.valid) out.insitu = crypto_MakeXorDecryptor(opts2.password);
   return o;
 }
 function parse_FilePassHeader(blob, length, oo) {
@@ -41712,27 +43372,27 @@ function parse_FilePassHeader(blob, length, oo) {
   else o.Data = parse_RC4CryptoHeader(blob, length);
   return o;
 }
-function parse_FilePass(blob, length, opts) {
-  var o = { Type: opts.biff >= 8 ? blob.read_shift(2) : 0 };
+function parse_FilePass(blob, length, opts2) {
+  var o = { Type: opts2.biff >= 8 ? blob.read_shift(2) : 0 };
   if (o.Type) parse_FilePassHeader(blob, length - 2, o);
-  else parse_XORObfuscation(blob, opts.biff >= 8 ? length : length - 2, opts, o);
+  else parse_XORObfuscation(blob, opts2.biff >= 8 ? length : length - 2, opts2, o);
   return o;
 }
-function rtf_to_sheet(d, opts) {
-  switch (opts.type) {
+function rtf_to_sheet(d, opts2) {
+  switch (opts2.type) {
     case "base64":
-      return rtf_to_sheet_str(Base64_decode(d), opts);
+      return rtf_to_sheet_str(Base64_decode(d), opts2);
     case "binary":
-      return rtf_to_sheet_str(d, opts);
+      return rtf_to_sheet_str(d, opts2);
     case "buffer":
-      return rtf_to_sheet_str(has_buf && Buffer.isBuffer(d) ? d.toString("binary") : a2s(d), opts);
+      return rtf_to_sheet_str(has_buf && Buffer.isBuffer(d) ? d.toString("binary") : a2s(d), opts2);
     case "array":
-      return rtf_to_sheet_str(cc2str(d), opts);
+      return rtf_to_sheet_str(cc2str(d), opts2);
   }
-  throw new Error("Unrecognized type " + opts.type);
+  throw new Error("Unrecognized type " + opts2.type);
 }
-function rtf_to_sheet_str(str, opts) {
-  var o = opts || {};
+function rtf_to_sheet_str(str, opts2) {
+  var o = opts2 || {};
   var ws = {};
   var dense = o.dense;
   if (dense)
@@ -41793,8 +43453,8 @@ function rtf_to_sheet_str(str, opts) {
   ws["!ref"] = encode_range(range3);
   return ws;
 }
-function rtf_to_workbook(d, opts) {
-  var wb = sheet_to_workbook(rtf_to_sheet(d, opts), opts);
+function rtf_to_workbook(d, opts2) {
+  var wb = sheet_to_workbook(rtf_to_sheet(d, opts2), opts2);
   wb.bookType = "rtf";
   return wb;
 }
@@ -41940,7 +43600,7 @@ var XLMLPatternTypeMap = {
   "ThinReverseDiagStripe": "lightDown",
   "ThinHorzCross": "lightGrid"
 };
-function parse_borders(t2, styles, themes, opts) {
+function parse_borders(t2, styles, themes, opts2) {
   styles.Borders = [];
   var border2 = {};
   var pass = false;
@@ -42049,13 +43709,13 @@ function parse_borders(t2, styles, themes, opts) {
         pass = false;
         break;
       default:
-        if (opts && opts.WTF) {
+        if (opts2 && opts2.WTF) {
           if (!pass) throw new Error("unrecognized " + y[0] + " in borders");
         }
     }
   });
 }
-function parse_fills(t2, styles, themes, opts) {
+function parse_fills(t2, styles, themes, opts2) {
   styles.Fills = [];
   var fill3 = {};
   var pass = false;
@@ -42136,13 +43796,13 @@ function parse_fills(t2, styles, themes, opts) {
         pass = false;
         break;
       default:
-        if (opts && opts.WTF) {
+        if (opts2 && opts2.WTF) {
           if (!pass) throw new Error("unrecognized " + y[0] + " in fills");
         }
     }
   });
 }
-function parse_fonts(t2, styles, themes, opts) {
+function parse_fonts(t2, styles, themes, opts2) {
   styles.Fonts = [];
   var font = {};
   var pass = false;
@@ -42349,13 +44009,13 @@ function parse_fonts(t2, styles, themes, opts) {
         pass = false;
         break;
       default:
-        if (opts && opts.WTF) {
+        if (opts2 && opts2.WTF) {
           if (!pass) throw new Error("unrecognized " + y[0] + " in fonts");
         }
     }
   });
 }
-function parse_numFmts(t2, styles, opts) {
+function parse_numFmts(t2, styles, opts2) {
   styles.NumberFmt = [];
   var k = keys(table_fmt);
   for (var i = 0; i < k.length; ++i) styles.NumberFmt[k[i]] = table_fmt[k[i]];
@@ -42385,13 +44045,13 @@ function parse_numFmts(t2, styles, opts) {
       case "</numFmt>":
         break;
       default:
-        if (opts.WTF) throw new Error("unrecognized " + y[0] + " in numFmts");
+        if (opts2.WTF) throw new Error("unrecognized " + y[0] + " in numFmts");
     }
   }
 }
 var cellXF_uint = ["numFmtId", "fillId", "fontId", "borderId", "xfId"];
 var cellXF_bool = ["applyAlignment", "applyBorder", "applyFill", "applyFont", "applyNumberFormat", "applyProtection", "pivotButton", "quotePrefix"];
-function parse_cellXfs(t2, styles, opts) {
+function parse_cellXfs(t2, styles, opts2) {
   styles.CellXf = [];
   var xf;
   var pass = false;
@@ -42464,23 +44124,23 @@ function parse_cellXfs(t2, styles, opts) {
         pass = false;
         break;
       default:
-        if (opts && opts.WTF) {
+        if (opts2 && opts2.WTF) {
           if (!pass) throw new Error("unrecognized " + y[0] + " in cellXfs");
         }
     }
   });
 }
 var parse_sty_xml = /* @__PURE__ */ (function make_pstyx() {
-  return function parse_sty_xml2(data2, themes, opts) {
+  return function parse_sty_xml2(data2, themes, opts2) {
     var styles = {};
     if (!data2) return styles;
     data2 = remove_doctype(str_remove_ng(data2, "<!--", "-->"));
     var t2;
-    if (t2 = str_match_xml_ns(data2, "numFmts")) parse_numFmts(t2[0], styles, opts);
-    if (t2 = str_match_xml_ns(data2, "fonts")) parse_fonts(t2[0], styles, themes, opts);
-    if (t2 = str_match_xml_ns(data2, "fills")) parse_fills(t2[0], styles, themes, opts);
-    if (t2 = str_match_xml_ns(data2, "borders")) parse_borders(t2[0], styles, themes, opts);
-    if (t2 = str_match_xml_ns(data2, "cellXfs")) parse_cellXfs(t2[0], styles, opts);
+    if (t2 = str_match_xml_ns(data2, "numFmts")) parse_numFmts(t2[0], styles, opts2);
+    if (t2 = str_match_xml_ns(data2, "fonts")) parse_fonts(t2[0], styles, themes, opts2);
+    if (t2 = str_match_xml_ns(data2, "fills")) parse_fills(t2[0], styles, themes, opts2);
+    if (t2 = str_match_xml_ns(data2, "borders")) parse_borders(t2[0], styles, themes, opts2);
+    if (t2 = str_match_xml_ns(data2, "cellXfs")) parse_cellXfs(t2[0], styles, opts2);
     return styles;
   };
 })();
@@ -42489,10 +44149,10 @@ function parse_BrtFmt(data2, length) {
   var stFmtCode = parse_XLWideString(data2, length - 2);
   return [numFmtId, stFmtCode];
 }
-function parse_BrtFont(data2, length, opts) {
+function parse_BrtFont(data2, length, opts2) {
   var out = {};
   out.sz = data2.read_shift(2) / 20;
-  var grbit = parse_FontFlags(data2, 2, opts);
+  var grbit = parse_FontFlags(data2, 2, opts2);
   if (grbit.fItalic) out.italic = 1;
   if (grbit.fCondense) out.condense = 1;
   if (grbit.fExtend) out.extend = 1;
@@ -42539,7 +44199,7 @@ function parse_BrtXF(data2, length) {
   return { ixfe: ixfeParent, numFmtId: ifmt };
 }
 var parse_BrtBorder = parsenoop;
-function parse_sty_bin(data2, themes, opts) {
+function parse_sty_bin(data2, themes, opts2) {
   var styles = {};
   styles.NumberFmt = [];
   for (var y in table_fmt) styles.NumberFmt[y] = table_fmt[y];
@@ -42607,7 +44267,7 @@ function parse_sty_bin(data2, themes, opts) {
       default:
         if (R.T > 0) state.push(RT);
         else if (R.T < 0) state.pop();
-        else if (!pass || opts.WTF && state[state.length - 1] != 37) throw new Error("Unexpected record 0x" + RT.toString(16));
+        else if (!pass || opts2.WTF && state[state.length - 1] != 37) throw new Error("Unexpected record 0x" + RT.toString(16));
     }
   });
   return styles;
@@ -42626,7 +44286,7 @@ var XLSXThemeClrScheme = [
   "</a:hlink>",
   "</a:folHlink>"
 ];
-function parse_clrScheme(t2, themes, opts) {
+function parse_clrScheme(t2, themes, opts2) {
   themes.themeElements.clrScheme = [];
   var color = {};
   (t2[0].match(tagregex) || []).forEach(function(x) {
@@ -42692,7 +44352,7 @@ function parse_clrScheme(t2, themes, opts) {
         }
         break;
       default:
-        if (opts && opts.WTF) throw new Error("Unrecognized " + y[0] + " in clrScheme");
+        if (opts2 && opts2.WTF) throw new Error("Unrecognized " + y[0] + " in clrScheme");
     }
   });
 }
@@ -42700,27 +44360,27 @@ function parse_fontScheme() {
 }
 function parse_fmtScheme() {
 }
-function parse_themeElements(data2, themes, opts) {
+function parse_themeElements(data2, themes, opts2) {
   themes.themeElements = {};
   var t2;
   if (!(t2 = str_match_xml(data2, "a:clrScheme"))) throw new Error("clrScheme not found in themeElements");
-  parse_clrScheme(t2, themes, opts);
+  parse_clrScheme(t2, themes, opts2);
   if (!(t2 = str_match_xml(data2, "a:fontScheme"))) throw new Error("fontScheme not found in themeElements");
-  parse_fontScheme(t2, themes, opts);
+  parse_fontScheme(t2, themes, opts2);
   if (!(t2 = str_match_xml(data2, "a:fmtScheme"))) throw new Error("fmtScheme not found in themeElements");
-  parse_fmtScheme(t2, themes, opts);
+  parse_fmtScheme(t2, themes, opts2);
 }
-function parse_theme_xml(data2, opts) {
+function parse_theme_xml(data2, opts2) {
   if (!data2 || data2.length === 0) data2 = write_theme();
   var t2;
   var themes = {};
   if (!(t2 = str_match_xml(data2, "a:themeElements"))) throw new Error("themeElements not found in theme");
-  parse_themeElements(t2[0], themes, opts);
+  parse_themeElements(t2[0], themes, opts2);
   themes.raw = data2;
   return themes;
 }
-function write_theme(Themes, opts) {
-  if (opts && opts.themeXLSX) return opts.themeXLSX;
+function write_theme(Themes, opts2) {
+  if (opts2 && opts2.themeXLSX) return opts2.themeXLSX;
   if (Themes && typeof Themes.raw == "string") return Themes.raw;
   var o = [XML_HEADER];
   o[o.length] = '<a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Office Theme">';
@@ -42886,11 +44546,11 @@ function write_theme(Themes, opts) {
   o[o.length] = "</a:theme>";
   return o.join("");
 }
-function parse_Theme(blob, length, opts) {
+function parse_Theme(blob, length, opts2) {
   var end = blob.l + length;
   var dwThemeVersion = blob.read_shift(4);
   if (dwThemeVersion === 124226) return;
-  if (!opts.cellStyles) {
+  if (!opts2.cellStyles) {
     blob.l = end;
     return;
   }
@@ -42904,7 +44564,7 @@ function parse_Theme(blob, length, opts) {
   }
   var themeXML = getzipstr(zip, "theme/theme/theme1.xml", true);
   if (!themeXML) return;
-  return parse_theme_xml(themeXML, opts);
+  return parse_theme_xml(themeXML, opts2);
 }
 function parse_ColorTheme(blob) {
   return blob.read_shift(4);
@@ -43034,7 +44694,7 @@ function parse_BrtBeginEsmdb(data2) {
 }
 function parse_xlmeta_bin(data2, name6, _opts) {
   var out = { Types: [], Cell: [], Value: [] };
-  var opts = _opts || {};
+  var opts2 = _opts || {};
   var state = [];
   var pass = false;
   var metatype = 2;
@@ -43067,13 +44727,13 @@ function parse_xlmeta_bin(data2, name6, _opts) {
         break;
       default:
         if (R.T) {
-        } else if (!pass || opts.WTF && state[state.length - 1] != 35)
+        } else if (!pass || opts2.WTF && state[state.length - 1] != 35)
           throw new Error("Unexpected record 0x" + RT.toString(16));
     }
   });
   return out;
 }
-function parse_xlmeta_xml(data2, name6, opts) {
+function parse_xlmeta_xml(data2, name6, opts2) {
   var out = { Types: [], Cell: [], Value: [] };
   if (!data2)
     return out;
@@ -43146,7 +44806,7 @@ function parse_xlmeta_xml(data2, name6, opts) {
         lastmeta.offsets.push(+y.i);
         break;
       default:
-        if (!pass && (opts == null ? void 0 : opts.WTF))
+        if (!pass && (opts2 == null ? void 0 : opts2.WTF))
           throw new Error("unrecognized " + y[0] + " in metadata");
     }
     return x;
@@ -43190,7 +44850,7 @@ function parse_BrtCalcChainItem$(data2) {
   if (flags2 & 8) out.a = "1";
   return out;
 }
-function parse_cc_bin(data2, name6, opts) {
+function parse_cc_bin(data2, name6, opts2) {
   var out = [];
   var pass = false;
   recordhopper(data2, function hopper_cc(val3, R, RT) {
@@ -43200,7 +44860,7 @@ function parse_cc_bin(data2, name6, opts) {
         break;
       default:
         if (R.T) {
-        } else if (!pass || opts.WTF) throw new Error("Unexpected record 0x" + RT.toString(16));
+        } else if (!pass || opts2.WTF) throw new Error("Unexpected record 0x" + RT.toString(16));
     }
   });
   return out;
@@ -43209,7 +44869,7 @@ function parse_xlink_xml() {
 }
 function parse_xlink_bin(data2, rel, name6, _opts) {
   if (!data2) return data2;
-  var opts = _opts || {};
+  var opts2 = _opts || {};
   var pass = false, end = false;
   recordhopper(data2, function xlink_parse(val3, R, RT) {
     if (end) return;
@@ -43264,9 +44924,9 @@ function parse_xlink_bin(data2, rel, name6, _opts) {
         break;
       default:
         if (R.T) {
-        } else if (!pass || opts.WTF) throw new Error("Unexpected record 0x" + RT.toString(16));
+        } else if (!pass || opts2.WTF) throw new Error("Unexpected record 0x" + RT.toString(16));
     }
-  }, opts);
+  }, opts2);
 }
 function parse_drawing(data2, rels) {
   if (!data2) return "??";
@@ -43356,7 +45016,7 @@ function sheet_insert_comments(sheet, comments, threaded, people) {
     cell.c.push(o);
   });
 }
-function parse_comments_xml(data2, opts) {
+function parse_comments_xml(data2, opts2) {
   if (data2.match(/<(?:\w+:)?comments *\/>/)) return [];
   var authors = [];
   var commentList = [];
@@ -43374,18 +45034,18 @@ function parse_comments_xml(data2, opts) {
     var y = parsexmltag(cm[0]);
     var comment = { author: y.authorId && authors[y.authorId] || "sheetjsghost", ref: y.ref, guid: y.guid };
     var cell = decode_cell(y.ref);
-    if (opts.sheetRows && opts.sheetRows <= cell.r) return;
+    if (opts2.sheetRows && opts2.sheetRows <= cell.r) return;
     var textMatch = str_match_xml_ns(x, "text");
     var rt = !!textMatch && !!textMatch[1] && parse_si(textMatch[1]) || { r: "", t: "", h: "" };
     comment.r = rt.r;
     if (rt.r == "<t></t>") rt.t = rt.h = "";
     comment.t = (rt.t || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-    if (opts.cellHTML) comment.h = rt.h;
+    if (opts2.cellHTML) comment.h = rt.h;
     commentList.push(comment);
   });
   return commentList;
 }
-function parse_tcmnt_xml(data2, opts) {
+function parse_tcmnt_xml(data2, opts2) {
   var out = [];
   var pass = false, comment = {}, tidx = 0;
   data2.replace(tagregex, function xml_tcmnt(x, idx) {
@@ -43435,13 +45095,13 @@ function parse_tcmnt_xml(data2, opts) {
         pass = false;
         break;
       default:
-        if (!pass && opts.WTF) throw new Error("unrecognized " + y[0] + " in threaded comments");
+        if (!pass && opts2.WTF) throw new Error("unrecognized " + y[0] + " in threaded comments");
     }
     return x;
   });
   return out;
 }
-function parse_people_xml(data2, opts) {
+function parse_people_xml(data2, opts2) {
   var out = [];
   var pass = false;
   data2.replace(tagregex, function xml_tcmnt(x) {
@@ -43474,7 +45134,7 @@ function parse_people_xml(data2, opts) {
         pass = false;
         break;
       default:
-        if (!pass && opts.WTF) throw new Error("unrecognized " + y[0] + " in threaded comments");
+        if (!pass && opts2.WTF) throw new Error("unrecognized " + y[0] + " in threaded comments");
     }
     return x;
   });
@@ -43490,7 +45150,7 @@ function parse_BrtBeginComment(data2) {
   return out;
 }
 var parse_BrtCommentAuthor = parse_XLWideString;
-function parse_comments_bin(data2, opts) {
+function parse_comments_bin(data2, opts2) {
   var out = [];
   var authors = [];
   var c = {};
@@ -43511,7 +45171,7 @@ function parse_comments_bin(data2, opts) {
       case 636:
         c.author = authors[c.iauthor];
         delete c.iauthor;
-        if (opts.sheetRows && c.rfx && opts.sheetRows <= c.rfx.r) break;
+        if (opts2.sheetRows && c.rfx && opts2.sheetRows <= c.rfx.r) break;
         if (!c.t) c.t = "";
         delete c.rfx;
         out.push(c);
@@ -43530,7 +45190,7 @@ function parse_comments_bin(data2, opts) {
         break;
       default:
         if (R.T) {
-        } else if (!pass || opts.WTF) throw new Error("Unexpected record 0x" + RT.toString(16));
+        } else if (!pass || opts2.WTF) throw new Error("Unexpected record 0x" + RT.toString(16));
     }
   });
   return out;
@@ -43626,11 +45286,11 @@ function parse_ColRelU(blob, length) {
   var c = blob.read_shift(length == 1 ? 1 : 2);
   return [c & 16383, c >> 14 & 1, c >> 15 & 1];
 }
-function parse_RgceArea(blob, length, opts) {
+function parse_RgceArea(blob, length, opts2) {
   var w = 2;
-  if (opts) {
-    if (opts.biff >= 2 && opts.biff <= 5) return parse_RgceArea_BIFF2(blob, length, opts);
-    else if (opts.biff == 12) w = 4;
+  if (opts2) {
+    if (opts2.biff >= 2 && opts2.biff <= 5) return parse_RgceArea_BIFF2(blob, length, opts2);
+    else if (opts2.biff == 12) w = 4;
   }
   var r = blob.read_shift(w), R = blob.read_shift(w);
   var c = parse_ColRelU(blob, 2);
@@ -43643,16 +45303,16 @@ function parse_RgceArea_BIFF2(blob) {
   var C = blob.read_shift(1);
   return { s: { r: r[0], c, cRel: r[1], rRel: r[2] }, e: { r: R[0], c: C, cRel: R[1], rRel: R[2] } };
 }
-function parse_RgceAreaRel(blob, length, opts) {
-  if (opts.biff < 8) return parse_RgceArea_BIFF2(blob, length, opts);
-  var r = blob.read_shift(opts.biff == 12 ? 4 : 2), R = blob.read_shift(opts.biff == 12 ? 4 : 2);
+function parse_RgceAreaRel(blob, length, opts2) {
+  if (opts2.biff < 8) return parse_RgceArea_BIFF2(blob, length, opts2);
+  var r = blob.read_shift(opts2.biff == 12 ? 4 : 2), R = blob.read_shift(opts2.biff == 12 ? 4 : 2);
   var c = parse_ColRelU(blob, 2);
   var C = parse_ColRelU(blob, 2);
   return { s: { r, c: c[0], cRel: c[1], rRel: c[2] }, e: { r: R, c: C[0], cRel: C[1], rRel: C[2] } };
 }
-function parse_RgceLoc(blob, length, opts) {
-  if (opts && opts.biff >= 2 && opts.biff <= 5) return parse_RgceLoc_BIFF2(blob, length, opts);
-  var r = blob.read_shift(opts && opts.biff == 12 ? 4 : 2);
+function parse_RgceLoc(blob, length, opts2) {
+  if (opts2 && opts2.biff >= 2 && opts2.biff <= 5) return parse_RgceLoc_BIFF2(blob, length, opts2);
+  var r = blob.read_shift(opts2 && opts2.biff == 12 ? 4 : 2);
   var c = parse_ColRelU(blob, 2);
   return { r, c: c[0], cRel: c[1], rRel: c[2] };
 }
@@ -43666,9 +45326,9 @@ function parse_RgceElfLoc(blob) {
   var c = blob.read_shift(2);
   return { r, c: c & 255, fQuoted: !!(c & 16384), cRel: c >> 15, rRel: c >> 15 };
 }
-function parse_RgceLocRel(blob, length, opts) {
-  var biff = opts && opts.biff ? opts.biff : 8;
-  if (biff >= 2 && biff <= 5) return parse_RgceLocRel_BIFF2(blob, length, opts);
+function parse_RgceLocRel(blob, length, opts2) {
+  var biff = opts2 && opts2.biff ? opts2.biff : 8;
+  if (biff >= 2 && biff <= 5) return parse_RgceLocRel_BIFF2(blob, length, opts2);
   var r = blob.read_shift(biff >= 12 ? 4 : 2);
   var cl = blob.read_shift(2);
   var cRel = (cl & 16384) >> 14, rRel = (cl & 32768) >> 15;
@@ -43686,16 +45346,16 @@ function parse_RgceLocRel_BIFF2(blob) {
   if (cRel == 1 && c >= 128) c = c - 256;
   return { r: rl, c, cRel, rRel };
 }
-function parse_PtgArea(blob, length, opts) {
+function parse_PtgArea(blob, length, opts2) {
   var type = (blob[blob.l++] & 96) >> 5;
-  var area = parse_RgceArea(blob, opts.biff >= 2 && opts.biff <= 5 ? 6 : 8, opts);
+  var area = parse_RgceArea(blob, opts2.biff >= 2 && opts2.biff <= 5 ? 6 : 8, opts2);
   return [type, area];
 }
-function parse_PtgArea3d(blob, length, opts) {
+function parse_PtgArea3d(blob, length, opts2) {
   var type = (blob[blob.l++] & 96) >> 5;
   var ixti = blob.read_shift(2, "i");
   var w = 8;
-  if (opts) switch (opts.biff) {
+  if (opts2) switch (opts2.biff) {
     case 5:
       blob.l += 12;
       w = 6;
@@ -43704,19 +45364,19 @@ function parse_PtgArea3d(blob, length, opts) {
       w = 12;
       break;
   }
-  var area = parse_RgceArea(blob, w, opts);
+  var area = parse_RgceArea(blob, w, opts2);
   return [type, ixti, area];
 }
-function parse_PtgAreaErr(blob, length, opts) {
+function parse_PtgAreaErr(blob, length, opts2) {
   var type = (blob[blob.l++] & 96) >> 5;
-  blob.l += opts && opts.biff > 8 ? 12 : opts.biff < 8 ? 6 : 8;
+  blob.l += opts2 && opts2.biff > 8 ? 12 : opts2.biff < 8 ? 6 : 8;
   return [type];
 }
-function parse_PtgAreaErr3d(blob, length, opts) {
+function parse_PtgAreaErr3d(blob, length, opts2) {
   var type = (blob[blob.l++] & 96) >> 5;
   var ixti = blob.read_shift(2);
   var w = 8;
-  if (opts) switch (opts.biff) {
+  if (opts2) switch (opts2.biff) {
     case 5:
       blob.l += 12;
       w = 6;
@@ -43728,14 +45388,14 @@ function parse_PtgAreaErr3d(blob, length, opts) {
   blob.l += w;
   return [type, ixti];
 }
-function parse_PtgAreaN(blob, length, opts) {
+function parse_PtgAreaN(blob, length, opts2) {
   var type = (blob[blob.l++] & 96) >> 5;
-  var area = parse_RgceAreaRel(blob, length - 1, opts);
+  var area = parse_RgceAreaRel(blob, length - 1, opts2);
   return [type, area];
 }
-function parse_PtgArray(blob, length, opts) {
+function parse_PtgArray(blob, length, opts2) {
   var type = (blob[blob.l++] & 96) >> 5;
-  blob.l += opts.biff == 2 ? 6 : opts.biff == 12 ? 14 : 7;
+  blob.l += opts2.biff == 2 ? 6 : opts2.biff == 12 ? 14 : 7;
   return [type];
 }
 function parse_PtgAttrBaxcel(blob) {
@@ -43744,31 +45404,31 @@ function parse_PtgAttrBaxcel(blob) {
   blob.l += 4;
   return [bitSemi, bitBaxcel];
 }
-function parse_PtgAttrChoose(blob, length, opts) {
+function parse_PtgAttrChoose(blob, length, opts2) {
   blob.l += 2;
-  var offset2 = blob.read_shift(opts && opts.biff == 2 ? 1 : 2);
+  var offset2 = blob.read_shift(opts2 && opts2.biff == 2 ? 1 : 2);
   var o = [];
-  for (var i = 0; i <= offset2; ++i) o.push(blob.read_shift(opts && opts.biff == 2 ? 1 : 2));
+  for (var i = 0; i <= offset2; ++i) o.push(blob.read_shift(opts2 && opts2.biff == 2 ? 1 : 2));
   return o;
 }
-function parse_PtgAttrGoto(blob, length, opts) {
+function parse_PtgAttrGoto(blob, length, opts2) {
   var bitGoto = blob[blob.l + 1] & 255 ? 1 : 0;
   blob.l += 2;
-  return [bitGoto, blob.read_shift(opts && opts.biff == 2 ? 1 : 2)];
+  return [bitGoto, blob.read_shift(opts2 && opts2.biff == 2 ? 1 : 2)];
 }
-function parse_PtgAttrIf(blob, length, opts) {
+function parse_PtgAttrIf(blob, length, opts2) {
   var bitIf = blob[blob.l + 1] & 255 ? 1 : 0;
   blob.l += 2;
-  return [bitIf, blob.read_shift(opts && opts.biff == 2 ? 1 : 2)];
+  return [bitIf, blob.read_shift(opts2 && opts2.biff == 2 ? 1 : 2)];
 }
 function parse_PtgAttrIfError(blob) {
   var bitIf = blob[blob.l + 1] & 255 ? 1 : 0;
   blob.l += 2;
   return [bitIf, blob.read_shift(2)];
 }
-function parse_PtgAttrSemi(blob, length, opts) {
+function parse_PtgAttrSemi(blob, length, opts2) {
   var bitSemi = blob[blob.l + 1] & 255 ? 1 : 0;
-  blob.l += opts && opts.biff == 2 ? 3 : 4;
+  blob.l += opts2 && opts2.biff == 2 ? 3 : 4;
   return [bitSemi];
 }
 function parse_PtgAttrSpaceType(blob) {
@@ -43783,49 +45443,49 @@ function parse_PtgAttrSpaceSemi(blob) {
   blob.read_shift(2);
   return parse_PtgAttrSpaceType(blob, 2);
 }
-function parse_PtgRef(blob, length, opts) {
+function parse_PtgRef(blob, length, opts2) {
   var type = (blob[blob.l] & 96) >> 5;
   blob.l += 1;
-  var loc = parse_RgceLoc(blob, 0, opts);
+  var loc = parse_RgceLoc(blob, 0, opts2);
   return [type, loc];
 }
-function parse_PtgRefN(blob, length, opts) {
+function parse_PtgRefN(blob, length, opts2) {
   var type = (blob[blob.l] & 96) >> 5;
   blob.l += 1;
-  var loc = parse_RgceLocRel(blob, 0, opts);
+  var loc = parse_RgceLocRel(blob, 0, opts2);
   return [type, loc];
 }
-function parse_PtgRef3d(blob, length, opts) {
+function parse_PtgRef3d(blob, length, opts2) {
   var type = (blob[blob.l] & 96) >> 5;
   blob.l += 1;
   var ixti = blob.read_shift(2);
-  if (opts && opts.biff == 5) blob.l += 12;
-  var loc = parse_RgceLoc(blob, 0, opts);
+  if (opts2 && opts2.biff == 5) blob.l += 12;
+  var loc = parse_RgceLoc(blob, 0, opts2);
   return [type, ixti, loc];
 }
-function parse_PtgFunc(blob, length, opts) {
+function parse_PtgFunc(blob, length, opts2) {
   var type = (blob[blob.l] & 96) >> 5;
   blob.l += 1;
-  var iftab = blob.read_shift(opts && opts.biff <= 3 ? 1 : 2);
+  var iftab = blob.read_shift(opts2 && opts2.biff <= 3 ? 1 : 2);
   return [FtabArgc[iftab], Ftab[iftab], type];
 }
-function parse_PtgFuncVar(blob, length, opts) {
+function parse_PtgFuncVar(blob, length, opts2) {
   var type = blob[blob.l++];
-  var cparams = blob.read_shift(1), tab2 = opts && opts.biff <= 3 ? [type == 88 ? -1 : 0, blob.read_shift(1)] : parsetab(blob);
+  var cparams = blob.read_shift(1), tab2 = opts2 && opts2.biff <= 3 ? [type == 88 ? -1 : 0, blob.read_shift(1)] : parsetab(blob);
   return [cparams, (tab2[0] === 0 ? Ftab : Cetab)[tab2[1]]];
 }
 function parsetab(blob) {
   return [blob[blob.l + 1] >> 7, blob.read_shift(2) & 32767];
 }
-function parse_PtgAttrSum(blob, length, opts) {
-  blob.l += opts && opts.biff == 2 ? 3 : 4;
+function parse_PtgAttrSum(blob, length, opts2) {
+  blob.l += opts2 && opts2.biff == 2 ? 3 : 4;
   return;
 }
-function parse_PtgExp(blob, length, opts) {
+function parse_PtgExp(blob, length, opts2) {
   blob.l++;
-  if (opts && opts.biff == 12) return [blob.read_shift(4, "i"), 0];
+  if (opts2 && opts2.biff == 12) return [blob.read_shift(4, "i"), 0];
   var row = blob.read_shift(2);
-  var col = blob.read_shift(opts && opts.biff == 2 ? 1 : 2);
+  var col = blob.read_shift(opts2 && opts2.biff == 2 ? 1 : 2);
   return [row, col];
 }
 function parse_PtgErr(blob) {
@@ -43844,9 +45504,9 @@ function parse_PtgNum(blob) {
   blob.l++;
   return parse_Xnum(blob, 8);
 }
-function parse_PtgStr(blob, length, opts) {
+function parse_PtgStr(blob, length, opts2) {
   blob.l++;
-  return parse_ShortXLUnicodeString(blob, length - 1, opts);
+  return parse_ShortXLUnicodeString(blob, length - 1, opts2);
 }
 function parse_SerAr(blob, biff) {
   var val3 = [blob.read_shift(1)];
@@ -43892,34 +45552,34 @@ function parse_SerAr(blob, biff) {
   }
   return val3;
 }
-function parse_PtgExtraMem(blob, cce, opts) {
-  var count = blob.read_shift(opts.biff == 12 ? 4 : 2);
+function parse_PtgExtraMem(blob, cce, opts2) {
+  var count = blob.read_shift(opts2.biff == 12 ? 4 : 2);
   var out = [];
-  for (var i = 0; i != count; ++i) out.push((opts.biff == 12 ? parse_UncheckedRfX : parse_Ref8U)(blob, 8));
+  for (var i = 0; i != count; ++i) out.push((opts2.biff == 12 ? parse_UncheckedRfX : parse_Ref8U)(blob, 8));
   return out;
 }
-function parse_PtgExtraArray(blob, length, opts) {
+function parse_PtgExtraArray(blob, length, opts2) {
   var rows = 0, cols = 0;
-  if (opts.biff == 12) {
+  if (opts2.biff == 12) {
     rows = blob.read_shift(4);
     cols = blob.read_shift(4);
   } else {
     cols = 1 + blob.read_shift(1);
     rows = 1 + blob.read_shift(2);
   }
-  if (opts.biff >= 2 && opts.biff < 8) {
+  if (opts2.biff >= 2 && opts2.biff < 8) {
     --rows;
     if (--cols == 0) cols = 256;
   }
   for (var i = 0, o = []; i != rows && (o[i] = []); ++i)
-    for (var j = 0; j != cols; ++j) o[i][j] = parse_SerAr(blob, opts.biff);
+    for (var j = 0; j != cols; ++j) o[i][j] = parse_SerAr(blob, opts2.biff);
   return o;
 }
-function parse_PtgName(blob, length, opts) {
+function parse_PtgName(blob, length, opts2) {
   var type = blob.read_shift(1) >>> 5 & 3;
-  var w = !opts || opts.biff >= 8 ? 4 : 2;
+  var w = !opts2 || opts2.biff >= 8 ? 4 : 2;
   var nameindex = blob.read_shift(w);
-  switch (opts.biff) {
+  switch (opts2.biff) {
     case 2:
       blob.l += 5;
       break;
@@ -43933,8 +45593,8 @@ function parse_PtgName(blob, length, opts) {
   }
   return [type, 0, nameindex];
 }
-function parse_PtgNameX(blob, length, opts) {
-  if (opts.biff == 5) return parse_PtgNameX_BIFF5(blob, length, opts);
+function parse_PtgNameX(blob, length, opts2) {
+  if (opts2.biff == 5) return parse_PtgNameX_BIFF5(blob, length, opts2);
   var type = blob.read_shift(1) >>> 5 & 3;
   var ixti = blob.read_shift(2);
   var nameindex = blob.read_shift(4);
@@ -43948,29 +45608,29 @@ function parse_PtgNameX_BIFF5(blob) {
   blob.l += 12;
   return [type, ixti, nameindex];
 }
-function parse_PtgMemArea(blob, length, opts) {
+function parse_PtgMemArea(blob, length, opts2) {
   var type = blob.read_shift(1) >>> 5 & 3;
-  blob.l += opts && opts.biff == 2 ? 3 : 4;
-  var cce = blob.read_shift(opts && opts.biff == 2 ? 1 : 2);
+  blob.l += opts2 && opts2.biff == 2 ? 3 : 4;
+  var cce = blob.read_shift(opts2 && opts2.biff == 2 ? 1 : 2);
   return [type, cce];
 }
-function parse_PtgMemFunc(blob, length, opts) {
+function parse_PtgMemFunc(blob, length, opts2) {
   var type = blob.read_shift(1) >>> 5 & 3;
-  var cce = blob.read_shift(opts && opts.biff == 2 ? 1 : 2);
+  var cce = blob.read_shift(opts2 && opts2.biff == 2 ? 1 : 2);
   return [type, cce];
 }
-function parse_PtgRefErr(blob, length, opts) {
+function parse_PtgRefErr(blob, length, opts2) {
   var type = blob.read_shift(1) >>> 5 & 3;
   blob.l += 4;
-  if (opts.biff < 8) blob.l--;
-  if (opts.biff == 12) blob.l += 2;
+  if (opts2.biff < 8) blob.l--;
+  if (opts2.biff == 12) blob.l += 2;
   return [type];
 }
-function parse_PtgRefErr3d(blob, length, opts) {
+function parse_PtgRefErr3d(blob, length, opts2) {
   var type = (blob[blob.l++] & 96) >> 5;
   var ixti = blob.read_shift(2);
   var w = 4;
-  if (opts) switch (opts.biff) {
+  if (opts2) switch (opts2.biff) {
     case 5:
       w = 15;
       break;
@@ -43984,9 +45644,9 @@ function parse_PtgRefErr3d(blob, length, opts) {
 var parse_PtgMemErr = parsenoop;
 var parse_PtgMemNoMem = parsenoop;
 var parse_PtgTbl = parsenoop;
-function parse_PtgElfLoc(blob, length, opts) {
+function parse_PtgElfLoc(blob, length, opts2) {
   blob.l += 2;
-  return [parse_RgceElfLoc(blob, 4, opts)];
+  return [parse_RgceElfLoc(blob, 4, opts2)];
 }
 function parse_PtgElfNoop(blob) {
   blob.l += 6;
@@ -44038,14 +45698,14 @@ function parse_PtgSxName(blob) {
   blob.l += 2;
   return [blob.read_shift(4)];
 }
-function parse_PtgSheet(blob, length, opts) {
+function parse_PtgSheet(blob, length, opts2) {
   blob.l += 5;
   blob.l += 2;
-  blob.l += opts.biff == 2 ? 1 : 4;
+  blob.l += opts2.biff == 2 ? 1 : 4;
   return ["PTGSHEET"];
 }
-function parse_PtgEndSheet(blob, length, opts) {
-  blob.l += opts.biff == 2 ? 4 : 5;
+function parse_PtgEndSheet(blob, length, opts2) {
+  blob.l += opts2.biff == 2 ? 4 : 5;
   return ["PTGENDSHEET"];
 }
 function parse_PtgMemAreaN(blob) {
@@ -44190,22 +45850,22 @@ var Ptg19 = {
   128: { n: "PtgAttrIfError", f: parse_PtgAttrIfError },
   255: {}
 };
-function parse_RgbExtra(blob, length, rgce, opts) {
-  if (opts.biff < 8) return parsenoop(blob, length);
+function parse_RgbExtra(blob, length, rgce, opts2) {
+  if (opts2.biff < 8) return parsenoop(blob, length);
   var target = blob.l + length;
   var o = [];
   for (var i = 0; i !== rgce.length; ++i) {
     switch (rgce[i][0]) {
       case "PtgArray":
-        rgce[i][1] = parse_PtgExtraArray(blob, 0, opts);
+        rgce[i][1] = parse_PtgExtraArray(blob, 0, opts2);
         o.push(rgce[i][1]);
         break;
       case "PtgMemArea":
-        rgce[i][2] = parse_PtgExtraMem(blob, rgce[i][1], opts);
+        rgce[i][2] = parse_PtgExtraMem(blob, rgce[i][1], opts2);
         o.push(rgce[i][2]);
         break;
       case "PtgExp":
-        if (opts && opts.biff == 12) {
+        if (opts2 && opts2.biff == 12) {
           rgce[i][1][1] = blob.read_shift(4);
           o.push(rgce[i][1]);
         }
@@ -44226,7 +45886,7 @@ function parse_RgbExtra(blob, length, rgce, opts) {
   if (length !== 0) o.push(parsenoop(blob, length));
   return o;
 }
-function parse_Rgce(blob, length, opts) {
+function parse_Rgce(blob, length, opts2) {
   var target = blob.l + length;
   var R, id, ptgs = [];
   while (target != blob.l) {
@@ -44237,7 +45897,7 @@ function parse_Rgce(blob, length, opts) {
     if (!R || !R.f) {
       parsenoop(blob, length);
     } else {
-      ptgs.push([R.n, R.f(blob, length, opts)]);
+      ptgs.push([R.n, R.f(blob, length, opts2)]);
     }
   }
   return ptgs;
@@ -44283,24 +45943,24 @@ function make_3d_range(start, end) {
   console.error("Cannot hydrate range", start, end);
   return start + ":" + end;
 }
-function get_ixti_raw(supbooks, ixti, opts) {
+function get_ixti_raw(supbooks, ixti, opts2) {
   if (!supbooks) return "SH33TJSERR0";
-  if (opts.biff > 8 && (!supbooks.XTI || !supbooks.XTI[ixti])) return supbooks.SheetNames[ixti];
+  if (opts2.biff > 8 && (!supbooks.XTI || !supbooks.XTI[ixti])) return supbooks.SheetNames[ixti];
   if (!supbooks.XTI) return "SH33TJSERR6";
   var XTI = supbooks.XTI[ixti];
-  if (opts.biff < 8) {
+  if (opts2.biff < 8) {
     if (ixti > 1e4) ixti -= 65536;
     if (ixti < 0) ixti = -ixti;
     return ixti == 0 ? "" : supbooks.XTI[ixti - 1];
   }
   if (!XTI) return "SH33TJSERR1";
   var o = "";
-  if (opts.biff > 8) switch (supbooks[XTI[0]][0]) {
+  if (opts2.biff > 8) switch (supbooks[XTI[0]][0]) {
     case 357:
       o = XTI[1] == -1 ? "#REF" : supbooks.SheetNames[XTI[1]];
       return XTI[1] == XTI[2] ? o : o + ":" + supbooks.SheetNames[XTI[2]];
     case 358:
-      if (opts.SID != null) return supbooks.SheetNames[opts.SID];
+      if (opts2.SID != null) return supbooks.SheetNames[opts2.SID];
       return "SH33TJSSAME" + supbooks[XTI[0]][0];
     case 355:
     /* 'BrtSupBookSrc' */
@@ -44323,12 +45983,12 @@ function get_ixti_raw(supbooks, ixti, opts) {
       return XTI[1] == XTI[2] ? o : o + ":" + supbooks[XTI[0]][0][3][XTI[2]];
   }
 }
-function get_ixti(supbooks, ixti, opts) {
-  var ixtiraw = get_ixti_raw(supbooks, ixti, opts);
-  return ixtiraw == "#REF" ? ixtiraw : formula_quote_sheet_name(ixtiraw, opts);
+function get_ixti(supbooks, ixti, opts2) {
+  var ixtiraw = get_ixti_raw(supbooks, ixti, opts2);
+  return ixtiraw == "#REF" ? ixtiraw : formula_quote_sheet_name(ixtiraw, opts2);
 }
-function stringify_formula(formula, range3, cell, supbooks, opts) {
-  var biff = opts && opts.biff || 8;
+function stringify_formula(formula, range3, cell, supbooks, opts2) {
+  var biff = opts2 && opts2.biff || 8;
   var _range = (
     /*range != null ? range :*/
     { s: { c: 0, r: 0 }, e: { c: 0, r: 0 } }
@@ -44383,7 +46043,7 @@ function stringify_formula(formula, range3, cell, supbooks, opts) {
               break;
             default:
               sp = "";
-              if (opts.WTF) throw new Error("Unexpected PtgAttrSpaceType " + formula[0][last_sp][1][0]);
+              if (opts2.WTF) throw new Error("Unexpected PtgAttrSpaceType " + formula[0][last_sp][1][0]);
           }
           e2 = e2 + sp;
           last_sp = -1;
@@ -44414,18 +46074,18 @@ function stringify_formula(formula, range3, cell, supbooks, opts) {
       case "PtgAttrIfError":
         break;
       case "PtgRef":
-        c = shift_cell_xls(f[1][1], _range, opts);
+        c = shift_cell_xls(f[1][1], _range, opts2);
         stack.push(encode_cell_xls(c, biff));
         break;
       case "PtgRefN":
-        c = cell ? shift_cell_xls(f[1][1], cell, opts) : f[1][1];
+        c = cell ? shift_cell_xls(f[1][1], cell, opts2) : f[1][1];
         stack.push(encode_cell_xls(c, biff));
         break;
       case "PtgRef3d":
         ixti = /*::Number(*/
         f[1][1];
-        c = shift_cell_xls(f[1][2], _range, opts);
-        sname = get_ixti(supbooks, ixti, opts);
+        c = shift_cell_xls(f[1][2], _range, opts2);
+        sname = get_ixti(supbooks, ixti, opts2);
         var w = sname;
         stack.push(sname + "!" + encode_cell_xls(c, biff));
         break;
@@ -44464,19 +46124,19 @@ function stringify_formula(formula, range3, cell, supbooks, opts) {
         );
         break;
       case "PtgAreaN":
-        r = shift_range_xls(f[1][1], cell ? { s: cell } : _range, opts);
-        stack.push(encode_range_xls(r, opts));
+        r = shift_range_xls(f[1][1], cell ? { s: cell } : _range, opts2);
+        stack.push(encode_range_xls(r, opts2));
         break;
       case "PtgArea":
-        r = shift_range_xls(f[1][1], _range, opts);
-        stack.push(encode_range_xls(r, opts));
+        r = shift_range_xls(f[1][1], _range, opts2);
+        stack.push(encode_range_xls(r, opts2));
         break;
       case "PtgArea3d":
         ixti = /*::Number(*/
         f[1][1];
         r = f[1][2];
-        sname = get_ixti(supbooks, ixti, opts);
-        stack.push(sname + "!" + encode_range_xls(r, opts));
+        sname = get_ixti(supbooks, ixti, opts2);
+        stack.push(sname + "!" + encode_range_xls(r, opts2));
         break;
       case "PtgAttrSum":
         stack.push("SUM(" + stack.pop() + ")");
@@ -44489,14 +46149,14 @@ function stringify_formula(formula, range3, cell, supbooks, opts) {
         nameidx = f[1][2];
         var lbl = (supbooks.names || [])[nameidx - 1] || (supbooks[0] || [])[nameidx];
         var name6 = lbl ? lbl.Name : "SH33TJSNAME" + String(nameidx);
-        if (name6 && name6.slice(0, 6) == "_xlfn." && !opts.xlfn) name6 = name6.slice(6);
+        if (name6 && name6.slice(0, 6) == "_xlfn." && !opts2.xlfn) name6 = name6.slice(6);
         stack.push(name6);
         break;
       case "PtgNameX":
         var bookidx = f[1][1];
         nameidx = f[1][2];
         var externbook;
-        if (opts.biff <= 5) {
+        if (opts2.biff <= 5) {
           if (bookidx < 0) bookidx = -bookidx;
           if (supbooks[bookidx]) externbook = supbooks[bookidx][nameidx];
         } else {
@@ -44510,7 +46170,7 @@ function stringify_formula(formula, range3, cell, supbooks, opts) {
           if (supbooks[bookidx] && supbooks[bookidx][nameidx]) o += supbooks[bookidx][nameidx].Name;
           else if (supbooks[0] && supbooks[0][nameidx]) o += supbooks[0][nameidx].Name;
           else {
-            var ixtidata = (get_ixti_raw(supbooks, bookidx, opts) || "").split(";;");
+            var ixtidata = (get_ixti_raw(supbooks, bookidx, opts2) || "").split(";;");
             if (ixtidata[nameidx - 1]) o = ixtidata[nameidx - 1];
             else o += "SH33TJSERRX";
           }
@@ -44542,7 +46202,7 @@ function stringify_formula(formula, range3, cell, supbooks, opts) {
               rp = fill("\r", formula[0][last_sp][1][1]) + rp;
               break;
             default:
-              if (opts.WTF) throw new Error("Unexpected PtgAttrSpaceType " + formula[0][last_sp][1][0]);
+              if (opts2.WTF) throw new Error("Unexpected PtgAttrSpaceType " + formula[0][last_sp][1][0]);
           }
           last_sp = -1;
         }
@@ -44559,14 +46219,14 @@ function stringify_formula(formula, range3, cell, supbooks, opts) {
         var q = { c: cell.c, r: cell.r };
         if (supbooks.sharedf[encode_cell(c)]) {
           var parsedf = supbooks.sharedf[encode_cell(c)];
-          stack.push(stringify_formula(parsedf, _range, q, supbooks, opts));
+          stack.push(stringify_formula(parsedf, _range, q, supbooks, opts2));
         } else {
           var fnd = false;
           for (e1 = 0; e1 != supbooks.arrayf.length; ++e1) {
             e2 = supbooks.arrayf[e1];
             if (c.c < e2[0].s.c || c.c > e2[0].e.c) continue;
             if (c.r < e2[0].s.r || c.r > e2[0].e.r) continue;
-            stack.push(stringify_formula(e2[1], _range, q, supbooks, opts));
+            stack.push(stringify_formula(e2[1], _range, q, supbooks, opts2));
             fnd = true;
             break;
           }
@@ -44643,7 +46303,7 @@ function stringify_formula(formula, range3, cell, supbooks, opts) {
         throw new Error("Unrecognized Formula Token: " + String(f));
     }
     var PtgNonDisp = ["PtgAttrSpace", "PtgAttrSpaceSemi", "PtgAttrGoto"];
-    if (opts.biff != 3) {
+    if (opts2.biff != 3) {
       if (last_sp >= 0 && PtgNonDisp.indexOf(formula[0][ff][0]) == -1) {
         f = formula[0][last_sp];
         var _left = true;
@@ -44663,49 +46323,49 @@ function stringify_formula(formula, range3, cell, supbooks, opts) {
             break;
           default:
             sp = "";
-            if (opts.WTF) throw new Error("Unexpected PtgAttrSpaceType " + f[1][0]);
+            if (opts2.WTF) throw new Error("Unexpected PtgAttrSpaceType " + f[1][0]);
         }
         stack.push((_left ? sp : "") + stack.pop() + (_left ? "" : sp));
         last_sp = -1;
       }
     }
   }
-  if (stack.length > 1 && opts.WTF) throw new Error("bad formula stack");
+  if (stack.length > 1 && opts2.WTF) throw new Error("bad formula stack");
   if (stack[0] == "TRUE") return true;
   if (stack[0] == "FALSE") return false;
   return stack[0];
 }
-function parse_ArrayParsedFormula(blob, length, opts) {
-  var target = blob.l + length, len2 = opts.biff == 2 ? 1 : 2;
+function parse_ArrayParsedFormula(blob, length, opts2) {
+  var target = blob.l + length, len2 = opts2.biff == 2 ? 1 : 2;
   var rgcb, cce = blob.read_shift(len2);
   if (cce == 65535) return [[], parsenoop(blob, length - 2)];
-  var rgce = parse_Rgce(blob, cce, opts);
-  if (length !== cce + len2) rgcb = parse_RgbExtra(blob, length - cce - len2, rgce, opts);
+  var rgce = parse_Rgce(blob, cce, opts2);
+  if (length !== cce + len2) rgcb = parse_RgbExtra(blob, length - cce - len2, rgce, opts2);
   blob.l = target;
   return [rgce, rgcb];
 }
-function parse_XLSCellParsedFormula(blob, length, opts) {
-  var target = blob.l + length, len2 = opts.biff == 2 ? 1 : 2;
+function parse_XLSCellParsedFormula(blob, length, opts2) {
+  var target = blob.l + length, len2 = opts2.biff == 2 ? 1 : 2;
   var rgcb, cce = blob.read_shift(len2);
   if (cce == 65535) return [[], parsenoop(blob, length - 2)];
-  var rgce = parse_Rgce(blob, cce, opts);
-  if (length !== cce + len2) rgcb = parse_RgbExtra(blob, length - cce - len2, rgce, opts);
+  var rgce = parse_Rgce(blob, cce, opts2);
+  if (length !== cce + len2) rgcb = parse_RgbExtra(blob, length - cce - len2, rgce, opts2);
   blob.l = target;
   return [rgce, rgcb];
 }
-function parse_NameParsedFormula(blob, length, opts, cce) {
+function parse_NameParsedFormula(blob, length, opts2, cce) {
   var target = blob.l + length;
-  var rgce = parse_Rgce(blob, cce, opts);
+  var rgce = parse_Rgce(blob, cce, opts2);
   var rgcb;
-  if (target !== blob.l) rgcb = parse_RgbExtra(blob, target - blob.l, rgce, opts);
+  if (target !== blob.l) rgcb = parse_RgbExtra(blob, target - blob.l, rgce, opts2);
   return [rgce, rgcb];
 }
-function parse_SharedParsedFormula(blob, length, opts) {
+function parse_SharedParsedFormula(blob, length, opts2) {
   var target = blob.l + length;
   var rgcb, cce = blob.read_shift(2);
-  var rgce = parse_Rgce(blob, cce, opts);
+  var rgce = parse_Rgce(blob, cce, opts2);
   if (cce == 65535) return [[], parsenoop(blob, length - 2)];
-  if (length !== cce + 2) rgcb = parse_RgbExtra(blob, target - cce - 2, rgce, opts);
+  if (length !== cce + 2) rgcb = parse_RgbExtra(blob, target - cce - 2, rgce, opts2);
   return [rgce, rgcb];
 }
 function parse_FormulaValue(blob) {
@@ -44729,25 +46389,25 @@ function parse_FormulaValue(blob) {
   }
   return [];
 }
-function parse_Formula(blob, length, opts) {
+function parse_Formula(blob, length, opts2) {
   var end = blob.l + length;
-  var cell = parse_XLSCell(blob, 6, opts);
+  var cell = parse_XLSCell(blob, 6, opts2);
   var val3 = parse_FormulaValue(blob, 8);
   var flags2 = blob.read_shift(1);
-  if (opts.biff != 2) {
+  if (opts2.biff != 2) {
     blob.read_shift(1);
-    if (opts.biff >= 5) {
+    if (opts2.biff >= 5) {
       blob.read_shift(4);
     }
   }
-  var cbf = parse_XLSCellParsedFormula(blob, end - blob.l, opts);
+  var cbf = parse_XLSCellParsedFormula(blob, end - blob.l, opts2);
   return { cell, val: val3[0], formula: cbf, shared: flags2 >> 3 & 1, tt: val3[1] };
 }
-function parse_XLSBParsedFormula(data2, length, opts) {
+function parse_XLSBParsedFormula(data2, length, opts2) {
   var cce = data2.read_shift(4);
-  var rgce = parse_Rgce(data2, cce, opts);
+  var rgce = parse_Rgce(data2, cce, opts2);
   var cb = data2.read_shift(4);
-  var rgcb = cb > 0 ? parse_RgbExtra(data2, cb, rgce, opts) : null;
+  var rgcb = cb > 0 ? parse_RgbExtra(data2, cb, rgce, opts2) : null;
   return [rgce, rgcb];
 }
 var parse_XLSBArrayParsedFormula = parse_XLSBParsedFormula;
@@ -45930,15 +47590,15 @@ function default_margins(margins, mode) {
   if (margins.header == null) margins.header = defs[4];
   if (margins.footer == null) margins.footer = defs[5];
 }
-function safe_format(p, fmtid, fillid, opts, themes, styles, date1904) {
+function safe_format(p, fmtid, fillid, opts2, themes, styles, date1904) {
   try {
-    if (opts.cellNF) p.z = table_fmt[fmtid];
+    if (opts2.cellNF) p.z = table_fmt[fmtid];
   } catch (e) {
-    if (opts.WTF) throw e;
+    if (opts2.WTF) throw e;
   }
-  if (p.t === "z" && !opts.cellStyles) return;
+  if (p.t === "z" && !opts2.cellStyles) return;
   if (p.t === "d" && typeof p.v === "string") p.v = parseDate(p.v);
-  if ((!opts || opts.cellText !== false) && p.t !== "z") try {
+  if ((!opts2 || opts2.cellText !== false) && p.t !== "z") try {
     if (table_fmt[fmtid] == null) SSF__load(SSFImplicit[fmtid] || "General", fmtid);
     if (p.t === "e") p.w = p.w || BErr[p.v];
     else if (fmtid === 0) {
@@ -45954,21 +47614,21 @@ function safe_format(p, fmtid, fillid, opts, themes, styles, date1904) {
     } else if (p.t === "d") p.w = SSF_format(fmtid, datenum(p.v, !!date1904), _ssfopts);
     else p.w = SSF_format(fmtid, p.v, _ssfopts);
   } catch (e) {
-    if (opts.WTF) throw e;
+    if (opts2.WTF) throw e;
   }
-  if (!opts.cellStyles) return;
+  if (!opts2.cellStyles) return;
   if (fillid != null) try {
     p.s = styles.Fills[fillid];
     if (p.s.fgColor && p.s.fgColor.theme && !p.s.fgColor.rgb) {
       p.s.fgColor.rgb = rgb_tint(themes.themeElements.clrScheme[p.s.fgColor.theme].rgb, p.s.fgColor.tint || 0);
-      if (opts.WTF) p.s.fgColor.raw_rgb = themes.themeElements.clrScheme[p.s.fgColor.theme].rgb;
+      if (opts2.WTF) p.s.fgColor.raw_rgb = themes.themeElements.clrScheme[p.s.fgColor.theme].rgb;
     }
     if (p.s.bgColor && p.s.bgColor.theme) {
       p.s.bgColor.rgb = rgb_tint(themes.themeElements.clrScheme[p.s.bgColor.theme].rgb, p.s.bgColor.tint || 0);
-      if (opts.WTF) p.s.bgColor.raw_rgb = themes.themeElements.clrScheme[p.s.bgColor.theme].rgb;
+      if (opts2.WTF) p.s.bgColor.raw_rgb = themes.themeElements.clrScheme[p.s.bgColor.theme].rgb;
     }
   } catch (e) {
-    if (opts.WTF && styles.Fills) throw e;
+    if (opts2.WTF && styles.Fills) throw e;
   }
 }
 function parse_ws_xml_dim(ws, s2) {
@@ -45982,12 +47642,12 @@ var colregex = /<(?:\w+:)?col\b[^<>]*[\/]?>/g;
 var afregex = /<(?:\w+:)?autoFilter[^>]*/g;
 var marginregex = /<(?:\w+:)?pageMargins[^<>]*\/>/g;
 var sheetprregex = /<(?:\w+:)?sheetPr\b[^<>]*?\/>/;
-function parse_ws_xml(data2, opts, idx, rels, wb, themes, styles) {
+function parse_ws_xml(data2, opts2, idx, rels, wb, themes, styles) {
   if (!data2) return data2;
   if (!rels) rels = { "!id": {} };
-  if (DENSE != null && opts.dense == null) opts.dense = DENSE;
+  if (DENSE != null && opts2.dense == null) opts2.dense = DENSE;
   var s2 = {};
-  if (opts.dense) s2["!data"] = [];
+  if (opts2.dense) s2["!data"] = [];
   var refguess = { s: { r: 2e6, c: 2e6 }, e: { r: 0, c: 0 } };
   var data1 = "", data22 = "";
   var mtch = str_match_xml_ns(data2, "sheetData");
@@ -46001,16 +47661,16 @@ function parse_ws_xml(data2, opts, idx, rels, wb, themes, styles) {
   var ridx = (data1.match(/<(?:\w*:)?dimension/) || { index: -1 }).index;
   if (ridx > 0) {
     var ref = data1.slice(ridx, ridx + 50).match(dimregex);
-    if (ref && !(opts && opts.nodim)) parse_ws_xml_dim(s2, ref[1]);
+    if (ref && !(opts2 && opts2.nodim)) parse_ws_xml_dim(s2, ref[1]);
   }
   var svs = str_match_xml_ns(data1, "sheetViews");
   if (svs && svs[1]) parse_ws_xml_sheetviews(svs[1], wb);
   var columns = [];
-  if (opts.cellStyles) {
+  if (opts2.cellStyles) {
     var cols = data1.match(colregex);
     if (cols) parse_ws_xml_cols(columns, cols);
   }
-  if (mtch) parse_ws_xml_data(mtch[1], s2, opts, refguess, themes, styles, wb);
+  if (mtch) parse_ws_xml_data(mtch[1], s2, opts2, refguess, themes, styles, wb);
   var afilter = data22.match(afregex);
   if (afilter) s2["!autofilter"] = parse_ws_xml_autofilter(afilter[0]);
   var merges = [];
@@ -46023,12 +47683,12 @@ function parse_ws_xml(data2, opts, idx, rels, wb, themes, styles) {
   if (margins) s2["!margins"] = parse_ws_xml_margins(parsexmltag(margins[0]));
   var m;
   if (m = data22.match(/legacyDrawing r:id="(.*?)"/)) s2["!legrel"] = m[1];
-  if (opts && opts.nodim) refguess.s.c = refguess.s.r = 0;
+  if (opts2 && opts2.nodim) refguess.s.c = refguess.s.r = 0;
   if (!s2["!ref"] && refguess.e.c >= refguess.s.c && refguess.e.r >= refguess.s.r) s2["!ref"] = encode_range(refguess);
-  if (opts.sheetRows > 0 && s2["!ref"]) {
+  if (opts2.sheetRows > 0 && s2["!ref"]) {
     var tmpref = safe_decode_range(s2["!ref"]);
-    if (opts.sheetRows <= +tmpref.e.r) {
-      tmpref.e.r = opts.sheetRows - 1;
+    if (opts2.sheetRows <= +tmpref.e.r) {
+      tmpref.e.r = opts2.sheetRows - 1;
       if (tmpref.e.r > refguess.e.r) tmpref.e.r = refguess.e.r;
       if (tmpref.e.r < tmpref.s.r) tmpref.s.r = tmpref.e.r;
       if (tmpref.e.c > refguess.e.c) tmpref.e.c = refguess.e.c;
@@ -46125,7 +47785,7 @@ var parse_ws_xml_data = /* @__PURE__ */ (function() {
   var cellregex = /<(?:\w+:)?c[ \/>]/, rowregex = /<\/(?:\w+:)?row>/;
   var rregex = /r=["']([^"']*)["']/;
   var refregex = /ref=["']([^"']*)["']/;
-  return function parse_ws_xml_data2(sdata, s2, opts, guess, themes, styles, wb) {
+  return function parse_ws_xml_data2(sdata, s2, opts2, guess, themes, styles, wb) {
     var ri = 0, x = "", cells = [], cref = [], idx = 0, i = 0, cc = 0, d = "", p;
     var tag2, tagr = 0, tagc = 0;
     var sstr, ftag;
@@ -46135,7 +47795,7 @@ var parse_ws_xml_data = /* @__PURE__ */ (function() {
     var sharedf = [];
     var dense = s2["!data"] != null;
     var rows = [], rowobj = {}, rowrite = false;
-    var sheetStubs = !!opts.sheetStubs;
+    var sheetStubs = !!opts2.sheetStubs;
     var date1904 = !!((wb || {}).WBProps || {}).date1904;
     for (var marr = sdata.split(rowregex), mt = 0, marrlen = marr.length; mt != marrlen; ++mt) {
       x = marr[mt].trim();
@@ -46154,11 +47814,11 @@ var parse_ws_xml_data = /* @__PURE__ */ (function() {
             ++ri;
             break outa;
           }
-          if (opts && opts.cellStyles) {
+          if (opts2 && opts2.cellStyles) {
             tag2 = parsexmltag(x.slice(rstarti, ri), true);
             tagr = tag2.r != null ? parseInt(tag2.r, 10) : tagr + 1;
             tagc = -1;
-            if (opts.sheetRows && opts.sheetRows < tagr) continue;
+            if (opts2.sheetRows && opts2.sheetRows < tagr) continue;
             rowobj = {};
             rowrite = false;
             if (tag2.ht) {
@@ -46185,12 +47845,12 @@ var parse_ws_xml_data = /* @__PURE__ */ (function() {
       tag2 = parsexmltag(x.slice(rstarti, ri), true);
       tagr = tag2.r != null ? parseInt(tag2.r, 10) : tagr + 1;
       tagc = -1;
-      if (opts.sheetRows && opts.sheetRows < tagr) continue;
-      if (!opts.nodim) {
+      if (opts2.sheetRows && opts2.sheetRows < tagr) continue;
+      if (!opts2.nodim) {
         if (guess.s.r > tagr - 1) guess.s.r = tagr - 1;
         if (guess.e.r < tagr - 1) guess.e.r = tagr - 1;
       }
-      if (opts && opts.cellStyles) {
+      if (opts2 && opts2.cellStyles) {
         rowobj = {};
         rowrite = false;
         if (tag2.ht) {
@@ -46237,7 +47897,7 @@ var parse_ws_xml_data = /* @__PURE__ */ (function() {
         p = { t: "" };
         if ((cref = str_match_xml_ns(d, "v")) != null && /*::cref != null && */
         cref[1] !== "") p.v = unescapexml(cref[1]);
-        if (opts.cellFormula) {
+        if (opts2.cellFormula) {
           if ((cref = str_match_xml_ns(d, "f")) != null) {
             if (cref[1] == "") {
               if (
@@ -46249,7 +47909,7 @@ var parse_ws_xml_data = /* @__PURE__ */ (function() {
               }
             } else {
               p.f = unescapexml(utf8read(cref[1]), true);
-              if (!opts.xlfn) p.f = _xlfn(p.f);
+              if (!opts2.xlfn) p.f = _xlfn(p.f);
               if (
                 /*::cref != null && cref[0] != null && */
                 cref[0].indexOf('t="array"') > -1
@@ -46262,7 +47922,7 @@ var parse_ws_xml_data = /* @__PURE__ */ (function() {
               ) {
                 ftag = parsexmltag(cref[0]);
                 var ___f = unescapexml(utf8read(cref[1]));
-                if (!opts.xlfn) ___f = _xlfn(___f);
+                if (!opts2.xlfn) ___f = _xlfn(___f);
                 sharedf[parseInt(ftag.si, 10)] = [ftag, ___f, tag2.r];
               }
             }
@@ -46301,27 +47961,27 @@ var parse_ws_xml_data = /* @__PURE__ */ (function() {
               sstr = strs[parseInt(p.v, 10)];
               p.v = sstr.t;
               p.r = sstr.r;
-              if (opts.cellHTML) p.h = sstr.h;
+              if (opts2.cellHTML) p.h = sstr.h;
             }
             break;
           case "str":
             p.t = "s";
             p.v = p.v != null ? unescapexml(utf8read(p.v), true) : "";
-            if (opts.cellHTML) p.h = escapehtml(p.v);
+            if (opts2.cellHTML) p.h = escapehtml(p.v);
             break;
           case "inlineStr":
             cref = str_match_xml_ns(d, "is");
             p.t = "s";
             if (cref != null && (sstr = parse_si(cref[1]))) {
               p.v = sstr.t;
-              if (opts.cellHTML) p.h = sstr.h;
+              if (opts2.cellHTML) p.h = sstr.h;
             } else p.v = "";
             break;
           case "b":
             p.v = parsexmlbool(p.v);
             break;
           case "d":
-            if (opts.cellDates) p.v = parseDate(p.v, date1904);
+            if (opts2.cellDates) p.v = parseDate(p.v, date1904);
             else {
               p.v = datenum(parseDate(p.v, date1904), date1904);
               p.t = "n";
@@ -46329,7 +47989,7 @@ var parse_ws_xml_data = /* @__PURE__ */ (function() {
             break;
           /* error string in .w, number in .v */
           case "e":
-            if (!opts || opts.cellText !== false) p.w = p.v;
+            if (!opts2 || opts2.cellText !== false) p.w = p.v;
             p.v = RBErr[p.v];
             break;
         }
@@ -46339,22 +47999,22 @@ var parse_ws_xml_data = /* @__PURE__ */ (function() {
           cf = styles.CellXf[tag2.s];
           if (cf != null) {
             if (cf.numFmtId != null) fmtid = cf.numFmtId;
-            if (opts.cellStyles) {
+            if (opts2.cellStyles) {
               if (cf.fillId != null) fillid = cf.fillId;
             }
           }
         }
-        safe_format(p, fmtid, fillid, opts, themes, styles, date1904);
-        if (opts.cellDates && do_format && p.t == "n" && fmt_is_date(table_fmt[fmtid])) {
+        safe_format(p, fmtid, fillid, opts2, themes, styles, date1904);
+        if (opts2.cellDates && do_format && p.t == "n" && fmt_is_date(table_fmt[fmtid])) {
           p.v = numdate(p.v + (date1904 ? 1462 : 0));
           p.t = typeof p.v == "number" ? "n" : "d";
         }
-        if (tag2.cm && opts.xlmeta) {
-          var cm = (opts.xlmeta.Cell || [])[+tag2.cm - 1];
+        if (tag2.cm && opts2.xlmeta) {
+          var cm = (opts2.xlmeta.Cell || [])[+tag2.cm - 1];
           if (cm && cm.type == "XLDAPR") p.D = true;
         }
         var _r;
-        if (opts.nodim) {
+        if (opts2.nodim) {
           _r = decode_cell(tag2.r);
           if (guess.s.r > _r.r) guess.s.r = _r.r;
           if (guess.e.r < _r.r) guess.e.r = _r.r;
@@ -46436,88 +48096,88 @@ function parse_BrtShortIsst(data2) {
 }
 function parse_BrtCellReal(data2) {
   var cell = parse_XLSBCell(data2);
-  var value = parse_Xnum(data2);
-  return [cell, value, "n"];
+  var value2 = parse_Xnum(data2);
+  return [cell, value2, "n"];
 }
 function parse_BrtShortReal(data2) {
   var cell = parse_XLSBShortCell(data2);
-  var value = parse_Xnum(data2);
-  return [cell, value, "n"];
+  var value2 = parse_Xnum(data2);
+  return [cell, value2, "n"];
 }
 function parse_BrtCellRk(data2) {
   var cell = parse_XLSBCell(data2);
-  var value = parse_RkNumber(data2);
-  return [cell, value, "n"];
+  var value2 = parse_RkNumber(data2);
+  return [cell, value2, "n"];
 }
 function parse_BrtShortRk(data2) {
   var cell = parse_XLSBShortCell(data2);
-  var value = parse_RkNumber(data2);
-  return [cell, value, "n"];
+  var value2 = parse_RkNumber(data2);
+  return [cell, value2, "n"];
 }
 function parse_BrtCellRString(data2) {
   var cell = parse_XLSBCell(data2);
-  var value = parse_RichStr(data2);
-  return [cell, value, "is"];
+  var value2 = parse_RichStr(data2);
+  return [cell, value2, "is"];
 }
 function parse_BrtCellSt(data2) {
   var cell = parse_XLSBCell(data2);
-  var value = parse_XLWideString(data2);
-  return [cell, value, "str"];
+  var value2 = parse_XLWideString(data2);
+  return [cell, value2, "str"];
 }
 function parse_BrtShortSt(data2) {
   var cell = parse_XLSBShortCell(data2);
-  var value = parse_XLWideString(data2);
-  return [cell, value, "str"];
+  var value2 = parse_XLWideString(data2);
+  return [cell, value2, "str"];
 }
-function parse_BrtFmlaBool(data2, length, opts) {
+function parse_BrtFmlaBool(data2, length, opts2) {
   var end = data2.l + length;
   var cell = parse_XLSBCell(data2);
-  cell.r = opts["!row"];
-  var value = data2.read_shift(1);
-  var o = [cell, value, "b"];
-  if (opts.cellFormula) {
+  cell.r = opts2["!row"];
+  var value2 = data2.read_shift(1);
+  var o = [cell, value2, "b"];
+  if (opts2.cellFormula) {
     data2.l += 2;
-    var formula = parse_XLSBCellParsedFormula(data2, end - data2.l, opts);
-    o[3] = stringify_formula(formula, null, cell, opts.supbooks, opts);
+    var formula = parse_XLSBCellParsedFormula(data2, end - data2.l, opts2);
+    o[3] = stringify_formula(formula, null, cell, opts2.supbooks, opts2);
   } else data2.l = end;
   return o;
 }
-function parse_BrtFmlaError(data2, length, opts) {
+function parse_BrtFmlaError(data2, length, opts2) {
   var end = data2.l + length;
   var cell = parse_XLSBCell(data2);
-  cell.r = opts["!row"];
-  var value = data2.read_shift(1);
-  var o = [cell, value, "e"];
-  if (opts.cellFormula) {
+  cell.r = opts2["!row"];
+  var value2 = data2.read_shift(1);
+  var o = [cell, value2, "e"];
+  if (opts2.cellFormula) {
     data2.l += 2;
-    var formula = parse_XLSBCellParsedFormula(data2, end - data2.l, opts);
-    o[3] = stringify_formula(formula, null, cell, opts.supbooks, opts);
+    var formula = parse_XLSBCellParsedFormula(data2, end - data2.l, opts2);
+    o[3] = stringify_formula(formula, null, cell, opts2.supbooks, opts2);
   } else data2.l = end;
   return o;
 }
-function parse_BrtFmlaNum(data2, length, opts) {
+function parse_BrtFmlaNum(data2, length, opts2) {
   var end = data2.l + length;
   var cell = parse_XLSBCell(data2);
-  cell.r = opts["!row"];
-  var value = parse_Xnum(data2);
-  var o = [cell, value, "n"];
-  if (opts.cellFormula) {
+  cell.r = opts2["!row"];
+  var value2 = parse_Xnum(data2);
+  var o = [cell, value2, "n"];
+  if (opts2.cellFormula) {
     data2.l += 2;
-    var formula = parse_XLSBCellParsedFormula(data2, end - data2.l, opts);
-    o[3] = stringify_formula(formula, null, cell, opts.supbooks, opts);
+    var formula = parse_XLSBCellParsedFormula(data2, end - data2.l, opts2);
+    o[3] = stringify_formula(formula, null, cell, opts2.supbooks, opts2);
   } else data2.l = end;
   return o;
 }
-function parse_BrtFmlaString(data2, length, opts) {
+function parse_BrtFmlaString(data2, length, opts2) {
   var end = data2.l + length;
   var cell = parse_XLSBCell(data2);
-  cell.r = opts["!row"];
-  var value = parse_XLWideString(data2);
-  var o = [cell, value, "str"];
-  if (opts.cellFormula) {
+  cell.r = opts2["!row"];
+  var value2 = parse_XLWideString(data2);
+  var o = [cell, value2, "str"];
+  if (opts2.cellFormula) {
     data2.l += 2;
-    var formula = parse_XLSBCellParsedFormula(data2, end - data2.l, opts);
-    o[3] = stringify_formula(formula, null, cell, opts.supbooks, opts);
+    var formula = parse_XLSBCellParsedFormula(data2, end - data2.l, opts2);
+    o[3] = stringify_formula(formula, null, cell, opts2.supbooks, opts2);
   } else data2.l = end;
   return o;
 }
@@ -46536,24 +48196,24 @@ function parse_BrtHLink(data2, length) {
 }
 function parse_BrtPane() {
 }
-function parse_BrtArrFmla(data2, length, opts) {
+function parse_BrtArrFmla(data2, length, opts2) {
   var end = data2.l + length;
   var rfx = parse_RfX(data2, 16);
   var fAlwaysCalc = data2.read_shift(1);
   var o = [rfx];
   o[2] = fAlwaysCalc;
-  if (opts.cellFormula) {
-    var formula = parse_XLSBArrayParsedFormula(data2, end - data2.l, opts);
+  if (opts2.cellFormula) {
+    var formula = parse_XLSBArrayParsedFormula(data2, end - data2.l, opts2);
     o[1] = formula;
   } else data2.l = end;
   return o;
 }
-function parse_BrtShrFmla(data2, length, opts) {
+function parse_BrtShrFmla(data2, length, opts2) {
   var end = data2.l + length;
   var rfx = parse_UncheckedRfX(data2, 16);
   var o = [rfx];
-  if (opts.cellFormula) {
-    var formula = parse_XLSBSharedParsedFormula(data2, end - data2.l, opts);
+  if (opts2.cellFormula) {
+    var formula = parse_XLSBSharedParsedFormula(data2, end - data2.l, opts2);
     o[1] = formula;
     data2.l = end;
   } else data2.l = end;
@@ -46578,31 +48238,31 @@ function parse_BrtDVal14() {
 }
 function parse_ws_bin(data2, _opts, idx, rels, wb, themes, styles) {
   if (!data2) return data2;
-  var opts = _opts || {};
+  var opts2 = _opts || {};
   if (!rels) rels = { "!id": {} };
-  if (DENSE != null && opts.dense == null) opts.dense = DENSE;
+  if (DENSE != null && opts2.dense == null) opts2.dense = DENSE;
   var s2 = {};
-  if (opts.dense) s2["!data"] = [];
+  if (opts2.dense) s2["!data"] = [];
   var ref;
   var refguess = { s: { r: 2e6, c: 2e6 }, e: { r: 0, c: 0 } };
   var state = [];
   var pass = false, end = false;
   var row, p, cf, R, C, addr, sstr, rr, cell;
   var merges = [];
-  opts.biff = 12;
-  opts["!row"] = 0;
+  opts2.biff = 12;
+  opts2["!row"] = 0;
   var ai = 0, af = false;
   var arrayf = [];
   var sharedf = {};
-  var supbooks = opts.supbooks || /*::(*/
+  var supbooks = opts2.supbooks || /*::(*/
   wb.supbooks || [[]];
   supbooks.sharedf = sharedf;
   supbooks.arrayf = arrayf;
   supbooks.SheetNames = wb.SheetNames || wb.Sheets.map(function(x) {
     return x.name;
   });
-  if (!opts.supbooks) {
-    opts.supbooks = supbooks;
+  if (!opts2.supbooks) {
+    opts2.supbooks = supbooks;
     if (wb.Names) for (var i = 0; i < wb.Names.length; ++i) supbooks[0][i + 1] = wb.Names[i];
   }
   var colinfo = [], rowinfo = [];
@@ -46618,9 +48278,9 @@ function parse_ws_bin(data2, _opts, idx, rels, wb, themes, styles) {
         break;
       case 0:
         row = val3;
-        if (opts.sheetRows && opts.sheetRows <= row.r) end = true;
+        if (opts2.sheetRows && opts2.sheetRows <= row.r) end = true;
         rr = encode_row(R = row.r);
-        opts["!row"] = row.r;
+        opts2["!row"] = row.r;
         if (val3.hidden || val3.hpt || val3.level != null) {
           if (val3.hpt) val3.hpx = pt2px(val3.hpt);
           rowinfo[val3.r] = val3;
@@ -46674,7 +48334,7 @@ function parse_ws_bin(data2, _opts, idx, rels, wb, themes, styles) {
             break;
           case "e":
             p.v = val3[1];
-            if (opts.cellText !== false) p.w = BErr[p.v];
+            if (opts2.cellText !== false) p.w = BErr[p.v];
             break;
           case "str":
             p.t = "s";
@@ -46685,13 +48345,13 @@ function parse_ws_bin(data2, _opts, idx, rels, wb, themes, styles) {
             p.v = val3[1].t;
             break;
         }
-        if (cf = styles.CellXf[val3[0].iStyleRef]) safe_format(p, cf.numFmtId, null, opts, themes, styles, date1904 > 0);
+        if (cf = styles.CellXf[val3[0].iStyleRef]) safe_format(p, cf.numFmtId, null, opts2, themes, styles, date1904 > 0);
         C = val3[0].c == -1 ? C + 1 : val3[0].c;
-        if (opts.dense) {
+        if (opts2.dense) {
           if (!s2["!data"][R]) s2["!data"][R] = [];
           s2["!data"][R][C] = p;
         } else s2[encode_col(C) + rr] = p;
-        if (opts.cellFormula) {
+        if (opts2.cellFormula) {
           af = false;
           for (ai = 0; ai < arrayf.length; ++ai) {
             var aii = arrayf[ai];
@@ -46708,7 +48368,7 @@ function parse_ws_bin(data2, _opts, idx, rels, wb, themes, styles) {
         if (refguess.s.c > C) refguess.s.c = C;
         if (refguess.e.r < row.r) refguess.e.r = row.r;
         if (refguess.e.c < C) refguess.e.c = C;
-        if (opts.cellDates && cf && p.t == "n" && fmt_is_date(table_fmt[cf.numFmtId])) {
+        if (opts2.cellDates && cf && p.t == "n" && fmt_is_date(table_fmt[cf.numFmtId])) {
           var _d = SSF_parse_date_code(p.v + date1904);
           if (_d) {
             p.t = "d";
@@ -46724,10 +48384,10 @@ function parse_ws_bin(data2, _opts, idx, rels, wb, themes, styles) {
       case 1:
       /* 'BrtCellBlank' */
       case 12:
-        if (!opts.sheetStubs || pass) break;
+        if (!opts2.sheetStubs || pass) break;
         p = { t: "z", v: void 0 };
         C = val3[0].c == -1 ? C + 1 : val3[0].c;
-        if (opts.dense) {
+        if (opts2.dense) {
           if (!s2["!data"][R]) s2["!data"][R] = [];
           s2["!data"][R][C] = p;
         } else s2[encode_col(C) + rr] = p;
@@ -46746,7 +48406,7 @@ function parse_ws_bin(data2, _opts, idx, rels, wb, themes, styles) {
         break;
       case 49:
         {
-          cm = ((opts.xlmeta || {}).Cell || [])[val3 - 1];
+          cm = ((opts2.xlmeta || {}).Cell || [])[val3 - 1];
         }
         break;
       case 494:
@@ -46759,7 +48419,7 @@ function parse_ws_bin(data2, _opts, idx, rels, wb, themes, styles) {
           val3.Target = "#" + val3.loc;
         }
         for (R = val3.rfx.s.r; R <= val3.rfx.e.r; ++R) for (C = val3.rfx.s.c; C <= val3.rfx.e.c; ++C) {
-          if (opts.dense) {
+          if (opts2.dense) {
             if (!s2["!data"][R]) s2["!data"][R] = [];
             if (!s2["!data"][R][C]) s2["!data"][R][C] = { t: "z", v: void 0 };
             s2["!data"][R][C].l = val3;
@@ -46771,21 +48431,21 @@ function parse_ws_bin(data2, _opts, idx, rels, wb, themes, styles) {
         }
         break;
       case 426:
-        if (!opts.cellFormula) break;
+        if (!opts2.cellFormula) break;
         arrayf.push(val3);
-        cell = opts.dense ? s2["!data"][R][C] : s2[encode_col(C) + rr];
-        cell.f = stringify_formula(val3[1], refguess, { r: row.r, c: C }, supbooks, opts);
+        cell = opts2.dense ? s2["!data"][R][C] : s2[encode_col(C) + rr];
+        cell.f = stringify_formula(val3[1], refguess, { r: row.r, c: C }, supbooks, opts2);
         cell.F = encode_range(val3[0]);
         break;
       case 427:
-        if (!opts.cellFormula) break;
+        if (!opts2.cellFormula) break;
         sharedf[encode_cell(val3[0].s)] = val3[1];
-        cell = opts.dense ? s2["!data"][R][C] : s2[encode_col(C) + rr];
-        cell.f = stringify_formula(val3[1], refguess, { r: row.r, c: C }, supbooks, opts);
+        cell = opts2.dense ? s2["!data"][R][C] : s2[encode_col(C) + rr];
+        cell.f = stringify_formula(val3[1], refguess, { r: row.r, c: C }, supbooks, opts2);
         break;
       /* identical to 'ColInfo' in XLS */
       case 60:
-        if (!opts.cellStyles) break;
+        if (!opts2.cellStyles) break;
         while (val3.e >= val3.s) {
           colinfo[val3.e--] = { width: val3.w / 256, hidden: !!(val3.flags & 1), level: val3.level };
           if (!seencol) {
@@ -46936,16 +48596,16 @@ function parse_ws_bin(data2, _opts, idx, rels, wb, themes, styles) {
         break;
       default:
         if (RR.T) {
-        } else if (!pass || opts.WTF) throw new Error("Unexpected record 0x" + RT.toString(16));
+        } else if (!pass || opts2.WTF) throw new Error("Unexpected record 0x" + RT.toString(16));
     }
-  }, opts);
-  delete opts.supbooks;
-  delete opts["!row"];
+  }, opts2);
+  delete opts2.supbooks;
+  delete opts2["!row"];
   if (!s2["!ref"] && (refguess.s.r < 2e6 || ref && (ref.e.r > 0 || ref.e.c > 0 || ref.s.r > 0 || ref.s.c > 0))) s2["!ref"] = encode_range(ref || refguess);
-  if (opts.sheetRows && s2["!ref"]) {
+  if (opts2.sheetRows && s2["!ref"]) {
     var tmpref = safe_decode_range(s2["!ref"]);
-    if (opts.sheetRows <= +tmpref.e.r) {
-      tmpref.e.r = opts.sheetRows - 1;
+    if (opts2.sheetRows <= +tmpref.e.r) {
+      tmpref.e.r = opts2.sheetRows - 1;
       if (tmpref.e.r > refguess.e.r) tmpref.e.r = refguess.e.r;
       if (tmpref.e.r < tmpref.s.r) tmpref.s.r = tmpref.e.r;
       if (tmpref.e.c > refguess.e.c) tmpref.e.c = refguess.e.c;
@@ -46975,7 +48635,7 @@ function parse_Cache(data2) {
   });
   return [col, nf, f];
 }
-function parse_chart(data2, name6, opts, rels, wb, csheet) {
+function parse_chart(data2, name6, opts2, rels, wb, csheet) {
   var cs = csheet || { "!type": "chart" };
   if (!data2) return csheet;
   var C = 0, R = 0, col = "A";
@@ -46998,7 +48658,7 @@ function parse_chart(data2, name6, opts, rels, wb, csheet) {
   if (C > 0) cs["!ref"] = encode_range(refguess);
   return cs;
 }
-function parse_cs_xml(data2, opts, idx, rels, wb) {
+function parse_cs_xml(data2, opts2, idx, rels, wb) {
   if (!data2) return data2;
   if (!rels) rels = { "!id": {} };
   var s2 = { "!type": "chart", "!drawel": null, "!rel": "" };
@@ -47014,7 +48674,7 @@ function parse_BrtCsProp(data2, length) {
   var name6 = parse_XLWideString(data2, length - 10);
   return { name: name6 };
 }
-function parse_cs_bin(data2, opts, idx, rels, wb) {
+function parse_cs_bin(data2, opts2, idx, rels, wb) {
   if (!data2) return data2;
   if (!rels) rels = { "!id": {} };
   var s2 = { "!type": "chart", "!drawel": null, "!rel": "" };
@@ -47060,9 +48720,9 @@ function parse_cs_bin(data2, opts, idx, rels, wb) {
       default:
         if (R.T > 0) state.push(RT);
         else if (R.T < 0) state.pop();
-        else if (!pass || opts.WTF) throw new Error("Unexpected record 0x" + RT.toString(16));
+        else if (!pass || opts2.WTF) throw new Error("Unexpected record 0x" + RT.toString(16));
     }
-  }, opts);
+  }, opts2);
   if (rels["!id"][s2["!rel"]]) s2["!drawel"] = rels["!id"][s2["!rel"]];
   return s2;
 }
@@ -47169,7 +48829,7 @@ function check_ws_name(n2, safe) {
   return true;
 }
 var wbnsregex = /<\w+:workbook/;
-function parse_wb_xml(data2, opts) {
+function parse_wb_xml(data2, opts2) {
   if (!data2) throw new Error("Could not find file");
   var wb = (
     /*::(*/
@@ -47396,7 +49056,7 @@ function parse_wb_xml(data2, opts) {
       case "<revisionPtr":
         break;
       default:
-        if (!pass && opts.WTF) throw new Error("unrecognized " + y[0] + " in workbook");
+        if (!pass && opts2.WTF) throw new Error("unrecognized " + y[0] + " in workbook");
     }
     return x;
   });
@@ -47442,7 +49102,7 @@ function parse_BrtFRTArchID$(data2, length) {
   data2.l += length - 8;
   return o;
 }
-function parse_BrtName(data2, length, opts) {
+function parse_BrtName(data2, length, opts2) {
   var end = data2.l + length;
   var flags2 = data2.read_shift(4);
   data2.l += 1;
@@ -47451,7 +49111,7 @@ function parse_BrtName(data2, length, opts) {
   var formula;
   var comment = "";
   try {
-    formula = parse_XLSBNameParsedFormula(data2, 0, opts);
+    formula = parse_XLSBNameParsedFormula(data2, 0, opts2);
     try {
       comment = parse_XLNullableWideString(data2);
     } catch (e) {
@@ -47466,12 +49126,12 @@ function parse_BrtName(data2, length, opts) {
   if (comment) out.Comment = comment;
   return out;
 }
-function parse_wb_bin(data2, opts) {
+function parse_wb_bin(data2, opts2) {
   var wb = { AppVersion: {}, WBProps: {}, WBView: [], Sheets: [], CalcPr: {}, xmlns: "" };
   var state = [];
   var pass = false;
-  if (!opts) opts = {};
-  opts.biff = 12;
+  if (!opts2) opts2 = {};
+  opts2.biff = 12;
   var Names = [];
   var supbooks = [[]];
   supbooks.SheetNames = [];
@@ -47487,9 +49147,9 @@ function parse_wb_bin(data2, opts) {
         wb.WBProps = val3;
         break;
       case 39:
-        if (val3.Sheet != null) opts.SID = val3.Sheet;
-        val3.Ref = val3.Ptg ? stringify_formula(val3.Ptg, null, null, supbooks, opts) : "#REF!";
-        delete opts.SID;
+        if (val3.Sheet != null) opts2.SID = val3.Sheet;
+        val3.Ref = val3.Ptg ? stringify_formula(val3.Ptg, null, null, supbooks, opts2) : "#REF!";
+        delete opts2.SID;
         delete val3.Ptg;
         Names.push(val3);
         break;
@@ -47597,57 +49257,57 @@ function parse_wb_bin(data2, opts) {
         break;
       default:
         if (R.T) {
-        } else if (!pass || opts.WTF && state[state.length - 1] != 37 && state[state.length - 1] != 35) throw new Error("Unexpected record 0x" + RT.toString(16));
+        } else if (!pass || opts2.WTF && state[state.length - 1] != 37 && state[state.length - 1] != 35) throw new Error("Unexpected record 0x" + RT.toString(16));
     }
-  }, opts);
+  }, opts2);
   parse_wb_defaults(wb);
   wb.Names = Names;
   wb.supbooks = supbooks;
   return wb;
 }
-function parse_wb(data2, name6, opts) {
-  if (name6.slice(-4) === ".bin") return parse_wb_bin(data2, opts);
-  return parse_wb_xml(data2, opts);
+function parse_wb(data2, name6, opts2) {
+  if (name6.slice(-4) === ".bin") return parse_wb_bin(data2, opts2);
+  return parse_wb_xml(data2, opts2);
 }
-function parse_ws(data2, name6, idx, opts, rels, wb, themes, styles) {
-  if (name6.slice(-4) === ".bin") return parse_ws_bin(data2, opts, idx, rels, wb, themes, styles);
-  return parse_ws_xml(data2, opts, idx, rels, wb, themes, styles);
+function parse_ws(data2, name6, idx, opts2, rels, wb, themes, styles) {
+  if (name6.slice(-4) === ".bin") return parse_ws_bin(data2, opts2, idx, rels, wb, themes, styles);
+  return parse_ws_xml(data2, opts2, idx, rels, wb, themes, styles);
 }
-function parse_cs(data2, name6, idx, opts, rels, wb, themes, styles) {
-  if (name6.slice(-4) === ".bin") return parse_cs_bin(data2, opts, idx, rels, wb, themes, styles);
-  return parse_cs_xml(data2, opts, idx, rels, wb, themes, styles);
+function parse_cs(data2, name6, idx, opts2, rels, wb, themes, styles) {
+  if (name6.slice(-4) === ".bin") return parse_cs_bin(data2, opts2, idx, rels, wb, themes, styles);
+  return parse_cs_xml(data2, opts2, idx, rels, wb, themes, styles);
 }
-function parse_ms(data2, name6, idx, opts, rels, wb, themes, styles) {
-  if (name6.slice(-4) === ".bin") return parse_ms_bin(data2, opts, idx, rels, wb, themes, styles);
-  return parse_ms_xml(data2, opts, idx, rels, wb, themes, styles);
+function parse_ms(data2, name6, idx, opts2, rels, wb, themes, styles) {
+  if (name6.slice(-4) === ".bin") return parse_ms_bin(data2, opts2, idx, rels, wb, themes, styles);
+  return parse_ms_xml(data2, opts2, idx, rels, wb, themes, styles);
 }
-function parse_ds(data2, name6, idx, opts, rels, wb, themes, styles) {
-  if (name6.slice(-4) === ".bin") return parse_ds_bin(data2, opts, idx, rels, wb, themes, styles);
-  return parse_ds_xml(data2, opts, idx, rels, wb, themes, styles);
+function parse_ds(data2, name6, idx, opts2, rels, wb, themes, styles) {
+  if (name6.slice(-4) === ".bin") return parse_ds_bin(data2, opts2, idx, rels, wb, themes, styles);
+  return parse_ds_xml(data2, opts2, idx, rels, wb, themes, styles);
 }
-function parse_sty(data2, name6, themes, opts) {
-  if (name6.slice(-4) === ".bin") return parse_sty_bin(data2, themes, opts);
-  return parse_sty_xml(data2, themes, opts);
+function parse_sty(data2, name6, themes, opts2) {
+  if (name6.slice(-4) === ".bin") return parse_sty_bin(data2, themes, opts2);
+  return parse_sty_xml(data2, themes, opts2);
 }
-function parse_sst(data2, name6, opts) {
-  if (name6.slice(-4) === ".bin") return parse_sst_bin(data2, opts);
-  return parse_sst_xml(data2, opts);
+function parse_sst(data2, name6, opts2) {
+  if (name6.slice(-4) === ".bin") return parse_sst_bin(data2, opts2);
+  return parse_sst_xml(data2, opts2);
 }
-function parse_cmnt(data2, name6, opts) {
-  if (name6.slice(-4) === ".bin") return parse_comments_bin(data2, opts);
-  return parse_comments_xml(data2, opts);
+function parse_cmnt(data2, name6, opts2) {
+  if (name6.slice(-4) === ".bin") return parse_comments_bin(data2, opts2);
+  return parse_comments_xml(data2, opts2);
 }
-function parse_cc(data2, name6, opts) {
-  if (name6.slice(-4) === ".bin") return parse_cc_bin(data2, name6, opts);
-  return parse_cc_xml(data2, name6, opts);
+function parse_cc(data2, name6, opts2) {
+  if (name6.slice(-4) === ".bin") return parse_cc_bin(data2, name6, opts2);
+  return parse_cc_xml(data2, name6, opts2);
 }
-function parse_xlink(data2, rel, name6, opts) {
-  if (name6.slice(-4) === ".bin") return parse_xlink_bin(data2, rel, name6, opts);
-  return parse_xlink_xml(data2, rel, name6, opts);
+function parse_xlink(data2, rel, name6, opts2) {
+  if (name6.slice(-4) === ".bin") return parse_xlink_bin(data2, rel, name6, opts2);
+  return parse_xlink_xml(data2, rel, name6, opts2);
 }
-function parse_xlmeta(data2, name6, opts) {
-  if (name6.slice(-4) === ".bin") return parse_xlmeta_bin(data2, name6, opts);
-  return parse_xlmeta_xml(data2, name6, opts);
+function parse_xlmeta(data2, name6, opts2) {
+  if (name6.slice(-4) === ".bin") return parse_xlmeta_bin(data2, name6, opts2);
+  return parse_xlmeta_xml(data2, name6, opts2);
 }
 var attregexg2 = /\b((?:\w+:)?[\w]+)=((?:")([^"]*)(?:")|(?:')([^']*)(?:'))/g;
 var attregex2 = /\b((?:\w+:)?[\w]+)=((?:")(?:[^"]*)(?:")|(?:')(?:[^']*)(?:'))/;
@@ -47685,10 +49345,10 @@ function xlml_parsexmltagobj(tag2) {
   return z;
 }
 var XLMLFormatMap;
-function xlml_format(format3, value, date1904) {
+function xlml_format(format3, value2, date1904) {
   var fmt = XLMLFormatMap[format3] || unescapexml(format3);
-  if (fmt === "General") return SSF_general(value);
-  return SSF_format(fmt, value, { date1904: !!date1904 });
+  if (fmt === "General") return SSF_general(value2);
+  return SSF_format(fmt, value2, { date1904: !!date1904 });
 }
 function xlml_set_custprop(Custprops, key4, cp, val3) {
   var oval = val3;
@@ -47747,8 +49407,8 @@ function safe_format_xlml(cell, nf, o, date1904) {
     if (o.WTF) throw e;
   }
 }
-function process_style_xlml(styles, stag, opts) {
-  if (opts.cellStyles) {
+function process_style_xlml(styles, stag, opts2) {
+  if (opts2.cellStyles) {
     if (stag.Interior) {
       var I = stag.Interior;
       if (I.Pattern) I.patternType = XLMLPatternTypeMap[I.Pattern] || I.Pattern;
@@ -47841,24 +49501,24 @@ function xlml_clean_comment(comment) {
   comment.v = comment.w = comment.ixfe = void 0;
 }
 function parse_xlml_xml(d, _opts) {
-  var opts = _opts || {};
+  var opts2 = _opts || {};
   make_ssf();
   var str = debom(xlml_normalize(d));
-  if (opts.type == "binary" || opts.type == "array" || opts.type == "base64") {
+  if (opts2.type == "binary" || opts2.type == "array" || opts2.type == "base64") {
     if (typeof $cptable !== "undefined") str = $cptable.utils.decode(65001, char_codes(str));
     else str = utf8read(str);
   }
   var opening = str.slice(0, 1024).toLowerCase(), ishtml = false;
   opening = opening.replace(/".*?"/g, "");
   if ((opening.indexOf(">") & 1023) > Math.min(opening.indexOf(",") & 1023, opening.indexOf(";") & 1023)) {
-    var _o = dup(opts);
+    var _o = dup(opts2);
     _o.type = "string";
     return PRN.to_workbook(str, _o);
   }
   if (opening.indexOf("<?xml") == -1) ["html", "table", "head", "meta", "script", "style", "div"].forEach(function(tag2) {
     if (opening.indexOf("<" + tag2) >= 0) ishtml = true;
   });
-  if (ishtml) return html_to_workbook(str, opts);
+  if (ishtml) return html_to_workbook(str, opts2);
   XLMLFormatMap = {
     "General Number": "General",
     "General Date": table_fmt[22],
@@ -47879,9 +49539,9 @@ function parse_xlml_xml(d, _opts) {
   };
   var Rn;
   var state = [], tmp;
-  if (DENSE != null && opts.dense == null) opts.dense = DENSE;
+  if (DENSE != null && opts2.dense == null) opts2.dense = DENSE;
   var sheets2 = {}, sheetnames = [], cursheet = {}, sheetname = "";
-  if (opts.dense) cursheet["!data"] = [];
+  if (opts2.dense) cursheet["!data"] = [];
   var cell = {}, row = {};
   var dtag = xlml_parsexmltag('<Data ss:Type="String">'), didx = 0;
   var c = 0, r = 0;
@@ -47908,7 +49568,7 @@ function parse_xlml_xml(d, _opts) {
       }
       if (state[state.length - 1][1]) break;
       if (Rn[1] === "/") parse_xlml_data(str.slice(didx, Rn.index), ss, dtag, state[state.length - 1][0] == /*"Comment"*/
-      "comment" ? comment : cell, { c, r }, styles, cstys[c], row, arrayf, opts, Workbook.WBProps.date1904);
+      "comment" ? comment : cell, { c, r }, styles, cstys[c], row, arrayf, opts2, Workbook.WBProps.date1904);
       else {
         ss = "";
         dtag = xlml_parsexmltag(Rn[0]);
@@ -47918,8 +49578,8 @@ function parse_xlml_xml(d, _opts) {
     case "cell":
       if (Rn[1] === "/") {
         if (comments.length > 0) cell.c = comments;
-        if ((!opts.sheetRows || opts.sheetRows > r) && cell.v !== void 0) {
-          if (opts.dense) {
+        if ((!opts2.sheetRows || opts2.sheetRows > r) && cell.v !== void 0) {
+          if (opts2.dense) {
             if (!cursheet["!data"][r]) cursheet["!data"][r] = [];
             cursheet["!data"][r][c] = cell;
           } else cursheet[encode_col(c) + encode_row(r)] = cell;
@@ -47935,14 +49595,14 @@ function parse_xlml_xml(d, _opts) {
           rr = r + (parseInt(cell.MergeDown, 10) | 0);
           if (cc > c || rr > r) merges.push({ s: { c, r }, e: { c: cc, r: rr } });
         }
-        if (!opts.sheetStubs) {
+        if (!opts2.sheetStubs) {
           if (cell.MergeAcross) c = cc + 1;
           else ++c;
         } else if (cell.MergeAcross || cell.MergeDown) {
           for (var cma = c; cma <= cc; ++cma) {
             for (var cmd = r; cmd <= rr; ++cmd) {
               if (cma > c || cmd > r) {
-                if (opts.dense) {
+                if (opts2.dense) {
                   if (!cursheet["!data"][cmd]) cursheet["!data"][cmd] = [];
                   cursheet["!data"][cmd][cma] = { t: "z" };
                 } else cursheet[encode_col(cma) + encode_row(cmd)] = { t: "z" };
@@ -47991,9 +49651,9 @@ function parse_xlml_xml(d, _opts) {
         sheetnames.push(sheetname);
         if (refguess.s.r <= refguess.e.r && refguess.s.c <= refguess.e.c) {
           cursheet["!ref"] = encode_range(refguess);
-          if (opts.sheetRows && opts.sheetRows <= refguess.e.r) {
+          if (opts2.sheetRows && opts2.sheetRows <= refguess.e.r) {
             cursheet["!fullref"] = cursheet["!ref"];
-            refguess.e.r = opts.sheetRows - 1;
+            refguess.e.r = opts2.sheetRows - 1;
             cursheet["!ref"] = encode_range(refguess);
           }
         }
@@ -48008,7 +49668,7 @@ function parse_xlml_xml(d, _opts) {
         tmp = xlml_parsexmltag(Rn[0]);
         sheetname = unescapexml(tmp.Name);
         cursheet = {};
-        if (opts.dense) cursheet["!data"] = [];
+        if (opts2.dense) cursheet["!data"] = [];
         merges = [];
         arrayf = [];
         rowinfo = [];
@@ -48027,7 +49687,7 @@ function parse_xlml_xml(d, _opts) {
       }
       break;
     case "style":
-      if (Rn[1] === "/") process_style_xlml(styles, stag, opts);
+      if (Rn[1] === "/") process_style_xlml(styles, stag, opts2);
       else stag = xlml_parsexmltag(Rn[0]);
       break;
     case "numberformat":
@@ -48105,7 +49765,7 @@ function parse_xlml_xml(d, _opts) {
       else fidx = Rn.index + Rn[0].length;
       break;
     case "interior":
-      if (!opts.cellStyles) break;
+      if (!opts2.cellStyles) break;
       stag.Interior = xlml_parsexmltag(Rn[0]);
       break;
     case "protection":
@@ -48200,8 +49860,8 @@ function parse_xlml_xml(d, _opts) {
     case "null":
       break;
     default:
-      if (state.length == 0 && Rn[3] == "document") return parse_fods(str, opts);
-      if (state.length == 0 && Rn[3] == "uof") return parse_fods(str, opts);
+      if (state.length == 0 && Rn[3] == "document") return parse_fods(str, opts2);
+      if (state.length == 0 && Rn[3] == "uof") return parse_fods(str, opts2);
       var seen = true;
       switch (state[state.length - 1][0]) {
         /* OfficeDocumentSettings */
@@ -48918,10 +50578,10 @@ function parse_xlml_xml(d, _opts) {
         }
         break;
       }
-      if (opts.WTF) throw "Unrecognized tag: " + Rn[3] + "|" + state.join("|");
+      if (opts2.WTF) throw "Unrecognized tag: " + Rn[3] + "|" + state.join("|");
   }
   var out = {};
-  if (!opts.bookSheets && !opts.bookProps) out.Sheets = sheets2;
+  if (!opts2.bookSheets && !opts2.bookProps) out.Sheets = sheets2;
   out.SheetNames = sheetnames;
   out.Workbook = Workbook;
   out.SSF = dup(table_fmt);
@@ -48930,17 +50590,17 @@ function parse_xlml_xml(d, _opts) {
   out.bookType = "xlml";
   return out;
 }
-function parse_xlml(data2, opts) {
-  fix_read_opts(opts = opts || {});
-  switch (opts.type || "base64") {
+function parse_xlml(data2, opts2) {
+  fix_read_opts(opts2 = opts2 || {});
+  switch (opts2.type || "base64") {
     case "base64":
-      return parse_xlml_xml(Base64_decode(data2), opts);
+      return parse_xlml_xml(Base64_decode(data2), opts2);
     case "binary":
     case "buffer":
     case "file":
-      return parse_xlml_xml(data2, opts);
+      return parse_xlml_xml(data2, opts2);
     case "array":
-      return parse_xlml_xml(a2s(data2), opts);
+      return parse_xlml_xml(a2s(data2), opts2);
   }
 }
 function parse_compobj(obj) {
@@ -48964,11 +50624,11 @@ function parse_compobj(obj) {
   v2.Reserved2 = o.read_shift(0, "lpwstr");
 }
 var CONTINUE_RT = [60, 1084, 2066, 2165, 2175];
-function slurp(RecordType, R, blob, length, opts) {
+function slurp(RecordType, R, blob, length, opts2) {
   var l = length;
   var bufs = [];
   var d = blob.slice(blob.l, blob.l + l);
-  if (opts && opts.enc && opts.enc.insitu && d.length > 0) switch (RecordType) {
+  if (opts2 && opts2.enc && opts2.enc.insitu && d.length > 0) switch (RecordType) {
     case 9:
     case 521:
     case 1033:
@@ -48984,7 +50644,7 @@ function slurp(RecordType, R, blob, length, opts) {
     case 133:
       break;
     default:
-      opts.enc.insitu(d);
+      opts2.enc.insitu(d);
   }
   bufs.push(d);
   blob.l += l;
@@ -49011,19 +50671,19 @@ function slurp(RecordType, R, blob, length, opts) {
     ll += bufs[j].length;
   }
   if (b.length < length) throw "XLS Record 0x" + RecordType.toString(16) + " Truncated: " + b.length + " < " + length;
-  return R.f(b, b.length, opts);
+  return R.f(b, b.length, opts2);
 }
-function safe_format_xf(p, opts, date1904) {
+function safe_format_xf(p, opts2, date1904) {
   if (p.t === "z") return;
   if (!p.XF) return;
   var fmtid = 0;
   try {
     fmtid = p.z || p.XF.numFmtId || 0;
-    if (opts.cellNF && p.z == null) p.z = table_fmt[fmtid];
+    if (opts2.cellNF && p.z == null) p.z = table_fmt[fmtid];
   } catch (e) {
-    if (opts.WTF) throw e;
+    if (opts2.WTF) throw e;
   }
-  if (!opts || opts.cellText !== false) try {
+  if (!opts2 || opts2.cellText !== false) try {
     if (p.t === "e") {
       p.w = p.w || BErr[p.v];
     } else if (fmtid === 0 || fmtid == "General") {
@@ -49031,11 +50691,11 @@ function safe_format_xf(p, opts, date1904) {
         if ((p.v | 0) === p.v) p.w = p.v.toString(10);
         else p.w = SSF_general_num(p.v);
       } else p.w = SSF_general(p.v);
-    } else p.w = SSF_format(fmtid, p.v, { date1904: !!date1904, dateNF: opts && opts.dateNF });
+    } else p.w = SSF_format(fmtid, p.v, { date1904: !!date1904, dateNF: opts2 && opts2.dateNF });
   } catch (e) {
-    if (opts.WTF) throw e;
+    if (opts2.WTF) throw e;
   }
-  if (opts.cellDates && fmtid && p.t == "n" && fmt_is_date(table_fmt[fmtid] || String(fmtid))) {
+  if (opts2.cellDates && fmtid && p.t == "n" && fmt_is_date(table_fmt[fmtid] || String(fmtid))) {
     var _d = SSF_parse_date_code(p.v + (date1904 ? 1462 : 0));
     if (_d) {
       p.t = "d";
@@ -49104,7 +50764,7 @@ function parse_workbook(blob, options2) {
         if (arrayf[afi][0].e.c < cell.c || arrayf[afi][0].e.r < cell.r) continue;
         line.F = encode_range(arrayf[afi][0]);
         if (arrayf[afi][0].s.c != cell.c || arrayf[afi][0].s.r != cell.r) delete line.f;
-        if (line.f) line.f = "" + stringify_formula(arrayf[afi][1], range3, cell, supbooks, opts);
+        if (line.f) line.f = "" + stringify_formula(arrayf[afi][1], range3, cell, supbooks, opts2);
         break;
       }
     }
@@ -49115,7 +50775,7 @@ function parse_workbook(blob, options2) {
       } else out[last_cell] = line;
     }
   };
-  var opts = {
+  var opts2 = {
     enc: false,
     // encrypted
     sbcch: 0,
@@ -49139,16 +50799,16 @@ function parse_workbook(blob, options2) {
     cellStyles: !!options2 && !!options2.cellStyles,
     WTF: !!options2 && !!options2.wtf
   };
-  if (options2.password) opts.password = options2.password;
+  if (options2.password) opts2.password = options2.password;
   var themes;
   var merges = [];
   var objects = [];
   var colinfo = [], rowinfo = [];
   var seencol = false;
   var supbooks = [];
-  supbooks.SheetNames = opts.snames;
-  supbooks.sharedf = opts.sharedf;
-  supbooks.arrayf = opts.arrayf;
+  supbooks.SheetNames = opts2.snames;
+  supbooks.sharedf = opts2.sharedf;
+  supbooks.arrayf = opts2.arrayf;
   supbooks.names = [];
   supbooks.XTI = [];
   var last_RT = 0;
@@ -49156,7 +50816,7 @@ function parse_workbook(blob, options2) {
   var BIFF2Fmt = 0, BIFF2FmtTable = [];
   var FilterDatabases = [];
   var last_lbl;
-  opts.codepage = 1200;
+  opts2.codepage = 1200;
   set_cp(1200);
   var seen_codepage = false;
   while (blob.l < blob.length - 1) {
@@ -49174,7 +50834,7 @@ function parse_workbook(blob, options2) {
       if (R.r === 2 || R.r == 12) {
         var rt = blob.read_shift(2);
         length -= 2;
-        if (!opts.enc && rt !== RecordType && ((rt & 255) << 8 | rt >> 8) !== RecordType) throw new Error("rt mismatch: " + rt + "!=" + RecordType);
+        if (!opts2.enc && rt !== RecordType && ((rt & 255) << 8 | rt >> 8) !== RecordType) throw new Error("rt mismatch: " + rt + "!=" + RecordType);
         if (R.r == 12) {
           blob.l += 10;
           length -= 10;
@@ -49182,9 +50842,9 @@ function parse_workbook(blob, options2) {
       }
       var val3 = {};
       if (RecordType === 10) val3 = /*::(*/
-      R.f(blob, length, opts);
+      R.f(blob, length, opts2);
       else val3 = /*::(*/
-      slurp(RecordType, R, blob, length, opts);
+      slurp(RecordType, R, blob, length, opts2);
       if (file_depth == 0 && [9, 521, 1033, 2057].indexOf(last_RT) === -1) continue;
       switch (RecordType) {
         case 34:
@@ -49194,14 +50854,14 @@ function parse_workbook(blob, options2) {
           wb.opts.WriteProtect = true;
           break;
         case 47:
-          if (!opts.enc) blob.l = 0;
-          opts.enc = val3;
+          if (!opts2.enc) blob.l = 0;
+          opts2.enc = val3;
           if (!options2.password) throw new Error("File is password-protected");
           if (val3.valid == null) throw new Error("Encryption scheme unsupported");
           if (!val3.valid) throw new Error("Password is incorrect");
           break;
         case 92:
-          opts.lastuser = val3;
+          opts2.lastuser = val3;
           break;
         case 66:
           var cpval = Number(val3);
@@ -49216,14 +50876,14 @@ function parse_workbook(blob, options2) {
               cpval = 1252;
               break;
           }
-          set_cp(opts.codepage = cpval);
+          set_cp(opts2.codepage = cpval);
           seen_codepage = true;
           break;
         case 317:
-          opts.rrtabid = val3;
+          opts2.rrtabid = val3;
           break;
         case 25:
-          opts.winlocked = val3;
+          opts2.winlocked = val3;
           break;
         case 439:
           wb.opts["RefreshAll"] = val3;
@@ -49247,7 +50907,7 @@ function parse_workbook(blob, options2) {
           wb.opts["CalcSaveRecalc"] = val3;
           break;
         case 15:
-          opts.CalcRefMode = val3;
+          opts2.CalcRefMode = val3;
           break;
         // TODO: implement R1C1
         case 2211:
@@ -49280,7 +50940,7 @@ function parse_workbook(blob, options2) {
         case 536:
           last_lbl = {
             Name: val3.Name,
-            Ref: stringify_formula(val3.rgce, range3, null, supbooks, opts)
+            Ref: stringify_formula(val3.rgce, range3, null, supbooks, opts2)
           };
           if (val3.itab > 0) last_lbl.Sheet = val3.itab - 1;
           supbooks.names.push(last_lbl);
@@ -49295,7 +50955,7 @@ function parse_workbook(blob, options2) {
           }
           break;
         case 22:
-          opts.ExternCount = val3;
+          opts2.ExternCount = val3;
           break;
         case 23:
           if (supbooks.length == 0) {
@@ -49306,7 +50966,7 @@ function parse_workbook(blob, options2) {
           supbooks.XTI = supbooks.XTI.concat(val3);
           break;
         case 2196:
-          if (opts.biff < 8) break;
+          if (opts2.biff < 8) break;
           if (last_lbl != null) last_lbl.Comment = val3[1];
           break;
         case 18:
@@ -49314,12 +50974,12 @@ function parse_workbook(blob, options2) {
           break;
         /* for sheet or book */
         case 19:
-          if (val3 !== 0 && opts.WTF) console.error("Password verifier: " + val3);
+          if (val3 !== 0 && opts2.WTF) console.error("Password verifier: " + val3);
           break;
         case 133:
           {
-            Directory2[opts.biff == 4 ? opts.snames.length : val3.pos] = val3;
-            opts.snames.push(val3.name);
+            Directory2[opts2.biff == 4 ? opts2.snames.length : val3.pos] = val3;
+            opts2.snames.push(val3.name);
           }
           break;
         case 10:
@@ -49357,7 +51017,7 @@ function parse_workbook(blob, options2) {
         case 1033:
         case 2057:
           {
-            if (opts.biff === 8) opts.biff = {
+            if (opts2.biff === 8) opts2.biff = {
               9: 2,
               521: 3,
               1033: 4
@@ -49370,35 +51030,35 @@ function parse_workbook(blob, options2) {
               2: 2,
               7: 2
             }[val3.BIFFVer] || 8;
-            opts.biffguess = val3.BIFFVer == 0;
+            opts2.biffguess = val3.BIFFVer == 0;
             if (val3.BIFFVer == 0 && val3.dt == 4096) {
-              opts.biff = 5;
+              opts2.biff = 5;
               seen_codepage = true;
-              set_cp(opts.codepage = 28591);
+              set_cp(opts2.codepage = 28591);
             }
-            if (opts.biff == 4 && val3.dt & 256) biff4w = true;
-            if (opts.biff == 8 && val3.BIFFVer == 0 && val3.dt == 16) opts.biff = 2;
+            if (opts2.biff == 4 && val3.dt & 256) biff4w = true;
+            if (opts2.biff == 8 && val3.BIFFVer == 0 && val3.dt == 16) opts2.biff = 2;
             if (file_depth++ && !biff4w) break;
             out = {};
             if (options2.dense) out["!data"] = [];
-            if (opts.biff < 8 && !seen_codepage) {
+            if (opts2.biff < 8 && !seen_codepage) {
               seen_codepage = true;
-              set_cp(opts.codepage = options2.codepage || 1252);
+              set_cp(opts2.codepage = options2.codepage || 1252);
             }
-            if (opts.biff == 4 && biff4w) {
-              cur_sheet = (Directory2[opts.snames.indexOf(cur_sheet) + 1] || { name: "" }).name;
-            } else if (opts.biff < 5 || val3.BIFFVer == 0 && val3.dt == 4096) {
+            if (opts2.biff == 4 && biff4w) {
+              cur_sheet = (Directory2[opts2.snames.indexOf(cur_sheet) + 1] || { name: "" }).name;
+            } else if (opts2.biff < 5 || val3.BIFFVer == 0 && val3.dt == 4096) {
               if (cur_sheet === "") cur_sheet = "Sheet1";
               range3 = { s: { r: 0, c: 0 }, e: { r: 0, c: 0 } };
               var fakebs8 = { pos: blob.l - length, name: cur_sheet };
               Directory2[fakebs8.pos] = fakebs8;
-              opts.snames.push(cur_sheet);
+              opts2.snames.push(cur_sheet);
             } else cur_sheet = (Directory2[s2] || { name: "" }).name;
             if (val3.dt == 32) out["!type"] = "chart";
             if (val3.dt == 64) out["!type"] = "macro";
             merges = [];
             objects = [];
-            opts.arrayf = arrayf = [];
+            opts2.arrayf = arrayf = [];
             colinfo = [];
             rowinfo = [];
             seencol = false;
@@ -49461,9 +51121,9 @@ function parse_workbook(blob, options2) {
               if (_f && _f[0] && _f[0][0] && _f[0][0][0] == "PtgExp") {
                 var _fr = _f[0][0][1][0], _fc = _f[0][0][1][1];
                 var _fe = encode_cell({ r: _fr, c: _fc });
-                if (sharedf[_fe]) temp_val.f = "" + stringify_formula(val3.formula, range3, val3.cell, supbooks, opts);
+                if (sharedf[_fe]) temp_val.f = "" + stringify_formula(val3.formula, range3, val3.cell, supbooks, opts2);
                 else temp_val.F = ((options2.dense ? (out["!data"][_fr] || [])[_fc] : out[_fe]) || {}).F;
-              } else temp_val.f = "" + stringify_formula(val3.formula, range3, val3.cell, supbooks, opts);
+              } else temp_val.f = "" + stringify_formula(val3.formula, range3, val3.cell, supbooks, opts2);
             }
             if (BIFF2Fmt > 0) temp_val.z = temp_val.XF && temp_val.XF.numFmtId && BIFF2FmtTable[temp_val.XF.numFmtId] || BIFF2FmtTable[temp_val.ixfe >> 8 & 63];
             safe_format_xf(temp_val, options2, wb.opts.Date1904);
@@ -49479,7 +51139,7 @@ function parse_workbook(blob, options2) {
               temp_val = make_cell(val3, last_formula.cell.ixfe, "s");
               temp_val.XF = XFs[temp_val.ixfe];
               if (options2.cellFormula) {
-                temp_val.f = "" + stringify_formula(last_formula.formula, range3, last_formula.cell, supbooks, opts);
+                temp_val.f = "" + stringify_formula(last_formula.formula, range3, last_formula.cell, supbooks, opts2);
               }
               if (BIFF2Fmt > 0) temp_val.z = temp_val.XF && temp_val.XF.numFmtId && BIFF2FmtTable[temp_val.XF.numFmtId] || BIFF2FmtTable[temp_val.ixfe >> 8 & 63];
               safe_format_xf(temp_val, options2, wb.opts.Date1904);
@@ -49497,7 +51157,7 @@ function parse_workbook(blob, options2) {
             if (options2.cellFormula && cc) {
               if (!last_formula) break;
               if (!_arraystart || !cc) break;
-              cc.f = "" + stringify_formula(val3[1], range3, val3[0], supbooks, opts);
+              cc.f = "" + stringify_formula(val3[1], range3, val3[0], supbooks, opts2);
               cc.F = encode_range(val3[0]);
             }
           }
@@ -49509,7 +51169,7 @@ function parse_workbook(blob, options2) {
               if (!last_formula) break;
               sharedf[encode_cell(last_formula.cell)] = val3[0];
               cc = options2.dense ? (out["!data"][last_formula.cell.r] || [])[last_formula.cell.c] : out[encode_cell(last_formula.cell)];
-              (cc || {}).f = "" + stringify_formula(val3[0], range3, lastcell, supbooks, opts);
+              (cc || {}).f = "" + stringify_formula(val3[0], range3, lastcell, supbooks, opts2);
             }
           }
           break;
@@ -49562,7 +51222,7 @@ function parse_workbook(blob, options2) {
           break;
         case 1054:
           {
-            if (opts.biff >= 3 && opts.biff <= 4) {
+            if (opts2.biff >= 3 && opts2.biff <= 4) {
               BIFF2FmtTable[BIFF2Fmt++] = val3[1];
               for (var b4idx = 0; b4idx < BIFF2Fmt + 163; ++b4idx) if (table_fmt[b4idx] == val3[1]) break;
               if (b4idx >= 163) SSF__load(val3[1], BIFF2Fmt + 163);
@@ -49580,13 +51240,13 @@ function parse_workbook(blob, options2) {
           merges = merges.concat(val3);
           break;
         case 93:
-          objects[val3.cmo[0]] = opts.lastobj = val3;
+          objects[val3.cmo[0]] = opts2.lastobj = val3;
           break;
         case 438:
-          opts.lastobj.TxO = val3;
+          opts2.lastobj.TxO = val3;
           break;
         case 127:
-          opts.lastobj.ImData = val3;
+          opts2.lastobj.ImData = val3;
           break;
         case 440:
           {
@@ -49622,7 +51282,7 @@ function parse_workbook(blob, options2) {
               range3.s.c = Math.min(range3.s.c, val3[0].c);
             }
             if (!cc.c) cc.c = [];
-            if (opts.biff <= 5 && opts.biff >= 2) cmnt = { a: "SheetJ5", t: val3[1] };
+            if (opts2.biff <= 5 && opts2.biff >= 2) cmnt = { a: "SheetJ5", t: val3[1] };
             else {
               var noteobj = objects[val3[2]];
               cmnt = { a: val3[1], t: noteobj.TxO.t };
@@ -49636,7 +51296,7 @@ function parse_workbook(blob, options2) {
           break;
         case 125:
           {
-            if (!opts.cellStyles) break;
+            if (!opts2.cellStyles) break;
             while (val3.e >= val3.s) {
               colinfo[val3.e--] = { width: val3.w / 256, level: val3.level || 0, hidden: !!(val3.flags & 1) };
               if (!seencol) {
@@ -49716,7 +51376,7 @@ function parse_workbook(blob, options2) {
   });
   wb.Strings = sst;
   wb.SSF = dup(table_fmt);
-  if (opts.enc) wb.Encryption = opts.enc;
+  if (opts2.enc) wb.Encryption = opts2.enc;
   if (themes) wb.Themes = themes;
   wb.Metadata = {};
   if (country !== void 0) wb.Metadata.Country = country;
@@ -54532,8 +56192,8 @@ function write_biff_rec(ba, type, payload, length) {
   ) ba.push(payload);
 }
 function html_to_sheet(str, _opts) {
-  var opts = _opts || {};
-  var dense = opts.dense != null ? opts.dense : DENSE;
+  var opts2 = _opts || {};
+  var dense = opts2.dense != null ? opts2.dense : DENSE;
   var ws = {};
   if (dense) ws["!data"] = [];
   str = str_remove_ng(str, "<!--", "-->");
@@ -54550,7 +56210,7 @@ function html_to_sheet(str, _opts) {
     var hd = row.slice(0, 3).toLowerCase();
     if (hd == "<tr") {
       ++R;
-      if (opts.sheetRows && opts.sheetRows <= R) {
+      if (opts2.sheetRows && opts2.sheetRows <= R) {
         --R;
         break;
       }
@@ -54589,15 +56249,15 @@ function html_to_sheet(str, _opts) {
         continue;
       }
       var o = { t: "s", v: m };
-      if (opts.raw || !m.trim().length || _t == "s") {
+      if (opts2.raw || !m.trim().length || _t == "s") {
       } else if (m === "TRUE") o = { t: "b", v: true };
       else if (m === "FALSE") o = { t: "b", v: false };
       else if (!isNaN(fuzzynum(m))) o = { t: "n", v: fuzzynum(m) };
       else if (!isNaN(fuzzydate(m).getDate())) {
         o = { t: "d", v: parseDate(m) };
-        if (opts.UTC === false) o.v = utc_to_local(o.v);
-        if (!opts.cellDates) o = { t: "n", v: datenum(o.v) };
-        o.z = opts.dateNF || table_fmt[14];
+        if (opts2.UTC === false) o.v = utc_to_local(o.v);
+        if (!opts2.cellDates) o = { t: "n", v: datenum(o.v) };
+        o.z = opts2.dateNF || table_fmt[14];
       } else if (m.charCodeAt(0) == 35 && RBErr[m] != null) {
         o.t = "e";
         o.w = m;
@@ -54659,17 +56319,17 @@ function make_html_row(ws, r, R, o) {
 }
 var HTML_BEGIN = '<html><head><meta charset="utf-8"/><title>SheetJS Table Export</title></head><body>';
 var HTML_END = "</body></html>";
-function html_to_workbook(str, opts) {
+function html_to_workbook(str, opts2) {
   var mtch = str_match_xml_ig(str, "table");
   if (!mtch || mtch.length == 0) throw new Error("Invalid HTML: could not find <table>");
   if (mtch.length == 1) {
-    var w = sheet_to_workbook(html_to_sheet(mtch[0], opts), opts);
+    var w = sheet_to_workbook(html_to_sheet(mtch[0], opts2), opts2);
     w.bookType = "html";
     return w;
   }
   var wb = book_new();
   mtch.forEach(function(s2, idx) {
-    book_append_sheet(wb, html_to_sheet(s2, opts), "Sheet" + (idx + 1));
+    book_append_sheet(wb, html_to_sheet(s2, opts2), "Sheet" + (idx + 1));
   });
   wb.bookType = "html";
   return wb;
@@ -54678,8 +56338,8 @@ function make_html_preamble(ws, R, o) {
   var out = [];
   return out.join("") + "<table" + (o && o.id ? ' id="' + o.id + '"' : "") + ">";
 }
-function sheet_to_html(ws, opts) {
-  var o = opts || {};
+function sheet_to_html(ws, opts2) {
+  var o = opts2 || {};
   var header = o.header != null ? o.header : HTML_BEGIN;
   var footer = o.footer != null ? o.footer : HTML_END;
   var out = [header];
@@ -54694,18 +56354,18 @@ function sheet_add_dom(ws, table10, _opts) {
   if (!rows) {
     throw "Unsupported origin when " + table10.tagName + " is not a TABLE";
   }
-  var opts = _opts || {};
+  var opts2 = _opts || {};
   var dense = ws["!data"] != null;
   var or_R = 0, or_C = 0;
-  if (opts.origin != null) {
-    if (typeof opts.origin == "number") or_R = opts.origin;
+  if (opts2.origin != null) {
+    if (typeof opts2.origin == "number") or_R = opts2.origin;
     else {
-      var _origin = typeof opts.origin == "string" ? decode_cell(opts.origin) : opts.origin;
+      var _origin = typeof opts2.origin == "string" ? decode_cell(opts2.origin) : opts2.origin;
       or_R = _origin.r;
       or_C = _origin.c;
     }
   }
-  var sheetRows = Math.min(opts.sheetRows || 1e7, rows.length);
+  var sheetRows = Math.min(opts2.sheetRows || 1e7, rows.length);
   var range3 = { s: { r: 0, c: 0 }, e: { r: or_R, c: or_C } };
   if (ws["!ref"]) {
     var _range = decode_range(ws["!ref"]);
@@ -54722,13 +56382,13 @@ function sheet_add_dom(ws, table10, _opts) {
   for (; _R < rows.length && R < sheetRows; ++_R) {
     var row = rows[_R];
     if (is_dom_element_hidden(row)) {
-      if (opts.display) continue;
+      if (opts2.display) continue;
       rowinfo[R] = { hidden: true };
     }
     var elts = row.cells;
     for (_C = C = 0; _C < elts.length; ++_C) {
       var elt = elts[_C];
-      if (opts.display && is_dom_element_hidden(elt)) continue;
+      if (opts2.display && is_dom_element_hidden(elt)) continue;
       var v2 = elt.hasAttribute("data-v") ? elt.getAttribute("data-v") : elt.hasAttribute("v") ? elt.getAttribute("v") : htmldecode(elt.innerHTML);
       var z = elt.getAttribute("data-z") || elt.getAttribute("z");
       for (midx = 0; midx < merges.length; ++midx) {
@@ -54744,16 +56404,16 @@ function sheet_add_dom(ws, table10, _opts) {
       var _t = elt.getAttribute("data-t") || elt.getAttribute("t") || "";
       if (v2 != null) {
         if (v2.length == 0) o.t = _t || "z";
-        else if (opts.raw || v2.trim().length == 0 || _t == "s") {
+        else if (opts2.raw || v2.trim().length == 0 || _t == "s") {
         } else if (_t == "e" && BErr[+v2]) o = { t: "e", v: +v2, w: BErr[+v2] };
         else if (v2 === "TRUE") o = { t: "b", v: true };
         else if (v2 === "FALSE") o = { t: "b", v: false };
         else if (!isNaN(fuzzynum(v2))) o = { t: "n", v: fuzzynum(v2) };
         else if (!isNaN(fuzzydate(v2).getDate())) {
           o = { t: "d", v: parseDate(v2) };
-          if (opts.UTC) o.v = local_to_utc(o.v);
-          if (!opts.cellDates) o = { t: "n", v: datenum(o.v) };
-          o.z = opts.dateNF || table_fmt[14];
+          if (opts2.UTC) o.v = local_to_utc(o.v);
+          if (!opts2.cellDates) o = { t: "n", v: datenum(o.v) };
+          o.z = opts2.dateNF || table_fmt[14];
         } else if (v2.charCodeAt(0) == 35 && RBErr[v2] != null) o = { t: "e", v: RBErr[v2], w: v2 };
       }
       if (o.z === void 0 && z != null) o.z = z;
@@ -54781,13 +56441,13 @@ function sheet_add_dom(ws, table10, _opts) {
   return ws;
 }
 function parse_dom_table(table10, _opts) {
-  var opts = _opts || {};
+  var opts2 = _opts || {};
   var ws = {};
-  if (opts.dense) ws["!data"] = [];
+  if (opts2.dense) ws["!data"] = [];
   return sheet_add_dom(ws, table10, _opts);
 }
-function table_to_book(table10, opts) {
-  var o = sheet_to_workbook(parse_dom_table(table10, opts), opts);
+function table_to_book(table10, opts2) {
+  var o = sheet_to_workbook(parse_dom_table(table10, opts2), opts2);
   return o;
 }
 function is_dom_element_hidden(element) {
@@ -55078,8 +56738,8 @@ function parse_ods_styles(d, _opts, _nfm) {
   return number_format_map;
 }
 function parse_content_xml(d, _opts, _nfm) {
-  var opts = _opts || {};
-  if (DENSE != null && opts.dense == null) opts.dense = DENSE;
+  var opts2 = _opts || {};
+  if (DENSE != null && opts2.dense == null) opts2.dense = DENSE;
   var str = xlml_normalize(d);
   var state = [], tmp;
   var tag2;
@@ -55088,7 +56748,7 @@ function parse_content_xml(d, _opts, _nfm) {
   var rowtag;
   var Sheets = {}, SheetNames = [];
   var ws = {};
-  if (opts.dense) ws["!data"] = [];
+  if (opts2.dense) ws["!data"] = [];
   var Rn, q;
   var ctag = { value: "" }, ctag2 = {};
   var textp = "", textpidx = 0, textptag, oldtextp = "", oldtextpidx = 0;
@@ -55114,9 +56774,9 @@ function parse_content_xml(d, _opts, _nfm) {
       if (Rn[1] === "/") {
         if (range3.e.c >= range3.s.c && range3.e.r >= range3.s.r) ws["!ref"] = encode_range(range3);
         else ws["!ref"] = "A1:A1";
-        if (opts.sheetRows > 0 && opts.sheetRows <= range3.e.r) {
+        if (opts2.sheetRows > 0 && opts2.sheetRows <= range3.e.r) {
           ws["!fullref"] = ws["!ref"];
-          range3.e.r = opts.sheetRows - 1;
+          range3.e.r = opts2.sheetRows - 1;
           ws["!ref"] = encode_range(range3);
         }
         if (merges.length) ws["!merges"] = merges;
@@ -55132,7 +56792,7 @@ function parse_content_xml(d, _opts, _nfm) {
         range3.s.r = range3.s.c = 1e7;
         range3.e.r = range3.e.c = 0;
         ws = {};
-        if (opts.dense) ws["!data"] = [];
+        if (opts2.dense) ws["!data"] = [];
         merges = [];
         rowinfo = [];
         intable = true;
@@ -55163,9 +56823,9 @@ function parse_content_xml(d, _opts, _nfm) {
         ++C;
         ctag = parsexmltag(Rn[0], false);
         colpeat = parseInt(ctag["number-columns-repeated"] || "1", 10) || 1;
-        if (opts.sheetStubs) {
+        if (opts2.sheetStubs) {
           while (colpeat-- > 0) {
-            if (opts.dense) {
+            if (opts2.dense) {
               if (!ws["!data"][R]) ws["!data"][R] = [];
               ws["!data"][R][C] = { t: "z" };
             } else ws[encode_cell({ r: R, c: C })] = { t: "z" };
@@ -55189,12 +56849,12 @@ function parse_content_xml(d, _opts, _nfm) {
           v: null
           /*:: , z:null, w:"",c:[]*/
         };
-        if (ctag.formula && opts.cellFormula != false) q.f = ods_to_csf_formula(unescapexml(ctag.formula));
+        if (ctag.formula && opts2.cellFormula != false) q.f = ods_to_csf_formula(unescapexml(ctag.formula));
         if (ctag["style-name"] && styles[ctag["style-name"]]) q.z = styles[ctag["style-name"]];
         if ((ctag["\u6570\u636E\u7C7B\u578B"] || ctag["value-type"]) == "string") {
           q.t = "s";
           q.v = unescapexml(ctag["string-value"] || "");
-          if (opts.dense) {
+          if (opts2.dense) {
             if (!ws["!data"][R]) ws["!data"][R] = [];
             ws["!data"][R][C] = q;
           } else {
@@ -55224,7 +56884,7 @@ function parse_content_xml(d, _opts, _nfm) {
           /*:: , z:null, w:"",c:[]*/
         };
         if (ctag["style-name"] && styles[ctag["style-name"]]) q.z = styles[ctag["style-name"]];
-        if (opts.cellFormula) {
+        if (opts2.cellFormula) {
           if (ctag.formula) ctag.formula = unescapexml(ctag.formula);
           if (ctag["number-matrix-columns-spanned"] && ctag["number-matrix-rows-spanned"]) {
             mR = parseInt(ctag["number-matrix-rows-spanned"], 10) || 0;
@@ -55257,7 +56917,7 @@ function parse_content_xml(d, _opts, _nfm) {
           case "float":
             q.t = "n";
             q.v = parseFloat(ctag.value);
-            if (opts.cellDates && q.z && fmt_is_date(q.z)) {
+            if (opts2.cellDates && q.z && fmt_is_date(q.z)) {
               q.v = numdate(q.v + (WB.WBProps.date1904 ? 1462 : 0));
               q.t = typeof q.v == "number" ? "n" : "d";
             }
@@ -55273,7 +56933,7 @@ function parse_content_xml(d, _opts, _nfm) {
           case "date":
             q.t = "d";
             q.v = parseDate(ctag["date-value"], WB.WBProps.date1904);
-            if (!opts.cellDates) {
+            if (!opts2.cellDates) {
               q.t = "n";
               q.v = datenum(q.v, WB.WBProps.date1904);
             }
@@ -55283,7 +56943,7 @@ function parse_content_xml(d, _opts, _nfm) {
           case "time":
             q.t = "n";
             q.v = parse_isodur(ctag["time-value"]) / 86400;
-            if (opts.cellDates) {
+            if (opts2.cellDates) {
               q.v = numdate(q.v);
               q.t = typeof q.v == "number" ? "n" : "d";
             }
@@ -55319,16 +56979,16 @@ function parse_content_xml(d, _opts, _nfm) {
           q.c = comments;
           comments = [];
         }
-        if (textp && opts.cellText !== false) q.w = textp;
+        if (textp && opts2.cellText !== false) q.w = textp;
         if (isstub) {
           q.t = "z";
           delete q.v;
         }
-        if (!isstub || opts.sheetStubs) {
-          if (!(opts.sheetRows && opts.sheetRows <= R)) {
+        if (!isstub || opts2.sheetStubs) {
+          if (!(opts2.sheetRows && opts2.sheetRows <= R)) {
             for (var rpt = 0; rpt < rowpeat; ++rpt) {
               colpeat = parseInt(ctag["number-columns-repeated"] || "1", 10);
-              if (opts.dense) {
+              if (opts2.dense) {
                 if (!ws["!data"][R + rpt]) ws["!data"][R + rpt] = [];
                 ws["!data"][R + rpt][C] = rpt == 0 ? q : dup(q);
                 while (--colpeat > 0) ws["!data"][R + rpt][C + colpeat] = dup(q);
@@ -55907,7 +57567,7 @@ function parse_content_xml(d, _opts, _nfm) {
         case "\u5B57:":
           break;
         default:
-          if (opts.WTF) throw new Error(Rn);
+          if (opts2.WTF) throw new Error(Rn);
       }
   }
   var out = {
@@ -55915,24 +57575,24 @@ function parse_content_xml(d, _opts, _nfm) {
     SheetNames,
     Workbook: WB
   };
-  if (opts.bookSheets) delete /*::(*/
+  if (opts2.bookSheets) delete /*::(*/
   out.Sheets;
   return out;
 }
-function parse_ods(zip, opts) {
-  opts = opts || {};
-  if (safegetzipfile(zip, "META-INF/manifest.xml")) parse_manifest(getzipdata(zip, "META-INF/manifest.xml"), opts);
+function parse_ods(zip, opts2) {
+  opts2 = opts2 || {};
+  if (safegetzipfile(zip, "META-INF/manifest.xml")) parse_manifest(getzipdata(zip, "META-INF/manifest.xml"), opts2);
   var styles = getzipstr(zip, "styles.xml");
-  var Styles = styles && parse_ods_styles(utf8read(styles), opts);
+  var Styles = styles && parse_ods_styles(utf8read(styles), opts2);
   var content = getzipstr(zip, "content.xml");
   if (!content) throw new Error("Missing content.xml in ODS / UOF file");
-  var wb = parse_content_xml(utf8read(content), opts, Styles);
+  var wb = parse_content_xml(utf8read(content), opts2, Styles);
   if (safegetzipfile(zip, "meta.xml")) wb.Props = parse_core_props(getzipdata(zip, "meta.xml"));
   wb.bookType = "ods";
   return wb;
 }
-function parse_fods(data2, opts) {
-  var wb = parse_content_xml(data2, opts);
+function parse_fods(data2, opts2) {
+  var wb = parse_content_xml(data2, opts2);
   wb.bookType = "fods";
   return wb;
 }
@@ -56333,7 +57993,7 @@ function numbers_format_cell(cell, t2, flags2, ofmt, nfmt) {
         cell.w = cell.w.replace(/:(\d\d\d)$/, ".$1");
     }
 }
-function parse_old_storage(buf, lut, v2, opts) {
+function parse_old_storage(buf, lut, v2, opts2) {
   var dv = u8_to_dataview(buf);
   var flags2 = dv.getUint32(4, true);
   var ridx = -1, sidx = -1, zidx = -1, ieee = NaN, dc = 0, dt = new Date(Date.UTC(2001, 0, 1));
@@ -56381,7 +58041,7 @@ function parse_old_storage(buf, lut, v2, opts) {
       break;
     case 5:
       {
-        if (opts == null ? void 0 : opts.cellDates)
+        if (opts2 == null ? void 0 : opts2.cellDates)
           ret = { t: "d", v: dt };
         else
           ret = { t: "n", v: dc / 86400 + 35430, z: table_fmt[14] };
@@ -56416,7 +58076,7 @@ function parse_old_storage(buf, lut, v2, opts) {
     ret.v /= 86400;
   return ret;
 }
-function parse_new_storage(buf, lut, opts) {
+function parse_new_storage(buf, lut, opts2) {
   var dv = u8_to_dataview(buf);
   var flags2 = dv.getUint32(4, true);
   var fields = dv.getUint32(8, true);
@@ -56466,7 +58126,7 @@ function parse_new_storage(buf, lut, opts) {
       break;
     case 5:
       {
-        if (opts == null ? void 0 : opts.cellDates)
+        if (opts2 == null ? void 0 : opts2.cellDates)
           ret = { t: "d", v: dt };
         else
           ret = { t: "n", v: dc / 86400 + 35430, z: table_fmt[14] };
@@ -56516,16 +58176,16 @@ function parse_new_storage(buf, lut, opts) {
     ret.v /= 86400;
   return ret;
 }
-function parse_cell_storage(buf, lut, opts) {
+function parse_cell_storage(buf, lut, opts2) {
   switch (buf[0]) {
     case 0:
     case 1:
     case 2:
     case 3:
     case 4:
-      return parse_old_storage(buf, lut, buf[0], opts);
+      return parse_old_storage(buf, lut, buf[0], opts2);
     case 5:
-      return parse_new_storage(buf, lut, opts);
+      return parse_new_storage(buf, lut, opts2);
     default:
       throw new Error("Unsupported payload version ".concat(buf[0]));
   }
@@ -56696,7 +58356,7 @@ function iwa_to_s5s_comment(iwa) {
     });
   return out;
 }
-function parse_TST_TableModelArchive(M2, root, ws, opts) {
+function parse_TST_TableModelArchive(M2, root, ws, opts2) {
   var _a2, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
   var pb = parse_shallow(root.data);
   var range3 = { s: { r: 0, c: 0 }, e: { r: 0, c: 0 } };
@@ -56745,7 +58405,7 @@ function parse_TST_TableModelArchive(M2, root, ws, opts) {
     var _tile = parse_TST_Tile(M2, ref2);
     _tile.data.forEach(function(row, R) {
       row.forEach(function(buf, C) {
-        var res = parse_cell_storage(buf, lut, opts);
+        var res = parse_cell_storage(buf, lut, opts2);
         if (res) {
           if (dense) {
             if (!dws["!data"][_R + R])
@@ -56809,19 +58469,19 @@ function parse_TST_TableModelArchive(M2, root, ws, opts) {
     }
   }
 }
-function parse_TST_TableInfoArchive(M2, root, opts) {
+function parse_TST_TableInfoArchive(M2, root, opts2) {
   var pb = parse_shallow(root.data);
   var out = { "!ref": "A1" };
-  if (opts == null ? void 0 : opts.dense)
+  if (opts2 == null ? void 0 : opts2.dense)
     out["!data"] = [];
   var tableref = M2[parse_TSP_Reference(pb[2][0].data)];
   var mtype = varint_to_i32(tableref[0].meta[1][0].data);
   if (mtype != 6001)
     throw new Error("6000 unexpected reference to ".concat(mtype));
-  parse_TST_TableModelArchive(M2, tableref[0], out, opts);
+  parse_TST_TableModelArchive(M2, tableref[0], out, opts2);
   return out;
 }
-function parse_TN_SheetArchive(M2, root, opts) {
+function parse_TN_SheetArchive(M2, root, opts2) {
   var _a2;
   var pb = parse_shallow(root.data);
   var out = {
@@ -56833,12 +58493,12 @@ function parse_TN_SheetArchive(M2, root, opts) {
     M2[off3].forEach(function(m) {
       var mtype = varint_to_i32(m.meta[1][0].data);
       if (mtype == 6e3)
-        out.sheets.push(parse_TST_TableInfoArchive(M2, m, opts));
+        out.sheets.push(parse_TST_TableInfoArchive(M2, m, opts2));
     });
   });
   return out;
 }
-function parse_TN_DocumentArchive(M2, root, opts) {
+function parse_TN_DocumentArchive(M2, root, opts2) {
   var _a2;
   var out = book_new();
   out.Workbook = { WBProps: { date1904: true } };
@@ -56850,7 +58510,7 @@ function parse_TN_DocumentArchive(M2, root, opts) {
     M2[off3].forEach(function(m) {
       var mtype = varint_to_i32(m.meta[1][0].data);
       if (mtype == 2) {
-        var root2 = parse_TN_SheetArchive(M2, m, opts);
+        var root2 = parse_TN_SheetArchive(M2, m, opts2);
         root2.sheets.forEach(function(sheet, idx) {
           book_append_sheet(out, sheet, idx == 0 ? root2.name : root2.name + "_" + idx, true);
         });
@@ -56862,7 +58522,7 @@ function parse_TN_DocumentArchive(M2, root, opts) {
   out.bookType = "numbers";
   return out;
 }
-function parse_numbers_iwa(cfb, opts) {
+function parse_numbers_iwa(cfb, opts2) {
   var _a2, _b2, _c, _d, _e, _f, _g;
   var M2 = {}, indices = [];
   cfb.FullPaths.forEach(function(p) {
@@ -56910,18 +58570,18 @@ function parse_numbers_iwa(cfb, opts) {
     });
   if (!docroot)
     throw new Error("Cannot find Document root");
-  return parse_TN_DocumentArchive(M2, docroot, opts);
+  return parse_TN_DocumentArchive(M2, docroot, opts2);
 }
 function fix_opts_func(defaults) {
-  return function fix_opts(opts) {
+  return function fix_opts(opts2) {
     for (var i = 0; i != defaults.length; ++i) {
       var d = defaults[i];
-      if (opts[d[0]] === void 0) opts[d[0]] = d[1];
-      if (d[2] === "n") opts[d[0]] = Number(opts[d[0]]);
+      if (opts2[d[0]] === void 0) opts2[d[0]] = d[1];
+      if (d[2] === "n") opts2[d[0]] = Number(opts2[d[0]]);
     }
   };
 }
-function fix_read_opts(opts) {
+function fix_read_opts(opts2) {
   fix_opts_func([
     ["cellNF", false],
     /* emit cell number format string as .z */
@@ -56953,7 +58613,7 @@ function fix_read_opts(opts) {
     /* password */
     ["WTF", false]
     /* WTF mode (throws errors) */
-  ])(opts);
+  ])(opts2);
 }
 function get_sheet_type(n2) {
   if (RELS.WS.indexOf(n2) > -1) return "sheet";
@@ -56974,36 +58634,36 @@ function safe_parse_wbrels(wbrels, sheets2) {
   }
   return !wbrels || wbrels.length === 0 ? null : wbrels;
 }
-function parse_sheet_legacy_drawing(sheet, type, zip, path, idx, opts, wb, comments) {
+function parse_sheet_legacy_drawing(sheet, type, zip, path, idx, opts2, wb, comments) {
   if (!sheet || !sheet["!legdrawel"]) return;
   var dfile = resolve_path(sheet["!legdrawel"].Target, path);
   var draw2 = getzipstr(zip, dfile, true);
   if (draw2) parse_vml(utf8read(draw2), sheet, comments || []);
 }
-function safe_parse_sheet(zip, path, relsPath, sheet, idx, sheetRels, sheets2, stype, opts, wb, themes, styles) {
+function safe_parse_sheet(zip, path, relsPath, sheet, idx, sheetRels, sheets2, stype, opts2, wb, themes, styles) {
   try {
     sheetRels[sheet] = parse_rels(getzipstr(zip, relsPath, true), path);
     var data2 = getzipdata(zip, path);
     var _ws;
     switch (stype) {
       case "sheet":
-        _ws = parse_ws(data2, path, idx, opts, sheetRels[sheet], wb, themes, styles);
+        _ws = parse_ws(data2, path, idx, opts2, sheetRels[sheet], wb, themes, styles);
         break;
       case "chart":
-        _ws = parse_cs(data2, path, idx, opts, sheetRels[sheet], wb, themes, styles);
+        _ws = parse_cs(data2, path, idx, opts2, sheetRels[sheet], wb, themes, styles);
         if (!_ws || !_ws["!drawel"]) break;
         var dfile = resolve_path(_ws["!drawel"].Target, path);
         var drelsp = get_rels_path(dfile);
         var draw2 = parse_drawing(getzipstr(zip, dfile, true), parse_rels(getzipstr(zip, drelsp, true), dfile));
         var chartp = resolve_path(draw2, dfile);
         var crelsp = get_rels_path(chartp);
-        _ws = parse_chart(getzipstr(zip, chartp, true), chartp, opts, parse_rels(getzipstr(zip, crelsp, true), chartp), wb, _ws);
+        _ws = parse_chart(getzipstr(zip, chartp, true), chartp, opts2, parse_rels(getzipstr(zip, crelsp, true), chartp), wb, _ws);
         break;
       case "macro":
-        _ws = parse_ms(data2, path, idx, opts, sheetRels[sheet], wb, themes, styles);
+        _ws = parse_ms(data2, path, idx, opts2, sheetRels[sheet], wb, themes, styles);
         break;
       case "dialog":
-        _ws = parse_ds(data2, path, idx, opts, sheetRels[sheet], wb, themes, styles);
+        _ws = parse_ds(data2, path, idx, opts2, sheetRels[sheet], wb, themes, styles);
         break;
       default:
         throw new Error("Unrecognized sheet type " + stype);
@@ -57014,39 +58674,39 @@ function safe_parse_sheet(zip, path, relsPath, sheet, idx, sheetRels, sheets2, s
       var dfile2 = "";
       if (sheetRels[sheet][n2].Type == RELS.CMNT) {
         dfile2 = resolve_path(sheetRels[sheet][n2].Target, path);
-        comments = parse_cmnt(getzipdata(zip, dfile2, true), dfile2, opts);
+        comments = parse_cmnt(getzipdata(zip, dfile2, true), dfile2, opts2);
         if (!comments || !comments.length) return;
         sheet_insert_comments(_ws, comments, false);
       }
       if (sheetRels[sheet][n2].Type == RELS.TCMNT) {
         dfile2 = resolve_path(sheetRels[sheet][n2].Target, path);
-        tcomments = tcomments.concat(parse_tcmnt_xml(getzipdata(zip, dfile2, true), opts));
+        tcomments = tcomments.concat(parse_tcmnt_xml(getzipdata(zip, dfile2, true), opts2));
       }
     });
-    if (tcomments && tcomments.length) sheet_insert_comments(_ws, tcomments, true, opts.people || []);
-    parse_sheet_legacy_drawing(_ws, stype, zip, path, idx, opts, wb, comments);
+    if (tcomments && tcomments.length) sheet_insert_comments(_ws, tcomments, true, opts2.people || []);
+    parse_sheet_legacy_drawing(_ws, stype, zip, path, idx, opts2, wb, comments);
   } catch (e) {
-    if (opts.WTF) throw e;
+    if (opts2.WTF) throw e;
   }
 }
 function strip_front_slash(x) {
   return x.charAt(0) == "/" ? x.slice(1) : x;
 }
-function parse_zip(zip, opts) {
+function parse_zip(zip, opts2) {
   make_ssf();
-  opts = opts || {};
-  fix_read_opts(opts);
-  if (safegetzipfile(zip, "META-INF/manifest.xml")) return parse_ods(zip, opts);
-  if (safegetzipfile(zip, "objectdata.xml")) return parse_ods(zip, opts);
+  opts2 = opts2 || {};
+  fix_read_opts(opts2);
+  if (safegetzipfile(zip, "META-INF/manifest.xml")) return parse_ods(zip, opts2);
+  if (safegetzipfile(zip, "objectdata.xml")) return parse_ods(zip, opts2);
   if (safegetzipfile(zip, "Index/Document.iwa")) {
     if (typeof Uint8Array == "undefined") throw new Error("NUMBERS file parsing requires Uint8Array support");
     if (typeof parse_numbers_iwa != "undefined") {
-      if (zip.FileIndex) return parse_numbers_iwa(zip, opts);
+      if (zip.FileIndex) return parse_numbers_iwa(zip, opts2);
       var _zip = CFB.utils.cfb_new();
       zipentries(zip).forEach(function(e) {
         zip_add_file(_zip, e, getzipbin(zip, e));
       });
-      return parse_numbers_iwa(_zip, opts);
+      return parse_numbers_iwa(_zip, opts2);
     }
     throw new Error("Unsupported NUMBERS file");
   }
@@ -57055,11 +58715,11 @@ function parse_zip(zip, opts) {
     if (safegetzipfile(zip, "index.xml")) throw new Error("Unsupported NUMBERS 09 file");
     var index_zip = CFB.find(zip, "Index.zip");
     if (index_zip) {
-      opts = dup(opts);
-      delete opts.type;
-      if (typeof index_zip.content == "string") opts.type = "binary";
-      if (typeof Bun !== "undefined" && Buffer.isBuffer(index_zip.content)) return readSync(new Uint8Array(index_zip.content), opts);
-      return readSync(index_zip.content, opts);
+      opts2 = dup(opts2);
+      delete opts2.type;
+      if (typeof index_zip.content == "string") opts2.type = "binary";
+      if (typeof Bun !== "undefined" && Buffer.isBuffer(index_zip.content)) return readSync(new Uint8Array(index_zip.content), opts2);
+      return readSync(index_zip.content, opts2);
     }
     throw new Error("Unsupported ZIP file");
   }
@@ -57080,56 +58740,56 @@ function parse_zip(zip, opts) {
   if (dir.workbooks[0].slice(-3) == "bin") xlsb = true;
   var themes = {};
   var styles = {};
-  if (!opts.bookSheets && !opts.bookProps) {
+  if (!opts2.bookSheets && !opts2.bookProps) {
     strs = [];
     if (dir.sst) try {
-      strs = parse_sst(getzipdata(zip, strip_front_slash(dir.sst)), dir.sst, opts);
+      strs = parse_sst(getzipdata(zip, strip_front_slash(dir.sst)), dir.sst, opts2);
     } catch (e) {
-      if (opts.WTF) throw e;
+      if (opts2.WTF) throw e;
     }
-    if (opts.cellStyles && dir.themes.length) themes = parse_theme_xml(getzipstr(zip, dir.themes[0].replace(/^\//, ""), true) || "", opts);
-    if (dir.style) styles = parse_sty(getzipdata(zip, strip_front_slash(dir.style)), dir.style, themes, opts);
+    if (opts2.cellStyles && dir.themes.length) themes = parse_theme_xml(getzipstr(zip, dir.themes[0].replace(/^\//, ""), true) || "", opts2);
+    if (dir.style) styles = parse_sty(getzipdata(zip, strip_front_slash(dir.style)), dir.style, themes, opts2);
   }
   dir.links.map(function(link) {
     try {
       var rels = parse_rels(getzipstr(zip, get_rels_path(strip_front_slash(link))), link);
-      return parse_xlink(getzipdata(zip, strip_front_slash(link)), rels, link, opts);
+      return parse_xlink(getzipdata(zip, strip_front_slash(link)), rels, link, opts2);
     } catch (e) {
     }
   });
-  var wb = parse_wb(getzipdata(zip, strip_front_slash(dir.workbooks[0])), dir.workbooks[0], opts);
+  var wb = parse_wb(getzipdata(zip, strip_front_slash(dir.workbooks[0])), dir.workbooks[0], opts2);
   var props = {}, propdata = "";
   if (dir.coreprops.length) {
     propdata = getzipdata(zip, strip_front_slash(dir.coreprops[0]), true);
     if (propdata) props = parse_core_props(propdata);
     if (dir.extprops.length !== 0) {
       propdata = getzipdata(zip, strip_front_slash(dir.extprops[0]), true);
-      if (propdata) parse_ext_props(propdata, props, opts);
+      if (propdata) parse_ext_props(propdata, props, opts2);
     }
   }
   var custprops = {};
-  if (!opts.bookSheets || opts.bookProps) {
+  if (!opts2.bookSheets || opts2.bookProps) {
     if (dir.custprops.length !== 0) {
       propdata = getzipstr(zip, strip_front_slash(dir.custprops[0]), true);
-      if (propdata) custprops = parse_cust_props(propdata, opts);
+      if (propdata) custprops = parse_cust_props(propdata, opts2);
     }
   }
   var out = {};
-  if (opts.bookSheets || opts.bookProps) {
+  if (opts2.bookSheets || opts2.bookProps) {
     if (wb.Sheets) sheets2 = wb.Sheets.map(function pluck(x) {
       return x.name;
     });
     else if (props.Worksheets && props.SheetNames.length > 0) sheets2 = props.SheetNames;
-    if (opts.bookProps) {
+    if (opts2.bookProps) {
       out.Props = props;
       out.Custprops = custprops;
     }
-    if (opts.bookSheets && typeof sheets2 !== "undefined") out.SheetNames = sheets2;
-    if (opts.bookSheets ? out.SheetNames : opts.bookProps) return out;
+    if (opts2.bookSheets && typeof sheets2 !== "undefined") out.SheetNames = sheets2;
+    if (opts2.bookSheets ? out.SheetNames : opts2.bookProps) return out;
   }
   sheets2 = {};
   var deps = {};
-  if (opts.bookDeps && dir.calcchain) deps = parse_cc(getzipdata(zip, strip_front_slash(dir.calcchain)), dir.calcchain, opts);
+  if (opts2.bookDeps && dir.calcchain) deps = parse_cc(getzipdata(zip, strip_front_slash(dir.calcchain)), dir.calcchain, opts2);
   var i = 0;
   var sheetRels = {};
   var path, relsPath;
@@ -57147,10 +58807,10 @@ function parse_zip(zip, opts) {
   if (!safegetzipfile(zip, wbrelsfile)) wbrelsfile = "xl/_rels/workbook." + wbext + ".rels";
   var wbrels = parse_rels(getzipstr(zip, wbrelsfile, true), wbrelsfile.replace(/_rels.*/, "s5s"));
   if ((dir.metadata || []).length >= 1) {
-    opts.xlmeta = parse_xlmeta(getzipdata(zip, strip_front_slash(dir.metadata[0])), dir.metadata[0], opts);
+    opts2.xlmeta = parse_xlmeta(getzipdata(zip, strip_front_slash(dir.metadata[0])), dir.metadata[0], opts2);
   }
   if ((dir.people || []).length >= 1) {
-    opts.people = parse_people_xml(getzipdata(zip, strip_front_slash(dir.people[0])), opts);
+    opts2.people = parse_people_xml(getzipdata(zip, strip_front_slash(dir.people[0])), opts2);
   }
   if (wbrels) wbrels = safe_parse_wbrels(wbrels, wb.Sheets);
   var nmode = getzipdata(zip, "xl/worksheets/sheet.xml", true) ? 1 : 0;
@@ -57166,24 +58826,24 @@ function parse_zip(zip, opts) {
       path = path.replace(/sheet0\./, "sheet.");
     }
     relsPath = path.replace(/^(.*)(\/)([^\/]*)$/, "$1/_rels/$3.rels");
-    if (opts && opts.sheets != null) switch (typeof opts.sheets) {
+    if (opts2 && opts2.sheets != null) switch (typeof opts2.sheets) {
       case "number":
-        if (i != opts.sheets) continue wsloop;
+        if (i != opts2.sheets) continue wsloop;
         break;
       case "string":
-        if (props.SheetNames[i].toLowerCase() != opts.sheets.toLowerCase()) continue wsloop;
+        if (props.SheetNames[i].toLowerCase() != opts2.sheets.toLowerCase()) continue wsloop;
         break;
       default:
-        if (Array.isArray && Array.isArray(opts.sheets)) {
+        if (Array.isArray && Array.isArray(opts2.sheets)) {
           var snjseen = false;
-          for (var snj = 0; snj != opts.sheets.length; ++snj) {
-            if (typeof opts.sheets[snj] == "number" && opts.sheets[snj] == i) snjseen = 1;
-            if (typeof opts.sheets[snj] == "string" && opts.sheets[snj].toLowerCase() == props.SheetNames[i].toLowerCase()) snjseen = 1;
+          for (var snj = 0; snj != opts2.sheets.length; ++snj) {
+            if (typeof opts2.sheets[snj] == "number" && opts2.sheets[snj] == i) snjseen = 1;
+            if (typeof opts2.sheets[snj] == "string" && opts2.sheets[snj].toLowerCase() == props.SheetNames[i].toLowerCase()) snjseen = 1;
           }
           if (!snjseen) continue wsloop;
         }
     }
-    safe_parse_sheet(zip, path, relsPath, props.SheetNames[i], i, sheetRels, sheets2, stype, opts, wb, themes, styles);
+    safe_parse_sheet(zip, path, relsPath, props.SheetNames[i], i, sheetRels, sheets2, stype, opts2, wb, themes, styles);
   }
   out = {
     Directory: dir,
@@ -57198,7 +58858,7 @@ function parse_zip(zip, opts) {
     Themes: themes,
     SSF: dup(table_fmt)
   };
-  if (opts && opts.bookFiles) {
+  if (opts2 && opts2.bookFiles) {
     if (zip.files) {
       out.keys = entries;
       out.files = zip.files;
@@ -57212,7 +58872,7 @@ function parse_zip(zip, opts) {
       });
     }
   }
-  if (opts && opts.bookVBA) {
+  if (opts2 && opts2.bookVBA) {
     if (dir.vba.length > 0) out.vbaraw = getzipdata(zip, strip_front_slash(dir.vba[0]), true);
     else if (dir.defaults && dir.defaults.bin === CT_VBA) out.vbaraw = getzipdata(zip, "xl/vbaProject.bin", true);
   }
@@ -57220,7 +58880,7 @@ function parse_zip(zip, opts) {
   return out;
 }
 function parse_xlsxcfb(cfb, _opts) {
-  var opts = _opts || {};
+  var opts2 = _opts || {};
   var f = "Workbook", data2 = CFB.find(cfb, f);
   try {
     f = "/!DataSpaces/Version";
@@ -57252,8 +58912,8 @@ function parse_xlsxcfb(cfb, _opts) {
   f = "/EncryptedPackage";
   data2 = CFB.find(cfb, f);
   if (!data2 || !data2.content) throw new Error("ECMA-376 Encrypted file missing " + f);
-  if (einfo[0] == 4 && typeof decrypt_agile !== "undefined") return decrypt_agile(einfo[1], data2.content, opts.password || "", opts);
-  if (einfo[0] == 2 && typeof decrypt_std76 !== "undefined") return decrypt_std76(einfo[1], data2.content, opts.password || "", opts);
+  if (einfo[0] == 4 && typeof decrypt_agile !== "undefined") return decrypt_agile(einfo[1], data2.content, opts2.password || "", opts2);
+  if (einfo[0] == 2 && typeof decrypt_std76 !== "undefined") return decrypt_std76(einfo[1], data2.content, opts2.password || "", opts2);
   throw new Error("File is password-protected");
 }
 function firstbyte(f, o) {
@@ -57274,13 +58934,13 @@ function firstbyte(f, o) {
   }
   return [x.charCodeAt(0), x.charCodeAt(1), x.charCodeAt(2), x.charCodeAt(3), x.charCodeAt(4), x.charCodeAt(5), x.charCodeAt(6), x.charCodeAt(7)];
 }
-function read_cfb(cfb, opts) {
-  if (CFB.find(cfb, "EncryptedPackage")) return parse_xlsxcfb(cfb, opts);
-  return parse_xlscfb(cfb, opts);
+function read_cfb(cfb, opts2) {
+  if (CFB.find(cfb, "EncryptedPackage")) return parse_xlsxcfb(cfb, opts2);
+  return parse_xlscfb(cfb, opts2);
 }
-function read_zip(data2, opts) {
+function read_zip(data2, opts2) {
   var zip, d = data2;
-  var o = opts || {};
+  var o = opts2 || {};
   if (!o.type) o.type = has_buf && Buffer.isBuffer(data2) ? "buffer" : "base64";
   zip = zip_read(d, o);
   return parse_zip(zip, o);
@@ -57340,9 +59000,9 @@ function read_prn(data2, d, o, str) {
   }
   return PRN.to_workbook(d, o);
 }
-function readSync(data2, opts) {
+function readSync(data2, opts2) {
   reset_cp();
-  var o = opts || {};
+  var o = opts2 || {};
   if (o.codepage && typeof $cptable === "undefined") console.error("Codepage tables are not loaded.  Non-ASCII characters may not give expected results");
   if (typeof ArrayBuffer !== "undefined" && data2 instanceof ArrayBuffer) return readSync(new Uint8Array(data2), (o = dup(o), o.type = "array", o));
   if (typeof Int8Array !== "undefined" && data2 instanceof Int8Array) return readSync(new Uint8Array(data2.buffer, data2.byteOffset, data2.length), o);
@@ -57489,11 +59149,11 @@ function make_json_row(sheet, r, R, cols, header, hdr, o) {
   }
   return { row, isempty };
 }
-function sheet_to_json(sheet, opts) {
+function sheet_to_json(sheet, opts2) {
   if (sheet == null || sheet["!ref"] == null) return [];
   var val3 = { t: "n", v: 0 }, header = 0, offset2 = 1, hdr = [], v2 = 0, vv = "";
   var r = { s: { r: 0, c: 0 }, e: { r: 0, c: 0 } };
-  var o = opts || {};
+  var o = opts2 || {};
   var range3 = o.range != null ? o.range : sheet["!ref"];
   if (o.header === 1) header = 1;
   else if (o.header === "A") header = 2;
@@ -57587,9 +59247,9 @@ function make_csv_row(sheet, r, R, cols, fs, rs, FS, w, o) {
   if (o.blankrows === false && isempty) return null;
   return row.join(FS);
 }
-function sheet_to_csv(sheet, opts) {
+function sheet_to_csv(sheet, opts2) {
   var out = [];
-  var o = opts == null ? {} : opts;
+  var o = opts2 == null ? {} : opts2;
   if (sheet == null || sheet["!ref"] == null) return "";
   var r = safe_decode_range(sheet["!ref"]);
   var FS = o.FS !== void 0 ? o.FS : ",", fs = FS.charCodeAt(0);
@@ -57609,16 +59269,16 @@ function sheet_to_csv(sheet, opts) {
   }
   return out.join("");
 }
-function sheet_to_txt(sheet, opts) {
-  if (!opts) opts = {};
-  opts.FS = "	";
-  opts.RS = "\n";
-  var s2 = sheet_to_csv(sheet, opts);
-  if (typeof $cptable == "undefined" || opts.type == "string") return s2;
+function sheet_to_txt(sheet, opts2) {
+  if (!opts2) opts2 = {};
+  opts2.FS = "	";
+  opts2.RS = "\n";
+  var s2 = sheet_to_csv(sheet, opts2);
+  if (typeof $cptable == "undefined" || opts2.type == "string") return s2;
   var o = $cptable.utils.encode(1200, s2, "str");
   return String.fromCharCode(255) + String.fromCharCode(254) + o;
 }
-function sheet_to_formulae(sheet, opts) {
+function sheet_to_formulae(sheet, opts2) {
   var y = "", x, val3 = "";
   if (sheet == null || sheet["!ref"] == null) return [];
   var r = safe_decode_range(sheet["!ref"]), rr = "", cols = [], C;
@@ -57639,7 +59299,7 @@ function sheet_to_formulae(sheet, opts) {
         if (y.indexOf(":") == -1) y = y + ":" + y;
       }
       if (x.f != null) val3 = x.f;
-      else if (opts && opts.values === false) continue;
+      else if (opts2 && opts2.values === false) continue;
       else if (x.t == "z") continue;
       else if (x.t == "n" && x.v != null) val3 = "" + x.v;
       else if (x.t == "b") val3 = x.v ? "TRUE" : "FALSE";
@@ -57652,8 +59312,8 @@ function sheet_to_formulae(sheet, opts) {
   }
   return cmds;
 }
-function sheet_add_json(_ws, js, opts) {
-  var o = opts || {};
+function sheet_add_json(_ws, js, opts2) {
+  var o = opts2 || {};
   var dense = _ws ? _ws["!data"] != null : o.dense;
   if (DENSE != null && dense == null) dense = DENSE;
   var offset2 = +!o.skipHeader;
@@ -57738,8 +59398,8 @@ function sheet_add_json(_ws, js, opts) {
   ws["!ref"] = encode_range(range3);
   return ws;
 }
-function json_to_sheet(js, opts) {
-  return sheet_add_json(null, js, opts);
+function json_to_sheet(js, opts2) {
+  return sheet_add_json(null, js, opts2);
 }
 function ws_get_cell_stub(ws, R, C) {
   if (typeof R == "string") {
@@ -58243,11 +59903,11 @@ var inflt = function(dat, st, buf, dict) {
 };
 var et = /* @__PURE__ */ new u8(0);
 var Inflate = /* @__PURE__ */ (function() {
-  function Inflate2(opts, cb) {
-    if (typeof opts == "function")
-      cb = opts, opts = {};
+  function Inflate2(opts2, cb) {
+    if (typeof opts2 == "function")
+      cb = opts2, opts2 = {};
     this.ondata = cb;
-    var dict = opts && opts.dictionary && opts.dictionary.subarray(-32768);
+    var dict = opts2 && opts2.dictionary && opts2.dictionary.subarray(-32768);
     this.s = { i: 0, b: dict ? dict.length : 0 };
     this.o = new u8(32768);
     this.p = new u8(0);
@@ -58330,7 +59990,7 @@ function inspectZip(buffer2, maxExpanded = 30 * 1024 * 1024, maxEntries = 2e3) {
       if (pos + 4 <= offset2 && v2.getUint32(pos, true) === 134695760) pos += 4;
       ensure(pos + 12 <= offset2 && v2.getUint32(pos, true) === crc && v2.getUint32(pos + 4, true) === packed && v2.getUint32(pos + 8, true) === expanded, "ZIP\u30C7\u30FC\u30BF\u8A18\u8FF0\u5B50\u304C\u4E0D\u4E00\u81F4");
       rangeEnd = pos + 12;
-      for (const [off3, value] of [[14, crc], [18, packed], [22, expanded]]) ensure(v2.getUint32(local + off3, true) === 0 || v2.getUint32(local + off3, true) === value, "ZIP\u30ED\u30FC\u30AB\u30EB\u30B5\u30A4\u30BA\u304C\u4E0D\u4E00\u81F4");
+      for (const [off3, value2] of [[14, crc], [18, packed], [22, expanded]]) ensure(v2.getUint32(local + off3, true) === 0 || v2.getUint32(local + off3, true) === value2, "ZIP\u30ED\u30FC\u30AB\u30EB\u30B5\u30A4\u30BA\u304C\u4E0D\u4E00\u81F4");
     } else ensure(v2.getUint32(local + 14, true) === crc && v2.getUint32(local + 18, true) === packed && v2.getUint32(local + 22, true) === expanded, "ZIP\u30ED\u30FC\u30AB\u30EBCRC\u30FB\u30B5\u30A4\u30BA\u304C\u4E0D\u4E00\u81F4");
     let actual = 0, checksum = 4294967295;
     const consume = (chunk) => {
@@ -58353,1421 +60013,6 @@ function inspectZip(buffer2, maxExpanded = 30 * 1024 * 1024, maxEntries = 2e3) {
   ranges.sort((a, b) => a.start - b.start);
   ensure(ranges[0].start === 0 && ranges.every((r, i) => r.end <= (i + 1 < ranges.length ? ranges[i + 1].start : offset2)), "ZIP\u9818\u57DF\u91CD\u8907\u30FB\u5148\u982D\u30C7\u30FC\u30BF\u304C\u4E0D\u6B63");
   return { names: [...names], total };
-}
-
-// src/roster.ts
-function collectRoster(t2) {
-  const players = new Map((t2.roster ?? []).map((p) => [p.id, p]));
-  const clubs = new Set(t2.clubs ?? []);
-  for (const e of t2.events) for (const entry of e.entries) {
-    if (entry.club.trim() && !(e.type === "doubles" && entry.pairNo !== void 0 && entry.club.includes("\uFF0F"))) clubs.add(entry.club.trim());
-    const separator = /[／/\n]/;
-    const names = entry.name.split(separator.test(entry.name) ? separator : /・/).map((n2) => n2.trim());
-    entry.players.forEach((id, i) => {
-      if (id.startsWith("TEAM-PENDING-")) return;
-      const name6 = e.type === "singles" ? entry.name : e.type === "doubles" && names.length === 2 ? names[i] : id;
-      const old = players.get(id);
-      if (!old || e.type === "singles" && !old.teamId) players.set(id, { ...old, id, name: name6, club: entry.club, kana: old?.kana ?? entry.kana, gender: old?.gender ?? entry.gender, grade: old?.grade ?? entry.grade });
-      else if (!old.club && entry.club) players.set(id, { ...old, club: entry.club });
-    });
-  }
-  return { players: [...players.values()], clubs: [...clubs] };
-}
-function preserveRoster(t2) {
-  const { players, clubs } = collectRoster(t2);
-  if (players.length || t2.roster) t2.roster = players;
-  if (clubs.length || t2.clubs) t2.clubs = clubs;
-}
-function deletionSummary(t2, id) {
-  const event = eventOf(t2, id), matches = t2.matches.filter((m) => m.eventId === id && m.status !== "bye");
-  return { name: event.name, entrants: event.entries.length, players: new Set(event.entries.flatMap((p) => p.players).filter((p) => !p.startsWith("TEAM-PENDING-"))).size, matches: matches.length, results: matches.filter((m) => m.status === "completed" || m.rubbers?.some((r) => r.games.length)).length };
-}
-function deleteEvent(t2, id) {
-  return atomicMutation(t2, (d) => {
-    eventOf(d, id);
-    preserveRoster(d);
-    const stages = new Set(d.stages.filter((s2) => s2.eventId === id).map((s2) => s2.id));
-    const groups = new Set(d.stages.filter((s2) => stages.has(s2.id)).flatMap((s2) => s2.groups.map((g) => g.id)));
-    const removed = new Set(d.matches.filter((m) => m.eventId === id).map((m) => m.id));
-    for (const a of d.archives ?? []) {
-      for (const s2 of a.stages.filter((s3) => s3.eventId === id)) s2.groups.forEach((g) => groups.add(g.id));
-      for (const m of a.matches.filter((m2) => m2.eventId === id)) removed.add(m.id);
-      a.stages = a.stages.filter((s2) => s2.eventId !== id);
-      a.matches = a.matches.filter((m) => m.eventId !== id);
-      if (a.events) a.events = a.events.filter((e) => e.id !== id);
-    }
-    ensure(d.matches.every((m) => m.eventId === id || m.deps.every((x) => !removed.has(x))), "\u4ED6\u7A2E\u76EE\u306E\u8A66\u5408\u304C\u5BFE\u8C61\u7A2E\u76EE\u3092\u53C2\u7167\u3057\u3066\u3044\u307E\u3059");
-    d.events = d.events.filter((e) => e.id !== id);
-    d.stages = d.stages.filter((s2) => !stages.has(s2.id));
-    d.matches = d.matches.filter((m) => !removed.has(m.id));
-    if (d.rulings) d.rulings = d.rulings.filter((r) => !groups.has(r.groupId));
-    if (d.corrections) d.corrections = d.corrections.filter((c) => !removed.has(c.matchId));
-    if (d.archives) d.archives = d.archives.filter((a) => a.stages.length || a.matches.length || a.events?.length);
-  });
-}
-
-// src/registration.ts
-var key = (s2) => s2.normalize("NFKC").trim().replace(/\s+/g, " ").toLowerCase();
-function registrationView(t2) {
-  const { players, clubs } = collectRoster(t2);
-  const teams = [...t2.registrationTeams ?? []];
-  for (const name6 of clubs) if (name6.trim() && name6.length <= 120 && !teams.some((x) => key(x.name) === key(name6))) {
-    let n2 = teams.length + 1;
-    while (teams.some((x) => x.id === "legacy-club-" + n2)) n2++;
-    teams.push({ id: "legacy-club-" + n2, name: name6 });
-  }
-  const byClub = new Map(teams.map((x) => [key(x.name), x.id]));
-  return { teams, players: players.map((p) => ({ ...p, teamId: p.teamId ?? byClub.get(key(p.club)) })) };
-}
-function initializeRegistration(t2) {
-  const { teams, players } = registrationView(t2);
-  t2.registrationTeams = teams;
-  t2.roster = players;
-}
-function registerTeam(t2, name6) {
-  const normalized = name6.trim();
-  ensure(normalized && normalized.length <= 120, "\u6240\u5C5E\u30C1\u30FC\u30E0\u540D\u306F1\u301C120\u6587\u5B57\u3067\u3059");
-  const found = t2.registrationTeams.find((x) => key(x.name) === key(normalized));
-  if (found) return found;
-  const team = { id: uid(), name: normalized };
-  t2.registrationTeams.push(team);
-  return team;
-}
-function nextTeamRank(t2, teamId) {
-  return Math.max(0, ...(t2.roster ?? []).filter((p) => p.teamId === teamId).map((p) => p.teamRank ?? 0)) + 1;
-}
-function putParticipant(t2, input3, id) {
-  const name6 = input3.name.trim(), team = t2.registrationTeams.find((x) => x.id === input3.teamId);
-  ensure(name6 && name6.length <= 120 && team, "\u6C0F\u540D\u3068\u6240\u5C5E\u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
-  const p = t2.roster.find((x) => x.id === id);
-  ensure(!id || p, "\u9078\u624BID\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
-  ensure(!p || p.teamId === team.id || !t2.events.some((e) => e.entries.some((x) => x.players.includes(p.id)) || e.pairDrafts?.some((x) => x.players.includes(p.id))), "\u51FA\u5834\u4E2D\u306E\u9078\u624B\u306E\u6240\u5C5E\u5909\u66F4\u306F\u5148\u306B\u30A8\u30F3\u30C8\u30EA\u30FC\u3092\u89E3\u9664\u3057\u3066\u304F\u3060\u3055\u3044");
-  const peers = t2.roster.filter((x) => x.id !== id && x.teamId === team.id && x.teamRank !== void 0);
-  const value = { ...input3, id: p?.id ?? uid(), name: name6, club: team.name, teamRank: input3.teamRank ?? p?.teamRank ?? nextTeamRank(t2, team.id) };
-  if (p && p.teamId === team.id && p.teamRank !== void 0 && value.teamRank !== p.teamRank) {
-    const old = p.teamRank, next = value.teamRank;
-    for (const peer of peers) {
-      const rank = peer.teamRank;
-      if (next < old && rank >= next && rank < old) peer.teamRank = rank + 1;
-      if (next > old && rank <= next && rank > old) peer.teamRank = rank - 1;
-    }
-  } else ensure(!peers.some((x) => x.teamRank === value.teamRank), "\u540C\u3058\u30C1\u30FC\u30E0\u5185\u9806\u4F4D\u304C\u767B\u9332\u6E08\u307F\u3067\u3059");
-  if (p) Object.assign(p, value);
-  else t2.roster.push(value);
-  for (const e of t2.events.filter((e2) => !t2.stages.some((s2) => s2.eventId === e2.id))) {
-    if (e.entries.some((entry) => entry.players.includes(value.id)) || e.pairDrafts?.some((x) => x.players.includes(value.id))) eligible(e, value);
-    for (const entry of e.entries.filter((e2) => e2.players.includes(value.id))) {
-      if (e.type === "singles") Object.assign(entry, { name: value.name, club: value.club, kana: value.kana, gender: value.gender, grade: value.grade });
-      if (e.type === "doubles" && entry.pairNo !== void 0) Object.assign(entry, pairDetails(t2, entry.players));
-    }
-  }
-  return value;
-}
-function eligible(e, p) {
-  const q = e.entryEligibility;
-  ensure(
-    !q || (!q.gender || q.gender === p.gender) && (!q.grade || q.grade === p.grade) && (q.minAge === void 0 || p.age !== void 0 && p.age >= q.minAge) && (q.maxAge === void 0 || p.age !== void 0 && p.age <= q.maxAge),
-    e.name + " \u306E\u53C2\u52A0\u8CC7\u683C\u3092\u6E80\u305F\u3057\u307E\u305B\u3093\uFF1A" + p.name
-  );
-}
-function editable(t2, id) {
-  const e = eventOf(t2, id);
-  ensure(!t2.stages.some((s2) => s2.eventId === id), "\u7D44\u5408\u305B\u4F5C\u6210\u5F8C\u306F\u5909\u66F4\u3067\u304D\u307E\u305B\u3093\u3002\u7D44\u5408\u305B\u3092\u4FDD\u7BA1\u30FB\u53D6\u6D88\u3057\u3066\u304F\u3060\u3055\u3044");
-  return e;
-}
-function pairDetails(t2, players) {
-  const names = players.map((id) => {
-    const p = t2.roster.find((x) => x.id === id);
-    ensure(p, "\u30DA\u30A2\u306E\u9078\u624B\u304C\u3042\u308A\u307E\u305B\u3093");
-    return p;
-  });
-  const clubs = [...new Set(names.map((p) => p.club))];
-  return { name: names.map((p) => p.name).join("\uFF0F"), club: clubs.length === 1 ? clubs[0] : clubs.join("\uFF0F") };
-}
-function addPair(t2, e, number, players, rank) {
-  ensure(players.length === 2 && players.every(Boolean) && new Set(players).size === 2 && !e.entries.some((p) => p.players.some((id) => players.includes(id))), "\u30C0\u30D6\u30EB\u30B9\u306E\u69CB\u6210\u307E\u305F\u306F\u91CD\u8907\u304C\u4E0D\u6B63\u3067\u3059");
-  for (const id of players) {
-    const p = t2.roster.find((x) => x.id === id);
-    ensure(p, "\u9078\u624B\u672A\u767B\u9332");
-    eligible(e, p);
-  }
-  ensure(!e.entries.some((p) => p.pairNo === number), "\u30DA\u30A2\u756A\u53F7\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
-  if (rank === void 0) rank = nextPairRank(t2, e, players);
-  e.entries.push({ id: uid(), seed: 0, players, pairNo: number, ...rank === void 0 ? {} : { pairRank: rank }, ...pairDetails(t2, players) });
-  e.pairCounter = Math.max(e.pairCounter ?? 1, number + 1);
-}
-function setRegistration(t2, eventId, playerId, selected) {
-  const e = editable(t2, eventId), p = t2.roster.find((x) => x.id === playerId);
-  ensure(p, "\u5927\u4F1A\u540D\u7C3F\u306B\u9078\u624B\u304C\u3042\u308A\u307E\u305B\u3093");
-  const existing = e.entries.find((x) => x.players.includes(playerId));
-  const drafts = e.pairDrafts ?? (e.pairDrafts = []);
-  const pending = drafts.findIndex((d) => d.players.includes(playerId));
-  if (e.type === "team") {
-    if (selected && !existing) {
-      eligible(e, p);
-      const team = t2.registrationTeams.find((x) => x.id === p.teamId);
-      ensure(team, "\u56E3\u4F53\u6226\u3067\u306F\u6240\u5C5E\u30C1\u30FC\u30E0\u3092\u767B\u9332\u3057\u3066\u304F\u3060\u3055\u3044");
-      const row = e.entries.find((r) => r.registrationTeamId === team.id) ?? e.entries.find((r) => key(r.club || r.name) === key(team.name));
-      if (row) {
-        row.registrationTeamId = team.id;
-        row.players = row.players.filter((id) => !id.startsWith("TEAM-PENDING-"));
-        row.players.push(p.id);
-      } else e.entries.push({ id: uid(), name: team.name, club: team.name, seed: 0, players: [p.id], registrationTeamId: team.id });
-    }
-    if (!selected && existing) {
-      existing.players = existing.players.filter((id) => id !== p.id);
-      if (!existing.players.length) e.entries = e.entries.filter((x) => x !== existing);
-    }
-    return;
-  }
-  if (e.type === "singles") {
-    if (selected && !existing) {
-      eligible(e, p);
-      e.entries.push({ id: uid(), players: [p.id], name: p.name, club: p.club, seed: 0, kana: p.kana, gender: p.gender, grade: p.grade });
-    }
-    if (!selected && existing) e.entries = e.entries.filter((x) => x !== existing);
-    return;
-  }
-  if (!selected) {
-    if (existing) {
-      const n2 = existing.pairNo ?? allocatePair(e);
-      const currentRank = pairDisplay(t2, e, { number: existing.pairNo ?? 0, id: existing.id, players: existing.players, pairRank: existing.pairRank });
-      e.entries = e.entries.filter((x) => x !== existing);
-      drafts.push({ number: n2, players: existing.players.filter((id) => id !== playerId), pairRank: pairScope(t2, existing.players) === "@mixed" ? nextPairRank(t2, e, [existing.players.find((id) => id !== playerId)]) : currentRank });
-    } else if (pending >= 0) drafts.splice(pending, 1);
-  } else if (!existing && pending < 0) {
-    eligible(e, p);
-    const candidates2 = drafts.filter((d) => pairScope(t2, d.players) === pairScope(t2, [playerId]));
-    if (candidates2.length) {
-      const first = candidates2.sort((a, b) => a.number - b.number)[0];
-      drafts.splice(drafts.indexOf(first), 1);
-      addPair(t2, e, first.number, [...first.players, playerId], first.pairRank);
-    } else drafts.push({ number: allocatePair(e), players: [playerId], pairRank: nextPairRank(t2, e, [playerId]) });
-  }
-}
-function allocatePair(e) {
-  const n2 = Math.max(e.pairCounter ?? 1, ...e.entries.map((x) => (x.pairNo ?? 0) + 1), ...(e.pairDrafts ?? []).map((x) => x.number + 1));
-  e.pairCounter = n2 + 1;
-  return n2;
-}
-function changePair(t2, eventId, number, ids) {
-  const e = editable(t2, eventId);
-  ensure(e.type === "doubles" && ids.length === 2 && ids.every(Boolean) && new Set(ids).size === 2, "\u5225\u3005\u306E2\u540D\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
-  const old = e.entries.find((p) => p.pairNo === number);
-  const draft = e.pairDrafts?.find((p) => p.number === number);
-  ensure(old || draft, "\u30DA\u30A2\u304C\u3042\u308A\u307E\u305B\u3093");
-  ensure(!e.entries.some((p) => p !== old && p.players.some((id) => ids.includes(id))) && !e.pairDrafts?.some((p) => p !== draft && p.players.some((id) => ids.includes(id))), "\u5225\u306E\u30DA\u30A2\u306B\u767B\u9332\u6E08\u307F\u306E\u9078\u624B\u306F\u5148\u306B\u89E3\u9664\u3057\u3066\u304F\u3060\u3055\u3044");
-  if (old && ids.every((id) => old.players.includes(id))) {
-    Object.assign(old, { players: ids, ...pairDetails(t2, ids) });
-    return;
-  }
-  if (old) e.entries = e.entries.filter((p) => p !== old);
-  if (draft) e.pairDrafts = e.pairDrafts.filter((p) => p !== draft);
-  addPair(t2, e, number, ids, pairScope(t2, old?.players ?? draft.players) === pairScope(t2, ids) ? old?.pairRank ?? draft?.pairRank : void 0);
-}
-function setRegistrationSeed(t2, eventId, entryId, seed) {
-  const e = eventOf(t2, eventId);
-  ensure(!t2.stages.some((s2) => s2.eventId === eventId), "\u7D44\u5408\u305B\u4F5C\u6210\u5F8C\u306F\u30B7\u30FC\u30C9\u5909\u66F4\u3067\u304D\u307E\u305B\u3093\u3002\u5148\u306B\u4FDD\u7BA1\u30FB\u53D6\u6D88\u3057\u3066\u304F\u3060\u3055\u3044");
-  const entry = e.entries.find((p) => p.id === entryId);
-  ensure(entry && Number.isSafeInteger(seed) && seed >= 0 && !e.entries.some((p) => p !== entry && seed > 0 && p.seed === seed), "\u30B7\u30FC\u30C9\u9806\u4F4D\u304C\u4E0D\u6B63\u3001\u307E\u305F\u306F\u540C\u4E00\u7A2E\u76EE\u5185\u3067\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
-  entry.seed = seed;
-}
-function assertNoPendingPairs(e) {
-  ensure(!e.pairDrafts?.length, "\u30C0\u30D6\u30EB\u30B9\u30DA\u30A2\u306B\u6B20\u54E1\u304C\u3042\u308A\u307E\u3059\u30022\u540D\u305A\u3064\u767B\u9332\u3057\u3066\u304B\u3089\u7D44\u5408\u305B\u3092\u4F5C\u6210\u3057\u3066\u304F\u3060\u3055\u3044");
-}
-function pairScope(t2, players) {
-  const byId = new Map((t2.roster ?? []).map((p) => [p.id, p]));
-  const teams = [...new Set(players.map((id) => byId.get(id)?.teamId ?? ""))];
-  return teams.length === 1 ? teams[0] : "@mixed";
-}
-function pairSlots(e) {
-  return [...e.entries.map((p) => ({ number: p.pairNo ?? 0, players: p.players, pairRank: p.pairRank, id: p.id })), ...e.pairDrafts ?? []].sort((a, b) => a.number - b.number);
-}
-function pairDisplay(t2, e, slot) {
-  const team = pairScope(t2, slot.players);
-  const slots = pairSlots(e).filter((p) => pairScope(t2, p.players) === team);
-  const reserved = new Set(slots.flatMap((p) => p.pairRank ? [p.pairRank] : []));
-  let candidate = 0;
-  for (const p of slots) {
-    if (p.pairRank) {
-      if (p.id ? slot.id === p.id : slot.number === p.number) return p.pairRank;
-    } else {
-      do {
-        candidate++;
-      } while (reserved.has(candidate));
-      if (p.id ? slot.id === p.id : slot.number === p.number) return candidate;
-    }
-  }
-  return candidate + 1;
-}
-function rankPair(t2, eid2, number, rank) {
-  const e = eventOf(t2, eid2);
-  const target = e.entries.find((p) => p.pairNo === number);
-  ensure(target && Number.isSafeInteger(rank) && rank > 0, "\u30DA\u30A2\u3068\u9806\u4F4D\u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
-  const scope = pairScope(t2, target.players), peers = pairSlots(e).filter((p) => pairScope(t2, p.players) === scope);
-  ensure(rank <= peers.length, "\u30DA\u30A2\u9806\u4F4D\u306F1\u301C" + peers.length + "\u3067\u3059");
-  const ordered2 = peers.sort((a, b) => pairDisplay(t2, e, a) - pairDisplay(t2, e, b));
-  const index = ordered2.findIndex((p) => p.number === number);
-  const [moved] = ordered2.splice(index, 1);
-  ordered2.splice(rank - 1, 0, moved);
-  for (const [i, p] of ordered2.entries()) {
-    const row = p.id ? e.entries.find((x) => x.id === p.id) : e.pairDrafts?.find((x) => x.number === p.number);
-    if (row) row.pairRank = i + 1;
-  }
-}
-function nextPairRank(t2, e, players) {
-  const scope = pairScope(t2, players);
-  return Math.max(0, ...pairSlots(e).filter((p) => pairScope(t2, p.players) === scope).map((p) => pairDisplay(t2, e, p))) + 1;
-}
-
-// src/exchange.ts
-var clubKey = (s2) => s2.normalize("NFKC").trim().replace(/\s+/g, " ").toLowerCase();
-function opposing(a, b) {
-  const x = clubKey(a.club), y = clubKey(b.club);
-  return a.id !== b.id && !a.players.some((p) => b.players.includes(p)) && (!x || !y || x !== y);
-}
-var pairKey = (a, b) => JSON.stringify(a < b ? [a, b] : [b, a]);
-function exchangeSetup(t2, eventId, options2) {
-  return atomicMutation(t2, (d) => {
-    const e = eventOf(d, eventId);
-    assertNoPendingPairs(e);
-    ensure(e.type !== "team" && e.entries.length >= 2 && e.entries.length <= 512, "\u4EA4\u6D41\u6226\u306F\u500B\u4EBA\u6226\u306E2\u301C512\u67A0\u3067\u3059");
-    ensure(!options2.byLevel || e.entries.every((p) => p.level?.trim()), "\u4EA4\u6D41\u6226\u306E\u5168\u53C2\u52A0\u8005\u306B\u30EC\u30D9\u30EB\u3092\u8A2D\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
-    ensure(!d.stages.some((s3) => s3.eventId === eventId), "\u3053\u306E\u7A2E\u76EE\u306B\u306F\u7D44\u5408\u305B\u304C\u3042\u308A\u307E\u3059");
-    ensure(new Set(e.entries.flatMap((p) => p.players)).size === e.entries.reduce((n2, p) => n2 + p.players.length, 0), "\u540C\u4E00\u9078\u624B\u304C\u8907\u6570\u67A0\u306B\u3044\u307E\u3059");
-    const id = uid(), s2 = { id, eventId, name: "\u4EA4\u6D41\u6226\u30FB\u7DF4\u7FD2\u8A66\u5408", kind: "league", excludeClub: true, exchange: structuredClone(options2), groups: [{ id: uid(), name: "\u4EA4\u6D41\u6226", entries: e.entries.map((p) => p.id) }] };
-    d.stages.push(s2);
-    plan(d, s2);
-    return id;
-  });
-}
-function allowed(s2, a, b) {
-  return opposing(a, b) && (!s2.exchange.byLevel || (a.level ?? "") === (b.level ?? ""));
-}
-function canRemove(m) {
-  return m.status === "waiting" && !m.manualSchedule && !m.queueOrder && !m.startedAt && !m.games.length;
-}
-function fixture(s2, a, b, number, duration) {
-  const options2 = s2.exchange;
-  options2.sequence = (options2.sequence ?? 0) + 1;
-  return { id: uid(), exchangeSequence: options2.sequence, eventId: s2.eventId, stageId: s2.id, groupId: s2.groups[0].id, number, round: 1, left: a.id, right: b.id, deps: [], games: [], winner: "", status: "waiting", court: 0, time: 0, duration };
-}
-function plan(t2, s2) {
-  const options2 = s2.exchange, entries = eventOf(t2, s2.eventId).entries.filter((p) => !options2.inactive.includes(p.id));
-  const existing = t2.matches.filter((m) => m.stageId === s2.id);
-  const used = new Set(existing.map((m) => pairKey(m.left, m.right))), counts = new Map(entries.map((p) => [p.id, 0]));
-  for (const m of existing) for (const id of [m.left, m.right]) if (counts.has(id)) counts.set(id, counts.get(id) + 1);
-  const choices = entries.flatMap((a, i) => entries.slice(i + 1).filter((b) => allowed(s2, a, b) && !used.has(pairKey(a.id, b.id))).map((b) => [a, b]));
-  const capacity = new Map(entries.map((p) => [p.id, 0]));
-  for (const [a, b] of choices) {
-    capacity.set(a.id, capacity.get(a.id) + 1);
-    capacity.set(b.id, capacity.get(b.id) + 1);
-  }
-  let number = t2.matches.reduce((n2, m) => Math.max(n2, m.number), 0);
-  const append = (a, b) => {
-    ensure(t2.matches.length < 5e4, "\u8A66\u5408\u6570\u4E0A\u9650\uFF0850,000\u4EF6\uFF09\u3092\u8D85\u3048\u307E\u3059");
-    t2.matches.push(fixture(s2, a, b, ++number, options2.duration));
-    for (const p of [a, b]) counts.set(p.id, counts.get(p.id) + 1);
-  };
-  if (options2.mode === "all") {
-    for (const [a, b] of choices) append(a, b);
-    return;
-  }
-  const selected = /* @__PURE__ */ new Map();
-  function select3(a, b) {
-    selected.set(pairKey(a.id, b.id), [a, b]);
-    for (const p of [a, b]) counts.set(p.id, counts.get(p.id) + 1);
-  }
-  const viable = choices.filter(([a, b]) => counts.get(a.id) < options2.target && counts.get(b.id) < options2.target);
-  const neighbours = new Map(entries.map((e) => [e.id, /* @__PURE__ */ new Set()]));
-  for (const [a, b] of viable) {
-    neighbours.get(a.id).add(b);
-    neighbours.get(b.id).add(a);
-  }
-  const order = (a, b) => counts.get(a.id) - counts.get(b.id) || neighbours.get(a.id).size - neighbours.get(b.id).size || capacity.get(a.id) - capacity.get(b.id);
-  function remove(a, b) {
-    neighbours.get(a.id).delete(b);
-    neighbours.get(b.id).delete(a);
-  }
-  while (true) {
-    const a = entries.filter((p) => neighbours.get(p.id).size).sort(order)[0];
-    if (!a) break;
-    const b = [...neighbours.get(a.id)].sort(order)[0];
-    select3(a, b);
-    remove(a, b);
-    for (const p of [a, b]) if (counts.get(p.id) >= options2.target) for (const q of neighbours.get(p.id)) remove(p, q);
-  }
-  const eligible2 = new Set(choices.map(([a, b]) => pairKey(a.id, b.id)));
-  for (const [key4, [a, b]] of [...selected]) {
-    const under = entries.filter((p) => counts.get(p.id) < options2.target).sort(order);
-    if (!under.length) break;
-    const edges = (from) => under.filter((p) => {
-      if (p === a || p === b) return false;
-      const id = pairKey(from.id, p.id);
-      return eligible2.has(id) && !selected.has(id);
-    });
-    const first = edges(a), second = edges(b);
-    const u = first.find((p) => second.some((q) => p !== q || counts.get(p.id) + 2 <= options2.target));
-    const v2 = u && second.find((q) => q !== u || counts.get(u.id) + 2 <= options2.target);
-    if (!u || !v2) continue;
-    selected.delete(key4);
-    for (const p of [a, b]) counts.set(p.id, counts.get(p.id) - 1);
-    select3(a, u);
-    select3(b, v2);
-  }
-  ensure(t2.matches.length + selected.size <= 5e4, "\u8A66\u5408\u6570\u4E0A\u9650\uFF0850,000\u4EF6\uFF09\u3092\u8D85\u3048\u307E\u3059");
-  for (const [a, b] of selected.values()) t2.matches.push(fixture(s2, a, b, ++number, options2.duration));
-}
-function exchangeOf(t2, id) {
-  const s2 = t2.stages.find((x) => x.id === id);
-  ensure(s2?.exchange, "\u4EA4\u6D41\u6226\u304C\u3042\u308A\u307E\u305B\u3093");
-  return s2;
-}
-function addExchangeEntry(t2, id, input3) {
-  return atomicMutation(t2, (d) => {
-    const s2 = exchangeOf(d, id), e = eventOf(d, s2.eventId);
-    ensure(e.entries.length < 512 && input3.players.every((p2) => !e.entries.some((x) => x.players.includes(p2))), "\u9078\u624BID\u304C\u91CD\u8907\u307E\u305F\u306F\u53C2\u52A0\u4E0A\u9650\u3067\u3059");
-    ensure(!s2.exchange.byLevel || input3.level?.trim(), "\u30EC\u30D9\u30EB\u5225\u4EA4\u6D41\u6226\u306B\u306F\u30EC\u30D9\u30EB\u304C\u5FC5\u8981\u3067\u3059");
-    const p = { ...input3, id: uid(), seed: 0, joinedAt: Date.now() };
-    e.entries.push(p);
-    s2.groups[0].entries.push(p.id);
-    plan(d, s2);
-  });
-}
-function leaveExchange(t2, id, entrant) {
-  return atomicMutation(t2, (d) => {
-    const s2 = exchangeOf(d, id);
-    ensure(s2.groups[0].entries.includes(entrant) && !s2.exchange.inactive.includes(entrant), "\u53C2\u52A0\u4E2D\u306E\u9078\u624B\u30FB\u7D44\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
-    const affected = d.matches.filter((m) => m.stageId === id && (m.left === entrant || m.right === entrant));
-    ensure(!affected.some((m) => ["called", "playing"].includes(m.status)), "\u547C\u51FA\u6E08\u307F\u30FB\u9032\u884C\u4E2D\u306E\u8A66\u5408\u3092\u5148\u306B\u51E6\u7406\u3057\u3066\u304F\u3060\u3055\u3044");
-    ensure(!affected.some((m) => m.status === "waiting" && !canRemove(m)), "\u4E88\u5B9A\u6E08\u307F\u30FB\u624B\u52D5\u8A2D\u5B9A\u6E08\u307F\u306E\u8A66\u5408\u3092\u5148\u306B\u89E3\u9664\u3057\u3066\u304F\u3060\u3055\u3044");
-    s2.exchange.inactive.push(entrant);
-    const remove = new Set(affected.filter((m) => canRemove(m)).map((m) => m.id));
-    d.matches = d.matches.filter((m) => !remove.has(m.id));
-    plan(d, s2);
-  });
-}
-function addExchangeMatch(t2, id, left, right) {
-  return atomicMutation(t2, (d) => {
-    const s2 = exchangeOf(d, id), e = eventOf(d, s2.eventId), a = e.entries.find((p) => p.id === left), b = e.entries.find((p) => p.id === right);
-    ensure(a && b && allowed(s2, a, b) && ![left, right].some((p) => s2.exchange.inactive.includes(p)), "\u540C\u6240\u5C5E\u30FB\u96E2\u8131\u6E08\u307F\u30FB\u30EC\u30D9\u30EB\u9055\u3044\u306E\u5BFE\u6226\u306F\u8FFD\u52A0\u3067\u304D\u307E\u305B\u3093");
-    ensure(!d.matches.some((m) => m.stageId === id && pairKey(m.left, m.right) === pairKey(left, right)), "\u4E88\u5B9A\u6E08\u307F\u307E\u305F\u306F\u5BFE\u6226\u6E08\u307F\u3067\u3059");
-    ensure(d.matches.length < 5e4, "\u8A66\u5408\u6570\u4E0A\u9650\uFF0850,000\u4EF6\uFF09\u3092\u8D85\u3048\u307E\u3059");
-    d.matches.push(fixture(s2, a, b, d.matches.reduce((n2, m) => Math.max(n2, m.number), 0) + 1, s2.exchange.duration));
-  });
-}
-function exchangeStats(t2, id, now = Date.now()) {
-  const s2 = exchangeOf(t2, id), rows = new Map(eventOf(t2, s2.eventId).entries.map((p) => [p.id, { entry: p, planned: 0, done: 0, status: "\u5F85\u6A5F", last: 0, wait: 0 }]));
-  for (const m of t2.matches) if (m.stageId === id) for (const key4 of [m.left, m.right]) {
-    const r = rows.get(key4);
-    if (!r) continue;
-    r.planned++;
-    if (m.status === "completed") {
-      r.done++;
-      r.last = Math.max(r.last, m.finishedAt ?? 0);
-    }
-    if (m.status === "called" || m.status === "playing") r.status = m.status === "called" ? "\u547C\u51FA\u6E08" : "\u8A66\u5408\u4E2D";
-  }
-  for (const r of rows.values()) {
-    if (s2.exchange.inactive.includes(r.entry.id)) r.status = "\u96E2\u8131";
-    else if (r.status === "\u5F85\u6A5F" && r.planned === r.done && r.planned > 0) r.status = "\u7D42\u4E86";
-    if (r.status === "\u5F85\u6A5F") r.wait = Math.max(0, Math.floor((now - (r.last || r.entry.joinedAt || s2.exchange.created)) / 6e4));
-  }
-  return [...rows.values()];
-}
-function releaseExchangeBooking(t2, id) {
-  return atomicMutation(t2, (d) => {
-    const m = d.matches.find((m2) => m2.id === id);
-    ensure(m && d.stages.some((s2) => s2.id === m.stageId && s2.exchange) && m.status === "waiting" && !m.startedAt && !m.games.length, "\u672A\u958B\u59CB\u306E\u4EA4\u6D41\u6226\u3060\u3051\u4E88\u5B9A\u3092\u89E3\u9664\u3067\u304D\u307E\u3059");
-    m.court = 0;
-    m.time = 0;
-    delete m.queueOrder;
-    delete m.manualSchedule;
-  });
-}
-
-// src/planning.ts
-function possiblePlayers(t2, id, seen = /* @__PURE__ */ new Set()) {
-  ensure(!seen.has(id), "\u4F9D\u5B58\u5FAA\u74B0");
-  seen.add(id);
-  const m = t2.matches.find((m2) => m2.id === id);
-  ensure(m, "\u4F9D\u5B58\u8A66\u5408\u306A\u3057");
-  const p = (side, i) => m[side] ? entryOf(t2, m[side]).players : feeder(m, i) ? possiblePlayers(t2, feeder(m, i), new Set(seen)) : [];
-  return [.../* @__PURE__ */ new Set([...p("left", 0), ...p("right", 1)])];
-}
-var localDay = (epoch2) => {
-  const d = new Date(epoch2);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-};
-var actualDateAllowed = (t2, epoch2, date) => dayMinute(t2, epoch2, date) !== void 0 || !!t2.competitionDays && !!dayConfig(t2, localDay(epoch2));
-var restFor = (t2, id, date) => t2.playerRest?.find((x) => x.id === id)?.minutes ?? dayConfig(t2, date)?.rest ?? t2.restMinutes ?? 0;
-function dayMinute(t2, epoch2, date = t2.date) {
-  if (epoch2 === void 0 || !Number.isFinite(epoch2) || localDay(epoch2) !== date) return void 0;
-  const d = new Date(epoch2);
-  return d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60 + d.getMilliseconds() / 6e4;
-}
-function reservation(t2, m, now) {
-  const date = plannedDate(t2, m);
-  const start = dayMinute(t2, m.startedAt, date);
-  if (start === void 0) return m;
-  let end = m.status === "completed" ? dayMinute(t2, m.finishedAt, date) : void 0;
-  if (end === void 0) {
-    end = start + m.duration;
-    const minute2 = dayMinute(t2, now, date);
-    if (m.status === "playing" && minute2 !== void 0 && minute2 >= end) end = minute2 + m.duration;
-  }
-  ensure(end >= start, "\u5B9F\u7D42\u4E86\u65E5\u6642\u304C\u5B9F\u958B\u59CB\u524D\u3067\u3059");
-  return { ...m, time: start, duration: Math.max(1, end - start) };
-}
-var offset = (t2, m) => t2.competitionDays?.length ? dayOffset(plannedDate(t2, m) ?? t2.date) : 0;
-var absolute = (t2, m, now) => {
-  const slot = reservation(t2, m, now);
-  return { ...slot, time: slot.time + offset(t2, m) };
-};
-function progressStatus(t2, now = Date.now()) {
-  return t2.matches.map((m) => {
-    const date = plannedDate(t2, m), minute2 = dayMinute(t2, now, date);
-    const actualStart = ["playing", "completed"].includes(m.status) ? dayMinute(t2, m.startedAt, date) : void 0, rawEnd = m.status === "completed" && actualStart !== void 0 ? dayMinute(t2, m.finishedAt, date) : void 0, actualEnd = rawEnd !== void 0 && rawEnd >= actualStart ? rawEnd : void 0;
-    const delayMinutes = Math.max(0, actualStart !== void 0 ? actualStart - m.time : m.status === "called" && minute2 !== void 0 && m.court > 0 ? minute2 - m.time : 0);
-    const overrunMinutes = m.status === "playing" && actualStart !== void 0 && minute2 !== void 0 ? Math.max(0, minute2 - (actualStart + m.duration)) : actualEnd !== void 0 && actualStart !== void 0 ? Math.max(0, actualEnd - (actualStart + m.duration)) : 0;
-    return { id: m.id, number: m.number, status: m.status, scheduledStart: m.time, startedAt: m.startedAt, finishedAt: m.finishedAt, actualTimingKnown: actualStart !== void 0 && (m.status !== "completed" || actualEnd !== void 0), delayMinutes: Math.floor(delayMinutes), overrunMinutes: Math.floor(overrunMinutes) };
-  });
-}
-function startMatch(t2, id, now = Date.now()) {
-  return atomicMutation(t2, (d) => {
-    const m = d.matches.find((m2) => m2.id === id);
-    const date = m && plannedDate(d, m);
-    ensure(m && m.status === "called" && m.court >= 1 && m.court <= calendarCourts(d, date) && m.left && m.right, "\u547C\u51FA\u6E08\u307F\u30FB\u30B3\u30FC\u30C8\u5272\u5F53\u6E08\u307F\u306E\u8A66\u5408\u3060\u3051\u958B\u59CB\u3067\u304D\u307E\u3059");
-    ensure(Number.isSafeInteger(now) && now >= 0 && localDay(now) === date, "\u5927\u4F1A\u958B\u50AC\u65E5\u3068\u958B\u59CB\u65E5\u6642\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
-    ensure(m.deps.every((id2) => {
-      const dep = d.matches.find((x) => x.id === id2);
-      return !!dep && finished(dep);
-    }), "\u9032\u51FA\u5143\u304C\u5B58\u5728\u3057\u306A\u3044\u304B\u672A\u5B8C\u4E86\u3067\u3059");
-    const stage = d.stages.find((s2) => s2.id === m.stageId);
-    ensure(stage, "\u8A66\u5408\u306E\u30B9\u30C6\u30FC\u30B8\u304C\u5B58\u5728\u3057\u307E\u305B\u3093");
-    ensure(!stage.source || d.matches.filter((x) => x.stageId === stage.source).every(finished), "\u4E88\u9078\u304C\u672A\u5B8C\u4E86\u3067\u3059");
-    const players = new Set(possiblePlayers(d, id));
-    for (const other of d.matches) {
-      if (other.id === id) continue;
-      if (other.status === "completed" && other.court === m.court && other.finishedAt !== void 0 && dayMinute(d, other.finishedAt, date) !== void 0) ensure(now >= other.finishedAt, "\u7AEF\u672B\u6642\u8A08\u304C\u30B3\u30FC\u30C8\u306E\u5B9F\u7D42\u4E86\u65E5\u6642\u3088\u308A\u524D\u3067\u3059");
-      if (["called", "playing"].includes(other.status)) {
-        ensure(other.court !== m.court, "\u30B3\u30FC\u30C8\u304C\u4F7F\u7528\u4E2D\u3067\u3059");
-        ensure(!possiblePlayers(d, other.id).some((p) => players.has(p)), "\u9078\u624B\u304C\u547C\u51FA\u30FB\u8A66\u5408\u4E2D\u3067\u3059");
-      }
-      if (other.status === "completed" && other.finishedAt !== void 0 && Number.isSafeInteger(other.finishedAt) && actualDateAllowed(d, other.finishedAt, date) && (other.startedAt === void 0 || !actualDateAllowed(d, other.startedAt, date) || other.finishedAt >= other.startedAt) && possiblePlayers(d, other.id).some((p) => players.has(p) && now - other.finishedAt < restFor(d, p, date) * 6e4)) throw Error("\u4F11\u61A9\u4E0D\u8DB3\u3067\u3059");
-    }
-    m.status = "playing";
-    m.startedAt = now;
-    m.finishedAt = void 0;
-  });
-}
-function validateSchedule(t2) {
-  for (const m of t2.matches) {
-    const date = plannedDate(t2, m), day = dayConfig(t2, date);
-    ensure(Number.isInteger(m.court) && m.court >= 0 && m.court <= calendarCourts(t2, date), "\u30B3\u30FC\u30C8\u756A\u53F7\u304C\u4E0D\u6B63");
-    ensure(Number.isInteger(m.time) && m.time >= 0 && m.time < 1440 && Number.isInteger(m.duration) && m.duration > 0 && m.time + m.duration <= 1440, "\u4E88\u5B9A\u6642\u523B\u304C\u4E0D\u6B63");
-    if (t2.competitionDays?.length && m.court && m.status !== "bye") {
-      ensure(day, "\u958B\u50AC\u65E5\u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
-      if (m.status === "waiting" && !partialProgress(m)) {
-        ensure(m.time >= day.start && m.time + m.duration <= day.end, "\u8A66\u5408\u304C\u958B\u50AC\u65E5\u306E\u5229\u7528\u6642\u9593\u5916\u3067\u3059");
-        ensure(!day.breaks?.some((b) => m.time < b.end && m.time + m.duration > b.start), "\u4F11\u5834\u6642\u9593\u3068\u91CD\u306A\u3063\u3066\u3044\u307E\u3059");
-      }
-    }
-  }
-  const slots = t2.matches.filter((m) => m.court > 0 && m.status !== "bye").map((m) => absolute(t2, m));
-  const end = new Map(slots.map((m) => [m.id, m.time + m.duration]));
-  const courts = /* @__PURE__ */ new Map(), players = /* @__PURE__ */ new Map();
-  for (const m of slots) {
-    const local = m.time - offset(t2, m), date = plannedDate(t2, m);
-    ensure(Number.isFinite(local) && local >= 0 && local + m.duration <= 1440, "\u4E88\u5B9A\u6642\u523B\u304C\u4E0D\u6B63");
-    const overlaps = (x) => m.time < x.time + x.duration && x.time < m.time + m.duration;
-    const cs = courts.get(m.court) || [];
-    ensure(!cs.some(overlaps), "\u4E88\u5B9A\u306E\u30B3\u30FC\u30C8\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
-    cs.push(m);
-    courts.set(m.court, cs);
-    for (const p of possiblePlayers(t2, m.id)) {
-      const ps = players.get(p) || [];
-      ensure(!ps.some((x) => m.time < x.time + x.duration + restFor(t2, p, plannedDate(t2, x)) && x.time < m.time + m.duration + restFor(t2, p, date)), "\u9078\u624B\u30FB\u52DD\u3061\u4E0A\u304C\u308A\u5019\u88DC\u306E\u4E88\u5B9A\u307E\u305F\u306F\u4F11\u61A9\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
-      ps.push(m);
-      players.set(p, ps);
-    }
-    const s2 = t2.stages.find((s3) => s3.id === m.stageId);
-    const deps = [...m.deps, ...t2.matches.filter((x) => x.stageId === s2.source && x.status !== "bye").map((x) => x.id)];
-    for (const id of deps) {
-      const dep = t2.matches.find((x) => x.id === id);
-      ensure(dep, "\u4E88\u5B9A\u306E\u4F9D\u5B58\u8A66\u5408\u304C\u5B58\u5728\u3057\u307E\u305B\u3093");
-      if (dep.status !== "bye" && !(dep.status === "completed" && dep.court === 0)) ensure(end.has(id) && end.get(id) <= m.time, "\u4E88\u9078\u30FB\u52DD\u3061\u4E0A\u304C\u308A\u5143\u306E\u7D42\u4E86\u524D\u3067\u3059");
-    }
-  }
-  return true;
-}
-var partialProgress = (m) => m.status === "waiting" && (m.startedAt !== void 0 || !!m.rubbers?.some((r) => r.games.length));
-function scheduleNumberingLocked(t2) {
-  return !!t2.scheduleNumbersLocked || t2.matches.some((m) => m.status !== "bye" && (m.status !== "waiting" || m.startedAt !== void 0 || m.rubbers?.some((r) => r.games.length))) || !!t2.corrections?.length;
-}
-function numberBySchedule(t2) {
-  return atomicMutation(t2, (d) => applyScheduleNumbers(d));
-}
-function applyScheduleNumbers(t2) {
-  ensure(!scheduleNumberingLocked(t2), "\u5927\u4F1A\u9032\u884C\u958B\u59CB\u5F8C\u306F\u8A66\u5408\u756A\u53F7\u3092\u5909\u66F4\u3067\u304D\u307E\u305B\u3093");
-  validateSchedule(t2);
-  const counters = /* @__PURE__ */ new Map();
-  const order = scheduleOrder(t2);
-  for (const m of order) {
-    const next = (counters.get(m.eventId) ?? 0) + 1;
-    counters.set(m.eventId, next);
-    m.scheduleOrdinal = next;
-    delete m.displayNumber;
-  }
-  invalidateMatchNumbers(t2);
-}
-function replan(t2, start, duration, gap, mode, rest, now = Date.now(), numbering = false) {
-  ensure(Number.isInteger(start) && start >= 0 && start < 1440 && Number.isInteger(duration) && duration > 0 && duration <= 600 && Number.isInteger(gap) && gap >= 0 && gap <= 120 && Number.isInteger(rest) && rest >= 0 && rest <= 120 && ["fixed", "flow"].includes(mode), "\u4E88\u5B9A\u6761\u4EF6\u304C\u4E0D\u6B63");
-  const copy = structuredClone(t2);
-  copy.restMinutes = rest;
-  copy.scheduleMode = mode;
-  const today = localDay(now);
-  for (const d of copy.competitionDays ?? []) for (const r of d.ranges) ensure(!rangeProblems(copy, r), rangeProblems(copy, r));
-  if (copy.competitionDays) for (const m of copy.matches) {
-    if (m.status === "bye") continue;
-    const date = plannedDate(copy, m);
-    ensure(date, "\u958B\u50AC\u65E5\u304C\u672A\u6307\u5B9A\u306E\u8A66\u5408\u304C\u3042\u308A\u307E\u3059");
-    m.scheduledDate = date;
-  }
-  ensure(!copy.matches.some((m) => ["called", "playing"].includes(m.status) && !m.court), "\u547C\u51FA\u30FB\u8A66\u5408\u4E2D\u306E\u30B3\u30FC\u30C8\u304C\u672A\u5272\u5F53\u3067\u3059");
-  const placed = copy.matches.filter((m) => (m.status !== "waiting" || (partialProgress(m) || m.manualSchedule)) && m.status !== "bye" && m.court > 0).map((m) => absolute(copy, m, now));
-  const ready = new Set(copy.matches.filter((m) => m.status !== "waiting" || partialProgress(m) || m.manualSchedule && m.court > 0).map((m) => m.id));
-  copy.matches.filter((m) => m.status === "bye").forEach((m) => ready.add(m.id));
-  const playerMap = new Map(copy.matches.map((m) => [m.id, new Set(possiblePlayers(copy, m.id))]));
-  const actualNow = copy.matches.some((x) => dayMinute(copy, x.startedAt, today) !== void 0) ? dayMinute(copy, now, today) : void 0;
-  const unavailable = new Map(copy.stages.filter((s2) => s2.exchange).map((s2) => [s2.id, new Set(s2.exchange.inactive)]));
-  const pending = copy.matches.filter((m) => m.status === "waiting" && !partialProgress(m) && !(m.manualSchedule && m.court > 0) && ![m.left, m.right].some((id) => unavailable.get(m.stageId)?.has(id)));
-  const weights = new Map(copy.events.map((e) => [e.id, e.schedulePriority ?? e.entries.length]));
-  const assigned = /* @__PURE__ */ new Map();
-  const priority = (m) => (assigned.get(m.eventId) || 0) / Math.max(1, weights.get(m.eventId) || 1);
-  const stages = new Map(copy.stages.map((s2) => [s2.id, s2]));
-  const remaining = /* @__PURE__ */ new Map();
-  for (const m of pending) remaining.set(m.stageId, (remaining.get(m.stageId) || 0) + 1);
-  for (const m of pending) m.court = 0;
-  const byCourt = /* @__PURE__ */ new Map(), byPlayer = /* @__PURE__ */ new Map();
-  const indexPlaced = (m) => {
-    const cs = byCourt.get(m.court) || [];
-    cs.push(m);
-    byCourt.set(m.court, cs);
-    for (const p of playerMap.get(m.id)) {
-      const ps = byPlayer.get(p) || [];
-      ps.push(m);
-      byPlayer.set(p, ps);
-    }
-  };
-  placed.forEach(indexPlaced);
-  while (pending.length) {
-    let index = -1;
-    for (const [i, m2] of pending.entries()) {
-      const stage2 = stages.get(m2.stageId);
-      if (!m2.deps.every((id) => ready.has(id)) || stage2.source && remaining.get(stage2.source)) continue;
-      const best = pending[index];
-      if (!best || priority(m2) < priority(best) || priority(m2) === priority(best) && ((weights.get(m2.eventId) || 0) > (weights.get(best.eventId) || 0) || m2.eventId === best.eventId && (m2.queueOrder ?? m2.number) < (best.queueOrder ?? best.number))) index = i;
-    }
-    ensure(index >= 0, "\u4E88\u5B9A\u306E\u4F9D\u5B58\u95A2\u4FC2\u3092\u89E3\u6C7A\u3067\u304D\u307E\u305B\u3093");
-    const m = pending.splice(index, 1)[0], stage = copy.stages.find((s2) => s2.id === m.stageId);
-    const deps = [...m.deps, ...copy.matches.filter((x) => x.stageId === stage.source).map((x) => x.id)];
-    const date = plannedDate(copy, m), day = dayConfig(copy, date), base = offset(copy, m), open = (day?.start ?? start) + base;
-    const earliest = Math.ceil(Math.max(open, date === today && actualNow !== void 0 ? base + actualNow : open, ...deps.map((id) => {
-      const n2 = copy.matches.find((m2) => m2.id === id);
-      if (copy.competitionDays && n2.status !== "bye") ensure(plannedDate(copy, n2) <= date, "\u4F9D\u5B58\u5143\u3088\u308A\u524D\u306E\u958B\u50AC\u65E5\u306B\u914D\u7F6E\u3067\u304D\u307E\u305B\u3093");
-      if (n2.status === "bye" || n2.status === "completed" && n2.court === 0) return open;
-      const slot = placed.find((p) => p.id === id);
-      ensure(slot, "\u4E88\u9078\u30FB\u52DD\u3061\u4E0A\u304C\u308A\u5143\u306E\u4E88\u5B9A\u304C\u672A\u5272\u5F53\u3067\u3059");
-      return slot.time + slot.duration;
-    })));
-    assigned.set(m.eventId, (assigned.get(m.eventId) || 0) + 1);
-    const ps = playerMap.get(m.id);
-    let bestTime = Infinity, bestCourt = 0;
-    for (let court = 1; court <= calendarCourts(copy, date); court++) {
-      const blocked = (day?.breaks ?? []).map((b) => ({ start: base + b.start, end: base + b.end }));
-      for (const x of byCourt.get(court) || []) blocked.push({ start: x.time - gap, end: x.time + x.duration + gap });
-      for (const p of ps) for (const x of byPlayer.get(p) || []) blocked.push({ start: x.time - restFor(copy, p, date), end: x.time + x.duration + restFor(copy, p, plannedDate(copy, x)) });
-      blocked.sort((a, b) => a.start - b.start || a.end - b.end);
-      let at = earliest;
-      for (const x of blocked) {
-        if (at + duration <= x.start) break;
-        if (at < x.end && x.start < at + duration) at = Math.ceil(x.end);
-      }
-      if (at < bestTime) {
-        bestTime = at;
-        bestCourt = court;
-      }
-    }
-    ensure(bestTime + duration <= base + (day?.end ?? 1440), (date || "") + " \u5F53\u65E5\u4E2D\u306B\u914D\u7F6E\u3067\u304D\u307E\u305B\u3093");
-    m.court = bestCourt;
-    m.time = bestTime - base;
-    m.duration = duration;
-    const position = { ...m, time: bestTime };
-    placed.push(position);
-    indexPlaced(position);
-    ready.add(m.id);
-    remaining.set(m.stageId, remaining.get(m.stageId) - 1);
-  }
-  validateSchedule(copy);
-  if (numbering && !scheduleNumberingLocked(copy)) {
-    applyScheduleNumbers(copy);
-    validate(copy);
-  }
-  Object.assign(t2, copy);
-}
-function editSchedule(t2, id, patch) {
-  const copy = structuredClone(t2), m = copy.matches.find((m2) => m2.id === id);
-  ensure(m, "\u8A66\u5408\u306A\u3057");
-  ensure(m.status === "waiting" && m.startedAt === void 0 && !m.rubbers?.some((r) => r.games.length), "\u672A\u958B\u59CB\u30FB\u5185\u8A33\u672A\u5165\u529B\u8A66\u5408\u3060\u3051\u4E88\u5B9A\u5909\u66F4\u3067\u304D\u307E\u3059");
-  ensure(patch && typeof patch === "object" && !Array.isArray(patch) && Object.getPrototypeOf(patch) === Object.prototype && Reflect.ownKeys(patch).length > 0 && Reflect.ownKeys(patch).every((k) => typeof k === "string" && ["court", "time", "duration", "number", "displayNumber", "queueOrder"].includes(k)), "\u4E88\u5B9A\u5909\u66F4\u9805\u76EE\u304C\u4E0D\u6B63");
-  const originalNumber = m.number, originalLabel = m.displayNumber;
-  ensure(!copy.scheduleNumbersLocked || (!Object.hasOwn(patch, "number") || patch.number === originalNumber) && (!Object.hasOwn(patch, "displayNumber") || patch.displayNumber === originalLabel), "\u9032\u884C\u958B\u59CB\u5F8C\u306F\u8A66\u5408\u756A\u53F7\u3092\u5909\u66F4\u3067\u304D\u307E\u305B\u3093");
-  Object.assign(m, patch);
-  if (copy.stages.some((s2) => s2.id === m.stageId && s2.exchange)) m.manualSchedule = !!(m.court || m.queueOrder);
-  if (Object.prototype.hasOwnProperty.call(patch, "number") && !Object.prototype.hasOwnProperty.call(patch, "displayNumber") && (originalLabel === void 0 || originalLabel.trim() === String(originalNumber))) m.displayNumber = String(m.number);
-  if (m.displayNumber !== void 0) ensure(typeof m.displayNumber === "string", "\u8868\u793A\u8A66\u5408\u756A\u53F7\u304C\u4E0D\u6B63");
-  if (typeof m.displayNumber === "string") m.displayNumber = m.displayNumber.trim();
-  ensure(Number.isInteger(m.court) && m.court >= 0 && m.court <= calendarCourts(copy, plannedDate(copy, m)) && Number.isInteger(m.time) && m.time >= 0 && m.time < 1440 && Number.isInteger(m.duration) && m.duration > 0 && m.duration <= 1440 && m.time + m.duration <= 1440, "\u30B3\u30FC\u30C8\u30FB\u6642\u9593\u304C\u4E0D\u6B63");
-  ensure(copy.matches.every((x) => Number.isSafeInteger(x.number) && x.number > 0), "\u8A66\u5408\u756A\u53F7\u306F1\u4EE5\u4E0A\u306E\u6574\u6570\u3067\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
-  ensure(new Set(copy.matches.map((m2) => m2.number)).size === copy.matches.length, "\u8A66\u5408\u756A\u53F7\u91CD\u8907");
-  ensure(copy.matches.every((x) => x.displayNumber === void 0 || typeof x.displayNumber === "string" && x.displayNumber.trim().length > 0 && x.displayNumber.length <= 48 && !/[\u0000-\u001f]/.test(x.displayNumber)), "\u8868\u793A\u8A66\u5408\u756A\u53F7\u304C\u4E0D\u6B63");
-  ensure(new Set(copy.matches.map((x) => x.displayNumber?.trim() || String(x.number))).size === copy.matches.length, "\u8868\u793A\u8A66\u5408\u756A\u53F7\u304C\u91CD\u8907");
-  validateSchedule(copy);
-  Object.assign(t2, copy);
-}
-function candidates(t2, now = Date.now(), allowEarly = false) {
-  const entries = new Map(t2.events.flatMap((e) => e.entries).map((p) => [p.id, p])), events2 = new Map(t2.events.map((e) => [e.id, e])), matches = new Map(t2.matches.map((m) => [m.id, m])), stages = new Map(t2.stages.map((s2) => [s2.id, s2])), memo = /* @__PURE__ */ new Map();
-  const players = (m, seen = /* @__PURE__ */ new Set()) => {
-    const cached = memo.get(m.id);
-    if (cached) return cached;
-    ensure(!seen.has(m.id), "\u4F9D\u5B58\u5FAA\u74B0");
-    seen.add(m.id);
-    const side = (id, dep) => id ? entries.get(id)?.players || [] : dep && matches.has(dep) ? players(matches.get(dep), new Set(seen)) : [];
-    const result2 = [.../* @__PURE__ */ new Set([...side(m.left, feeder(m, 0)), ...side(m.right, feeder(m, 1))])];
-    memo.set(m.id, result2);
-    return result2;
-  };
-  const today = localDay(now);
-  const workload = /* @__PURE__ */ new Map();
-  const busy2 = /* @__PURE__ */ new Set(), occupied = /* @__PURE__ */ new Set(), courtLast = /* @__PURE__ */ new Map(), last2 = /* @__PURE__ */ new Map(), stageDone = new Map(t2.stages.map((s2) => [s2.id, true]));
-  for (const m of t2.matches) {
-    if (["completed", "called", "playing"].includes(m.status)) players(m).forEach((p) => workload.set(p, (workload.get(p) || 0) + 1));
-    if (!finished(m)) stageDone.set(m.stageId, false);
-    if (["called", "playing"].includes(m.status)) {
-      occupied.add(m.court);
-      players(m).forEach((p) => busy2.add(p));
-    }
-    if (m.status === "completed" && m.finishedAt !== void 0 && Number.isSafeInteger(m.finishedAt) && actualDateAllowed(t2, m.finishedAt, today)) {
-      if (dayMinute(t2, m.finishedAt, today) !== void 0) courtLast.set(m.court, Math.max(courtLast.get(m.court) || 0, m.finishedAt));
-      if (m.startedAt === void 0 || !actualDateAllowed(t2, m.startedAt, today) || m.finishedAt >= m.startedAt) for (const p of players(m)) last2.set(p, Math.max(last2.get(p) || 0, m.finishedAt));
-    }
-  }
-  const day = dayConfig(t2, today);
-  const validClock = Number.isSafeInteger(now) && now >= 0 && (t2.competitionDays ? !!dayConfig(t2, today) : today === t2.date), minute2 = validClock ? new Date(now).getHours() * 60 + new Date(now).getMinutes() : void 0, free = Array.from({ length: calendarCourts(t2, today) }, (_2, i) => i + 1).filter((c) => !occupied.has(c)), safeFree = free.some((c) => (courtLast.get(c) || 0) <= now), fixed2 = t2.scheduleMode === "fixed";
-  return t2.matches.filter((m) => {
-    const stage = stages.get(m.stageId);
-    return m.status === "waiting" && m.left && m.right && m.deps.every((id) => matches.has(id) && finished(matches.get(id))) && stage && (!stage.source || stageDone.get(stage.source));
-  }).sort((a, b) => {
-    const exchangeA = stages.get(a.stageId)?.exchange, exchangeB = stages.get(b.stageId)?.exchange;
-    if (!!exchangeA !== !!exchangeB) return Number(!!exchangeB) - Number(!!exchangeA);
-    if (exchangeA && exchangeB) {
-      const explicit = (m) => !!m.manualSchedule || !!m.queueOrder;
-      const manual = Number(explicit(b)) - Number(explicit(a));
-      if (manual) return manual;
-      if (explicit(a) && explicit(b)) return (a.queueOrder ?? a.number) - (b.queueOrder ?? b.number);
-      const load = (m) => players(m).map((p) => workload.get(p) || 0);
-      const aLoad = load(a), bLoad = load(b);
-      const readySince = (m) => Math.max(...[m.left, m.right].flatMap((id) => {
-        const entry = entries.get(id);
-        return entry.players.map((p) => last2.get(p) || entry.joinedAt || stages.get(m.stageId).exchange.created);
-      }));
-      const fairness = Math.max(...aLoad) - Math.max(...bLoad) || aLoad.reduce((n2, x) => n2 + x, 0) - bLoad.reduce((n2, x) => n2 + x, 0) || readySince(a) - readySince(b);
-      if (fairness) return fairness;
-    }
-    return a.time - b.time || (a.queueOrder ?? a.number) - (b.queueOrder ?? b.number);
-  }).map((m) => {
-    const ps = players(m), lastPlayed = Math.max(0, ...ps.map((p) => last2.get(p) || 0)), assigned = m.court > 0, reason2 = stages.get(m.stageId)?.exchange?.inactive.some((id) => id === m.left || id === m.right) ? "\u53C2\u52A0\u8005\u304C\u96E2\u8131\u6E08\u307F" : events2.get(m.eventId)?.type === "team" && !m.rubbers ? "\u56E3\u4F53\u30AA\u30FC\u30C0\u30FC\u3092\u5148\u306B\u767B\u9332\u3057\u3066\u304F\u3060\u3055\u3044" : !validClock || plannedDate(t2, m) !== today ? "\u5927\u4F1A\u958B\u50AC\u65E5\u3068\u547C\u51FA\u65E5\u6642\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044" : day && minute2 !== void 0 && (minute2 < day.start || minute2 + m.duration > day.end || day.breaks?.some((b) => minute2 < b.end && minute2 + m.duration > b.start)) ? "\u958B\u50AC\u65E5\u306E\u5229\u7528\u6642\u9593\u5916\u3067\u3059" : ps.some((p) => busy2.has(p)) ? "\u9078\u624B\u304C\u8A66\u5408\u4E2D" : lastPlayed > now ? "\u9078\u624B\u306E\u5B9F\u7D42\u4E86\u6642\u523B\u3088\u308A\u7AEF\u672B\u6642\u8A08\u304C\u524D\u3067\u3059" : ps.some((p) => last2.has(p) && now - last2.get(p) < restFor(t2, p, today) * 6e4) ? "\u4F11\u61A9\u4E0D\u8DB3" : stages.get(m.stageId)?.exchange?.end && minute2 !== void 0 && minute2 + m.duration > stages.get(m.stageId).exchange.end ? "\u7D42\u4E86\u4E88\u5B9A\u307E\u3067\u306B\u53CE\u307E\u308A\u307E\u305B\u3093" : fixed2 && (!Number.isInteger(m.court) || m.court < 1 || m.court > calendarCourts(t2, today)) ? "\u30B3\u30FC\u30C8\u304C\u672A\u5272\u5F53\u3067\u3059" : (fixed2 || assigned) && occupied.has(m.court) ? "\u30B3\u30FC\u30C8\u304C\u4F7F\u7528\u4E2D\u3067\u3059" : (fixed2 || assigned) && (courtLast.get(m.court) || 0) > now ? "\u30B3\u30FC\u30C8\u306E\u5B9F\u7D42\u4E86\u6642\u523B\u3088\u308A\u7AEF\u672B\u6642\u8A08\u304C\u524D\u3067\u3059" : !fixed2 && free.length === 0 ? "\u30B3\u30FC\u30C8\u304C\u4F7F\u7528\u4E2D\u3067\u3059" : !fixed2 && !safeFree ? "\u30B3\u30FC\u30C8\u306E\u5B9F\u7D42\u4E86\u6642\u523B\u3088\u308A\u7AEF\u672B\u6642\u8A08\u304C\u524D\u3067\u3059" : !allowEarly && fixed2 && minute2 !== void 0 && m.time > minute2 ? "\u958B\u59CB\u4E88\u5B9A\u524D" : "";
-    const court = reason2 ? void 0 : assigned ? m.court : free.find((c) => (courtLast.get(c) || 0) <= now);
-    return { id: m.id, number: m.number, reason: reason2, court };
-  });
-}
-function callNext(t2, now = Date.now()) {
-  ensure(Number.isSafeInteger(now) && now >= 0 && (t2.competitionDays ? !!dayConfig(t2, localDay(now)) : localDay(now) === t2.date), "\u5927\u4F1A\u958B\u50AC\u65E5\u3068\u547C\u51FA\u65E5\u6642\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
-  return atomicMutation(t2, (d) => {
-    const free = Array.from({ length: calendarCourts(d, localDay(now)) }, (_2, i) => i + 1).filter((c) => !d.matches.some((m) => m.court === c && ["called", "playing"].includes(m.status)));
-    const matches = new Map(d.matches.map((m) => [m.id, m]));
-    const players = (m) => possiblePlayers(d, m.id);
-    const busy2 = new Set(d.matches.filter((m) => ["called", "playing"].includes(m.status)).flatMap(players));
-    for (const c of candidates(d, now)) {
-      if (c.reason) continue;
-      const m = matches.get(c.id);
-      const ps = players(m);
-      if (ps.some((p) => busy2.has(p))) continue;
-      const safeCourt = (court2) => !d.matches.some((x) => x.id !== m.id && x.court === court2 && x.status === "completed" && x.finishedAt !== void 0 && Number.isFinite(x.finishedAt) && dayMinute(d, x.finishedAt, localDay(now)) !== void 0 && x.finishedAt > now);
-      const court = d.scheduleMode === "fixed" || m.court > 0 ? free.find((n2) => n2 === m.court && safeCourt(n2)) : free.find(safeCourt);
-      if (!court) continue;
-      m.court = court;
-      if (d.competitionDays) m.scheduledDate = localDay(now);
-      m.status = "called";
-      ps.forEach((p) => busy2.add(p));
-      free.splice(free.indexOf(court), 1);
-      if (!free.length) break;
-    }
-  });
-}
-function callSelected(t2, id, now = Date.now()) {
-  return atomicMutation(t2, (d) => {
-    const item = candidates(d, now, true).find((c) => c.id === id);
-    ensure(item, "\u672A\u78BA\u5B9A\u307E\u305F\u306F\u547C\u51FA\u3067\u304D\u306A\u3044\u8A66\u5408\u3067\u3059");
-    ensure(!item.reason, item.reason);
-    const match = d.matches.find((m) => m.id === id);
-    if (!match.court) {
-      const court = Array.from({ length: calendarCourts(d, localDay(now)) }, (_2, i) => i + 1).find((c) => !d.matches.some((m) => m.court === c && (["called", "playing"].includes(m.status) || m.status === "completed" && m.finishedAt !== void 0 && dayMinute(d, m.finishedAt, localDay(now)) !== void 0 && m.finishedAt > now)));
-      ensure(court, "\u4F7F\u7528\u53EF\u80FD\u306A\u30B3\u30FC\u30C8\u304C\u3042\u308A\u307E\u305B\u3093");
-      match.court = court;
-    }
-    if (d.competitionDays) match.scheduledDate = localDay(now);
-    match.status = "called";
-  });
-}
-
-// src/rank-draw.ts
-function rankPositions(size) {
-  let order = [1, 2];
-  while (order.length < size) {
-    const complement = 2 * order.length + 1;
-    order = order.flatMap((rank, i) => i % 2 ? [complement - rank, rank] : [rank, complement - rank]);
-  }
-  return order;
-}
-function rankOrder(entries, random = Math.random, useRanks = true) {
-  const seats = Array(entries.length).fill(void 0);
-  const seen = /* @__PURE__ */ new Set(), ranks = /* @__PURE__ */ new Set();
-  for (const e of entries) {
-    if (e.seed) {
-      ensure(Number.isSafeInteger(e.seed) && e.seed >= 1 && e.seed <= entries.length && !seen.has(e.seed), "\u30B7\u30FC\u30C9\u756A\u53F7\u306E\u91CD\u8907\u307E\u305F\u306F\u7BC4\u56F2\u5916\u3067\u3059");
-      seen.add(e.seed);
-      seats[e.seed - 1] = e;
-    }
-    if (useRanks && e.rank !== void 0) {
-      ensure(Number.isSafeInteger(e.rank) && e.rank >= 1 && e.rank <= entries.length, "\u30E9\u30F3\u30AF\u306F\u53C2\u52A0\u4EBA\u6570\u4EE5\u5185\u306E\u6574\u6570\u3067\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
-      ensure(!ranks.has(e.rank), "\u30E9\u30F3\u30AF\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059: " + e.rank);
-      ranks.add(e.rank);
-    }
-  }
-  const remaining = entries.filter((e) => !e.seed);
-  const ranked2 = useRanks ? remaining.filter((e) => e.rank !== void 0).sort((a, b) => a.rank - b.rank) : [];
-  const deferred = [];
-  for (const e of ranked2) {
-    if (seats[e.rank - 1]) deferred.push(e);
-    else seats[e.rank - 1] = e;
-  }
-  for (const e of deferred) seats[seats.findIndex((x) => !x)] = e;
-  const randomPool = remaining.filter((e) => !useRanks || e.rank === void 0);
-  for (let i = randomPool.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
-    [randomPool[i], randomPool[j]] = [randomPool[j], randomPool[i]];
-  }
-  let next = 0;
-  return seats.map((e) => e ?? randomPool[next++]);
-}
-
-// src/ranking-basis.ts
-function rankingSignature(t2, gid, rows) {
-  const stage = t2.stages.find((s2) => s2.groups.some((g) => g.id === gid)), group = stage?.groups.find((g) => g.id === gid);
-  const ids = new Set(group?.entries || []);
-  return JSON.stringify({ stats: rows.map(({ id, played, wins, rate, gd, pd, rd }) => ({ id, played, wins, rate, gd, pd, rd })).sort((a, b) => a.id.localeCompare(b.id)), matches: t2.matches.filter((m) => (m.groupId === gid || m.stageId === stage?.source) && ids.has(m.left) && ids.has(m.right)).map((m) => ({ id: m.id, left: m.left, right: m.right, status: m.status, winner: m.winner, games: m.games, rubbers: m.rubbers })).sort((a, b) => a.id.localeCompare(b.id)) });
-}
-
-// src/engine.ts
-function addEvent(t2, name6, type, base = 21, wins = 2, deuce = true, cap = 30) {
-  ensure(name6.trim(), "\u7A2E\u76EE\u540D\u304C\u5FC5\u8981\u3067\u3059");
-  const e = { id: uid(), name: name6, type, rule: { base, wins, deuce, cap: deuce ? cap : base }, entries: [] };
-  t2.events.push(e);
-  return e;
-}
-function addEntry(t2, eid2, name6, club, players, seed = 0) {
-  const e = eventOf(t2, eid2);
-  ensure(!t2.stages.some((s2) => s2.eventId === eid2), "\u7D44\u5408\u305B\u4F5C\u6210\u5F8C\u306E\u53C2\u52A0\u8005\u8FFD\u52A0\u306F\u3067\u304D\u307E\u305B\u3093");
-  ensure(!e.entries.some((p2) => p2.players.length === players.length && p2.players.every((id) => players.includes(id))), "\u540C\u3058\u9078\u624B\u69CB\u6210\u304C\u767B\u9332\u6E08\u307F\u3067\u3059");
-  const p = { id: uid(), name: name6, club, players, seed };
-  e.entries.push(p);
-  return p;
-}
-var shuffle = (a) => {
-  a = [...a];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-};
-function ordered(entries, mode) {
-  return mode === "manual" ? [...entries] : mode === "seed" ? [...entries.filter((e) => e.seed > 0).sort((a, b) => a.seed - b.seed), ...shuffle(entries.filter((e) => !e.seed))] : shuffle(entries);
-}
-function newMatch(t2, s2, gid, left, right, round = 1, deps = []) {
-  ensure(t2.matches.length < 5e4, "\u8A66\u5408\u6570\u304C50,000\u4EF6\u3092\u8D85\u3048\u307E\u3059");
-  const m = { id: uid(), eventId: s2.eventId, stageId: s2.id, groupId: gid, number: (t2.matches.at(-1)?.number || 0) + 1, round, left, right, deps, games: [], winner: "", status: "waiting", court: 0, time: 0, duration: 20 };
-  t2.matches.push(m);
-  return m;
-}
-function drawInto(t2, eid2, kind, count = 1, mode = "seed", entries, source, name6, excludeClub = false) {
-  ensure(!excludeClub || kind === "league" && eventOf(t2, eid2).type !== "team", "\u540C\u30C1\u30FC\u30E0\u9664\u5916\u306F\u500B\u4EBA\u30EA\u30FC\u30B0\u304C\u5BFE\u8C61\u3067\u3059");
-  ensure(["league", "bracket"].includes(kind), "\u7D44\u5408\u305B\u65B9\u5F0F\u304C\u4E0D\u6B63\u3067\u3059");
-  ensure(["manual", "seed", "random", "rank"].includes(mode), "\u632F\u308A\u5206\u3051\u65B9\u6CD5\u304C\u4E0D\u6B63\u3067\u3059");
-  const e = eventOf(t2, eid2);
-  const pool3 = entries ? entries.map((id) => {
-    const p = e.entries.find((p2) => p2.id === id);
-    ensure(p, "\u53C2\u52A0\u8005\u4E0D\u660E");
-    return p;
-  }) : e.entries;
-  ensure(pool3.length >= 2 && pool3.length <= 512, "\u7D44\u5408\u305B\u306F2\u301C512\u7D44\u3067\u3059");
-  ensure(new Set(pool3.map((p) => p.id)).size === pool3.length, "\u53C2\u52A0ID\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
-  ensure(pool3.every((p) => !p.players.some((id) => id.startsWith("TEAM-PENDING-"))), "\u56E3\u4F53\u30E1\u30F3\u30D0\u30FC\u3092\u767B\u9332\u3057\u3066\u304B\u3089\u7D44\u5408\u305B\u3092\u4F5C\u6210\u3057\u3066\u304F\u3060\u3055\u3044");
-  const players = pool3.flatMap((p) => p.players);
-  ensure(new Set(players).size === players.length, "\u540C\u4E00\u9078\u624B\u304C\u8907\u6570\u306E\u53C2\u52A0\u67A0\u306B\u3044\u307E\u3059");
-  ensure(!t2.stages.some((s3) => s3.eventId === eid2 && !source), "\u521D\u671F\u7D44\u5408\u305B\u306F\u4F5C\u6210\u6E08\u307F\u3067\u3059");
-  ensure(Number.isInteger(count) && count >= 1 && count <= Math.floor(pool3.length / 2), "\u5404\u30EA\u30FC\u30B02\u7D44\u4EE5\u4E0A\u306B\u3057\u3066\u304F\u3060\u3055\u3044");
-  if (source) ensure(t2.stages.some((s3) => s3.id === source && s3.eventId === eid2), "\u9032\u51FA\u5143\u30B9\u30C6\u30FC\u30B8\u304C\u4E0D\u6B63\u3067\u3059");
-  if (name6 !== void 0) ensure(typeof name6 === "string" && name6.trim() && name6.length <= 120, "\u30B9\u30C6\u30FC\u30B8\u540D\u304C\u4E0D\u6B63\u3067\u3059");
-  let planned = 0;
-  if (kind === "league" && !excludeClub) {
-    const q = Math.floor(pool3.length / count), r = pool3.length % count;
-    planned = r * (q + 1) * q / 2 + (count - r) * q * (q - 1) / 2;
-  } else if (kind === "bracket") {
-    for (let i = 0; i < count; i++) {
-      const n2 = Math.floor(pool3.length / count) + (i < pool3.length % count ? 1 : 0);
-      planned += n2 - 1;
-    }
-  }
-  ensure(t2.matches.length + planned <= 5e4, "\u8A66\u5408\u6570\u304C50,000\u4EF6\u3092\u8D85\u3048\u307E\u3059\u3002\u30EA\u30FC\u30B0\u3092\u5206\u5272\u3057\u3066\u304F\u3060\u3055\u3044");
-  const s2 = { id: uid(), eventId: eid2, kind, name: name6 || (source ? "\u6C7A\u52DD" : "\u4E88\u9078"), source, groups: [], ...excludeClub ? { excludeClub: true } : {} };
-  t2.stages.push(s2);
-  t2.matches.sort((a, b) => a.number - b.number);
-  const ps = kind === "bracket" && !source && ["rank", "seed"].includes(mode) ? rankOrder(pool3, Math.random, mode === "rank") : ordered(pool3, mode === "rank" ? "seed" : mode);
-  if (kind === "league") {
-    s2.groups = Array.from({ length: count }, (_2, i) => ({ id: uid(), name: `${s2.name} ${i + 1}\u7D44`, entries: [] }));
-    ps.forEach((p, i) => {
-      const row = Math.floor(i / count), col = i % count;
-      s2.groups[row % 2 ? count - 1 - col : col].entries.push(p.id);
-    });
-    for (const g of s2.groups) for (let i = 0; i < g.entries.length; i++) for (let j = i + 1; j < g.entries.length; j++) if (!s2.excludeClub || opposing(entryOf(t2, g.entries[i]), entryOf(t2, g.entries[j]))) newMatch(t2, s2, g.id, g.entries[i], g.entries[j]);
-  } else {
-    s2.groups = Array.from({ length: count }, (_2, i) => ({ id: uid(), name: count === 1 ? s2.name : s2.name + " " + (i + 1) + "\u7D44", entries: [] }));
-    ps.forEach((p, i) => s2.groups[i % count].entries.push(p.id));
-    for (const g of s2.groups) {
-      let size = 2;
-      while (size < g.entries.length) size *= 2;
-      const slots = rankPositions(size).map((n2) => g.entries[n2 - 1] || "");
-      buildBracketGroup(t2, s2, g, slots);
-    }
-    propagate(t2, s2.id);
-    numberBracket(t2, s2.id);
-    if (mode === "rank") s2.rankDraw = true;
-  }
-  return s2;
-}
-function commitDraws(t2, draft) {
-  const stages = new Set(t2.stages.map((s2) => s2.id)), matches = new Map(t2.matches.map((m) => [m.id, m]));
-  t2.stages.push(...draft.stages.filter((s2) => !stages.has(s2.id)));
-  t2.matches = draft.matches.map((m) => matches.get(m.id) || m);
-}
-function draw(t2, eid2, kind, count = 1, mode = "seed", entries, source, name6, excludeClub = false) {
-  validate(t2);
-  assertNoPendingPairs(eventOf(t2, eid2));
-  const draft = structuredClone(t2), stage = drawInto(draft, eid2, kind, count, mode, entries, source, name6, excludeClub);
-  validate(draft);
-  commitDraws(t2, draft);
-  return t2.stages.find((s2) => s2.id === stage.id);
-}
-function numberBracket(t2, sid2) {
-  const matches = t2.matches.filter((m) => m.stageId === sid2).sort((a, b) => a.round - b.round || a.number - b.number);
-  let number = 0;
-  for (const m of matches) {
-    if (m.status === "bye") delete m.bracketNo;
-    else m.bracketNo = ++number;
-  }
-}
-function buildBracketGroup(t2, s2, g, slots) {
-  const old = t2.matches.filter((m) => m.groupId === g.id);
-  const byNode = new Map(old.map((m) => [m.node, m]));
-  const active = /* @__PURE__ */ new Map();
-  const make = [];
-  for (const [i, id] of slots.entries()) if (id) active.set(slots.length + i, { player: id });
-  for (let lane = slots.length / 2, round = 1; lane >= 1; lane /= 2, round++) {
-    for (let node = lane; node < lane * 2; node++) {
-      const a = active.get(node * 2), b = active.get(node * 2 + 1);
-      if (!a || !b) {
-        if (a || b) active.set(node, a || b);
-        continue;
-      }
-      const id = byNode.get(node)?.id ?? uid();
-      make.push({ node, round, left: a.player ?? "", right: b.player ?? "", feeds: [a.match ?? "", b.match ?? ""], id });
-      active.set(node, { match: id });
-    }
-  }
-  const newNodes = new Set(make.map((m) => m.node));
-  ensure(!old.some((m) => (m.court || m.displayNumber) && !newNodes.has(m.node)), "\u5272\u5F53\u6E08\u307F\u30FB\u63A1\u756A\u6E08\u307F\u306E\u67A0\u3092\u89E3\u9664\u3057\u3066\u304B\u3089\u5909\u66F4\u3057\u3066\u304F\u3060\u3055\u3044");
-  let last2 = t2.matches.reduce((max3, m) => Math.max(max3, m.number), 0);
-  t2.matches = t2.matches.filter((m) => m.groupId !== g.id);
-  for (const n2 of make) {
-    const m = byNode.get(n2.node);
-    const existing = m ? { ...m } : void 0;
-    if (existing) delete existing.rubbers;
-    t2.matches.push({
-      ...existing,
-      id: n2.id,
-      eventId: s2.eventId,
-      stageId: s2.id,
-      groupId: g.id,
-      number: m?.number ?? ++last2,
-      round: n2.round,
-      node: n2.node,
-      left: n2.left,
-      right: n2.right,
-      feeds: n2.feeds,
-      deps: n2.feeds.filter(Boolean),
-      games: [],
-      winner: "",
-      status: "waiting",
-      court: m?.court ?? 0,
-      time: m?.time ?? 0,
-      duration: m?.duration ?? 20
-    });
-  }
-  g.slots = [...slots];
-}
-function propagate(t2, sid2) {
-  const matches = t2.matches.filter((m) => m.stageId === sid2);
-  const byId = new Map(matches.map((m) => [m.id, m]));
-  for (const m of matches.sort((a, b) => a.round - b.round)) {
-    for (const side of [0, 1]) {
-      const id = feeder(m, side);
-      if (id) {
-        const d = byId.get(id);
-        m[side === 0 ? "left" : "right"] = finished(d) ? d.winner : "";
-      }
-    }
-    if (!m.feeds && (!m.deps.length || m.deps.every((id) => finished(byId.get(id)))) && !!m.left !== !!m.right) {
-      m.status = "bye";
-      m.winner = m.left || m.right;
-    }
-  }
-}
-function descendants(t2, id) {
-  const out = [];
-  const todo = [id];
-  while (todo.length) {
-    const at = todo.shift();
-    for (const m of t2.matches.filter((m2) => m2.deps.includes(at))) {
-      out.push(m);
-      todo.push(m.id);
-    }
-  }
-  return out;
-}
-function guardCorrection(t2, m, updateFinals = false) {
-  ensure(!descendants(t2, m.id).some((n2) => finished(n2) || ["called", "playing"].includes(n2.status)), "\u52DD\u8005\u304C\u5909\u308F\u308A\u307E\u3059\u3002\u5F8C\u7D9A\u8A66\u5408\u3092\u6C7A\u52DD\u5074\u304B\u3089\u7D50\u679C\u30FB\u9032\u884C\u53D6\u6D88\u3057\u3066\u304B\u3089\u3001\u5143\u306E\u8A66\u5408\u3092\u8A02\u6B63\u3057\u3066\u304F\u3060\u3055\u3044");
-  if (!updateFinals) ensure(!t2.stages.some((s2) => s2.source === m.stageId), "\u6C7A\u52DD\u4F5C\u6210\u5F8C\u306E\u4E88\u9078\u8A02\u6B63\u306F\u4FDD\u8B77\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u53D6\u308A\u6D88\u3057\u3066\u304B\u3089\u8A02\u6B63\u3057\u3066\u304F\u3060\u3055\u3044");
-}
-function updateQualifications(t2, sourceId) {
-  const source = t2.stages.find((s2) => s2.id === sourceId);
-  const stages = t2.stages.filter((s2) => s2.source === sourceId);
-  let changed = false;
-  for (const stage of stages) {
-    const rule = stage.qualification;
-    ensure(rule, "\u65E7\u7248\u306E\u6C7A\u52DD\u306F\u9032\u51FA\u6761\u4EF6\u3092\u518D\u8A08\u7B97\u3067\u304D\u307E\u305B\u3093\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u53D6\u308A\u6D88\u3057\u3066\u304B\u3089\u8A02\u6B63\u3057\u3066\u304F\u3060\u3055\u3044");
-    const next = "slots" in rule ? rule.slots.map((slot) => resolveFinalSlot(t2, slot)) : qualifiedGroups(t2, source).flatMap((rows, i) => {
-      if (rule.place !== void 0) {
-        ensure(!rows.some((r) => r.tied), "\u9032\u51FA\u5883\u754C\u304C\u540C\u9806\u4F4D\u3067\u3059\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u9806\u4F4D\u3092\u88C1\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
-        return rows.filter((r) => r.rank === rule.place).map((r) => r.id);
-      }
-      const count = rule.counts[i];
-      ensure(!(rows[count] && rows[count - 1].rank === rows[count].rank), "\u9032\u51FA\u5883\u754C\u304C\u540C\u9806\u4F4D\u3067\u3059\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u9806\u4F4D\u3092\u88C1\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
-      return rows.slice(0, count).map((r) => r.id);
-    });
-    ensure(next.length === rule.previous.length && next.every((id) => !!id) && new Set(next).size === next.length, "\u8A02\u6B63\u5F8C\u306E\u9032\u51FA\u8005\u306B\u6B20\u843D\u3084\u91CD\u8907\u304C\u3042\u308A\u307E\u3059\u3002\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u67A0\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
-    if (next.every((id, i) => id === rule.previous[i])) continue;
-    const matches = t2.matches.filter((n2) => n2.stageId === stage.id);
-    ensure(!stage.locked && !t2.stages.some((s2) => s2.source === stage.id) && matches.every((n2) => ["waiting", "bye"].includes(n2.status)), "\u6C7A\u52DD\u9032\u51FA\u8005\u304C\u5909\u308F\u308A\u307E\u3059\u3002\u6C7A\u52DD\u5074\u304B\u3089\u7D50\u679C\u30FB\u9032\u884C\u3092\u53D6\u308A\u6D88\u3057\u3066\u304B\u3089\u8A02\u6B63\u3057\u3066\u304F\u3060\u3055\u3044");
-    changed = true;
-    const mapping = new Map(rule.previous.map((id, i) => [id, next[i]]));
-    const replace = (id) => mapping.get(id) ?? id;
-    for (const g of stage.groups) {
-      g.entries = g.entries.map(replace);
-      if (g.slots) g.slots = g.slots.map(replace);
-    }
-    for (const m of matches) {
-      const left = replace(m.left), right = replace(m.right);
-      if (left !== m.left || right !== m.right) delete m.rubbers;
-      m.left = left;
-      m.right = right;
-      m.winner = replace(m.winner);
-    }
-    rule.previous = next;
-  }
-  if (changed && t2.matches.some((m) => m.court > 0)) validateSchedule(t2);
-}
-function scoreInto(t2, id, games2, walkover = "") {
-  const m = t2.matches.find((m2) => m2.id === id);
-  ensure(m && m.left && m.right, "\u5BFE\u6226\u8005\u304C\u672A\u78BA\u5B9A\u3067\u3059");
-  ensure(walkover || eventOf(t2, m.eventId).type !== "team", "\u56E3\u4F53\u6226\u306F\u30AA\u30FC\u30C0\u30FC\u5185\u8A33\u304B\u3089\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
-  const win = walkover ? (ensure([m.left, m.right].includes(walkover), "\u4E0D\u6226\u52DD\u8005\u304C\u4E0D\u6B63"), walkover) : m[result(games2, eventOf(t2, m.eventId).rule)];
-  const changed = m.status !== "completed" || m.winner !== win;
-  if (changed) {
-    guardCorrection(t2, m, true);
-    for (const d of descendants(t2, m.id)) delete d.rubbers;
-  }
-  delete m.decision;
-  delete m.termination;
-  delete m.retirementGames;
-  m.draw = false;
-  m.walkover = !!walkover;
-  m.finishedAt = m.status === "completed" && m.finishedAt !== void 0 ? m.finishedAt : Date.now();
-  if (walkover) m.rubbers = void 0;
-  m.games = walkover ? [] : games2;
-  m.winner = win;
-  m.status = "completed";
-  if (walkover) t2.history.push({ at: (/* @__PURE__ */ new Date()).toISOString(), op: uid(), action: "walkover:" + id, revision: t2.revision + 1 });
-  propagate(t2, m.stageId);
-  if (changed) updateQualifications(t2, m.stageId);
-}
-function cancelInto(t2, id) {
-  const m = t2.matches.find((m2) => m2.id === id);
-  ensure(m, "\u8A66\u5408\u306A\u3057");
-  guardCorrection(t2, m);
-  ensure(m.status !== "bye", "BYE\u306F\u53D6\u6D88\u3067\u304D\u307E\u305B\u3093");
-  delete m.decision;
-  delete m.termination;
-  delete m.retirementGames;
-  m.games = [];
-  m.draw = false;
-  m.walkover = false;
-  m.finishedAt = void 0;
-  m.startedAt = void 0;
-  m.winner = "";
-  m.status = "waiting";
-  m.rubbers = void 0;
-  for (const d of descendants(t2, id)) {
-    d.status = "waiting";
-    d.winner = "";
-    d.games = [];
-    delete d.rubbers;
-  }
-  propagate(t2, m.stageId);
-}
-function standings(t2, gid, applyRuling = true) {
-  const s2 = t2.stages.find((s3) => s3.groups.some((g) => g.id === gid));
-  ensure(s2 && s2.kind === "league", "\u30EA\u30FC\u30B0\u306A\u3057");
-  const ids = s2.groups.find((g) => g.id === gid).entries;
-  const pair = (a, b) => [a, b].sort().join("|");
-  const ms = /* @__PURE__ */ new Map();
-  if (s2.source && t2.stages.find((p) => p.id === s2.source)?.kind === "league") t2.matches.filter((m) => m.stageId === s2.source && finished(m) && ids.includes(m.left) && ids.includes(m.right)).forEach((m) => {
-    const k = pair(m.left, m.right);
-    ensure(!ms.has(k), "\u4E88\u9078\u7D50\u679C\u304C\u91CD\u8907");
-    ms.set(k, m);
-  });
-  t2.matches.filter((m) => m.groupId === gid && finished(m)).forEach((m) => ms.set(pair(m.left, m.right), m));
-  const e = eventOf(t2, s2.eventId);
-  const criteria = e.type === "team" ? e.team?.ranking || ["rate", "rubber", "game", "point"] : ["rate", "game", "point"];
-  const rows = ids.map((id) => {
-    let played = 0, wins = 0, draws = 0, gf = 0, ga = 0, pf = 0, pa = 0, rd = 0;
-    for (const m of ms.values()) {
-      if (m.left !== id && m.right !== id) continue;
-      played++;
-      if (m.draw) draws++;
-      else if (m.winner === id) wins++;
-      const left = m.left === id;
-      const rs = (m.rubbers || []).filter((r) => r.winner);
-      rd += rs.reduce((n2, r) => n2 + (r.winner === (left ? "left" : "right") ? 1 : -1), 0);
-      const games2 = e.type === "team" ? rs.flatMap((r) => r.games) : m.games;
-      for (const g of games2) {
-        const a = g[left ? 0 : 1], b = g[left ? 1 : 0];
-        pf += a;
-        pa += b;
-        a > b ? gf++ : ga++;
-      }
-    }
-    return { id, played, wins, draws, losses: played - wins - draws, gf, ga, pf, pa, rate: played ? (wins + draws * (e.team?.drawValue ?? 0.5)) / played : 0, gd: gf - ga, pd: pf - pa, rd, rank: 0, tied: false };
-  });
-  const value = (r, key4) => key4 === "rate" ? r.rate : key4 === "rubber" ? r.rd : key4 === "game" ? r.gd : r.pd;
-  const cmp = (a, b) => {
-    for (const k of criteria) {
-      const d = value(b, k) - value(a, k);
-      if (d) return d;
-    }
-    return 0;
-  };
-  rows.sort(cmp);
-  rows.forEach((r, i) => {
-    r.rank = i && !cmp(r, rows[i - 1]) ? rows[i - 1].rank : i + 1;
-    r.tied = rows.some((o) => o !== r && !cmp(r, o));
-  });
-  if (applyRuling) {
-    const basis = rankingSignature(t2, gid, rows);
-    const ruling = t2.rulings?.find((r) => r.groupId === gid && !r.cancelled && r.basis === basis);
-    if (ruling) {
-      rows.sort((a, b) => ruling.order.indexOf(a.id) - ruling.order.indexOf(b.id));
-      rows.forEach((r, i) => {
-        r.rank = i + 1;
-        r.tied = false;
-      });
-    }
-  }
-  return rows;
-}
-function qualifiedGroups(t2, s2) {
-  ensure(!s2.exchange, "\u4EA4\u6D41\u6226\u304B\u3089\u306E\u9032\u51FA\u306F\u3067\u304D\u307E\u305B\u3093");
-  const groups = s2.groups.map((g) => {
-    if (s2.kind === "league") {
-      const expected = g.entries.reduce((n2, id, i) => n2 + g.entries.slice(i + 1).filter((other) => !s2.excludeClub || opposing(entryOf(t2, id), entryOf(t2, other))).length, 0);
-      ensure(t2.matches.filter((m) => m.groupId === g.id).length === expected, "\u4E88\u9078\u306E\u8A66\u5408\u304C\u4E0D\u8DB3\u3057\u3066\u3044\u307E\u3059");
-      return standings(t2, g.id);
-    }
-    const ms = t2.matches.filter((m) => m.groupId === g.id && m.status === "completed").sort((a, b) => b.round - a.round);
-    ensure(ms.length && ms.every((m) => m.winner), "\u52DD\u8005\u304C\u78BA\u5B9A\u3057\u3066\u3044\u307E\u305B\u3093");
-    const final = ms[0];
-    return [{ id: final.winner, rank: 1, tied: false }, ...ms.map((m) => ({ id: m.winner === m.left ? m.right : m.left, rank: 2 ** (final.round - m.round) + 1, tied: false }))];
-  });
-  return groups;
-}
-function promoteInto(t2, sid2, top, kind, byRank = false) {
-  ensure(["league", "bracket"].includes(kind) && typeof byRank === "boolean", "\u6C7A\u52DD\u65B9\u5F0F\u304C\u4E0D\u6B63\u3067\u3059");
-  const s2 = t2.stages.find((s3) => s3.id === sid2);
-  ensure(s2 && !s2.exchange, "\u6C7A\u52DD\u306E\u9032\u51FA\u5143\u306B\u4EA4\u6D41\u6226\u306F\u4F7F\u7528\u3067\u304D\u307E\u305B\u3093");
-  ensure(!t2.stages.some((x) => x.source === sid2), "\u6C7A\u52DD\u4F5C\u6210\u6E08\u307F");
-  ensure(s2.groups.length && t2.matches.filter((m) => m.stageId === sid2).every(finished), "\u4E88\u9078\u5168\u8A66\u5408\u3092\u7D42\u4E86\u3057\u3066\u304F\u3060\u3055\u3044");
-  const counts = Array.isArray(top) ? top : s2.groups.map(() => top);
-  ensure(counts.length === s2.groups.length && counts.every((n2) => Number.isInteger(n2) && n2 > 0), "\u9032\u51FA\u6570\u304C\u4E0D\u6B63");
-  const groups = qualifiedGroups(t2, s2);
-  for (const [i, r] of groups.entries()) {
-    const n2 = counts[i];
-    ensure(n2 <= r.length, "\u9032\u51FA\u4EBA\u6570\u304C\u591A\u3059\u304E\u307E\u3059");
-    ensure(byRank ? !r.some((x) => x.tied) : !(r[n2] && r[n2 - 1].rank === r[n2].rank), "\u9032\u51FA\u5883\u754C\u304C\u540C\u9806\u4F4D\u3067\u3059\u3002\u81EA\u52D5\u9032\u51FA\u3092\u505C\u6B62\u3057\u307E\u3057\u305F");
-  }
-  const plans = byRank ? Array.from({ length: Math.max(...groups.map((r) => r.length)) }, (_2, i) => ({ ids: groups.flatMap((r) => r.filter((x) => x.rank === i + 1).map((x) => x.id)), kind: "league", name: `${i + 1}\u4F4D\u6C7A\u52DD`, mode: "manual", place: i + 1 })).filter((p) => p.ids.length >= 2) : [{ ids: groups.flatMap((r, i) => r.slice(0, counts[i]).map((x) => x.id)), kind, name: "\u6C7A\u52DD", mode: "seed" }];
-  ensure(plans.length, "\u751F\u6210\u3067\u304D\u308B\u6C7A\u52DD\u304C\u3042\u308A\u307E\u305B\u3093");
-  let additional = 0;
-  for (const p of plans) {
-    ensure(p.ids.length >= 2 && p.ids.length <= 512 && new Set(p.ids).size === p.ids.length, "\u6C7A\u52DD\u9032\u51FA\u8005\u6570\u30FB\u91CD\u8907\u304C\u4E0D\u6B63");
-    const players = p.ids.flatMap((id) => entryOf(t2, id).players);
-    ensure(new Set(players).size === players.length, "\u6C7A\u52DD\u3067\u540C\u4E00\u9078\u624B\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
-    if (p.kind === "league") additional += p.ids.length * (p.ids.length - 1) / 2;
-    else additional += p.ids.length - 1;
-  }
-  ensure(t2.matches.length + additional <= 5e4, "\u6C7A\u52DD\u5168\u4F53\u306E\u8A66\u5408\u6570\u304C50,000\u4EF6\u3092\u8D85\u3048\u307E\u3059");
-  for (const p of plans) {
-    const stage = drawInto(t2, s2.eventId, p.kind, 1, p.mode, p.ids, sid2, p.name);
-    stage.qualification = { previous: p.ids, counts, place: p.place };
-  }
-}
-function promote(t2, sid2, top, kind, byRank = false) {
-  validate(t2);
-  const draft = structuredClone(t2);
-  promoteInto(draft, sid2, top, kind, byRank);
-  validate(draft);
-  commitDraws(t2, draft);
-}
-function moveEntryInto(t2, sid2, pid, target) {
-  const s2 = t2.stages.find((s3) => s3.id === sid2);
-  ensure(s2 && s2.kind === "league" && !s2.exchange && !s2.locked && !t2.matches.some((m) => m.stageId === sid2 && m.status !== "waiting") && !t2.stages.some((x) => x.source === sid2), "\u958B\u59CB\u524D\u306E\u30EA\u30FC\u30B0\u3060\u3051\u8ABF\u6574\u3067\u304D\u307E\u3059");
-  const dst = s2.groups.find((g) => g.id === target);
-  ensure(dst, "\u79FB\u52D5\u5148\u306A\u3057");
-  const src2 = s2.groups.find((g) => g.entries.includes(pid));
-  ensure(src2 && src2.entries.length > 2 && src2 !== dst, "\u79FB\u52D5\u5143\u306F3\u7D44\u4EE5\u4E0A\u5FC5\u8981\u3067\u3059");
-  src2.entries = src2.entries.filter((x) => x !== pid);
-  dst.entries.push(pid);
-  t2.matches = t2.matches.filter((m) => m.stageId !== sid2).sort((a, b) => a.number - b.number);
-  for (const g of s2.groups) for (let i = 0; i < g.entries.length; i++) for (let j = i + 1; j < g.entries.length; j++) if (!s2.excludeClub || opposing(entryOf(t2, g.entries[i]), entryOf(t2, g.entries[j]))) newMatch(t2, s2, g.id, g.entries[i], g.entries[j]);
-}
-function teamOrderInto(t2, id, orders) {
-  const m = t2.matches.find((m2) => m2.id === id);
-  ensure(m && eventOf(t2, m.eventId).type === "team" && m.left && m.right, "\u56E3\u4F53\u8A66\u5408\u304C\u3042\u308A\u307E\u305B\u3093");
-  ensure(!finished(m) && !["called", "playing"].includes(m.status) && !m.rubbers?.some((r) => r.games.length), "\u5F97\u70B9\u5165\u529B\u6E08\u307F\u30AA\u30FC\u30C0\u30FC\u306F\u5909\u66F4\u3067\u304D\u307E\u305B\u3093");
-  const tr = eventOf(t2, m.eventId).team;
-  if (tr) ensure(orders.length === tr.rubbers, "\u898F\u5B9A\u306E\u5BFE\u6226\u672C\u6570\u3068\u7570\u306A\u308A\u307E\u3059");
-  for (const side of ["left", "right"]) {
-    const counts = /* @__PURE__ */ new Map();
-    orders.forEach((o, i) => {
-      if (tr) ensure(o[side].length === tr.orderSizes[i], "S/D\u306E\u9806\u756A\u304C\u7570\u306A\u308A\u307E\u3059");
-      for (const p of o[side]) {
-        checkTeamEligibility(tr, p);
-        const count = (counts.get(p) || 0) + 1;
-        ensure(count <= (tr?.maxAppearances || 9), "\u51FA\u5834\u56DE\u6570\u5236\u9650\u8D85\u904E");
-        counts.set(p, count);
-      }
-    });
-  }
-  ensure(orders.length >= 1 && orders.length <= 9 && (tr || orders.length % 2 === 1), "\u56E3\u4F53\u672C\u6570\u306F\u8A2D\u5B9A\u3057\u305F1\u301C9\u672C\u3067\u3059");
-  m.rubbers = orders.map((o) => {
-    ensure(o.left.length >= 1 && o.left.length <= 2 && o.left.length === o.right.length && new Set(o.left).size === o.left.length && new Set(o.right).size === o.right.length, "\u30AA\u30FC\u30C0\u30FC\u4EBA\u6570\u304C\u4E0D\u6B63");
-    ensure(o.left.every((p) => entryOf(t2, m.left).players.includes(p)) && o.right.every((p) => entryOf(t2, m.right).players.includes(p)), "\u767B\u9332\u9078\u624B\u3092\u9078\u3093\u3067\u304F\u3060\u3055\u3044");
-    return { ...o, games: [], winner: "" };
-  });
-}
-function refreshTeam(t2, m, priorStatus) {
-  const tr = eventOf(t2, m.eventId).team, rs = m.rubbers;
-  const a = rs.filter((r) => r.winner === "left").length, b = rs.filter((r) => r.winner === "right").length;
-  const complete = rs.every((r) => r.winner), tie = complete && a === b, bracket = t2.stages.find((s2) => s2.id === m.stageId)?.kind === "bracket", pending = tie && bracket && tr?.tieBreak === "manual";
-  ensure(!tie || pending || tr?.allowDraw === true, "\u56E3\u4F53\u304C\u540C\u70B9\u3067\u3059\u3002\u5F15\u5206\u3051\u3092\u8A31\u53EF\u3059\u308B\u5927\u4F1A\u898F\u5B9A\u304B\u3001\u5225\u9014\u306E\u6C7A\u7740\u898F\u5B9A\u304C\u5FC5\u8981\u3067\u3059");
-  ensure(!tie || !bracket || pending, "\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u306F\u5F15\u5206\u3051\u3067\u306F\u78BA\u5B9A\u3067\u304D\u307E\u305B\u3093\u3002\u5927\u4F1A\u898F\u5B9A\u306B\u5F93\u3063\u3066\u6C7A\u7740\u5F8C\u306B\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
-  const won = (tr?.mode !== "all" || complete) && Math.max(a, b) > rs.length / 2, draw2 = tie && !pending, ended = won || draw2;
-  delete m.decision;
-  m.draw = draw2;
-  m.walkover = false;
-  m.winner = won ? a > b ? m.left : m.right : "";
-  m.status = ended ? "completed" : ["called", "playing"].includes(priorStatus) ? priorStatus : "waiting";
-  m.finishedAt = ended ? priorStatus === "completed" ? m.finishedAt : Date.now() : void 0;
-  propagate(t2, m.stageId);
-}
-function teamScoreInto(t2, id, index, games2) {
-  const m = t2.matches.find((m2) => m2.id === id);
-  ensure(m && eventOf(t2, m.eventId).type === "team" && Number.isInteger(index) && m.rubbers?.[index], "\u30AA\u30FC\u30C0\u30FC\u304C\u3042\u308A\u307E\u305B\u3093");
-  guardCorrection(t2, m);
-  const priorStatus = m.status, w = result(games2, eventOf(t2, m.eventId).rule), tr = eventOf(t2, m.eventId).team;
-  ensure(tr?.mode !== "first" || !m.winner || m.rubbers[index].games.length, "\u5148\u53D6\u5236\u306E\u52DD\u6557\u306F\u78BA\u5B9A\u6E08\u307F\u3067\u3059");
-  m.rubbers[index].games = games2;
-  m.rubbers[index].winner = w;
-  refreshTeam(t2, m, priorStatus);
-}
-function teamCancelRubberInto(t2, id, index) {
-  const m = t2.matches.find((m2) => m2.id === id);
-  ensure(m && eventOf(t2, m.eventId).type === "team" && Number.isInteger(index) && m.rubbers?.[index]?.games.length, "\u53D6\u6D88\u3067\u304D\u308B\u5185\u8A33\u7D50\u679C\u304C\u3042\u308A\u307E\u305B\u3093");
-  guardCorrection(t2, m);
-  const priorStatus = m.status;
-  m.rubbers[index].games = [];
-  m.rubbers[index].winner = "";
-  refreshTeam(t2, m, priorStatus);
-}
-function compare(a, b) {
-  ensure(a.origin === b.origin, "\u5225\u5927\u4F1A\u3067\u3059\uFF08\u7531\u6765ID\u4E0D\u4E00\u81F4\uFF09");
-  const diff = [];
-  const check = (item, x, y) => {
-    if (JSON.stringify(x) !== JSON.stringify(y)) diff.push({ item, main: x, sub: y });
-  };
-  check("\u7DCF\u8A66\u5408\u6570", a.matches.length, b.matches.length);
-  check("\u9032\u884C\u8A2D\u5B9A", { courts: a.courts, rest: a.restMinutes, mode: a.scheduleMode }, { courts: b.courts, rest: b.restMinutes, mode: b.scheduleMode });
-  check("\u5165\u529B\u6E08\u307F\u8A66\u5408\u6570", a.matches.filter(finished).length, b.matches.filter(finished).length);
-  for (const id of /* @__PURE__ */ new Set([...a.matches.map((m) => m.id), ...b.matches.map((m) => m.id)])) {
-    const x = a.matches.find((m) => m.id === id), y = b.matches.find((m) => m.id === id);
-    check(`\u8A66\u5408 ${x?.displayNumber || x?.number || y?.displayNumber || y?.number} / ${id}`, x && { number: x.number, displayNumber: x.displayNumber, left: x.left, right: x.right, winner: x.winner, draw: x.draw || false, decision: x.decision, startedAt: x.startedAt, finishedAt: x.finishedAt, games: x.games, termination: x.termination, retirementGames: x.retirementGames, status: x.status, rubbers: x.rubbers, court: x.court, time: x.time, duration: x.duration }, y && { number: y.number, displayNumber: y.displayNumber, left: y.left, right: y.right, winner: y.winner, draw: y.draw || false, decision: y.decision, startedAt: y.startedAt, finishedAt: y.finishedAt, games: y.games, termination: y.termination, retirementGames: y.retirementGames, status: y.status, rubbers: y.rubbers, court: y.court, time: y.time, duration: y.duration });
-  }
-  check("\u6C7A\u52DD\u9032\u51FA\u30FB\u7D44\u5408\u305B", a.stages, b.stages);
-  for (const s2 of a.stages.filter((s3) => s3.kind === "league")) for (const g of s2.groups) {
-    if (b.stages.some((s3) => s3.groups.some((x) => x.id === g.id))) check("\u9806\u4F4D " + g.name, standings(a, g.id), standings(b, g.id));
-  }
-  return diff;
-}
-function terminateMatch(t2, id, winner, kind, played = []) {
-  return atomicMutation(t2, (d) => {
-    scoreInto(d, id, [], winner);
-    const m = d.matches.find((x) => x.id === id);
-    m.termination = kind;
-    if (played.length) m.retirementGames = structuredClone(played);
-  });
-}
-function score(t2, id, games2, walkover = "") {
-  return atomicMutation(t2, (d) => scoreInto(d, id, games2, walkover));
-}
-function cancel(t2, id) {
-  return atomicMutation(t2, (d) => cancelInto(d, id));
-}
-function teamScore(t2, id, index, games2) {
-  return atomicMutation(t2, (d) => teamScoreInto(d, id, index, games2));
-}
-function teamCancelRubber(t2, id, index) {
-  return atomicMutation(t2, (d) => teamCancelRubberInto(d, id, index));
-}
-function teamOrder(t2, id, orders) {
-  return atomicMutation(t2, (d) => teamOrderInto(d, id, orders));
-}
-function moveEntry(t2, sid2, pid, target) {
-  return atomicMutation(t2, (d) => moveEntryInto(d, sid2, pid, target));
-}
-function teamDecideInto(t2, id, winner, reason2) {
-  const m = t2.matches.find((m2) => m2.id === id);
-  ensure(m && eventOf(t2, m.eventId).type === "team" && eventOf(t2, m.eventId).team?.tieBreak === "manual" && t2.stages.find((s2) => s2.id === m.stageId)?.kind === "bracket", "\u624B\u52D5\u6C7A\u7740\u3092\u8A2D\u5B9A\u3057\u305F\u56E3\u4F53\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
-  guardCorrection(t2, m);
-  ensure(typeof reason2 === "string" && reason2.trim() && reason2.length <= 1e3, "\u6C7A\u7740\u7406\u7531\u3068\u5927\u4F1A\u898F\u5B9A\u306E\u6839\u62E0\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\uFF081000\u6587\u5B57\u4EE5\u5185\uFF09");
-  ensure(winner === m.left || winner === m.right, "\u6C7A\u7740\u52DD\u8005\u304C\u5BFE\u6226\u8005\u306B\u542B\u307E\u308C\u3066\u3044\u307E\u305B\u3093");
-  const rs = m.rubbers;
-  ensure(rs && rs.length > 0 && rs.every((r) => r.winner) && rs.filter((r) => r.winner === "left").length === rs.filter((r) => r.winner === "right").length, "\u5168\u672C\u304C\u540C\u70B9\u3067\u7D42\u4E86\u3057\u305F\u56E3\u4F53\u8A66\u5408\u306E\u307F\u6C7A\u7740\u3092\u5165\u529B\u3067\u304D\u307E\u3059");
-  const before = structuredClone(m), at = (/* @__PURE__ */ new Date()).toISOString();
-  m.decision = { winner, reason: reason2.trim(), at, basis: JSON.stringify(rs) };
-  m.draw = false;
-  m.walkover = false;
-  m.winner = winner;
-  m.finishedAt = m.status === "completed" ? m.finishedAt : Date.now();
-  m.status = "completed";
-  propagate(t2, m.stageId);
-  (t2.corrections ??= []).push({ at, matchId: id, reason: "\u540C\u70B9\u6C7A\u7740\uFF1A" + reason2.trim(), before, after: structuredClone(m) });
-  t2.history.push({ at, op: uid(), action: "\u56E3\u4F53\u540C\u70B9\u6C7A\u7740\uFF1A" + reason2.trim(), revision: t2.revision + 1 });
-}
-function teamDecide(t2, id, winner, reason2) {
-  return atomicMutation(t2, (d) => teamDecideInto(d, id, winner, reason2));
-}
-function swapEntries(t2, sid2, first, second) {
-  return atomicMutation(t2, (d) => {
-    const s2 = d.stages.find((x) => x.id === sid2);
-    ensure(s2 && s2.kind === "league" && !s2.exchange && !s2.locked && !d.stages.some((x) => x.source === sid2), "\u7DE8\u96C6\u3067\u304D\u308B\u4E88\u9078\u30EA\u30FC\u30B0\u304C\u3042\u308A\u307E\u305B\u3093");
-    ensure(!d.matches.some((m) => m.stageId === sid2 && m.status !== "waiting"), "\u8A66\u5408\u958B\u59CB\u5F8C\u306F\u7DE8\u96C6\u3067\u304D\u307E\u305B\u3093");
-    const a = s2.groups.find((g) => g.entries.includes(first)), b = s2.groups.find((g) => g.entries.includes(second));
-    ensure(a && b && first !== second, "\u4EA4\u63DB\u5BFE\u8C61\u304C\u4E0D\u6B63\u3067\u3059");
-    const ai = a.entries.indexOf(first), bi = b.entries.indexOf(second);
-    a.entries[ai] = second;
-    b.entries[bi] = first;
-    d.matches = d.matches.filter((m) => m.stageId !== sid2);
-    for (const g of s2.groups) for (let i = 0; i < g.entries.length; i++) for (let j = i + 1; j < g.entries.length; j++) if (!s2.excludeClub || opposing(entryOf(d, g.entries[i]), entryOf(d, g.entries[j]))) newMatch(d, s2, g.id, g.entries[i], g.entries[j]);
-  });
-}
-function removeEntry(t2, eid2, id) {
-  return atomicMutation(t2, (d) => {
-    const e = eventOf(d, eid2);
-    ensure(!d.stages.some((s2) => s2.eventId === eid2), "\u7D44\u5408\u305B\u4F5C\u6210\u5F8C\u306E\u524A\u9664\u306F\u4FDD\u8B77\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u5148\u306B\u7D44\u5408\u305B\u3092\u4FDD\u7BA1\u30FB\u53D6\u6D88\u3057\u3066\u304F\u3060\u3055\u3044");
-    ensure(e.entries.some((p) => p.id === id), "\u9078\u624B\u304C\u3042\u308A\u307E\u305B\u3093");
-    e.entries = e.entries.filter((p) => p.id !== id);
-  });
-}
-function promoteMatchSlots(t2, sid2, slots, name6 = "\u6C7A\u52DD\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8") {
-  return atomicMutation(t2, (d) => {
-    const source = d.stages.find((s2) => s2.id === sid2);
-    ensure(source?.kind === "bracket", "\u4E88\u9078\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
-    ensure(!d.stages.some((s2) => s2.source === sid2), "\u6C7A\u52DD\u4F5C\u6210\u6E08\u307F");
-    ensure(slots.length >= 2 && slots.length <= 512, "\u6C7A\u52DD\u306E\u53C2\u52A0\u8005\u67A0\u306F2\u301C512\u3067\u3059");
-    const matches = new Map(d.matches.filter((m) => m.stageId === sid2).map((m) => [m.id, m]));
-    ensure([...matches.values()].every(finished), "\u4E88\u9078\u5168\u8A66\u5408\u3092\u7D42\u4E86\u3057\u3066\u304F\u3060\u3055\u3044");
-    const refs = /* @__PURE__ */ new Set();
-    const ids = slots.map(({ matchId, side }) => {
-      ensure(side === "winner" || side === "loser", "\u9032\u51FA\u6761\u4EF6\u304C\u4E0D\u6B63");
-      ensure(!refs.has(matchId + side), "\u540C\u4E00\u306E\u9032\u51FA\u5143\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
-      refs.add(matchId + side);
-      const m = matches.get(matchId);
-      ensure(m?.status === "completed" && m.winner && m.left && m.right, "\u9032\u51FA\u5143\u306E\u5BFE\u6226\u7D50\u679C\u304C\u672A\u78BA\u5B9A\u3067\u3059");
-      return side === "winner" ? m.winner : m.winner === m.left ? m.right : m.left;
-    });
-    ensure(new Set(ids).size === ids.length, "\u540C\u3058\u9078\u624B\u30FB\u30C1\u30FC\u30E0\u304C\u6C7A\u52DD\u306B\u91CD\u8907\u3057\u307E\u3059");
-    let size = 2;
-    while (size < ids.length) size *= 2;
-    const positions = rankPositions(size).map((n2) => n2 - 1);
-    const order = Array(ids.length);
-    positions.filter((i) => i < ids.length).forEach((i, slot) => order[i] = ids[slot]);
-    const stage = drawInto(d, source.eventId, "bracket", 1, "manual", order, sid2, name6);
-    stage.qualification = { previous: ids, slots: structuredClone(slots) };
-    return stage.id;
-  });
-}
-function saveFinalSlots(t2, sid2, slots) {
-  return atomicMutation(t2, (d) => {
-    const stage = d.stages.find((s2) => s2.id === sid2);
-    ensure(stage?.kind === "bracket" && !d.stages.some((s2) => s2.source === sid2), "\u6C7A\u52DD\u751F\u6210\u524D\u306E\u4E88\u9078\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
-    stage.finalSlots = slots.map((slot) => ({ ...slot }));
-  });
-}
-function resolveFinalSlot(t2, slot) {
-  const m = t2.matches.find((m2) => m2.id === slot.matchId);
-  if (!m || m.status !== "completed" || !m.winner) return void 0;
-  return slot.side === "winner" ? m.winner : m.winner === m.left ? m.right : m.left;
 }
 
 // src/practice.ts
@@ -59875,6 +60120,7 @@ function download(blob, name6) {
 }
 async function workbookBytes(t2) {
   const wb = new import_exceljs.default.Workbook();
+  const directory = playerDirectory(t2);
   const add = (name6, rows) => {
     const ws = wb.addWorksheet(name6, { pageSetup: { paperSize: 9, orientation: "portrait", fitToPage: true, fitToWidth: 1, fitToHeight: 0, printTitlesRow: "1:1" } });
     for (const row of rows) ws.addRow(row);
@@ -59882,12 +60128,12 @@ async function workbookBytes(t2) {
     ws.columns.forEach((c) => c.width = 20);
   };
   add("\u5927\u4F1A", [["\u5927\u4F1A\u540D", "\u958B\u50AC\u65E5", "\u4F1A\u5834", "\u66F4\u65B0\u756A\u53F7"], [t2.name, t2.date, t2.venue, t2.revision]]);
-  add("\u53C2\u52A0\u8005", [["\u7A2E\u76EE", "\u8868\u793A\u540D", "\u6240\u5C5E", "\u9078\u624BID", "\u30B7\u30FC\u30C9", "\u6240\u5C5E\u5185\u30E9\u30F3\u30AF"], ...t2.events.flatMap((e) => e.entries.map((p) => [e.name, p.name, p.club, p.players.join("/"), p.seed, p.rank ?? ""]))]);
+  add("\u53C2\u52A0\u8005", [["\u7A2E\u76EE", "\u8868\u793A\u540D", "\u6240\u5C5E", "\u9078\u624B\u540D\u30FB\u69CB\u6210", "\u30B7\u30FC\u30C9", "\u6240\u5C5E\u5185\u30E9\u30F3\u30AF"], ...t2.events.flatMap((e) => e.entries.map((p) => [e.name, p.name, p.club, p.players.map((id) => playerText(directory, id, p.players)).join("\uFF0F"), p.seed, p.rank ?? ""]))]);
   const names = new Map(t2.events.flatMap((e) => e.entries).map((p) => [p.id, p.name]));
-  add("\u8A66\u5408\u7D50\u679C", [["\u756A\u53F7", "\u5DE6", "\u53F3", "\u5F97\u70B9", "\u52DD\u8005", "\u72B6\u614B", "\u30B3\u30FC\u30C8", "\u958B\u59CB\u5206"], ...t2.matches.filter((m) => m.status !== "bye").map((m) => [matchNumber(m, t2), names.get(m.left) || "", names.get(m.right) || "", (m.retirementGames ?? m.games).map((g) => g.join("-")).join("/"), m.draw ? "\u5F15\u5206\u3051" : names.get(m.winner) || "", terminationName(m) || m.status, m.court, m.time])]);
+  add("\u8A66\u5408\u7D50\u679C", [["\u756A\u53F7", "\u5DE6", "\u53F3", "\u5F97\u70B9", "\u52DD\u8005", "\u72B6\u614B", "\u30B3\u30FC\u30C8", "\u958B\u59CB\u5206"], ...t2.matches.filter((m) => m.status !== "bye").map((m) => [matchNumber(m, t2), names.get(m.left) || "", names.get(m.right) || "", (m.retirementGames ?? m.games).map((g) => g.join("-")).join("/"), m.draw ? "\u5F15\u5206\u3051" : names.get(m.winner) || "", terminationName(m) || matchStateName[m.status], m.court, m.time])]);
   add("\u9806\u4F4D", [["\u30B9\u30C6\u30FC\u30B8", "\u30EA\u30FC\u30B0", "\u9806\u4F4D", "\u9078\u624B", "\u52DD", "\u6557", "\u5206", "\u5BFE\u6226\u5DEE", "\u5F97\u5931G", "\u5F97\u5931\u70B9"], ...t2.stages.filter((s2) => s2.kind === "league").flatMap((s2) => s2.groups.flatMap((g) => standings(t2, g.id).map((r) => [s2.name, g.name, r.rank, names.get(r.id), r.wins, r.losses, r.draws, r.rd, r.gd, r.pd])))]);
-  add("\u4E88\u5B9A\u8868", [["\u756A\u53F7", "\u30B3\u30FC\u30C8", "\u958B\u59CB\u5206", "\u6240\u8981\u5206", "\u72B6\u614B"], ...t2.matches.filter((m) => m.status !== "bye").map((m) => [matchNumber(m, t2), m.court, m.time, m.duration, m.status])]);
-  add("\u56E3\u4F53\u5185\u8A33", [["\u756A\u53F7", "\u9806", "\u5DE6\u69CB\u6210", "\u53F3\u69CB\u6210", "\u5F97\u70B9", "\u52DD\u8005\u5074"], ...t2.matches.flatMap((m) => (m.rubbers || []).map((r, i) => [matchNumber(m, t2), i + 1, r.left.join("/"), r.right.join("/"), r.games.map((g) => g.join("-")).join("/"), r.winner]))]);
+  add("\u4E88\u5B9A\u8868", [["\u756A\u53F7", "\u30B3\u30FC\u30C8", "\u958B\u59CB\u5206", "\u6240\u8981\u5206", "\u72B6\u614B"], ...t2.matches.filter((m) => m.status !== "bye").map((m) => [matchNumber(m, t2), m.court, m.time, m.duration, matchStateName[m.status]])]);
+  add("\u56E3\u4F53\u5185\u8A33", [["\u756A\u53F7", "\u9806", "\u5DE6\u69CB\u6210", "\u53F3\u69CB\u6210", "\u5F97\u70B9", "\u52DD\u8005\u5074"], ...t2.matches.flatMap((m) => rubberReportRows(t2, m, directory).map((row) => [matchNumber(m, t2), ...row]))]);
   add("\u7DF4\u7FD2\u6210\u7E3E", [["\u7DF4\u7FD2", "\u9806\u4F4D", "\u9078\u624B", "\u8A66\u5408", "\u52DD", "\u5F97\u5931\u70B9"], ...(t2.practice || []).flatMap((p) => practiceRanking(p).map((r) => [p.name, r.rank, r.name, r.played, r.wins, r.diff]))]);
   return wb.xlsx.writeBuffer();
 }
@@ -59973,6 +60219,942 @@ function rosterRows(rows) {
   return hasHeader ? rowsWithData.slice(1).map((r) => positions.map((i) => r[i] || "")) : rowsWithData;
 }
 
+// src/diagnostics.ts
+var sensitive = /(password|passphrase|token|secret|credential|authorization|cookie)/i;
+function scrubDiagnostic(value2, depth = 0) {
+  if (depth > 12) return "[depth limit]";
+  if (typeof value2 === "string") return value2.slice(0, 4e3).replace(/((?:password|passphrase|token|secret|authorization)\s*[:=]\s*)[^\s,;]+/gi, "$1[redacted]");
+  if (Array.isArray(value2)) return value2.slice(0, 500).map((v2) => scrubDiagnostic(v2, depth + 1));
+  if (value2 && typeof value2 === "object") return Object.fromEntries(Object.entries(value2).map(([k, v2]) => [k, sensitive.test(k) ? "[redacted]" : scrubDiagnostic(v2, depth + 1)]));
+  return value2;
+}
+function buildDiagnostic(logs, detail) {
+  return { version: "1.0.0-rc.4", at: (/* @__PURE__ */ new Date()).toISOString(), detailIncluded: !!detail, logs: scrubDiagnostic(logs), ...detail ? { drafts: scrubDiagnostic(detail.drafts), pending: scrubDiagnostic(detail.pending) } : {} };
+}
+
+// src/storage.ts
+async function hash(value2) {
+  return Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value2))), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+var req = (r) => new Promise((resolve, reject) => {
+  r.onsuccess = () => resolve(r.result);
+  r.onerror = () => reject(r.error);
+});
+var done = (tx) => new Promise((resolve, reject) => {
+  tx.oncomplete = () => resolve();
+  tx.onabort = () => reject(tx.error || Error("\u4FDD\u5B58\u4E2D\u65AD"));
+  tx.onerror = () => {
+  };
+});
+var Store = class _Store {
+  db;
+  constructor(db2) {
+    this.db = db2;
+  }
+  static async open(name6 = "badminton-offline-rc64") {
+    const r = indexedDB.open(name6, 2);
+    let upgradeFailure;
+    r.onupgradeneeded = () => {
+      try {
+        const db3 = r.result;
+        for (const store of ["tournaments", "snapshots", "operations", "drafts", "logs", "trash", "pending", "masters", "templates"]) if (!db3.objectStoreNames.contains(store)) db3.createObjectStore(store, { keyPath: "id" });
+      } catch (error2) {
+        upgradeFailure = error2;
+        r.transaction?.abort();
+      }
+    };
+    r.onblocked = () => {
+      if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("storage-blocked"));
+    };
+    let db2;
+    try {
+      db2 = await req(r);
+    } catch (error2) {
+      throw upgradeFailure || error2;
+    }
+    db2.onversionchange = () => db2.close();
+    return new _Store(db2);
+  }
+  async rows(store) {
+    const tx = this.db.transaction(store), end = done(tx);
+    const rows = await req(tx.objectStore(store).getAll());
+    await end;
+    return rows;
+  }
+  async raw(id) {
+    const tx = this.db.transaction("tournaments"), end = done(tx);
+    const r = await req(tx.objectStore("tournaments").get(id));
+    await end;
+    return r;
+  }
+  async load(id) {
+    const r = await this.raw(id);
+    ensure(r, "\u5927\u4F1A\u304C\u3042\u308A\u307E\u305B\u3093");
+    return this.decode(r);
+  }
+  async decode(r) {
+    ensure(await hash(r.json) === r.hash, "\u7834\u640D\u691C\u51FA\uFF1A\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u304B\u3089\u5225\u5927\u4F1A\u3068\u3057\u3066\u5FA9\u5143\u3057\u3066\u304F\u3060\u3055\u3044");
+    const parsed = JSON.parse(r.json);
+    repairProgressMetadata(parsed);
+    const t2 = validate(parsed);
+    ensure(t2.id === r.id && t2.revision === r.revision, "\u4FDD\u5B58\u30E1\u30BF\u60C5\u5831\u4E0D\u4E00\u81F4");
+    return t2;
+  }
+  async list() {
+    const rows = await this.rows("tournaments");
+    return Promise.all(rows.map(async (r) => {
+      try {
+        const t2 = await this.decode(r);
+        return { id: t2.id, name: t2.name, revision: t2.revision, date: t2.date, error: "" };
+      } catch (e) {
+        return { id: r.id, name: "\u7834\u640D\u3057\u305F\u5927\u4F1A\uFF08\u524A\u9664\u305B\u305A\u4FDD\u6301\uFF09", revision: r.revision, date: "", error: String(e) };
+      }
+    }));
+  }
+  async save(input4, expected, op = uid(), action = "\u4FDD\u5B58") {
+    const requestHash = await hash(JSON.stringify({ input: input4, expected, action }));
+    const t2 = structuredClone(input4);
+    repairProgressMetadata(t2);
+    if (t2.schema === 1) {
+      for (const m of t2.matches) if (m.status === "completed" && m.walkover === void 0 && !m.games.length && t2.history.some((h) => h.action === "walkover:" + m.id)) m.walkover = true;
+    }
+    preserveRoster(t2);
+    validate(t2);
+    ensure(t2.revision === expected, "\u753B\u9762\u306E\u66F4\u65B0\u756A\u53F7\u304C\u4E0D\u4E00\u81F4");
+    t2.schema = 2;
+    t2.featureVersion = 2;
+    t2.revision = expected + 1;
+    t2.updated = (/* @__PURE__ */ new Date()).toISOString();
+    t2.history.push({ at: t2.updated, op, action, revision: t2.revision });
+    const json = JSON.stringify(t2), digest = await hash(json), env2 = { id: t2.id, revision: t2.revision, json, hash: digest };
+    let tx;
+    try {
+      tx = this.db.transaction(["tournaments", "snapshots", "operations", "trash"], "readwrite", { durability: "strict" });
+    } catch {
+      tx = this.db.transaction(["tournaments", "snapshots", "operations", "trash"], "readwrite");
+    }
+    const end = done(tx), ts = tx.objectStore("tournaments"), ops = tx.objectStore("operations"), snaps = tx.objectStore("snapshots");
+    let failure, duplicate = false;
+    const fail = (message) => {
+      failure = Error(message);
+      tx.abort();
+    };
+    const guard = (fn) => () => {
+      try {
+        fn();
+      } catch (error2) {
+        failure = error2 instanceof Error ? error2 : Error(String(error2));
+        try {
+          tx.abort();
+        } catch {
+        }
+      }
+    };
+    const seen = ops.get(t2.id + ":" + op);
+    seen.onsuccess = guard(() => {
+      if (seen.result) {
+        if (seen.result.requestHash !== requestHash) fail("\u64CD\u4F5CID\u304C\u7570\u306A\u308B\u5185\u5BB9\u3067\u518D\u5229\u7528\u3055\u308C\u3066\u3044\u307E\u3059");
+        else duplicate = true;
+        return;
+      }
+      const current = ts.get(t2.id);
+      current.onsuccess = guard(() => {
+        const old = current.result;
+        const apply3 = () => {
+          if ((old ? old.revision : 0) !== expected) {
+            fail("\u66F4\u65B0\u7AF6\u5408\uFF1A\u518D\u8AAD\u8FBC\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u5165\u529B\u306F\u4E0B\u66F8\u304D\u306B\u4FDD\u6301\u3057\u3066\u3044\u307E\u3059");
+            return;
+          }
+          if (old) snaps.put({ ...old, id: t2.id + ":" + old.revision, tournamentId: t2.id, savedAt: Date.now() });
+          ts.put(env2);
+          ops.put({ id: t2.id + ":" + op, hash: digest, requestHash, revision: t2.revision });
+          const all = snaps.getAll();
+          all.onsuccess = guard(() => {
+            const items = all.result.filter((x) => x.tournamentId === t2.id).sort((a, b) => b.revision - a.revision);
+            items.slice(20).forEach((x) => snaps.delete(x.id));
+          });
+        };
+        if (old) apply3();
+        else {
+          const deleted = tx.objectStore("trash").get(t2.id);
+          deleted.onsuccess = guard(() => {
+            if (deleted.result) fail("\u524A\u9664\u6E08\u307F\u5927\u4F1A\u3078\u306E\u53E4\u3044\u4FDD\u5B58\u306F\u62D2\u5426\u3057\u307E\u3057\u305F\u3002\u5225\u5927\u4F1A\u3068\u3057\u3066\u5FA9\u5143\u3057\u3066\u304F\u3060\u3055\u3044");
+            else apply3();
+          });
+        }
+      });
+    });
+    try {
+      await end;
+    } catch (error2) {
+      throw failure || error2;
+    }
+    return duplicate ? await this.load(t2.id) : t2;
+  }
+  async comparePutMany(store, changes2) {
+    const tx = this.db.transaction(store, "readwrite"), end = done(tx), target = tx.objectStore(store);
+    let conflict = false;
+    for (const { record, expected } of changes2) {
+      const old = target.get(record.id);
+      old.onsuccess = () => {
+        if (JSON.stringify(old.result) !== JSON.stringify(expected)) {
+          conflict = true;
+          tx.abort();
+          return;
+        }
+        target.put(record);
+      };
+    }
+    try {
+      await end;
+    } catch (error2) {
+      if (conflict) throw Error("\u4FDD\u5B58\u5185\u5BB9\u304C\u66F4\u65B0\u3055\u308C\u307E\u3057\u305F\u3002\u753B\u9762\u3092\u958B\u304D\u76F4\u3057\u3066\u518D\u8A66\u884C\u3057\u3066\u304F\u3060\u3055\u3044");
+      throw error2;
+    }
+  }
+  async put(store, value2) {
+    const tx = this.db.transaction(store, "readwrite"), end = done(tx);
+    tx.objectStore(store).put(value2);
+    await end;
+  }
+  async removeDraft(id) {
+    const tx = this.db.transaction("drafts", "readwrite"), end = done(tx);
+    tx.objectStore("drafts").delete(id);
+    await end;
+  }
+  async delete(id, expected) {
+    const tx = this.db.transaction(["tournaments", "trash"], "readwrite"), end = done(tx);
+    const r = tx.objectStore("tournaments").get(id);
+    r.onsuccess = () => {
+      if (!r.result || r.result.revision !== expected) {
+        tx.abort();
+        return;
+      }
+      tx.objectStore("trash").put({ ...r.result, deletedAt: Date.now() });
+      tx.objectStore("tournaments").delete(id);
+    };
+    await end;
+  }
+  async restoreSnapshot(id) {
+    const rows = await this.rows("snapshots");
+    const r = rows.find((x) => x.id === id);
+    ensure(r, "\u4E16\u4EE3\u304C\u3042\u308A\u307E\u305B\u3093");
+    ensure(await hash(r.json) === r.hash, "\u4E16\u4EE3\u30C7\u30FC\u30BF\u7834\u640D");
+    return this.importCopy(validate(JSON.parse(r.json)));
+  }
+  async importCopy(t2) {
+    validate(t2);
+    const copy = structuredClone(t2);
+    copy.id = uid();
+    copy.revision = 0;
+    if (copy.name.length <= 116) copy.name += "\uFF08\u5FA9\u5143\uFF09";
+    copy.history = structuredClone(t2.history);
+    return this.save(copy, 0, uid(), "\u5225\u5927\u4F1A\u3068\u3057\u3066\u5FA9\u5143");
+  }
+  async importBundle(tours, masters) {
+    ensure(tours.length > 0 && tours.length <= 100, "\u79FB\u884C\u5927\u4F1A\u6570\u304C\u4E0D\u6B63");
+    ensure(new Set(masters.map((m) => m.id)).size === masters.length && masters.every((m) => m.id && m.name && ["player", "club"].includes(m.kind)), "\u79FB\u884C\u30DE\u30B9\u30BF\u30FC\u304C\u4E0D\u6B63");
+    const copies = tours.map((input4) => {
+      validate(input4);
+      const t2 = structuredClone(input4);
+      t2.id = uid();
+      if (t2.name.length <= 116) t2.name += "\uFF08\u79FB\u884C\uFF09";
+      t2.revision = 1;
+      t2.updated = (/* @__PURE__ */ new Date()).toISOString();
+      t2.history.push({ at: t2.updated, op: uid(), action: "GAS\u4E00\u62EC\u79FB\u884C", revision: 1 });
+      validate(t2);
+      return t2;
+    });
+    const envelopes = await Promise.all(copies.map(async (t2) => {
+      const json = JSON.stringify(t2);
+      return { id: t2.id, revision: t2.revision, json, hash: await hash(json) };
+    }));
+    const tx = this.db.transaction(["tournaments", "masters"], "readwrite"), end = done(tx);
+    let failure;
+    for (const m of masters) {
+      const store = tx.objectStore("masters"), r = store.get(m.id);
+      r.onsuccess = () => {
+        if (r.result && JSON.stringify(r.result) !== JSON.stringify(m)) {
+          failure = Error("\u65E2\u5B58\u30DE\u30B9\u30BF\u30FCID\u3068\u5185\u5BB9\u304C\u7570\u306A\u308A\u307E\u3059\uFF1A" + m.id);
+          tx.abort();
+        } else if (!r.result) store.add(m);
+      };
+    }
+    for (const env2 of envelopes) tx.objectStore("tournaments").add(env2);
+    try {
+      await end;
+    } catch (e) {
+      throw failure || e;
+    }
+    return copies;
+  }
+  async insertMany(store, values2) {
+    const tx = this.db.transaction(store, "readwrite"), end = done(tx);
+    try {
+      for (const v2 of values2) tx.objectStore(store).add(v2);
+    } catch (e) {
+      tx.abort();
+      await end.catch(() => {
+      });
+      throw e;
+    }
+    await end;
+  }
+  async remove(store, id) {
+    const tx = this.db.transaction(store, "readwrite"), end = done(tx);
+    tx.objectStore(store).delete(id);
+    await end;
+  }
+  async queue(input4, expected, op, action, tab2) {
+    validate(input4);
+    ensure(op && op.length <= 150 && input4.revision === expected, "\u518D\u8A66\u884C\u64CD\u4F5CID\u30FB\u66F4\u65B0\u756A\u53F7\u304C\u4E0D\u6B63");
+    const signature = JSON.stringify({ input: input4, expected, action });
+    const value2 = { id: op, t: structuredClone(input4), expected, op, action, tab: tab2, at: Date.now() };
+    const tx = this.db.transaction("pending", "readwrite"), end = done(tx);
+    let failure;
+    const store = tx.objectStore("pending"), r = store.get(op);
+    r.onsuccess = () => {
+      if (r.result) {
+        const p = r.result;
+        if (JSON.stringify({ input: p.t, expected: p.expected, action: p.action }) !== signature) {
+          failure = Error("\u64CD\u4F5CID\u304C\u7570\u306A\u308B\u5185\u5BB9\u3067\u518D\u5229\u7528\u3055\u308C\u3066\u3044\u307E\u3059");
+          tx.abort();
+        }
+      } else store.add(value2);
+    };
+    try {
+      await end;
+    } catch (e) {
+      throw failure || e;
+    }
+  }
+  async retryPending(op) {
+    const p = (await this.rows("pending")).find((p2) => p2.id === op);
+    ensure(p, "\u518D\u8A66\u884C\u8981\u6C42\u306A\u3057");
+    const t2 = await this.save(p.t, p.expected, p.op, p.action);
+    await this.remove("pending", op);
+    return t2;
+  }
+  async pruneLogs(keep = 500) {
+    const logs = await this.rows("logs");
+    const tx = this.db.transaction("logs", "readwrite"), end = done(tx);
+    logs.sort((a, b) => b.at.localeCompare(a.at)).slice(keep).forEach((l) => tx.objectStore("logs").delete(l.id));
+    await end;
+  }
+  async log(operation, error2, phase = "\u64CD\u4F5C") {
+    await this.put("logs", { id: uid(), at: (/* @__PURE__ */ new Date()).toISOString(), operation, phase, type: error2 instanceof Error ? error2.name : "Error", message: scrubDiagnostic(String(error2)) });
+  }
+};
+
+// src/encryption.ts
+async function key2(password, salt, usage) {
+  ensure(password.length >= 8, "\u30D1\u30B9\u30EF\u30FC\u30C9\u306F8\u6587\u5B57\u4EE5\u4E0A");
+  const raw = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 21e4, hash: "SHA-256" }, raw, { name: "AES-GCM", length: 256 }, false, usage);
+}
+async function encrypt(bytes, password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)), cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await key2(password, salt, ["encrypt"]), bytes);
+  return new Blob([new TextEncoder().encode("BDMTE001"), salt, iv, cipher], { type: "application/octet-stream" });
+}
+async function decrypt(bytes, password) {
+  const b = new Uint8Array(bytes);
+  ensure(bytes.byteLength >= 52 && bytes.byteLength <= 31 * 1024 * 1024 && new TextDecoder().decode(b.slice(0, 8)) === "BDMTE001", "\u6697\u53F7\u30D5\u30A1\u30A4\u30EB\u5F62\u5F0F\u4E0D\u6B63");
+  try {
+    return await crypto.subtle.decrypt({ name: "AES-GCM", iv: b.slice(24, 36) }, await key2(password, b.slice(8, 24), ["decrypt"]), b.slice(36));
+  } catch {
+    throw Error("\u30D1\u30B9\u30EF\u30FC\u30C9\u304C\u9055\u3046\u304B\u6697\u53F7\u30D5\u30A1\u30A4\u30EB\u304C\u7834\u640D\u3057\u3066\u3044\u307E\u3059");
+  }
+}
+
+// src/community.ts
+var normalizeName = (name6) => name6.normalize("NFKC").trim().replace(/\s+/g, " ").toLowerCase();
+var clubsOf = (rows) => rows.filter((x) => x.kind === "club").sort((a, b) => a.name.localeCompare(b.name, "ja"));
+var peopleOf = (rows) => rows.filter((x) => x.kind === "player").sort((a, b) => a.name.localeCompare(b.name, "ja", { numeric: true }));
+var sessionsOf = (rows) => rows.filter((x) => x.kind === "session").sort((a, b) => b.created.localeCompare(a.created));
+function parsePeople(text2) {
+  const rows = text2.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).map((line) => {
+    const cells = line.split(line.includes("	") ? "	" : ",").map((x) => x.trim());
+    ensure(cells.length <= 3 && cells[0] && cells.every((x) => x.length <= 120), "\u6C0F\u540D\u30FB\u3075\u308A\u304C\u306A\u30FB\u5B66\u5E74\u306E\u9806\u30671\u884C\u306B\u3064\u304D1\u540D\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+    return { name: cells[0], kana: cells[1] ?? "", grade: cells[2] ?? "" };
+  });
+  ensure(rows.length, "\u9078\u624B\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+  return rows;
+}
+function duplicateName(people, name6, clubId) {
+  return people.some((p) => p.clubId === clubId && normalizeName(p.name) === normalizeName(name6));
+}
+function importToTournament(t2, rows, ids, associate = /* @__PURE__ */ new Map()) {
+  initializeRegistration(t2);
+  const clubs = new Map(clubsOf(rows).map((c) => [c.id, c])), people = new Map(peopleOf(rows).map((p) => [p.id, p]));
+  let added = 0;
+  for (const id of new Set(ids)) {
+    const p = people.get(id), club = p && clubs.get(p.clubId);
+    ensure(p && p.status === "\u6709\u52B9" && club && club.status !== "\u4F11\u6B62", "\u540D\u7C3F\u304C\u66F4\u65B0\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u53C2\u52A0\u9078\u624B\u3092\u9078\u3073\u76F4\u3057\u3066\u304F\u3060\u3055\u3044");
+    if (t2.roster.some((row) => row.id === id || row.masterId === id)) continue;
+    const target = associate.get(id);
+    if (target) {
+      const participant = t2.roster.find((row) => row.id === target);
+      ensure(participant && !participant.masterId && !t2.roster.some((row) => row.masterId === id), "\u9078\u624B\u306E\u7167\u5408\u5148\u304C\u5909\u66F4\u3055\u308C\u307E\u3057\u305F");
+      participant.masterId = id;
+      added++;
+      continue;
+    }
+    const team = registerTeam(t2, club.name);
+    t2.roster.push({ id, masterId: id, name: p.name, kana: p.kana, grade: p.grade, gender: p.gender, club: team.name, teamId: team.id, teamRank: nextTeamRank(t2, team.id) });
+    added++;
+  }
+  return added;
+}
+function tournamentImportPlan(t2, rows, ids, club, associate) {
+  const directory = playerDirectory(t2), participants = new Map(registrationView(t2).players.map((p) => [p.id, p]));
+  const masters = peopleOf(rows), changes2 = /* @__PURE__ */ new Map();
+  let skipped = 0;
+  for (const id of new Set(ids)) {
+    const p = participants.get(id);
+    ensure(p, "\u5143\u306E\u5927\u4F1A\u306E\u9078\u624B\u3092\u9078\u3073\u76F4\u3057\u3066\u304F\u3060\u3055\u3044");
+    const key4 = t2.origin + ":" + id;
+    if (masters.some((m) => m.id === p.masterId || m.sourceKeys?.includes(key4))) {
+      skipped++;
+      continue;
+    }
+    const existing = associate.get(id);
+    if (existing) {
+      const found = changes2.get(existing) ?? masters.find((m) => m.id === existing && m.clubId === club.id);
+      ensure(found, "\u7167\u5408\u5148\u304C\u5B58\u5728\u3057\u307E\u305B\u3093");
+      changes2.set(found.id, { ...found, sourceKeys: [.../* @__PURE__ */ new Set([...found.sourceKeys ?? [], key4])] });
+    } else {
+      const name6 = playerText(directory, id);
+      ensure(name6 !== "\u6C0F\u540D\u672A\u767B\u9332", "\u6C0F\u540D\u304C\u767B\u9332\u3055\u308C\u3066\u3044\u306A\u3044\u9078\u624B\u306F\u540D\u7C3F\u306B\u53D6\u308A\u8FBC\u3081\u307E\u305B\u3093");
+      const master = { id: uid(), kind: "player", name: name6, kana: p.kana ?? "", grade: p.grade ?? "", gender: p.gender ?? "", clubId: club.id, status: "\u6709\u52B9", sourceKeys: [key4] };
+      changes2.set(master.id, master);
+    }
+  }
+  return { changes: [...changes2.values()], skipped };
+}
+function newSession(name6, courts, rounds, participants, mode) {
+  const empty = create("\u7DF4\u7FD2");
+  const p = { id: uid(), kind: "session", name: name6.trim() || "\u7DF4\u7FD2 " + empty.date, created: (/* @__PURE__ */ new Date()).toISOString(), courts, rounds, mode, rule: { base: 21, cap: 30, wins: 1, deuce: true }, members: structuredClone(participants), matches: [] };
+  addSessionRounds(p, rounds);
+  return p;
+}
+function addSessionRounds(p, count) {
+  ensure(Number.isInteger(p.courts) && p.courts >= 1 && p.courts <= 64 && Number.isInteger(count) && count >= 1 && count <= 50, "\u30B3\u30FC\u30C8\u6570\u306F1\u301C64\u3001\u5DE1\u6570\u306F1\u301C50\u3067\u3059");
+  const active = p.members.filter((x) => !x.inactive);
+  ensure(active.length >= 4 && active.length <= 200, "\u7DF4\u7FD2\u306B\u306F4\u301C200\u540D\u306E\u53C2\u52A0\u8005\u304C\u5FC5\u8981\u3067\u3059");
+  const empty = create("\u7DF4\u7FD2"), start = Math.max(0, ...p.matches.map((m) => m.round));
+  if (p.mode === "rotation") {
+    const practice = generatePractice(empty, active.map((x) => x.id), p.courts, count);
+    const actual = new Map(practice.members.map((member, i) => [member.id, active[i].id]));
+    p.matches.push(...practice.matches.map((m) => ({ ...m, round: m.round + start, left: m.left.map((id) => actual.get(id)), right: m.right.map((id) => actual.get(id)) })));
+  } else {
+    const teams = /* @__PURE__ */ new Map();
+    for (const member of active) {
+      const team = teams.get(member.clubId) ?? [];
+      team.push(member);
+      teams.set(member.clubId, team);
+    }
+    const played = new Map(active.map((x) => [x.id, p.matches.filter((m) => [...m.left, ...m.right].includes(x.id)).length]));
+    ensure([...teams.values()].filter((x) => x.length >= 2).length >= 2, "\u5BFE\u6297\u7DF4\u7FD2\u306B\u306F2\u540D\u4EE5\u4E0A\u3044\u308B\u30C1\u30FC\u30E0\u304C2\u7D44\u5FC5\u8981\u3067\u3059");
+    for (let r = 1; r <= count; r++) {
+      const pools = [...teams.values()].map((members) => [...members].sort((a, b) => played.get(a.id) - played.get(b.id)));
+      for (let court = 1; court <= p.courts; court++) {
+        const ready = pools.filter((pool3) => pool3.length >= 2).sort((a, b) => played.get(a[0].id) + played.get(a[1].id) - played.get(b[0].id) - played.get(b[1].id));
+        if (ready.length < 2) break;
+        const [left, right] = ready.slice(0, 2).map((pool3) => pool3.splice(0, 2).map((x) => x.id));
+        for (const id of [...left, ...right]) played.set(id, played.get(id) + 1);
+        p.matches.push({ id: uid(), round: start + r, court, left, right, games: [], winner: "" });
+      }
+    }
+  }
+  validateSession(p);
+}
+function validateSession(p) {
+  ensure(p.name.trim() && p.name.length <= 120 && Number.isFinite(Date.parse(p.created)) && ["rotation", "teams"].includes(p.mode) && Number.isInteger(p.courts) && p.courts >= 1 && p.courts <= 64 && Number.isInteger(p.rounds) && p.rounds >= 1 && p.rounds <= 50 && p.matches.every((m) => Number.isInteger(m.court) && m.court >= 1 && m.court <= p.courts && Number.isInteger(m.round) && m.round >= 1), "\u7DF4\u7FD2\u8A2D\u5B9A\u304C\u4E0D\u6B63\u3067\u3059");
+  const t2 = create("\u7DF4\u7FD2\u306E\u691C\u67FB");
+  t2.practice = [p];
+  validate(t2);
+  const courts = /* @__PURE__ */ new Set(), players = /* @__PURE__ */ new Set();
+  for (const m of p.matches) {
+    ensure(m.startedAt === void 0 || Number.isSafeInteger(m.startedAt), "\u7DF4\u7FD2\u306E\u958B\u59CB\u65E5\u6642\u304C\u4E0D\u6B63\u3067\u3059");
+    ensure(m.finishedAt === void 0 || !!m.winner && Number.isSafeInteger(m.finishedAt) && (m.startedAt === void 0 || m.finishedAt >= m.startedAt), "\u7DF4\u7FD2\u306E\u7D42\u4E86\u65E5\u6642\u304C\u4E0D\u6B63\u3067\u3059");
+    if (m.startedAt === void 0 || m.winner) continue;
+    ensure(!courts.has(m.court), "\u30B3\u30FC\u30C8\u304C\u4F7F\u7528\u4E2D\u3067\u3059");
+    courts.add(m.court);
+    for (const id of [...m.left, ...m.right]) {
+      ensure(!players.has(id), "\u540C\u3058\u9078\u624B\u304C\u8A66\u5408\u4E2D\u3067\u3059");
+      players.add(id);
+    }
+  }
+}
+function sessionScore(p, id, games2) {
+  const m = p.matches.find((x) => x.id === id);
+  ensure(m, "\u7DF4\u7FD2\u8A66\u5408\u304C\u3042\u308A\u307E\u305B\u3093");
+  const winner = result(games2, p.rule);
+  m.games = games2;
+  m.winner = winner;
+  m.finishedAt ??= Math.max(Date.now(), m.startedAt ?? 0);
+  validateSession(p);
+}
+function startSessionMatch(p, id) {
+  const m = p.matches.find((m2) => m2.id === id);
+  ensure(m && !m.winner && !m.startedAt, "\u672A\u958B\u59CB\u306E\u7DF4\u7FD2\u8A66\u5408\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+  ensure([...m.left, ...m.right].every((id2) => !p.members.find((x) => x.id === id2)?.inactive), "\u9000\u51FA\u3057\u305F\u9078\u624B\u304C\u542B\u307E\u308C\u307E\u3059");
+  m.startedAt = Date.now();
+  validateSession(p);
+}
+function changeAttendance(p, id, inactive) {
+  const member = p.members.find((m) => m.id === id);
+  ensure(member, "\u53C2\u52A0\u8005\u304C\u3044\u307E\u305B\u3093");
+  if (inactive) ensure(!p.matches.some((m) => m.startedAt !== void 0 && !m.winner && [...m.left, ...m.right].includes(id)), "\u9032\u884C\u4E2D\u306E\u8A66\u5408\u3092\u7D42\u4E86\u3057\u3066\u304B\u3089\u9000\u51FA\u3057\u3066\u304F\u3060\u3055\u3044");
+  member.inactive = inactive;
+  if (inactive) p.matches = p.matches.filter((m) => m.winner || ![...m.left, ...m.right].includes(id));
+  validateSession(p);
+}
+function validateRows(rows) {
+  ensure(Array.isArray(rows) && new Set(rows.map((r) => r.id)).size === rows.length, "\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u5185\u306EID\u304C\u91CD\u8907\u3057\u3066\u3044\u307E\u3059");
+  for (const row of rows) {
+    ensure(row.id && typeof row.name === "string" && row.name.trim() && row.name.length <= 120, "\u540D\u7C3F\u30C7\u30FC\u30BF\u304C\u4E0D\u6B63\u3067\u3059");
+    if (row.kind === "session") validateSession(row);
+    else if (row.kind === "club") ensure(["\u6709\u52B9", "\u4F11\u6B62"].includes(row.status), "\u30C1\u30FC\u30E0\u72B6\u614B\u304C\u4E0D\u6B63\u3067\u3059");
+    else ensure(row.kind === "player" && ["\u6709\u52B9", "\u4F11\u6B62"].includes(row.status) && typeof row.clubId === "string" && typeof row.kana === "string" && typeof row.grade === "string" && typeof row.gender === "string", "\u9078\u624B\u30C7\u30FC\u30BF\u304C\u4E0D\u6B63\u3067\u3059");
+  }
+}
+async function communityExport(rows, password = "") {
+  validateRows(rows);
+  const json = JSON.stringify(rows), value2 = new Blob([JSON.stringify({ format: "bdmt-community-v1", sha256: await hash(json), json })], { type: "application/json" });
+  return password ? encrypt(await value2.arrayBuffer(), password) : value2;
+}
+async function communityDecode(bytes, password = "") {
+  ensure(bytes.byteLength <= 30 * 1024 * 1024, "\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u306F30MB\u4EE5\u5185\u3067\u3059");
+  const decoded = JSON.parse(new TextDecoder().decode(password ? await decrypt(bytes, password) : bytes));
+  ensure(decoded.format === "bdmt-community-v1" && typeof decoded.json === "string" && await hash(decoded.json) === decoded.sha256, "\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u5F62\u5F0F\u307E\u305F\u306FSHA-256\u304C\u4E0D\u6B63\u3067\u3059");
+  const rows = JSON.parse(decoded.json);
+  validateRows(rows);
+  return rows;
+}
+async function commitCommunity(db2, before, changes2) {
+  validateRows(changes2);
+  const known = new Map(before.map((r) => [r.id, r]));
+  await db2.comparePutMany("masters", changes2.map((record) => ({ record, expected: known.get(record.id) })));
+}
+function practiceEntrants(rows, selected2) {
+  const people = new Map(peopleOf(rows).map((p) => [p.id, p])), clubs = new Map(clubsOf(rows).map((x) => [x.id, x]));
+  return [...new Set(selected2)].map((id) => {
+    const p = people.get(id), club = p && clubs.get(p.clubId);
+    ensure(p && p.status === "\u6709\u52B9" && club && club.status !== "\u4F11\u6B62", "\u6709\u52B9\u306A\u9078\u624B\u3092\u9078\u3073\u76F4\u3057\u3066\u304F\u3060\u3055\u3044");
+    return { id: uid(), masterId: id, name: p.name, club: club.name, clubId: club.id };
+  });
+}
+var tournamentPeople = (t2) => registrationView(t2).players;
+
+// src/community-ui.ts
+var button = (label2, action, id = "") => `<button type="button" data-act="cm${action}"${id ? ' data-id="' + escapeHtml(id) + '"' : ""}>${escapeHtml(label2)}</button>`;
+var input = (label2, id, value2 = "", type = "text") => `<label>${escapeHtml(label2)}<input id="${id}" type="${type}" value="${escapeHtml(value2)}"></label>`;
+var opts = (rows, selected2 = "") => rows.map((r) => `<option value="${escapeHtml(r.id)}"${r.id === selected2 ? " selected" : ""}>${escapeHtml(r.name)}</option>`).join("");
+var select = (label2, id, rows, current = "") => `<label>${escapeHtml(label2)}<select id="${id}">${opts(rows, current)}</select></label>`;
+var check = (key4, name6, on2 = false) => `<label class="cm-check"><input type="checkbox" value="${escapeHtml(key4)}"${on2 ? " checked" : ""}> ${escapeHtml(name6)}</label>`;
+var get = (id) => document.getElementById(id);
+var value = (id) => get(id)?.value ?? "";
+var selected = (selector, scope = document) => [...scope.querySelectorAll(selector)].filter((x) => x.checked).map((x) => x.value);
+var title = (label2, html) => '<section class="card cm-panel"><h2>' + escapeHtml(label2) + "</h2>" + html + "</section>";
+var displayPerson = (p) => [p.name, p.kana, p.grade].filter(Boolean).join(" \xB7 ");
+var search = "";
+var preferredClub = "";
+var editedPerson = "";
+var activeSession = "";
+function teamChoices(rows, preselected = [], id = "cm-choices") {
+  const clubs = clubsOf(rows).filter((x) => x.status !== "\u4F11\u6B62"), people = peopleOf(rows).filter((x) => x.status === "\u6709\u52B9");
+  return `<div id="${id}" data-choices><p data-count aria-live="polite"></p>${clubs.map((club) => {
+    const players = people.filter((p) => p.clubId === club.id);
+    if (!players.length) return "";
+    return `<details ${players.some((p) => preselected.includes(p.id)) ? "open" : ""} data-pick-team><summary>${escapeHtml(club.name)}\uFF08${players.length}\u540D\uFF09</summary>
+   <div class="actions"><button type="button" data-pick="all">\u3053\u306E\u30C1\u30FC\u30E0\u3092\u5168\u9078\u629E</button><button type="button" data-pick="none">\u3053\u306E\u30C1\u30FC\u30E0\u3092\u5168\u89E3\u9664</button></div>
+   <div class="cm-checks">${players.map((p) => check(p.id, displayPerson(p), preselected.includes(p.id))).join("")}</div></details>`;
+  }).join("")}</div>`;
+}
+function wireChoices(scope) {
+  for (const area of scope.querySelectorAll("[data-choices]")) {
+    const refresh = () => {
+      const teams = [...area.querySelectorAll("[data-pick-team]")].filter((team) => team.querySelector("input:checked")).length;
+      area.querySelector("[data-count]").textContent = teams + "\u30C1\u30FC\u30E0\u30FB" + area.querySelectorAll("input:checked").length + "\u540D\u3092\u9078\u629E\u4E2D";
+    };
+    area.addEventListener("change", refresh);
+    area.addEventListener("click", (event) => {
+      const b = event.target.closest("[data-pick]");
+      if (!b) return;
+      b.closest("details")?.querySelectorAll("input").forEach((x) => x.checked = b.dataset.pick === "all");
+      refresh();
+    });
+    refresh();
+  }
+}
+var mountCommunity = wireChoices;
+function renderCommunity(rows, page2) {
+  const clubs = clubsOf(rows), people = peopleOf(rows), sessions = sessionsOf(rows);
+  if (page2 === "community") {
+    const club = clubs.find((c) => c.id === preferredClub) ?? clubs[0];
+    preferredClub = club?.id ?? "";
+    const person = people.find((p) => p.id === editedPerson);
+    const filter = normalizeName(search);
+    return title("\u5171\u901A\u30C1\u30FC\u30E0\u30FB\u9078\u624B\u540D\u7C3F", input("\u30C1\u30FC\u30E0\u30FB\u9078\u624B\u691C\u7D22", "cm-search", search) + button("\u691C\u7D22", "Search") + `<ul>${clubs.filter((c) => !filter || normalizeName(c.name).includes(filter) || people.some((p) => p.clubId === c.id && normalizeName(displayPerson(p)).includes(filter))).map((c) => "<li>" + button(c.name + "\uFF08" + people.filter((p) => p.clubId === c.id && p.status === "\u6709\u52B9").length + "\u540D\uFF09" + (c.status === "\u4F11\u6B62" ? " \xB7 \u4F11\u6B62" : ""), "ClubOpen", c.id) + "</li>").join("")}</ul>` + input("\u65B0\u898F\u30C1\u30FC\u30E0\u540D", "cm-new-club") + button("\u30C1\u30FC\u30E0\u3092\u767B\u9332", "ClubAdd")) + (club ? title(club.name + "\u306E\u540D\u7C3F", input("\u30C1\u30FC\u30E0\u540D", "cm-club-name", club.name) + input("\u30C1\u30FC\u30E0\u60C5\u5831", "cm-club-note", club.note) + button("\u30C1\u30FC\u30E0\u60C5\u5831\u3092\u4FDD\u5B58", "ClubSave", club.id) + button("\u30C1\u30FC\u30E0\u3092\u524A\u9664", "ClubDelete", club.id) + `<ul>${people.filter((p) => p.clubId === club.id && (!filter || normalizeName(displayPerson(p)).includes(filter) || normalizeName(club.name).includes(filter))).map((p) => "<li>" + button(displayPerson(p) + (p.status === "\u4F11\u6B62" ? " \xB7 \u9000\u56E3" : ""), "PersonOpen", p.id) + "</li>").join("")}</ul>` + select("\u6240\u5C5E\u30C1\u30FC\u30E0", "cm-person-club", clubs, person?.clubId ?? club.id) + input("\u6C0F\u540D", "cm-person-name", person?.name) + input("\u3075\u308A\u304C\u306A", "cm-person-kana", person?.kana) + input("\u5B66\u5E74", "cm-person-grade", person?.grade) + input("\u6027\u5225", "cm-person-gender", person?.gender) + button(person ? "\u9078\u624B\u60C5\u5831\u3092\u4FDD\u5B58" : "\u9078\u624B\u3092\u8FFD\u52A0", "PersonSave", person?.id) + (person ? button("\u65B0\u898F\u9078\u624B\u306E\u5165\u529B\u3078", "PersonOpen") + button(person.status === "\u4F11\u6B62" ? "\u5FA9\u5E30" : "\u9000\u56E3\u30FB\u524A\u9664", "PersonStatus", person.id) : "") + '<details><summary>\u30C1\u30FC\u30E0\u5185\u9078\u624B\u306E\u4E00\u62EC\u767B\u9332</summary><label>\u6C0F\u540D\u3001\u3075\u308A\u304C\u306A\u3001\u5B66\u5E74\uFF081\u884C1\u540D\u3002\u30BF\u30D6\u30FB\u30AB\u30F3\u30DE\u533A\u5207\u308A\uFF09<textarea id="cm-bulk" rows="5"></textarea></label>' + button("\u4E00\u62EC\u767B\u9332\u30D7\u30EC\u30D3\u30E5\u30FC", "Bulk", club.id) + "</details>") : "") + backupPanel();
+  }
+  const recent = sessions[0], opened = sessions.find((s2) => s2.id === activeSession) ?? recent;
+  if (opened) activeSession = opened.id;
+  return title("\u72EC\u7ACB\u7DF4\u7FD2\u30FB\u7DF4\u7FD2\u8A66\u5408", "<p>\u5171\u901A\u540D\u7C3F\u304B\u3089\u4ECA\u56DE\u53C2\u52A0\u3059\u308B\u9078\u624B\u3092\u9078\u629E\u3057\u307E\u3059\u3002</p>" + (recent ? button("\u524D\u56DE\u306E\u53C2\u52A0\u8005\u3068\u8A2D\u5B9A\u3092\u8AAD\u307F\u8FBC\u3080", "Previous", recent.id) : "") + teamChoices(rows) + input("\u7DF4\u7FD2\u540D", "cm-session-name") + input("\u30B3\u30FC\u30C8\u6570", "cm-courts", "4", "number") + input("\u5DE1\u6570", "cm-rounds", "5", "number") + select("\u65B9\u5F0F", "cm-mode", [{ id: "rotation", name: "\u30C0\u30D6\u30EB\u30B9\u7D44\u66FF\u3048" }, { id: "teams", name: "\u30C1\u30FC\u30E0\u5BFE\u6297\u7DF4\u7FD2\u8A66\u5408" }]) + '<label>\u81E8\u6642\u53C2\u52A0\u306E\u6C0F\u540D\uFF081\u884C1\u4EBA\uFF09<textarea id="cm-guests" rows="2"></textarea></label>' + button("\u7DF4\u7FD2\u3092\u958B\u59CB", "Start")) + title("\u7DF4\u7FD2\u5C65\u6B74", "<ul>" + sessions.map((s2) => "<li>" + button(s2.name + " \xB7 " + s2.created.slice(0, 10) + " \xB7 " + s2.matches.filter((m) => m.winner).length + "\uFF0F" + s2.matches.length + "\u8A66\u5408", "Session", s2.id) + "</li>").join("") + "</ul>") + (opened ? sessionPanel(opened, rows) : "") + backupPanel();
+}
+function backupPanel() {
+  return title("\u540D\u7C3F\u30FB\u7DF4\u7FD2\u5C65\u6B74\u306E\u4FDD\u5B58\u3068\u5FA9\u5143", "<p>\u5927\u4F1A\u306E\u4FDD\u5B58\u30FB\u5FA9\u65E7\u306F\u5927\u4F1A\u753B\u9762\u304B\u3089\u5229\u7528\u3067\u304D\u307E\u3059\u3002</p>" + input("\u6697\u53F7\u5316\u30D1\u30B9\u30EF\u30FC\u30C9\uFF08\u4EFB\u610F\u30018\u6587\u5B57\u4EE5\u4E0A\uFF09", "cm-password", "", "password") + button("\u540D\u7C3F\u3068\u7DF4\u7FD2\u306E\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7", "Backup") + '<label>\u5FA9\u5143\u30D5\u30A1\u30A4\u30EB<input id="cm-backup-file" type="file" accept=".json,.bdmtx"></label>' + button("\u5FA9\u5143\u30D7\u30EC\u30D3\u30E5\u30FC", "Restore"));
+}
+function sessionPanel(s2, rows) {
+  const name6 = (id) => s2.members.find((m) => m.id === id)?.name || "\u6C0F\u540D\u672A\u767B\u9332";
+  const members = s2.members.map((m) => `<li>${escapeHtml(m.name + " \xB7 " + m.club)}${m.inactive ? "\uFF08\u9000\u51FA\uFF09" : ""} ${button(m.inactive ? "\u518D\u53C2\u52A0" : "\u9014\u4E2D\u9000\u51FA", "Attendance", m.id)}</li>`).join("");
+  const list = s2.matches.map((m) => `<li>${m.round}\u5DE1\u30FB${m.court}\u9762 \xB7 ${escapeHtml(m.left.map(name6).join("\uFF0F"))} \u5BFE ${escapeHtml(m.right.map(name6).join("\uFF0F"))} ${m.winner ? escapeHtml(m.games[0].join("-")) : m.startedAt ? "\u8A66\u5408\u4E2D" : "\u5F85\u6A5F"} ${!m.winner && !m.startedAt ? button("\u8A66\u5408\u958B\u59CB", "Begin", m.id) : ""} ${button(m.winner ? "\u5F97\u70B9\u3092\u8A02\u6B63" : "\u5F97\u70B9\u3092\u5165\u529B", "Score", m.id)}</li>`).join("");
+  return title(s2.name, `<p>${s2.members.filter((x) => !x.inactive).length}\u540D\u53C2\u52A0\u4E2D \xB7 ${s2.courts}\u9762 \xB7 ${s2.matches.filter((m) => m.winner).length}\u8A66\u5408\u7D42\u4E86</p><details><summary>\u53C2\u52A0\u8005\u3068\u9014\u4E2D\u53C2\u52A0\u30FB\u9000\u51FA</summary><ul>${members}</ul>${teamChoices(rows, [], "cm-join-options")}${input("\u81E8\u6642\u53C2\u52A0\u8005\u540D", "cm-join-guest")}${button("\u9014\u4E2D\u53C2\u52A0\u3092\u767B\u9332", "Join")}${input("\u8FFD\u52A0\u3059\u308B\u5DE1\u6570", "cm-more", "1", "number")}${button("\u6B21\u306E\u7D44\u5408\u305B\u3092\u8FFD\u52A0", "More")}</details><details open><summary>\u5BFE\u6226\u30FB\u5F97\u70B9</summary><ol>${list}</ol></details><details><summary>\u9078\u624B\u5225\u7D50\u679C</summary><ol>${practiceRanking(s2).map((m) => `<li>${escapeHtml(m.name)} \xB7 ${m.played}\u8A66\u5408 ${m.wins}\u52DD</li>`).join("")}</ol></details>`);
+}
+function tournamentBridge(t2, rows) {
+  return '<details class="cm-panel"><summary>\u5171\u901A\u540D\u7C3F\u3068\u5927\u4F1A\u53C2\u52A0\u8005\u306E\u9023\u643A</summary>' + teamChoices(rows) + button("\u9078\u629E\u3057\u305F\u9078\u624B\u3092\u5927\u4F1A\u3078\u53D6\u308A\u8FBC\u3080", "ToTournament") + "<h4>\u5927\u4F1A\u304B\u3089\u5171\u901A\u540D\u7C3F\u3078</h4>" + select("\u5143\u306E\u6240\u5C5E", "cm-from-team", [{ id: "", name: "\u5168\u6240\u5C5E" }, ...[...new Set(tournamentPeople(t2).map((x) => x.club).filter(Boolean))].map((name6) => ({ id: name6, name: name6 }))]) + button("\u5143\u306E\u9078\u624B\u3092\u78BA\u8A8D\u3059\u308B", "FromTournament") + "</details>";
+}
+function dialog(c, heading, body, commit, ready) {
+  const panel = document.createElement("dialog");
+  panel.className = "player-picker cm-dialog";
+  panel.innerHTML = "<h2>" + escapeHtml(heading) + '</h2><div class="picker-options">' + body + '</div><p data-error role="alert"></p><div class="actions"><button type="button" data-commit>\u5185\u5BB9\u3092\u78BA\u5B9A</button><button type="button" data-close>\u53D6\u6D88</button></div>';
+  document.body.append(panel);
+  panel.addEventListener("close", () => panel.remove());
+  const yes = panel.querySelector("[data-commit]"), no = panel.querySelector("[data-close]");
+  let committing = false;
+  panel.addEventListener("cancel", (event) => {
+    if (committing) event.preventDefault();
+  });
+  no.addEventListener("click", () => panel.close());
+  yes.addEventListener("click", async () => {
+    if (committing) return;
+    committing = true;
+    yes.disabled = no.disabled = true;
+    try {
+      await commit(panel);
+      panel.close();
+      c.notice("\u4FDD\u5B58\u5B8C\u4E86");
+    } catch (error2) {
+      panel.querySelector("[data-error]").textContent = String(error2);
+    } finally {
+      committing = false;
+      yes.disabled = no.disabled = false;
+    }
+  });
+  panel.showModal();
+  ready?.(panel);
+}
+async function communityAction(c, action, id) {
+  const before = await c.db.rows("masters");
+  const clubs = clubsOf(before), people = peopleOf(before);
+  const put = async (changes2) => {
+    await commitCommunity(c.db, before, changes2);
+    await c.render();
+  };
+  const club = clubs.find((x) => x.id === id), person = people.find((x) => x.id === id);
+  switch (action) {
+    case "Search":
+      search = value("cm-search");
+      await c.render();
+      return;
+    case "ClubOpen":
+      preferredClub = id;
+      editedPerson = "";
+      await c.render();
+      return;
+    case "PersonOpen":
+      editedPerson = id;
+      await c.render();
+      return;
+    case "ClubAdd":
+    case "ClubSave": {
+      const name6 = value(action === "ClubAdd" ? "cm-new-club" : "cm-club-name").trim();
+      ensure(name6 && name6.length <= 120, "\u30C1\u30FC\u30E0\u540D\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+      ensure(!clubs.some((x) => x.id !== id && x.status === "\u6709\u52B9" && normalizeName(x.name) === normalizeName(name6)), "\u540C\u540D\u306E\u30C1\u30FC\u30E0\u304C\u767B\u9332\u6E08\u307F\u3067\u3059");
+      preferredClub = club?.id ?? uid();
+      await put([{ id: preferredClub, kind: "club", name: name6, status: "\u6709\u52B9", note: club ? value("cm-club-note").slice(0, 500) : "" }]);
+      return;
+    }
+    case "ClubDelete": {
+      ensure(club, "\u30C1\u30FC\u30E0\u304C\u3042\u308A\u307E\u305B\u3093");
+      if (!confirm("\u30C1\u30FC\u30E0\u3092\u9000\u5F79\u3057\u3001\u65B0\u898F\u306E\u9078\u629E\u80A2\u304B\u3089\u5916\u3057\u307E\u3059\u3002\u5927\u4F1A\u3068\u7DF4\u7FD2\u5C65\u6B74\u306F\u4FDD\u6301\u3057\u307E\u3059\u304B\uFF1F")) return;
+      await put([{ ...club, status: "\u4F11\u6B62" }]);
+      return;
+    }
+    case "PersonSave": {
+      const name6 = value("cm-person-name").trim(), clubId = value("cm-person-club");
+      ensure(name6 && name6.length <= 120 && clubs.some((x) => x.id === clubId), "\u6C0F\u540D\u3068\u6240\u5C5E\u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+      if ((person?.name !== name6 || person.clubId !== clubId) && duplicateName(people.filter((p) => p.id !== id), name6, clubId) && !confirm("\u540C\u3058\u6240\u5C5E\u306B\u540C\u540D\u306E\u9078\u624B\u304C\u3044\u307E\u3059\u3002\u5225\u4EBA\u3068\u3057\u3066\u767B\u9332\u3057\u307E\u3059\u304B\uFF1F")) return;
+      const row = { ...person, id: person?.id ?? uid(), kind: "player", status: person?.status ?? "\u6709\u52B9", name: name6, clubId, kana: value("cm-person-kana").slice(0, 120), grade: value("cm-person-grade").slice(0, 120), gender: value("cm-person-gender").slice(0, 120) };
+      preferredClub = clubId;
+      editedPerson = "";
+      await put([row]);
+      return;
+    }
+    case "PersonStatus": {
+      ensure(person, "\u9078\u624B\u304C\u3042\u308A\u307E\u305B\u3093");
+      if (!confirm(person.status === "\u6709\u52B9" ? "\u9000\u56E3\u3068\u3057\u3066\u65B0\u898F\u9078\u629E\u304B\u3089\u5916\u3057\u307E\u3059\u304B\uFF1F" : "\u3053\u306E\u9078\u624B\u3092\u540D\u7C3F\u306B\u5FA9\u5E30\u3055\u305B\u307E\u3059\u304B\uFF1F")) return;
+      await put([{ ...person, status: person.status === "\u6709\u52B9" ? "\u4F11\u6B62" : "\u6709\u52B9" }]);
+      return;
+    }
+    case "Bulk": {
+      ensure(club, "\u30C1\u30FC\u30E0\u304C\u3042\u308A\u307E\u305B\u3093");
+      const parsed = parsePeople(value("cm-bulk")), names = /* @__PURE__ */ new Set(), duplicates = parsed.map((p) => {
+        const key4 = normalizeName(p.name), dup2 = names.has(key4) || duplicateName(people, p.name, club.id);
+        names.add(key4);
+        return dup2;
+      });
+      dialog(
+        c,
+        "\u4E00\u62EC\u767B\u9332\u30D7\u30EC\u30D3\u30E5\u30FC \xB7 " + club.name,
+        `<p>${parsed.length}\u540D</p><ol>${parsed.map((p, i) => "<li>" + escapeHtml(displayPerson(p)) + (duplicates[i] ? " \xB7 \u540C\u540D\u5019\u88DC" : "") + "</li>").join("")}</ol>` + (duplicates.some(Boolean) ? '<label><input type="checkbox" data-duplicates> \u540C\u540D\u306E\u5019\u88DC\u3082\u5225\u306E\u9078\u624B\u3068\u3057\u3066\u8FFD\u52A0\u3059\u308B</label>' : ""),
+        async (panel) => {
+          ensure(!duplicates.some(Boolean) || panel.querySelector("[data-duplicates]")?.checked, "\u540C\u540D\u5019\u88DC\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
+          await put(parsed.map((p) => ({ ...p, id: uid(), kind: "player", gender: "", clubId: club.id, status: "\u6709\u52B9" })));
+        }
+      );
+      return;
+    }
+    case "ToTournament": {
+      const t2 = c.t;
+      ensure(t2, "\u5927\u4F1A\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+      const ids = selected("#cm-choices input");
+      ensure(ids.length, "\u9078\u624B\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+      const linked = ids.filter((id2) => t2.roster?.some((p) => p.id === id2 || p.masterId === id2)), pending = people.filter((p) => ids.includes(p.id) && !linked.includes(p.id));
+      const participants = tournamentPeople(t2);
+      dialog(c, "\u5927\u4F1A\u3078\u306E\u53D6\u308A\u8FBC\u307F\u30D7\u30EC\u30D3\u30E5\u30FC", `<p>\u53D6\u308A\u8FBC\u307F\u5019\u88DC ${pending.length}\u540D\u30FB\u767B\u9332\u6E08\u307F ${linked.length}\u540D</p><ul>${pending.map((p) => {
+        const candidates2 = participants.filter((q) => !q.masterId && normalizeName(q.name) === normalizeName(p.name));
+        return "<li>" + escapeHtml(p.name + " \xB7 " + (clubs.find((x) => x.id === p.clubId)?.name ?? "")) + (candidates2.length ? `<label>\u540C\u540D\u5019\u88DC\u306E\u7167\u5408<select data-link-master="${escapeHtml(p.id)}">${opts([{ id: "", name: "\u5225\u306E\u9078\u624B\u3068\u3057\u3066\u767B\u9332" }, ...candidates2.map((q) => ({ id: q.id, name: q.name + " \xB7 " + q.club + " \xB7 " + (q.teamRank ?? "\u9806\u4F4D\u306A\u3057") }))])}</select></label>` : "") + "</li>";
+      }).join("")}</ul><p>\u65E2\u5B58\u306E\u9078\u624B\u3068\u7167\u5408\u3059\u308B\u3068\u3001\u7D44\u5408\u305B\u30FB\u30DA\u30A2\u30FB\u5F97\u70B9\u306F\u305D\u306E\u9078\u624BID\u306E\u307E\u307E\u3067\u3059\u3002</p>`, async (panel) => {
+        if (!pending.length) return;
+        const links = new Map([...panel.querySelectorAll("[data-link-master]")].filter((x) => x.value).map((x) => [x.dataset.linkMaster, x.value]));
+        ensure(new Set(links.values()).size === links.size, "\u8907\u6570\u9078\u624B\u3092\u540C\u3058\u5927\u4F1A\u53C2\u52A0\u8005\u3078\u7167\u5408\u3067\u304D\u307E\u305B\u3093");
+        const rows = await c.db.rows("masters");
+        ensure(JSON.stringify(peopleOf(rows).filter((p) => ids.includes(p.id))) === JSON.stringify(people.filter((p) => ids.includes(p.id))), "\u5171\u901A\u540D\u7C3F\u304C\u5909\u66F4\u3055\u308C\u307E\u3057\u305F\u3002\u30D7\u30EC\u30D3\u30E5\u30FC\u3092\u3084\u308A\u76F4\u3057\u3066\u304F\u3060\u3055\u3044");
+        await c.save("\u5171\u901A\u540D\u7C3F\u304B\u3089\u53C2\u52A0\u8005\u3092\u767B\u9332", (copy) => {
+          ensure(copy.id === t2.id && copy.revision === t2.revision, "\u5927\u4F1A\u304C\u66F4\u65B0\u3055\u308C\u307E\u3057\u305F\u3002\u30D7\u30EC\u30D3\u30E5\u30FC\u3092\u3084\u308A\u76F4\u3057\u3066\u304F\u3060\u3055\u3044");
+          importToTournament(copy, rows, ids, links);
+        });
+      });
+      return;
+    }
+    case "FromTournament": {
+      const t2 = c.t;
+      ensure(t2, "\u5927\u4F1A\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+      const source = value("cm-from-team"), participants = tournamentPeople(t2).filter((p) => !source || p.club === source);
+      ensure(participants.length, "\u5BFE\u8C61\u9078\u624B\u304C\u3044\u307E\u305B\u3093");
+      dialog(
+        c,
+        "\u5927\u4F1A\u304B\u3089\u5171\u901A\u540D\u7C3F\u3078\u306E\u53D6\u308A\u8FBC\u307F\u30D7\u30EC\u30D3\u30E5\u30FC",
+        select("\u53D6\u308A\u8FBC\u307F\u5148", "cm-destination", [{ id: "", name: "\u65B0\u3057\u3044\u30C1\u30FC\u30E0" }, ...clubs.filter((x) => x.status === "\u6709\u52B9")]) + input("\u65B0\u3057\u3044\u30C1\u30FC\u30E0\u540D", "cm-import-club", source) + '<div id="cm-from-people" class="cm-checks">' + participants.map((p) => check(p.id, p.name + " \xB7 " + p.club) + (people.some((m) => normalizeName(m.name) === normalizeName(p.name)) ? " <small>\u540C\u540D\u5019\u88DC</small>" : "")).join("") + '</div><div id="cm-link-choices"></div>',
+        async (panel) => {
+          const ids = selected("#cm-from-people input", panel);
+          ensure(ids.length, "\u9078\u624B\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+          const destination = clubs.find((x) => x.id === value("cm-destination")), name6 = value("cm-import-club").trim();
+          ensure(destination || name6 && !clubs.some((x) => x.status === "\u6709\u52B9" && normalizeName(x.name) === normalizeName(name6)), "\u65E2\u5B58\u30C1\u30FC\u30E0\u3092\u9078\u3076\u304B\u3001\u91CD\u8907\u3057\u306A\u3044\u30C1\u30FC\u30E0\u540D\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+          const team = destination ?? { id: uid(), name: name6, status: "\u6709\u52B9", kind: "club" };
+          const links = new Map([...panel.querySelectorAll("[data-link-source]")].filter((x) => x.value).map((x) => [x.dataset.linkSource, x.value]));
+          const plan2 = tournamentImportPlan(t2, before, ids, team, links);
+          if (plan2.changes.length) await put([...destination ? [] : [team], ...plan2.changes]);
+        },
+        (panel) => {
+          const refresh = () => {
+            const destination = value("cm-destination"), list = people.filter((x) => x.clubId === destination), ids = selected("#cm-from-people input", panel);
+            panel.querySelector("#cm-link-choices").innerHTML = participants.filter((p) => ids.includes(p.id)).map((p) => {
+              const same = list.filter((x) => normalizeName(x.name) === normalizeName(p.name));
+              return same.length ? `<label>${escapeHtml(p.name)} \u306E\u7167\u5408\u5148<select data-link-source="${escapeHtml(p.id)}">${opts([{ id: "", name: "\u5225\u306E\u9078\u624B\u3068\u3057\u3066\u8FFD\u52A0" }, ...same.map((x) => ({ ...x, name: displayPerson(x) }))])}</select></label>` : "";
+            }).join("");
+          };
+          panel.addEventListener("change", (e) => {
+            if (e.target.matches("#cm-destination,#cm-from-people input")) refresh();
+          });
+        }
+      );
+      return;
+    }
+    case "Session":
+      activeSession = id;
+      await c.render();
+      return;
+    case "Previous": {
+      const p = sessionsOf(before).find((x) => x.id === id);
+      ensure(p, "\u524D\u56DE\u8A18\u9332\u304C\u3042\u308A\u307E\u305B\u3093");
+      const keys4 = new Set(p.members.filter((x) => !x.inactive).map((x) => x.masterId));
+      const scope = document.querySelector("#cm-choices");
+      scope.querySelectorAll("input").forEach((x) => {
+        x.checked = keys4.has(x.value);
+        if (x.checked) x.closest("details").open = true;
+      });
+      scope.querySelector("input")?.dispatchEvent(new Event("change", { bubbles: true }));
+      for (const [key4, val3] of [["cm-courts", p.courts], ["cm-rounds", p.rounds], ["cm-mode", p.mode]]) get(String(key4)).value = String(val3);
+      return;
+    }
+    case "Start": {
+      const members = practiceEntrants(before, selected("#cm-choices input"));
+      for (const name6 of value("cm-guests").split(/\r?\n/).map((x) => x.trim()).filter(Boolean)) members.push({ id: uid(), name: name6, clubId: "guests", club: "\u81E8\u6642\u53C2\u52A0" });
+      const mode = value("cm-mode") === "teams" ? "teams" : "rotation", p = newSession(value("cm-session-name"), Number(value("cm-courts")), Number(value("cm-rounds")), members, mode);
+      activeSession = p.id;
+      await put([p]);
+      return;
+    }
+    case "Join":
+    case "Attendance":
+    case "More":
+    case "Score":
+    case "Begin": {
+      const old = sessionsOf(before).find((x) => x.id === activeSession);
+      ensure(old, "\u7DF4\u7FD2\u304C\u3042\u308A\u307E\u305B\u3093");
+      const p = structuredClone(old);
+      if (action === "Join") {
+        const members = practiceEntrants(before, selected("#cm-join-options input")), guest = value("cm-join-guest").trim();
+        ensure(members.length || guest, "\u9014\u4E2D\u53C2\u52A0\u8005\u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+        for (const member of members) {
+          const prior = p.members.find((m) => m.masterId === member.masterId);
+          if (prior) prior.inactive = false;
+          else p.members.push(member);
+        }
+        if (guest) p.members.push({ id: uid(), name: guest, club: "\u81E8\u6642\u53C2\u52A0", clubId: "guests" });
+        validateJoin(p);
+      } else if (action === "Attendance") {
+        const member = p.members.find((x) => x.id === id);
+        ensure(member, "\u9078\u624B\u304C\u3042\u308A\u307E\u305B\u3093");
+        if (!member.inactive && !confirm("\u3053\u306E\u9078\u624B\u304C\u51FA\u5834\u3059\u308B\u5F97\u70B9\u672A\u5165\u529B\u306E\u7D44\u5408\u305B\u306F\u53D6\u6D88\u3055\u308C\u307E\u3059\u3002\u9000\u51FA\u3057\u307E\u3059\u304B\uFF1F")) return;
+        changeAttendance(p, id, !member.inactive);
+      } else if (action === "More") addSessionRounds(p, Number(value("cm-more")));
+      else if (action === "Begin") startSessionMatch(p, id);
+      else {
+        const m = p.matches.find((x) => x.id === id);
+        ensure(m, "\u5BFE\u8C61\u8A66\u5408\u304C\u3042\u308A\u307E\u305B\u3093");
+        const score2 = prompt("\u5DE6-\u53F3\u306E\u7D42\u4E86\u5F97\u70B9\uFF0821\u70B9\u3001\u4E0A\u965030\uFF09", m.games[0]?.join("-") || "21-15");
+        if (score2 === null) return;
+        ensure(/^\d{1,2}-\d{1,2}$/.test(score2), "\u4F8B\uFF1A21-15");
+        sessionScore(p, id, [score2.split("-").map(Number)]);
+      }
+      await put([p]);
+      return;
+    }
+    case "Backup": {
+      const password = value("cm-password"), blob = await communityExport(before, password);
+      download(blob, password ? "\u540D\u7C3F\u3068\u7DF4\u7FD2\u5C65\u6B74.bdmtx" : "\u540D\u7C3F\u3068\u7DF4\u7FD2\u5C65\u6B74.json");
+      return;
+    }
+    case "Restore": {
+      const file = get("cm-backup-file")?.files?.[0];
+      ensure(file && file.size <= 30 * 1024 * 1024, "\u5FA9\u5143\u30D5\u30A1\u30A4\u30EB\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+      const rows = await communityDecode(await file.arrayBuffer(), file.name.endsWith(".bdmtx") ? value("cm-password") : "");
+      const map = new Map(before.map((r) => [r.id, r])), added = rows.filter((r) => !map.has(r.id)), same = rows.filter((r) => JSON.stringify(map.get(r.id)) === JSON.stringify(r));
+      const conflict = rows.length - added.length - same.length;
+      dialog(c, "\u5171\u901A\u540D\u7C3F\u30FB\u7DF4\u7FD2\u306E\u5FA9\u5143\u30D7\u30EC\u30D3\u30E5\u30FC", `<p>\u65B0\u898F ${added.length}\u4EF6\u3001\u540C\u4E00 ${same.length}\u4EF6\u3001\u65E2\u5B58\u3068\u7570\u306A\u308BID ${conflict}\u4EF6\u3002</p><p>\u65E2\u5B58\u30C7\u30FC\u30BF\u306F\u4FDD\u6301\u3057\u3001\u65B0\u898FID\u306E\u307F\u8FFD\u52A0\u3057\u307E\u3059\u3002\u540C\u4E00ID\u3067\u5185\u5BB9\u304C\u7570\u306A\u308B\u5834\u5408\u306F\u78BA\u5B9A\u3067\u304D\u307E\u305B\u3093\u3002</p>`, async () => {
+        ensure(!conflict, "\u7570\u306A\u308B\u5185\u5BB9\u306E\u540C\u4E00ID\u304C\u3042\u308A\u307E\u3059");
+        await put(added);
+      });
+      return;
+    }
+  }
+}
+function validateJoin(p) {
+  ensure(p.members.length <= 200 && p.members.every((m) => m.name && m.name.length <= 120), "\u7DF4\u7FD2\u9078\u624B\u306F\u6700\u5927200\u540D\u3001\u6C0F\u540D\u306F120\u6587\u5B57\u4EE5\u5185\u3067\u3059");
+}
+
+// src/calendar-input.ts
+function fixtureId(t2, text2) {
+  const match = t2.matches.find((m) => m.status !== "bye" && (m.id === text2 || String(matchNumber(m, t2)) === text2));
+  ensure(match, "\u6307\u5B9A\u3055\u308C\u305F\u8A66\u5408\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093\uFF1A" + text2);
+  return match.id;
+}
+function minute(text2, allowEnd = false) {
+  ensure(/^\d\d:\d\d$/.test(text2), "\u6642\u523B\u306FHH:MM\u3067\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+  const [h, m] = text2.split(":").map(Number);
+  ensure(m < 60 && (h < 24 || allowEnd && h === 24 && m === 0), "\u6642\u523B\u304C\u4E0D\u6B63\u3067\u3059\uFF1A" + text2);
+  return h * 60 + m;
+}
+var eventCode = (t2, id) => id ? t2.events.find((e) => e.id === id)?.code ?? "\u7A2E\u76EE" + (t2.events.findIndex((e) => e.id === id) + 1) : "*";
+function parseRanges(t2, value2) {
+  return value2.split(";").map((s2) => s2.trim()).filter(Boolean).map((s2) => {
+    const [code3, kind, arg] = s2.split(":");
+    const e = t2.events.find((e2) => e2.code === code3 || e2.id === code3 || eventCode(t2, e2.id) === code3);
+    ensure(code3 === "*" || e, "\u7A2E\u76EE\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093\uFF1A" + code3);
+    const eventId = e?.id;
+    let r;
+    if (kind === "all" || kind === "finals") r = { kind, eventId };
+    else if (kind === "best" || kind === "round" || kind === "after-best" || kind === "after-round") {
+      const value3 = Number(arg);
+      ensure(kind.endsWith("best") ? [2, 4, 8, 16, 32, 64, 128, 256].includes(value3) : Number.isInteger(value3) && value3 >= 1 && value3 <= 32, "\u30E9\u30A6\u30F3\u30C9\u306E\u6307\u5B9A\u304C\u4E0D\u6B63\uFF1A" + s2);
+      r = { kind, eventId, value: value3 };
+    } else if (kind === "stage" || kind === "through-stage") {
+      const stages = t2.stages.filter((s3) => !eventId || s3.eventId === eventId);
+      const stage = stages.find((s3) => s3.id === arg) ?? stages[Number(arg) - 1];
+      ensure(stage, "\u5BFE\u8C61\u30B9\u30C6\u30FC\u30B8\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093");
+      r = { kind, eventId, id: stage.id };
+    } else if (kind === "through-match") r = { kind, eventId, id: fixtureId(t2, arg) };
+    else if (kind === "matches") {
+      ensure(arg, "\u624B\u52D5\u8A66\u5408\u304C\u7A7A\u6B04\u3067\u3059");
+      const ids = arg.split(",").map((x) => fixtureId(t2, x.trim()));
+      r = { kind, eventId, ids };
+    } else throw Error("\u7BC4\u56F2\u306E\u6307\u5B9A\u304C\u4E0D\u6B63\uFF1A" + s2);
+    const error2 = rangeProblems(t2, r);
+    ensure(!error2, error2);
+    return r;
+  });
+}
+function formatRanges(t2, ranges) {
+  return ranges.map((r) => {
+    const base = eventCode(t2, r.eventId) + ":" + r.kind;
+    const label2 = (id) => {
+      const m = t2.matches.find((m2) => m2.id === id);
+      return m ? String(matchNumber(m, t2)) : "\u524A\u9664\u6E08\u307F\u306E\u8A66\u5408";
+    };
+    if ("ids" in r) return base + ":" + r.ids.map(label2).join(",");
+    if (r.kind === "stage" || r.kind === "through-stage") {
+      const offset2 = t2.stages.filter((s2) => !r.eventId || s2.eventId === r.eventId).findIndex((s2) => s2.id === r.id);
+      return base + ":" + (offset2 < 0 ? "\u524A\u9664\u6E08\u307F\u306E\u30B9\u30C6\u30FC\u30B8" : offset2 + 1);
+    }
+    if (r.kind === "through-match") return base + ":" + label2(r.id);
+    if ("value" in r) return base + ":" + r.value;
+    return base;
+  }).join("; ");
+}
+function parseDays(t2, text2) {
+  return text2.split(/\r?\n/).map((x) => x.trim()).filter(Boolean).map((line) => {
+    const parts = line.split("|").map((s2) => s2.trim());
+    const [date, start, end, courts, rest, ranges, pauses] = parts;
+    ensure((parts.length === 6 || parts.length === 7) && validDay(date), "\u958B\u50AC\u65E5\u306E\u5F62\u5F0F\u304C\u4E0D\u6B63\uFF1A" + line);
+    const breaks = pauses ? pauses.split(",").map((item) => {
+      const [start2, end2] = item.trim().split("-");
+      return { start: minute(start2), end: minute(end2, true) };
+    }).sort((a, b) => a.start - b.start) : void 0;
+    return { date, start: minute(start), end: minute(end, true), courts: Number(courts), rest: Number(rest), ranges: parseRanges(t2, ranges), breaks };
+  });
+}
+function formatDays(t2, days2) {
+  return days2.map((d) => [d.date, clockText(d.start), clockText(d.end), d.courts, d.rest, formatRanges(t2, d.ranges), ...d.breaks?.length ? [d.breaks.map((b) => clockText(b.start) + "-" + clockText(b.end)).join(",")] : []].join(" | ")).join("\n");
+}
+function parsePrintSplit(t2, kind, text2) {
+  const lines = text2.split(/\r?\n/).map((s2) => s2.trim()).filter(Boolean);
+  if (kind === "boundaries" || kind === "times" || kind === "ranges") ensure(lines.length, "\u5206\u5272\u4F4D\u7F6E\u307E\u305F\u306F\u7BC4\u56F2\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+  if (kind === "boundaries") return { kind, ids: lines.flatMap((l) => l.split(",").map((v2) => fixtureId(t2, v2.trim()))) };
+  if (kind === "times") return { kind, starts: lines.map((l) => {
+    const [date, time2] = l.split(/\s+/);
+    ensure(validDay(date), "\u5883\u754C\u65E5\u306F YYYY-MM-DD HH:MM \u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044");
+    return { date, time: minute(time2) };
+  }) };
+  if (kind === "ranges") return { kind, pages: lines.map((l) => {
+    const [title3, text3] = l.split("|");
+    ensure(title3?.trim() && text3?.trim(), "\u30DA\u30FC\u30B8\u540D | \u7BC4\u56F2 \u3067\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+    return { title: title3.trim(), ranges: parseRanges(t2, text3) };
+  }) };
+  return { kind };
+}
+function formatPrintSplit(t2, s2) {
+  if (s2?.kind === "boundaries") return s2.ids.map((id) => {
+    const m = t2.matches.find((m2) => m2.id === id);
+    return m ? String(matchNumber(m, t2)) : "\u524A\u9664\u6E08\u307F\u306E\u8A66\u5408";
+  }).join("\n");
+  if (s2?.kind === "times") return s2.starts.map((b) => b.date + " " + clockText(b.time)).join("\n");
+  if (s2?.kind === "ranges") return s2.pages.map((p) => p.title + " | " + formatRanges(t2, p.ranges)).join("\n");
+  return "";
+}
+
 // src/bulk-registration.ts
 function previewTeamBatch(t2, teamId, text2) {
   const team = t2.registrationTeams?.find((x) => x.id === teamId);
@@ -60025,9 +61207,9 @@ async function applicationWorkbook(t2) {
   meta.addRows([[format, t2.id, t2.applicationFields ?? "none", t2.origin, "TEAM-PAIR"], ["\u5927\u4F1A\u540D", t2.name], ["\u8A18\u5165\u65B9\u6CD5", "\u30B7\u30F3\u30B0\u30EB\u30B9\u30FB\u56E3\u4F53\u306F\u25CB\u3001\u30C0\u30D6\u30EB\u30B9\u306F\u6240\u5C5E\u3054\u3068\u306B\u540C\u3058\u756A\u53F7\u30922\u540D\u3002\u7570\u6240\u5C5E\u30DA\u30A2\u306F\u4E21\u540D\u306E\u6B04\u306B M1\u3001M2 \u7B49\u3092\u5165\u529B\u3002\u7A7A\u6B04\u306F\u51FA\u5834\u306A\u3057\u3002"], ["\u518D\u63D0\u51FA", "\u521D\u56DE\u3068\u540C\u3058\u6240\u5C5E\u30FB\u9806\u4F4D\u30FB\u6C0F\u540D\u30FB\u3075\u308A\u304C\u306A\u3001\u307E\u305F\u306F\u904B\u55B6\u8005\u304B\u3089\u6848\u5185\u3055\u308C\u305F\u53C2\u52A0\u8005ID\u3092\u5165\u529B\u3002"], ...events(t2).map((e) => [e.id, code(e), e.type, e.name])]);
   return wb;
 }
-async function previewApplications(input3, files) {
+async function previewApplications(input4, files) {
   ensure(files.length > 0 && files.length <= 30, "\u7533\u8FBC\u30D5\u30A1\u30A4\u30EB\u306F\u4E00\u5EA6\u306B1\u301C30\u4EF6\u3067\u3059");
-  const t2 = structuredClone(input3);
+  const t2 = structuredClone(input4);
   initializeRegistration(t2);
   const staged = /* @__PURE__ */ new Map();
   const pairs = [];
@@ -60085,7 +61267,7 @@ async function previewApplications(input3, files) {
           selection.set(id, cell);
         }
         staged.set(p.id, selection);
-        const previous = events(input3).filter((e) => e.entries.some((x) => x.players.includes(p.id))).map(code).join("\u30FB") || "\u306A\u3057";
+        const previous = events(input4).filter((e) => e.entries.some((x) => x.players.includes(p.id))).map(code).join("\u30FB") || "\u306A\u3057";
         const next = [...selection].filter(([, mark]) => mark).map(([id, mark]) => code(eventOf(t2, id)) + (mark === "\u25CB" || mark === "\u3007" || mark === "\u25EF" ? "" : " #" + mark)).join("\u30FB") || "\u306A\u3057";
         const changes2 = old ? ["name", "kana", "gender", "age", "grade", "teamRank"].flatMap((k) => {
           const before = JSON.parse(old)[k], after = p[k];
@@ -60221,166 +61403,6 @@ function mountBracketZoom(host, views) {
   }
 }
 
-// src/bracket-layout.ts
-function bracketLayout(t2, matches, results = true, resultNumbers = false) {
-  const segments = [], captions = [];
-  const index = new Map(matches.map((m) => [m.id, m]));
-  const used = new Set(matches.flatMap((m) => m.deps));
-  const final = matches.find((m) => !used.has(m.id));
-  if (!final) return { width: 680, height: 100, segments, captions };
-  const entries = new Map(t2.events.flatMap((e) => e.entries.map((p) => [p.id, p])));
-  const step = 120, edge = 200, center = edge + step * final.round, w = 2 * center;
-  const team = t2.events.find((e) => e.id === final.eventId)?.team;
-  const pitch = Math.max(resultNumbers ? 78 : 64, (team?.rubbers ?? 0) * 16 + 16);
-  function line(x1, y1, x2, y2, red = false) {
-    if (x1 !== x2 || y1 !== y2) segments.push({ x1, y1, x2, y2, red });
-  }
-  function players(m) {
-    return [0, 1].reduce((n2, i) => {
-      const child = index.get(feeder(m, i));
-      return n2 + (child ? players(child) : Number(!!(i ? m.right : m.left)));
-    }, 0);
-  }
-  function player(id, side, y2) {
-    const entry = entries.get(id), x = side < 0 ? edge : w - edge;
-    if (entry) captions.push({
-      x: x + side * 10,
-      y: y2,
-      align: side < 0 ? "end" : "start",
-      kind: "player",
-      lines: [entry.name, entry.club].filter(Boolean)
-    });
-    return { x, y: y2, red: false };
-  }
-  function games2(m) {
-    if (m.rubbers?.length) return m.rubbers.map((r, i) => i + 1 + "\u672C " + r.games.map((g) => g.join("-")).join("/"));
-    return (m.retirementGames ?? m.games).map((g) => (m.winner === m.right ? [g[1], g[0]] : g).join("-"));
-  }
-  function counts(m) {
-    return [0, 1].map((i) => {
-      if (m.walkover) return m.winner === (i === 0 ? m.left : m.right) ? "" : "\xD7";
-      return String(m.rubbers?.length ? m.rubbers.filter((r) => r.winner === (i === 0 ? "left" : "right")).length : m.games.filter((g) => g[i] > g[1 - i]).length);
-    });
-  }
-  function caption(m, x, y2, side) {
-    const done3 = results && m.status === "completed", score2 = done3 ? games2(m) : [];
-    if (done3 && m.walkover && !score2.length && !resultNumbers) return;
-    captions.push({
-      x: x + side * 9,
-      y: y2 + (side === 0 ? 17 : done3 ? -8 * Math.max(1, score2.length + (resultNumbers ? 1 : 0)) : -8),
-      align: side < 0 ? "end" : side > 0 ? "start" : "middle",
-      kind: done3 ? "score" : "number",
-      lines: done3 ? resultNumbers ? [String(matchNumber(m, t2)), ...score2] : score2.length ? score2 : ["\u7D50\u679C\u3092\u78BA\u8A8D"] : [String(matchNumber(m, t2))],
-      match: m
-    });
-  }
-  function branch(m, side, cursor) {
-    const leaf = (id) => {
-      const p = player(id, side, cursor.y);
-      cursor.y += pitch;
-      return p;
-    };
-    if (m.status === "bye" && !m.deps.length) return leaf(m.left || m.right);
-    const [a, b] = [0, 1].map((i) => {
-      const child = index.get(feeder(m, i));
-      return child ? branch(child, side, cursor) : leaf(i ? m.right : m.left);
-    });
-    const x = center + side * step * (final.round - m.round), y2 = (a.y + b.y) / 2;
-    const done3 = results && m.status === "completed";
-    [a, b].forEach((p, i) => {
-      const won = done3 && !!m.winner && m.winner === (i === 0 ? m.left : m.right);
-      line(p.x, p.y, x, p.y, done3 ? won : p.red);
-      line(x, p.y, x, y2, won);
-      if (done3) {
-        const text2 = counts(m)[i];
-        if (text2) captions.push({ x: x - side * 6, y: p.y, align: side < 0 ? "start" : "end", kind: "count", lines: [text2], match: m.walkover ? m : void 0 });
-      }
-    });
-    caption(m, x, y2, side);
-    return { x, y: y2, red: done3 && !!m.winner };
-  }
-  const halves = [0, 1].map((i) => index.get(feeder(final, i)));
-  let height = 145;
-  let left, right;
-  if (halves.some(Boolean)) {
-    left = halves[0] ? branch(halves[0], -1, { y: 42 }) : player(final.left, -1, 42);
-    const rightSegments = segments.length, rightCaptions = captions.length;
-    right = halves[1] ? branch(halves[1], 1, { y: 42 }) : player(final.right, 1, 42);
-    const offset2 = left.y - right.y;
-    const shift = (fromSegment, fromCaption, dy) => {
-      for (let i = fromSegment; i < segments.length; i++) {
-        segments[i].y1 += dy;
-        segments[i].y2 += dy;
-      }
-      for (let i = fromCaption; i < captions.length; i++) captions[i].y += dy;
-    };
-    if (offset2 >= 0) {
-      shift(rightSegments, rightCaptions, offset2);
-      right.y += offset2;
-    } else {
-      shift(0, 0, -offset2);
-      shift(rightSegments, rightCaptions, offset2);
-      left.y -= offset2;
-    }
-    height = Math.max((halves[0] ? players(halves[0]) : 1) * pitch + Math.max(0, -offset2), (halves[1] ? players(halves[1]) : 1) * pitch + Math.max(0, offset2)) + 60;
-  } else {
-    left = player(final.left, -1, 65);
-    right = player(final.right, 1, 65);
-  }
-  const y = (left.y + right.y) / 2, finished4 = results && final.status === "completed";
-  [left, right].forEach((p, i) => {
-    const won = finished4 && !!final.winner && final.winner === (i === 0 ? final.left : final.right);
-    line(p.x, p.y, center, p.y, finished4 ? won : p.red);
-    line(center, p.y, center, y, won);
-    const count = finished4 ? counts(final)[i] : "";
-    if (count) captions.push({ x: center + (i === 0 ? -1 : 1) * 20, y: p.y - 10, align: "middle", kind: "count", lines: [count], match: final.walkover ? final : void 0 });
-  });
-  line(center, y, center, y - 35, finished4 && !!final.winner);
-  caption(final, center, y, 0);
-  return { width: w, height, segments, captions };
-}
-
-// src/print-bracket.ts
-function printableBrackets(t2, matches, results, resultNumbers = false) {
-  const used = new Set(matches.flatMap((m) => m.deps)), root = matches.find((m) => !used.has(m.id));
-  if (!root) return [];
-  const index = new Map(matches.map((m) => [m.id, m]));
-  const collect = (m) => [m, ...m.deps.flatMap((id) => index.has(id) ? collect(index.get(id)) : [])];
-  const pages = [];
-  function section2(m) {
-    const tree = collect(m), layout = bracketLayout(t2, tree, results, resultNumbers);
-    if (layout.height / layout.width <= 1.62 && tree.length <= 31) {
-      pages.push({ title: "\u5BFE\u6226\u56F3 \xB7 " + matchNumber(m, t2), layout });
-      return;
-    }
-    const ids = [0, 1].map((i) => feeder(m, i));
-    for (const id of ids) {
-      const child = index.get(id);
-      if (child) section2(child);
-    }
-    const event = t2.events.find((e) => e.id === m.eventId);
-    const extra = ids.flatMap((id, i) => {
-      const x = index.get(id);
-      const side = i ? "right" : "left";
-      if (!x || m[side]) return [];
-      return [{ id: "print-source-" + i, name: String(matchNumber(x, t2)) + " \u306E\u52DD\u8005", club: "", seed: 0, players: [] }];
-    });
-    const resolved = {
-      ...m,
-      left: m.left || (ids[0] ? "print-source-0" : ""),
-      right: m.right || (ids[1] ? "print-source-1" : ""),
-      feeds: void 0,
-      deps: [],
-      round: 1,
-      displayNumber: String(matchNumber(m, t2))
-    };
-    const local = { ...t2, events: t2.events.map((e) => e === event ? { ...e, entries: [...e.entries, ...extra] } : e) };
-    pages.push({ title: "\u63A5\u7D9A \xB7 " + matchNumber(m, t2), layout: bracketLayout(local, [resolved], results, resultNumbers) });
-  }
-  section2(root);
-  return pages;
-}
-
 // node_modules/tslib/tslib.es6.js
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -60433,22 +61455,22 @@ function __rest(s2, e) {
   return t2;
 }
 function __awaiter(thisArg, _arguments, P, generator) {
-  function adopt(value) {
-    return value instanceof P ? value : new P(function(resolve) {
-      resolve(value);
+  function adopt(value2) {
+    return value2 instanceof P ? value2 : new P(function(resolve) {
+      resolve(value2);
     });
   }
   return new (P || (P = Promise))(function(resolve, reject) {
-    function fulfilled(value) {
+    function fulfilled(value2) {
       try {
-        step(generator.next(value));
+        step(generator.next(value2));
       } catch (e) {
         reject(e);
       }
     }
-    function rejected(value) {
+    function rejected(value2) {
       try {
-        step(generator["throw"](value));
+        step(generator["throw"](value2));
       } catch (e) {
         reject(e);
       }
@@ -60617,12 +61639,12 @@ var charFromCode = function(code3) {
 var charFromHexCode = function(hex) {
   return charFromCode(parseInt(hex, 16));
 };
-var padStart = function(value, length, padChar) {
+var padStart = function(value2, length, padChar) {
   var padding = "";
-  for (var idx = 0, len2 = length - value.length; idx < len2; idx++) {
+  for (var idx = 0, len2 = length - value2.length; idx < len2; idx++) {
     padding += padChar;
   }
-  return padding + value;
+  return padding + value2;
 };
 var copyStringIntoBuffer = function(str, buffer2, offset2) {
   var length = str.length;
@@ -60722,12 +61744,12 @@ var parseDate2 = function(dateStr) {
   var date = /* @__PURE__ */ new Date(year + "-" + month + "-" + day + "T" + hours + ":" + mins + ":" + secs + tzOffset);
   return date;
 };
-var findLastMatch = function(value, regex2) {
+var findLastMatch = function(value2, regex2) {
   var _a2;
   var position = 0;
   var lastMatch;
-  while (position < value.length) {
-    var match = value.substring(position).match(regex2);
+  while (position < value2.length) {
+    var match = value2.substring(position).match(regex2);
     if (!match)
       return { match: lastMatch, pos: position };
     lastMatch = match;
@@ -60740,13 +61762,13 @@ var findLastMatch = function(value, regex2) {
 var last = function(array) {
   return array[array.length - 1];
 };
-var typedArrayFor = function(value) {
-  if (value instanceof Uint8Array)
-    return value;
-  var length = value.length;
+var typedArrayFor = function(value2) {
+  if (value2 instanceof Uint8Array)
+    return value2;
+  var length = value2.length;
   var typedArray = new Uint8Array(length);
   for (var idx = 0; idx < length; idx++) {
-    typedArray[idx] = value.charCodeAt(idx);
+    typedArray[idx] = value2.charCodeAt(idx);
   }
   return typedArray;
 };
@@ -60842,16 +61864,16 @@ var pluckIndices = function(arr, indices) {
   }
   return plucked;
 };
-var canBeConvertedToUint8Array = function(input3) {
-  return input3 instanceof Uint8Array || input3 instanceof ArrayBuffer || typeof input3 === "string";
+var canBeConvertedToUint8Array = function(input4) {
+  return input4 instanceof Uint8Array || input4 instanceof ArrayBuffer || typeof input4 === "string";
 };
-var toUint8Array = function(input3) {
-  if (typeof input3 === "string") {
-    return decodeFromBase64DataUri(input3);
-  } else if (input3 instanceof ArrayBuffer) {
-    return new Uint8Array(input3);
-  } else if (input3 instanceof Uint8Array) {
-    return input3;
+var toUint8Array = function(input4) {
+  if (typeof input4 === "string") {
+    return decodeFromBase64DataUri(input4);
+  } else if (input4 instanceof ArrayBuffer) {
+    return new Uint8Array(input4);
+  } else if (input4 instanceof Uint8Array) {
+    return input4;
   } else {
     throw new TypeError("`input` must be one of `string | ArrayBuffer | Uint8Array`");
   }
@@ -60867,15 +61889,15 @@ var waitForTick = function() {
 };
 
 // node_modules/pdf-lib/es/utils/unicode.js
-var utf16Encode = function(input3, byteOrderMark) {
+var utf16Encode = function(input4, byteOrderMark) {
   if (byteOrderMark === void 0) {
     byteOrderMark = true;
   }
   var encoded = [];
   if (byteOrderMark)
     encoded.push(65279);
-  for (var idx = 0, len2 = input3.length; idx < len2; ) {
-    var codePoint = input3.codePointAt(idx);
+  for (var idx = 0, len2 = input4.length; idx < len2; ) {
+    var codePoint = input4.codePointAt(idx);
     if (codePoint < 65536) {
       encoded.push(codePoint);
       idx += 1;
@@ -60905,22 +61927,22 @@ var ByteOrder;
   ByteOrder2["LittleEndian"] = "LittleEndian";
 })(ByteOrder || (ByteOrder = {}));
 var REPLACEMENT = "\uFFFD".codePointAt(0);
-var utf16Decode = function(input3, byteOrderMark) {
+var utf16Decode = function(input4, byteOrderMark) {
   if (byteOrderMark === void 0) {
     byteOrderMark = true;
   }
-  if (input3.length <= 1)
+  if (input4.length <= 1)
     return String.fromCodePoint(REPLACEMENT);
-  var byteOrder = byteOrderMark ? readBOM(input3) : ByteOrder.BigEndian;
+  var byteOrder = byteOrderMark ? readBOM(input4) : ByteOrder.BigEndian;
   var idx = byteOrderMark ? 2 : 0;
   var codePoints = [];
-  while (input3.length - idx >= 2) {
-    var first = decodeValues(input3[idx++], input3[idx++], byteOrder);
+  while (input4.length - idx >= 2) {
+    var first = decodeValues(input4[idx++], input4[idx++], byteOrder);
     if (isHighSurrogate(first)) {
-      if (input3.length - idx < 2) {
+      if (input4.length - idx < 2) {
         codePoints.push(REPLACEMENT);
       } else {
-        var second = decodeValues(input3[idx++], input3[idx++], byteOrder);
+        var second = decodeValues(input4[idx++], input4[idx++], byteOrder);
         if (isLowSurrogate(second)) {
           codePoints.push(first, second);
         } else {
@@ -60934,7 +61956,7 @@ var utf16Decode = function(input3, byteOrderMark) {
       codePoints.push(first);
     }
   }
-  if (idx < input3.length)
+  if (idx < input4.length)
     codePoints.push(REPLACEMENT);
   return String.fromCodePoint.apply(String, codePoints);
 };
@@ -61049,12 +62071,12 @@ var arrayToString = function(array) {
 var decompressJson = function(compressedJson) {
   return arrayToString(import_pako.default.inflate(decodeFromBase642(compressedJson)));
 };
-var padStart2 = function(value, length, padChar) {
+var padStart2 = function(value2, length, padChar) {
   var padding = "";
-  for (var idx = 0, len2 = length - value.length; idx < len2; idx++) {
+  for (var idx = 0, len2 = length - value2.length; idx < len2; idx++) {
     padding += padChar;
   }
-  return padding + value;
+  return padding + value2;
 };
 
 // node_modules/@pdf-lib/standard-fonts/es/Courier-Bold.compressed.json
@@ -61216,8 +62238,8 @@ var values = function(obj) {
   });
 };
 var StandardFontValues = values(FontNames);
-var isStandardFont = function(input3) {
-  return StandardFontValues.includes(input3);
+var isStandardFont = function(input4) {
+  return StandardFontValues.includes(input4);
 };
 var rectanglesAreEqual = function(a, b) {
   return a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
@@ -61230,39 +62252,39 @@ var backtick = function(val3) {
 var singleQuote = function(val3) {
   return "'" + val3 + "'";
 };
-var formatValue = function(value) {
-  var type = typeof value;
+var formatValue = function(value2) {
+  var type = typeof value2;
   if (type === "string")
-    return singleQuote(value);
+    return singleQuote(value2);
   else if (type === "undefined")
-    return backtick(value);
+    return backtick(value2);
   else
-    return value;
+    return value2;
 };
-var createValueErrorMsg = function(value, valueName, values2) {
+var createValueErrorMsg = function(value2, valueName, values2) {
   var allowedValues = new Array(values2.length);
   for (var idx = 0, len2 = values2.length; idx < len2; idx++) {
     var v2 = values2[idx];
     allowedValues[idx] = formatValue(v2);
   }
   var joinedValues = allowedValues.join(" or ");
-  return backtick(valueName) + " must be one of " + joinedValues + ", but was actually " + formatValue(value);
+  return backtick(valueName) + " must be one of " + joinedValues + ", but was actually " + formatValue(value2);
 };
-var assertIsOneOf = function(value, valueName, allowedValues) {
+var assertIsOneOf = function(value2, valueName, allowedValues) {
   if (!Array.isArray(allowedValues)) {
     allowedValues = values(allowedValues);
   }
   for (var idx = 0, len2 = allowedValues.length; idx < len2; idx++) {
-    if (value === allowedValues[idx])
+    if (value2 === allowedValues[idx])
       return;
   }
-  throw new TypeError(createValueErrorMsg(value, valueName, allowedValues));
+  throw new TypeError(createValueErrorMsg(value2, valueName, allowedValues));
 };
-var assertIsOneOfOrUndefined = function(value, valueName, allowedValues) {
+var assertIsOneOfOrUndefined = function(value2, valueName, allowedValues) {
   if (!Array.isArray(allowedValues)) {
     allowedValues = values(allowedValues);
   }
-  assertIsOneOf(value, valueName, allowedValues.concat(void 0));
+  assertIsOneOf(value2, valueName, allowedValues.concat(void 0));
 };
 var assertIsSubset = function(values2, valueName, allowedValues) {
   if (!Array.isArray(allowedValues)) {
@@ -61297,34 +62319,34 @@ var getType = function(val3) {
     return String(val3.constructor);
   return String(val3);
 };
-var isType = function(value, type) {
+var isType = function(value2, type) {
   if (type === "null")
-    return value === null;
+    return value2 === null;
   if (type === "undefined")
-    return value === void 0;
+    return value2 === void 0;
   if (type === "string")
-    return typeof value === "string";
+    return typeof value2 === "string";
   if (type === "number")
-    return typeof value === "number" && !isNaN(value);
+    return typeof value2 === "number" && !isNaN(value2);
   if (type === "boolean")
-    return typeof value === "boolean";
+    return typeof value2 === "boolean";
   if (type === "symbol")
-    return typeof value === "symbol";
+    return typeof value2 === "symbol";
   if (type === "bigint")
-    return typeof value === "bigint";
+    return typeof value2 === "bigint";
   if (type === Date)
-    return value instanceof Date;
+    return value2 instanceof Date;
   if (type === Array)
-    return value instanceof Array;
+    return value2 instanceof Array;
   if (type === Uint8Array)
-    return value instanceof Uint8Array;
+    return value2 instanceof Uint8Array;
   if (type === ArrayBuffer)
-    return value instanceof ArrayBuffer;
+    return value2 instanceof ArrayBuffer;
   if (type === Function)
-    return value instanceof Function;
-  return value instanceof type[0];
+    return value2 instanceof Function;
+  return value2 instanceof type[0];
 };
-var createTypeErrorMsg = function(value, valueName, types2) {
+var createTypeErrorMsg = function(value2, valueName, types2) {
   var allowedTypes = new Array(types2.length);
   for (var idx = 0, len2 = types2.length; idx < len2; idx++) {
     var type = types2[idx];
@@ -61352,51 +62374,51 @@ var createTypeErrorMsg = function(value, valueName, types2) {
       allowedTypes[idx] = backtick(type[1]);
   }
   var joinedTypes = allowedTypes.join(" or ");
-  return backtick(valueName) + " must be of type " + joinedTypes + ", but was actually of type " + backtick(getType(value));
+  return backtick(valueName) + " must be of type " + joinedTypes + ", but was actually of type " + backtick(getType(value2));
 };
-var assertIs = function(value, valueName, types2) {
+var assertIs = function(value2, valueName, types2) {
   for (var idx = 0, len2 = types2.length; idx < len2; idx++) {
-    if (isType(value, types2[idx]))
+    if (isType(value2, types2[idx]))
       return;
   }
-  throw new TypeError(createTypeErrorMsg(value, valueName, types2));
+  throw new TypeError(createTypeErrorMsg(value2, valueName, types2));
 };
-var assertOrUndefined = function(value, valueName, types2) {
-  assertIs(value, valueName, types2.concat("undefined"));
+var assertOrUndefined = function(value2, valueName, types2) {
+  assertIs(value2, valueName, types2.concat("undefined"));
 };
 var assertEachIs = function(values2, valueName, types2) {
   for (var idx = 0, len2 = values2.length; idx < len2; idx++) {
     assertIs(values2[idx], valueName, types2);
   }
 };
-var assertRange = function(value, valueName, min, max3) {
-  assertIs(value, valueName, ["number"]);
+var assertRange = function(value2, valueName, min, max3) {
+  assertIs(value2, valueName, ["number"]);
   assertIs(min, "min", ["number"]);
   assertIs(max3, "max", ["number"]);
   max3 = Math.max(min, max3);
-  if (value < min || value > max3) {
-    throw new Error(backtick(valueName) + " must be at least " + min + " and at most " + max3 + ", but was actually " + value);
+  if (value2 < min || value2 > max3) {
+    throw new Error(backtick(valueName) + " must be at least " + min + " and at most " + max3 + ", but was actually " + value2);
   }
 };
-var assertRangeOrUndefined = function(value, valueName, min, max3) {
-  assertIs(value, valueName, ["number", "undefined"]);
-  if (typeof value === "number")
-    assertRange(value, valueName, min, max3);
+var assertRangeOrUndefined = function(value2, valueName, min, max3) {
+  assertIs(value2, valueName, ["number", "undefined"]);
+  if (typeof value2 === "number")
+    assertRange(value2, valueName, min, max3);
 };
-var assertMultiple = function(value, valueName, multiplier) {
-  assertIs(value, valueName, ["number"]);
-  if (value % multiplier !== 0) {
-    throw new Error(backtick(valueName) + " must be a multiple of " + multiplier + ", but was actually " + value);
+var assertMultiple = function(value2, valueName, multiplier) {
+  assertIs(value2, valueName, ["number"]);
+  if (value2 % multiplier !== 0) {
+    throw new Error(backtick(valueName) + " must be a multiple of " + multiplier + ", but was actually " + value2);
   }
 };
-var assertInteger = function(value, valueName) {
-  if (!Number.isInteger(value)) {
-    throw new Error(backtick(valueName) + " must be an integer, but was actually " + value);
+var assertInteger = function(value2, valueName) {
+  if (!Number.isInteger(value2)) {
+    throw new Error(backtick(valueName) + " must be an integer, but was actually " + value2);
   }
 };
-var assertPositive = function(value, valueName) {
-  if (![1, 0].includes(Math.sign(value))) {
-    throw new Error(backtick(valueName) + " must be a positive number or 0, but was actually " + value);
+var assertPositive = function(value2, valueName) {
+  if (![1, 0].includes(Math.sign(value2))) {
+    throw new Error(backtick(valueName) + " must be a positive number or 0, but was actually " + value2);
   }
 };
 
@@ -61627,9 +62649,9 @@ var InvalidPDFDateStringError = (
   /** @class */
   (function(_super) {
     __extends(InvalidPDFDateStringError2, _super);
-    function InvalidPDFDateStringError2(value) {
+    function InvalidPDFDateStringError2(value2) {
       var _this = this;
-      var msg = 'Attempted to convert "' + value + '" to a date, but it does not match the PDF date string format.';
+      var msg = 'Attempted to convert "' + value2 + '" to a date, but it does not match the PDF date string format.';
       _this = _super.call(this, msg) || this;
       return _this;
     }
@@ -61731,9 +62753,9 @@ var NumberParsingError = (
   /** @class */
   (function(_super) {
     __extends(NumberParsingError2, _super);
-    function NumberParsingError2(pos, value) {
+    function NumberParsingError2(pos, value2) {
       var _this = this;
-      var msg = "Failed to parse number " + ("(line:" + pos.line + " col:" + pos.column + " offset=" + pos.offset + '): "' + value + '"');
+      var msg = "Failed to parse number " + ("(line:" + pos.line + " col:" + pos.column + " offset=" + pos.offset + '): "' + value2 + '"');
       _this = _super.call(this, msg) || this;
       return _this;
     }
@@ -61994,10 +63016,10 @@ var PDFNumber = (
   /** @class */
   (function(_super) {
     __extends(PDFNumber2, _super);
-    function PDFNumber2(value) {
+    function PDFNumber2(value2) {
       var _this = _super.call(this) || this;
-      _this.numberValue = value;
-      _this.stringValue = numberToString(value);
+      _this.numberValue = value2;
+      _this.stringValue = numberToString(value2);
       return _this;
     }
     PDFNumber2.prototype.asNumber = function() {
@@ -62019,8 +63041,8 @@ var PDFNumber = (
       offset2 += copyStringIntoBuffer(this.stringValue, buffer2, offset2);
       return this.stringValue.length;
     };
-    PDFNumber2.of = function(value) {
-      return new PDFNumber2(value);
+    PDFNumber2.of = function(value2) {
+      return new PDFNumber2(value2);
     };
     return PDFNumber2;
   })(PDFObject_default)
@@ -62149,12 +63171,12 @@ var PDFBool = (
   /** @class */
   (function(_super) {
     __extends(PDFBool2, _super);
-    function PDFBool2(enforcer, value) {
+    function PDFBool2(enforcer, value2) {
       var _this = this;
       if (enforcer !== ENFORCER)
         throw new PrivateConstructorError("PDFBool");
       _this = _super.call(this) || this;
-      _this.value = value;
+      _this.value = value2;
       return _this;
     }
     PDFBool2.prototype.asBoolean = function() {
@@ -62398,21 +63420,21 @@ var PDFDict = (
     PDFDict2.prototype.entries = function() {
       return Array.from(this.dict.entries());
     };
-    PDFDict2.prototype.set = function(key4, value) {
-      this.dict.set(key4, value);
+    PDFDict2.prototype.set = function(key4, value2) {
+      this.dict.set(key4, value2);
     };
     PDFDict2.prototype.get = function(key4, preservePDFNull) {
       if (preservePDFNull === void 0) {
         preservePDFNull = false;
       }
-      var value = this.dict.get(key4);
-      if (value === PDFNull_default && !preservePDFNull)
+      var value2 = this.dict.get(key4);
+      if (value2 === PDFNull_default && !preservePDFNull)
         return void 0;
-      return value;
+      return value2;
     };
     PDFDict2.prototype.has = function(key4) {
-      var value = this.dict.get(key4);
-      return value !== void 0 && value !== PDFNull_default;
+      var value2 = this.dict.get(key4);
+      return value2 !== void 0 && value2 !== PDFNull_default;
     };
     PDFDict2.prototype.lookupMaybe = function(key4) {
       var _a2;
@@ -62421,10 +63443,10 @@ var PDFDict = (
         types2[_i - 1] = arguments[_i];
       }
       var preservePDFNull = types2.includes(PDFNull_default);
-      var value = (_a2 = this.context).lookupMaybe.apply(_a2, __spreadArrays([this.get(key4, preservePDFNull)], types2));
-      if (value === PDFNull_default && !preservePDFNull)
+      var value2 = (_a2 = this.context).lookupMaybe.apply(_a2, __spreadArrays([this.get(key4, preservePDFNull)], types2));
+      if (value2 === PDFNull_default && !preservePDFNull)
         return void 0;
-      return value;
+      return value2;
     };
     PDFDict2.prototype.lookup = function(key4) {
       var _a2;
@@ -62433,10 +63455,10 @@ var PDFDict = (
         types2[_i - 1] = arguments[_i];
       }
       var preservePDFNull = types2.includes(PDFNull_default);
-      var value = (_a2 = this.context).lookup.apply(_a2, __spreadArrays([this.get(key4, preservePDFNull)], types2));
-      if (value === PDFNull_default && !preservePDFNull)
+      var value2 = (_a2 = this.context).lookup.apply(_a2, __spreadArrays([this.get(key4, preservePDFNull)], types2));
+      if (value2 === PDFNull_default && !preservePDFNull)
         return void 0;
-      return value;
+      return value2;
     };
     PDFDict2.prototype.delete = function(key4) {
       return this.dict.delete(key4);
@@ -62459,8 +63481,8 @@ var PDFDict = (
       var clone = PDFDict2.withContext(context3 || this.context);
       var entries = this.entries();
       for (var idx = 0, len2 = entries.length; idx < len2; idx++) {
-        var _a2 = entries[idx], key4 = _a2[0], value = _a2[1];
-        clone.set(key4, value);
+        var _a2 = entries[idx], key4 = _a2[0], value2 = _a2[1];
+        clone.set(key4, value2);
       }
       return clone;
     };
@@ -62468,8 +63490,8 @@ var PDFDict = (
       var dictString = "<<\n";
       var entries = this.entries();
       for (var idx = 0, len2 = entries.length; idx < len2; idx++) {
-        var _a2 = entries[idx], key4 = _a2[0], value = _a2[1];
-        dictString += key4.toString() + " " + value.toString() + "\n";
+        var _a2 = entries[idx], key4 = _a2[0], value2 = _a2[1];
+        dictString += key4.toString() + " " + value2.toString() + "\n";
       }
       dictString += ">>";
       return dictString;
@@ -62478,8 +63500,8 @@ var PDFDict = (
       var size = 5;
       var entries = this.entries();
       for (var idx = 0, len2 = entries.length; idx < len2; idx++) {
-        var _a2 = entries[idx], key4 = _a2[0], value = _a2[1];
-        size += key4.sizeInBytes() + value.sizeInBytes() + 2;
+        var _a2 = entries[idx], key4 = _a2[0], value2 = _a2[1];
+        size += key4.sizeInBytes() + value2.sizeInBytes() + 2;
       }
       return size;
     };
@@ -62490,10 +63512,10 @@ var PDFDict = (
       buffer2[offset2++] = CharCodes_default.Newline;
       var entries = this.entries();
       for (var idx = 0, len2 = entries.length; idx < len2; idx++) {
-        var _a2 = entries[idx], key4 = _a2[0], value = _a2[1];
+        var _a2 = entries[idx], key4 = _a2[0], value2 = _a2[1];
         offset2 += key4.copyBytesInto(buffer2, offset2);
         buffer2[offset2++] = CharCodes_default.Space;
-        offset2 += value.copyBytesInto(buffer2, offset2);
+        offset2 += value2.copyBytesInto(buffer2, offset2);
         buffer2[offset2++] = CharCodes_default.Newline;
       }
       buffer2[offset2++] = CharCodes_default.GreaterThan;
@@ -62679,12 +63701,12 @@ var PDFOperator = (
       return PDFOperator2.of(this.name, args);
     };
     PDFOperator2.prototype.toString = function() {
-      var value = "";
+      var value2 = "";
       for (var idx = 0, len2 = this.args.length; idx < len2; idx++) {
-        value += String(this.args[idx]) + " ";
+        value2 += String(this.args[idx]) + " ";
       }
-      value += this.name;
-      return value;
+      value2 += this.name;
+      return value2;
     };
     PDFOperator2.prototype.sizeInBytes = function() {
       var size = 0;
@@ -62858,11 +63880,11 @@ var PDFContentStream = (
       return PDFContentStream2.of(dict.clone(context3), operators, encode);
     };
     PDFContentStream2.prototype.getContentsString = function() {
-      var value = "";
+      var value2 = "";
       for (var idx = 0, len2 = this.operators.length; idx < len2; idx++) {
-        value += this.operators[idx] + "\n";
+        value2 += this.operators[idx] + "\n";
       }
-      return value;
+      return value2;
     };
     PDFContentStream2.prototype.getUnencodedContents = function() {
       var buffer2 = new Uint8Array(this.getUnencodedContentsSize());
@@ -63019,9 +64041,9 @@ var PDFContext = (
         var keys4 = Object.keys(literal);
         for (var idx = 0, len2 = keys4.length; idx < len2; idx++) {
           var key4 = keys4[idx];
-          var value = literal[key4];
-          if (value !== void 0)
-            dict.set(PDFName_default.of(key4), this.obj(value));
+          var value2 = literal[key4];
+          if (value2 !== void 0)
+            dict.set(PDFName_default.of(key4), this.obj(value2));
         }
         return dict;
       }
@@ -63102,8 +64124,8 @@ var PDFPageLeaf = (
       var clone = PDFPageLeaf2.fromMapWithContext(/* @__PURE__ */ new Map(), context3 || this.context, this.autoNormalizeCTM);
       var entries = this.entries();
       for (var idx = 0, len2 = entries.length; idx < len2; idx++) {
-        var _a2 = entries[idx], key4 = _a2[0], value = _a2[1];
-        clone.set(key4, value);
+        var _a2 = entries[idx], key4 = _a2[0], value2 = _a2[1];
+        clone.set(key4, value2);
       }
       return clone;
     };
@@ -63301,9 +64323,9 @@ var PDFObjectCopier = (
         var InheritableEntries = PDFPageLeaf_default.InheritableEntries;
         for (var idx = 0, len2 = InheritableEntries.length; idx < len2; idx++) {
           var key4 = PDFName_default.of(InheritableEntries[idx]);
-          var value = clonedPage.getInheritableAttribute(key4);
-          if (!clonedPage.get(key4) && value)
-            clonedPage.set(key4, value);
+          var value2 = clonedPage.getInheritableAttribute(key4);
+          if (!clonedPage.get(key4) && value2)
+            clonedPage.set(key4, value2);
         }
         clonedPage.delete(PDFName_default.of("Parent"));
         return _this.copyPDFDict(clonedPage);
@@ -63316,8 +64338,8 @@ var PDFObjectCopier = (
         _this.traversedObjects.set(originalDict, clonedDict);
         var entries = originalDict.entries();
         for (var idx = 0, len2 = entries.length; idx < len2; idx++) {
-          var _a2 = entries[idx], key4 = _a2[0], value = _a2[1];
-          clonedDict.set(key4, _this.copy(value));
+          var _a2 = entries[idx], key4 = _a2[0], value2 = _a2[1];
+          clonedDict.set(key4, _this.copy(value2));
         }
         return clonedDict;
       };
@@ -63328,8 +64350,8 @@ var PDFObjectCopier = (
         var clonedArray = originalArray.clone(_this.dest);
         _this.traversedObjects.set(originalArray, clonedArray);
         for (var idx = 0, len2 = originalArray.size(); idx < len2; idx++) {
-          var value = originalArray.get(idx);
-          clonedArray.set(idx, _this.copy(value));
+          var value2 = originalArray.get(idx);
+          clonedArray.set(idx, _this.copy(value2));
         }
         return clonedArray;
       };
@@ -63341,8 +64363,8 @@ var PDFObjectCopier = (
         _this.traversedObjects.set(originalStream, clonedStream);
         var entries = originalStream.dict.entries();
         for (var idx = 0, len2 = entries.length; idx < len2; idx++) {
-          var _a2 = entries[idx], key4 = _a2[0], value = _a2[1];
-          clonedStream.dict.set(key4, _this.copy(value));
+          var _a2 = entries[idx], key4 = _a2[0], value2 = _a2[1];
+          clonedStream.dict.set(key4, _this.copy(value2));
         }
         return clonedStream;
       };
@@ -63590,12 +64612,12 @@ var PDFObjectStream = (
       return PDFObjectStream2.withContextAndObjects(context3 || this.dict.context, this.objects.slice(), this.encode);
     };
     PDFObjectStream2.prototype.getContentsString = function() {
-      var value = this.offsetsString;
+      var value2 = this.offsetsString;
       for (var idx = 0, len2 = this.objects.length; idx < len2; idx++) {
         var _a2 = this.objects[idx], object = _a2[1];
-        value += object + "\n";
+        value2 += object + "\n";
       }
-      return value;
+      return value2;
     };
     PDFObjectStream2.prototype.getUnencodedContents = function() {
       var buffer2 = new Uint8Array(this.getUnencodedContentsSize());
@@ -63920,23 +64942,23 @@ var PDFCrossRefStream = (
     PDFCrossRefStream2.prototype.getContentsString = function() {
       var entryTuples = this.entryTuplesCache.access();
       var byteWidths = this.maxByteWidthsCache.access();
-      var value = "";
+      var value2 = "";
       for (var entryIdx = 0, entriesLen = entryTuples.length; entryIdx < entriesLen; entryIdx++) {
         var _a2 = entryTuples[entryIdx], first = _a2[0], second = _a2[1], third = _a2[2];
         var firstBytes = reverseArray(bytesFor(first));
         var secondBytes = reverseArray(bytesFor(second));
         var thirdBytes = reverseArray(bytesFor(third));
         for (var idx = byteWidths[0] - 1; idx >= 0; idx--) {
-          value += (firstBytes[idx] || 0).toString(2);
+          value2 += (firstBytes[idx] || 0).toString(2);
         }
         for (var idx = byteWidths[1] - 1; idx >= 0; idx--) {
-          value += (secondBytes[idx] || 0).toString(2);
+          value2 += (secondBytes[idx] || 0).toString(2);
         }
         for (var idx = byteWidths[2] - 1; idx >= 0; idx--) {
-          value += (thirdBytes[idx] || 0).toString(2);
+          value2 += (thirdBytes[idx] || 0).toString(2);
         }
       }
-      return value;
+      return value2;
     };
     PDFCrossRefStream2.prototype.getUnencodedContents = function() {
       var entryTuples = this.entryTuplesCache.access();
@@ -64102,9 +65124,9 @@ var PDFHexString = (
   /** @class */
   (function(_super) {
     __extends(PDFHexString2, _super);
-    function PDFHexString2(value) {
+    function PDFHexString2(value2) {
       var _this = _super.call(this) || this;
-      _this.value = value;
+      _this.value = value2;
       return _this;
     }
     PDFHexString2.prototype.asBytes = function() {
@@ -64152,11 +65174,11 @@ var PDFHexString = (
       buffer2[offset2++] = CharCodes_default.GreaterThan;
       return this.value.length + 2;
     };
-    PDFHexString2.of = function(value) {
-      return new PDFHexString2(value);
+    PDFHexString2.of = function(value2) {
+      return new PDFHexString2(value2);
     };
-    PDFHexString2.fromText = function(value) {
-      var encoded = utf16Encode(value);
+    PDFHexString2.fromText = function(value2) {
+      var encoded = utf16Encode(value2);
       var hex = "";
       for (var idx = 0, len2 = encoded.length; idx < len2; idx++) {
         hex += toHexStringOfMinLength(encoded[idx], 4);
@@ -64275,8 +65297,8 @@ var cmapHexFormat = function() {
   }
   return "<" + values2.join("") + ">";
 };
-var cmapHexString = function(value) {
-  return toHexStringOfMinLength(value, 4);
+var cmapHexString = function(value2) {
+  return toHexStringOfMinLength(value2, 4);
 };
 var cmapCodePointFormat = function(codePoint) {
   if (isWithinBMP(codePoint))
@@ -64334,9 +65356,9 @@ var PDFString = (
   /** @class */
   (function(_super) {
     __extends(PDFString2, _super);
-    function PDFString2(value) {
+    function PDFString2(value2) {
       var _this = _super.call(this) || this;
-      _this.value = value;
+      _this.value = value2;
       return _this;
     }
     PDFString2.prototype.asBytes = function() {
@@ -64422,8 +65444,8 @@ var PDFString = (
       buffer2[offset2++] = CharCodes_default.RightParen;
       return this.value.length + 2;
     };
-    PDFString2.of = function(value) {
-      return new PDFString2(value);
+    PDFString2.of = function(value2) {
+      return new PDFString2(value2);
     };
     PDFString2.fromDate = function(date) {
       var year = padStart(String(date.getUTCFullYear()), 4, "0");
@@ -66003,12 +67025,12 @@ UPNG.encode._filterZero = function(img, h, bpp, bpl, data2, filter, levelZero) {
   var fls = [], ftry = [0, 1, 2, 3, 4];
   if (filter != -1) ftry = [filter];
   else if (h * bpl > 5e5 || bpp == 1) ftry = [0];
-  var opts;
-  if (levelZero) opts = { level: 0 };
+  var opts2;
+  if (levelZero) opts2 = { level: 0 };
   var CMPR = levelZero && UZIP != null ? UZIP : import_pako4.default;
   for (var i = 0; i < ftry.length; i++) {
     for (var y = 0; y < h; y++) UPNG.encode._filterLine(data2, img, y, bpl, bpp, ftry[i]);
-    fls.push(CMPR["deflate"](data2, opts));
+    fls.push(CMPR["deflate"](data2, opts2));
   }
   var ti, tsize = 1e9;
   for (var i = 0; i < fls.length; i++) if (fls[i].length < tsize) {
@@ -66684,14 +67706,14 @@ var Ascii85Stream = (
         }
         this.bufferLength += 4;
       } else {
-        var input3 = this.input;
-        input3[0] = c;
+        var input4 = this.input;
+        input4[0] = c;
         for (i = 1; i < 5; ++i) {
           c = stream2.getByte();
           while (isSpace(c)) {
             c = stream2.getByte();
           }
-          input3[i] = c;
+          input4[i] = c;
           if (c === EOF || c === TILDA_CHAR) {
             break;
           }
@@ -66700,13 +67722,13 @@ var Ascii85Stream = (
         this.bufferLength += i - 1;
         if (i < 5) {
           for (; i < 5; ++i) {
-            input3[i] = 33 + 84;
+            input4[i] = 33 + 84;
           }
           this.eof = true;
         }
         var t2 = 0;
         for (i = 0; i < 5; ++i) {
-          t2 = t2 * 85 + (input3[i] - 33);
+          t2 = t2 * 85 + (input4[i] - 33);
         }
         for (i = 3; i >= 0; --i) {
           buffer2[bufferLength + i] = t2 & 255;
@@ -67458,12 +68480,12 @@ var FlateStream = (
         if ((b = str.getByte()) === -1) {
           throw new Error("Bad block header in flate stream");
         }
-        var check = b;
+        var check2 = b;
         if ((b = str.getByte()) === -1) {
           throw new Error("Bad block header in flate stream");
         }
-        check |= b << 8;
-        if (check !== (~blockLen & 65535) && (blockLen !== 0 || check !== 0)) {
+        check2 |= b << 8;
+        if (check2 !== (~blockLen & 65535) && (blockLen !== 0 || check2 !== 0)) {
           throw new Error("Bad uncompressed block length in flate stream");
         }
         this.codeBuf = 0;
@@ -68752,9 +69774,9 @@ var PDFAcroButton = (
       }
       var values2 = [];
       for (var idx = 0, len2 = opt.size(); idx < len2; idx++) {
-        var value = opt.lookup(idx);
-        if (value instanceof PDFString_default || value instanceof PDFHexString_default) {
-          values2.push(value);
+        var value2 = opt.lookup(idx);
+        if (value2 instanceof PDFString_default || value2 instanceof PDFHexString_default) {
+          values2.push(value2);
         }
       }
       return values2;
@@ -68822,17 +69844,17 @@ var PDFAcroCheckBox = (
     function PDFAcroCheckBox2() {
       return _super !== null && _super.apply(this, arguments) || this;
     }
-    PDFAcroCheckBox2.prototype.setValue = function(value) {
+    PDFAcroCheckBox2.prototype.setValue = function(value2) {
       var _a2;
       var onValue = (_a2 = this.getOnValue()) !== null && _a2 !== void 0 ? _a2 : PDFName_default.of("Yes");
-      if (value !== onValue && value !== PDFName_default.of("Off")) {
+      if (value2 !== onValue && value2 !== PDFName_default.of("Off")) {
         throw new InvalidAcroFieldValueError();
       }
-      this.dict.set(PDFName_default.of("V"), value);
+      this.dict.set(PDFName_default.of("V"), value2);
       var widgets = this.getWidgets();
       for (var idx = 0, len2 = widgets.length; idx < len2; idx++) {
         var widget = widgets[idx];
-        var state = widget.getOnValue() === value ? value : PDFName_default.of("Off");
+        var state = widget.getOnValue() === value2 ? value2 : PDFName_default.of("Off");
         widget.setAppearanceState(state);
       }
     };
@@ -68967,9 +69989,9 @@ var PDFAcroChoice = (
       if (v2 instanceof PDFArray_default) {
         var values2 = [];
         for (var idx = 0, len2 = v2.size(); idx < len2; idx++) {
-          var value = v2.lookup(idx);
-          if (value instanceof PDFString_default || value instanceof PDFHexString_default) {
-            values2.push(value);
+          var value2 = v2.lookup(idx);
+          if (value2 instanceof PDFString_default || value2 instanceof PDFHexString_default) {
+            values2.push(value2);
           }
         }
         return values2;
@@ -68982,8 +70004,8 @@ var PDFAcroChoice = (
     PDFAcroChoice2.prototype.setOptions = function(options2) {
       var newOpt = new Array(options2.length);
       for (var idx = 0, len2 = options2.length; idx < len2; idx++) {
-        var _a2 = options2[idx], value = _a2.value, display = _a2.display;
-        newOpt[idx] = this.dict.context.obj([value, display || value]);
+        var _a2 = options2[idx], value2 = _a2.value, display = _a2.display;
+        newOpt[idx] = this.dict.context.obj([value2, display || value2]);
       }
       this.dict.set(PDFName_default.of("Opt"), this.dict.context.obj(newOpt));
     };
@@ -69127,8 +70149,8 @@ var PDFAcroText = (
       var _a2;
       return (_a2 = this.Q()) === null || _a2 === void 0 ? void 0 : _a2.asNumber();
     };
-    PDFAcroText2.prototype.setValue = function(value) {
-      this.dict.set(PDFName_default.of("V"), value);
+    PDFAcroText2.prototype.setValue = function(value2) {
+      this.dict.set(PDFName_default.of("V"), value2);
     };
     PDFAcroText2.prototype.removeValue = function() {
       this.dict.delete(PDFName_default.of("V"));
@@ -69188,16 +70210,16 @@ var PDFAcroRadioButton = (
     function PDFAcroRadioButton2() {
       return _super !== null && _super.apply(this, arguments) || this;
     }
-    PDFAcroRadioButton2.prototype.setValue = function(value) {
+    PDFAcroRadioButton2.prototype.setValue = function(value2) {
       var onValues = this.getOnValues();
-      if (!onValues.includes(value) && value !== PDFName_default.of("Off")) {
+      if (!onValues.includes(value2) && value2 !== PDFName_default.of("Off")) {
         throw new InvalidAcroFieldValueError();
       }
-      this.dict.set(PDFName_default.of("V"), value);
+      this.dict.set(PDFName_default.of("V"), value2);
       var widgets = this.getWidgets();
       for (var idx = 0, len2 = widgets.length; idx < len2; idx++) {
         var widget = widgets[idx];
-        var state = widget.getOnValue() === value ? value : PDFName_default.of("Off");
+        var state = widget.getOnValue() === value2 ? value2 : PDFName_default.of("Off");
         widget.setAppearanceState(state);
       }
     };
@@ -69669,26 +70691,26 @@ var BaseParser = (
       this.capNumbers = capNumbers;
     }
     BaseParser2.prototype.parseRawInt = function() {
-      var value = "";
+      var value2 = "";
       while (!this.bytes.done()) {
         var byte = this.bytes.peek();
         if (!IsDigit[byte])
           break;
-        value += charFromCode(this.bytes.next());
+        value2 += charFromCode(this.bytes.next());
       }
-      var numberValue = Number(value);
-      if (!value || !isFinite(numberValue)) {
-        throw new NumberParsingError(this.bytes.position(), value);
+      var numberValue = Number(value2);
+      if (!value2 || !isFinite(numberValue)) {
+        throw new NumberParsingError(this.bytes.position(), value2);
       }
       return numberValue;
     };
     BaseParser2.prototype.parseRawNumber = function() {
-      var value = "";
+      var value2 = "";
       while (!this.bytes.done()) {
         var byte = this.bytes.peek();
         if (!IsNumeric[byte])
           break;
-        value += charFromCode(this.bytes.next());
+        value2 += charFromCode(this.bytes.next());
         if (byte === CharCodes_default.Period)
           break;
       }
@@ -69696,19 +70718,19 @@ var BaseParser = (
         var byte = this.bytes.peek();
         if (!IsDigit[byte])
           break;
-        value += charFromCode(this.bytes.next());
+        value2 += charFromCode(this.bytes.next());
       }
-      var numberValue = Number(value);
-      if (!value || !isFinite(numberValue)) {
-        throw new NumberParsingError(this.bytes.position(), value);
+      var numberValue = Number(value2);
+      if (!value2 || !isFinite(numberValue)) {
+        throw new NumberParsingError(this.bytes.position(), value2);
       }
       if (numberValue > Number.MAX_SAFE_INTEGER) {
         if (this.capNumbers) {
-          var msg = "Parsed number that is too large for some PDF readers: " + value + ", using Number.MAX_SAFE_INTEGER instead.";
+          var msg = "Parsed number that is too large for some PDF readers: " + value2 + ", using Number.MAX_SAFE_INTEGER instead.";
           console.warn(msg);
           return Number.MAX_SAFE_INTEGER;
         } else {
-          var msg = "Parsed number that is too large for some PDF readers: " + value + ", not capping.";
+          var msg = "Parsed number that is too large for some PDF readers: " + value2 + ", not capping.";
           console.warn(msg);
         }
       }
@@ -69955,21 +70977,21 @@ var PDFObjectParser = (
       return PDFNumber_default.of(firstNum);
     };
     PDFObjectParser2.prototype.parseHexString = function() {
-      var value = "";
+      var value2 = "";
       this.bytes.assertNext(CharCodes_default.LessThan);
       while (!this.bytes.done() && this.bytes.peek() !== CharCodes_default.GreaterThan) {
-        value += charFromCode(this.bytes.next());
+        value2 += charFromCode(this.bytes.next());
       }
       this.bytes.assertNext(CharCodes_default.GreaterThan);
-      return PDFHexString_default.of(value);
+      return PDFHexString_default.of(value2);
     };
     PDFObjectParser2.prototype.parseString = function() {
       var nestingLvl = 0;
       var isEscaped = false;
-      var value = "";
+      var value2 = "";
       while (!this.bytes.done()) {
         var byte = this.bytes.next();
-        value += charFromCode(byte);
+        value2 += charFromCode(byte);
         if (!isEscaped) {
           if (byte === CharCodes_default.LeftParen)
             nestingLvl += 1;
@@ -69982,7 +71004,7 @@ var PDFObjectParser = (
           isEscaped = false;
         }
         if (nestingLvl === 0) {
-          return PDFString_default.of(value.substring(1, value.length - 1));
+          return PDFString_default.of(value2.substring(1, value2.length - 1));
         }
       }
       throw new UnbalancedParenthesisError(this.bytes.position());
@@ -70018,8 +71040,8 @@ var PDFObjectParser = (
       var dict = /* @__PURE__ */ new Map();
       while (!this.bytes.done() && this.bytes.peek() !== CharCodes_default.GreaterThan && this.bytes.peekAhead(1) !== CharCodes_default.GreaterThan) {
         var key4 = this.parseName();
-        var value = this.parseObject();
-        dict.set(key4, value);
+        var value2 = this.parseObject();
+        dict.set(key4, value2);
         this.skipWhitespaceAndComments();
       }
       this.skipWhitespaceAndComments();
@@ -71932,23 +72954,23 @@ var lastIndexOfWhitespace = function(line) {
   }
   return void 0;
 };
-var splitOutLines = function(input3, maxWidth, font, fontSize) {
+var splitOutLines = function(input4, maxWidth, font, fontSize) {
   var _a2;
-  var lastWhitespaceIdx = input3.length;
+  var lastWhitespaceIdx = input4.length;
   while (lastWhitespaceIdx > 0) {
-    var line = input3.substring(0, lastWhitespaceIdx);
+    var line = input4.substring(0, lastWhitespaceIdx);
     var encoded = font.encodeText(line);
     var width = font.widthOfTextAtSize(line, fontSize);
     if (width < maxWidth) {
-      var remainder = input3.substring(lastWhitespaceIdx) || void 0;
+      var remainder = input4.substring(lastWhitespaceIdx) || void 0;
       return { line, encoded, width, remainder };
     }
     lastWhitespaceIdx = (_a2 = lastIndexOfWhitespace(line)) !== null && _a2 !== void 0 ? _a2 : 0;
   }
   return {
-    line: input3,
-    encoded: font.encodeText(input3),
-    width: font.widthOfTextAtSize(input3, fontSize),
+    line: input4,
+    encoded: font.encodeText(input4),
+    width: font.widthOfTextAtSize(input4, fontSize),
     remainder: void 0
   };
 };
@@ -72187,12 +73209,12 @@ var defaultRadioGroupAppearanceProvider = function(radioGroup, widget) {
     }
   };
 };
-var defaultButtonAppearanceProvider = function(button4, widget, font) {
+var defaultButtonAppearanceProvider = function(button5, widget, font) {
   var _a2, _b2, _c, _d, _e;
   var widgetColor = getDefaultColor(widget);
-  var fieldColor = getDefaultColor(button4.acroField);
+  var fieldColor = getDefaultColor(button5.acroField);
   var widgetFontSize = getDefaultFontSize(widget);
-  var fieldFontSize = getDefaultFontSize(button4.acroField);
+  var fieldFontSize = getDefaultFontSize(button5.acroField);
   var rectangle = widget.getRectangle();
   var ap = widget.getAppearanceCharacteristics();
   var bs = widget.getBorderStyle();
@@ -72230,7 +73252,7 @@ var defaultButtonAppearanceProvider = function(button4, widget, font) {
   if (widgetColor || widgetFontSize !== void 0) {
     updateDefaultAppearance(widget, textColor, font, fontSize);
   } else {
-    updateDefaultAppearance(button4.acroField, textColor, font, fontSize);
+    updateDefaultAppearance(button5.acroField, textColor, font, fontSize);
   }
   var options2 = {
     x: 0 + borderWidth / 2,
@@ -72393,7 +73415,7 @@ var defaultOptionListAppearanceProvider = function(optionList, widget, font) {
   var borderColor = componentsToColor(ap === null || ap === void 0 ? void 0 : ap.getBorderColor());
   var normalBackgroundColor = componentsToColor(ap === null || ap === void 0 ? void 0 : ap.getBackgroundColor());
   var options2 = optionList.getOptions();
-  var selected = optionList.getSelected();
+  var selected2 = optionList.getSelected();
   if (optionList.isSorted())
     options2.sort();
   var text2 = "";
@@ -72418,7 +73440,7 @@ var defaultOptionListAppearanceProvider = function(optionList, widget, font) {
   var selectedLines = [];
   for (var idx = 0, len2 = lines.length; idx < len2; idx++) {
     var line = lines[idx];
-    if (selected.includes(line.text))
+    if (selected2.includes(line.text))
       selectedLines.push(idx);
   }
   var blue = rgb(153 / 255, 193 / 255, 218 / 255);
@@ -72979,18 +74001,18 @@ var PDFDropdown = (
       var rawOptions = this.acroField.getOptions();
       var options2 = new Array(rawOptions.length);
       for (var idx = 0, len2 = options2.length; idx < len2; idx++) {
-        var _a2 = rawOptions[idx], display = _a2.display, value = _a2.value;
-        options2[idx] = (display !== null && display !== void 0 ? display : value).decodeText();
+        var _a2 = rawOptions[idx], display = _a2.display, value2 = _a2.value;
+        options2[idx] = (display !== null && display !== void 0 ? display : value2).decodeText();
       }
       return options2;
     };
     PDFDropdown2.prototype.getSelected = function() {
       var values2 = this.acroField.getValues();
-      var selected = new Array(values2.length);
+      var selected2 = new Array(values2.length);
       for (var idx = 0, len2 = values2.length; idx < len2; idx++) {
-        selected[idx] = values2[idx].decodeText();
+        selected2[idx] = values2[idx].decodeText();
       }
-      return selected;
+      return selected2;
     };
     PDFDropdown2.prototype.setOptions = function(options2) {
       assertIs(options2, "options", [Array]);
@@ -73180,18 +74202,18 @@ var PDFOptionList = (
       var rawOptions = this.acroField.getOptions();
       var options2 = new Array(rawOptions.length);
       for (var idx = 0, len2 = options2.length; idx < len2; idx++) {
-        var _a2 = rawOptions[idx], display = _a2.display, value = _a2.value;
-        options2[idx] = (display !== null && display !== void 0 ? display : value).decodeText();
+        var _a2 = rawOptions[idx], display = _a2.display, value2 = _a2.value;
+        options2[idx] = (display !== null && display !== void 0 ? display : value2).decodeText();
       }
       return options2;
     };
     PDFOptionList2.prototype.getSelected = function() {
       var values2 = this.acroField.getValues();
-      var selected = new Array(values2.length);
+      var selected2 = new Array(values2.length);
       for (var idx = 0, len2 = values2.length; idx < len2; idx++) {
-        selected[idx] = values2[idx].decodeText();
+        selected2[idx] = values2[idx].decodeText();
       }
-      return selected;
+      return selected2;
     };
     PDFOptionList2.prototype.setOptions = function(options2) {
       assertIs(options2, "options", [Array]);
@@ -73376,18 +74398,18 @@ var PDFRadioGroup = (
       return onOptions;
     };
     PDFRadioGroup2.prototype.getSelected = function() {
-      var value = this.acroField.getValue();
-      if (value === PDFName_default.of("Off"))
+      var value2 = this.acroField.getValue();
+      if (value2 === PDFName_default.of("Off"))
         return void 0;
       var exportValues = this.acroField.getExportValues();
       if (exportValues) {
         var onValues = this.acroField.getOnValues();
         for (var idx = 0, len2 = onValues.length; idx < len2; idx++) {
-          if (onValues[idx] === value)
+          if (onValues[idx] === value2)
             return exportValues[idx].decodeText();
         }
       }
-      return value.decodeText();
+      return value2.decodeText();
     };
     PDFRadioGroup2.prototype.select = function(option) {
       assertIs(option, "option", ["string"]);
@@ -73404,9 +74426,9 @@ var PDFRadioGroup = (
         }
       } else {
         for (var idx = 0, len2 = onValues.length; idx < len2; idx++) {
-          var value = onValues[idx];
-          if (value.decodeText() === option)
-            this.acroField.setValue(value);
+          var value2 = onValues[idx];
+          if (value2.decodeText() === option)
+            this.acroField.setValue(value2);
         }
       }
     };
@@ -73533,11 +74555,11 @@ var PDFTextField = (
       return _this;
     }
     PDFTextField2.prototype.getText = function() {
-      var value = this.acroField.getValue();
-      if (!value && this.isRichFormatted()) {
+      var value2 = this.acroField.getValue();
+      if (!value2 && this.isRichFormatted()) {
         throw new RichTextFieldReadError(this.getName());
       }
-      return value === null || value === void 0 ? void 0 : value.decodeText();
+      return value2 === null || value2 === void 0 ? void 0 : value2.decodeText();
     };
     PDFTextField2.prototype.setText = function(text2) {
       assertOrUndefined(text2, "text", ["string"]);
@@ -73867,10 +74889,10 @@ var PDFForm = (
       assertIs(name6, "name", ["string"]);
       var nameParts = splitFieldName(name6);
       var parent = this.findOrCreateNonTerminals(nameParts.nonTerminal);
-      var button4 = PDFAcroPushButton_default.create(this.doc.context);
-      button4.setPartialName(nameParts.terminal);
-      addFieldToParent(parent, [button4, button4.ref], nameParts.terminal);
-      return PDFButton_default.of(button4, button4.ref, this.doc);
+      var button5 = PDFAcroPushButton_default.create(this.doc.context);
+      button5.setPartialName(nameParts.terminal);
+      addFieldToParent(parent, [button5, button5.ref], nameParts.terminal);
+      return PDFButton_default.of(button5, button5.ref, this.doc);
     };
     PDFForm2.prototype.createCheckBox = function(name6) {
       assertIs(name6, "name", ["string"]);
@@ -74017,8 +75039,8 @@ var PDFForm = (
       var _a2;
       var refOrDict = widget.getNormalAppearance();
       if (refOrDict instanceof PDFDict_default && (field instanceof PDFCheckBox_default || field instanceof PDFRadioGroup_default)) {
-        var value = field.acroField.getValue();
-        var ref = (_a2 = refOrDict.get(value)) !== null && _a2 !== void 0 ? _a2 : refOrDict.get(PDFName_default.of("Off"));
+        var value2 = field.acroField.getValue();
+        var ref = (_a2 = refOrDict.get(value2)) !== null && _a2 !== void 0 ? _a2 : refOrDict.get(PDFName_default.of("Off"));
         if (ref instanceof PDFRef_default) {
           refOrDict = ref;
         }
@@ -74429,11 +75451,11 @@ var PDFDocument = (
       return form;
     };
     PDFDocument2.prototype.getTitle = function() {
-      var title2 = this.getInfoDict().lookup(PDFName_default.Title);
-      if (!title2)
+      var title3 = this.getInfoDict().lookup(PDFName_default.Title);
+      if (!title3)
         return void 0;
-      assertIsLiteralOrHexString(title2);
-      return title2.decodeText();
+      assertIsLiteralOrHexString(title3);
+      return title3.decodeText();
     };
     PDFDocument2.prototype.getAuthor = function() {
       var author = this.getInfoDict().lookup(PDFName_default.Author);
@@ -74484,10 +75506,10 @@ var PDFDocument = (
       assertIsLiteralOrHexString(modificationDate);
       return modificationDate.decodeDate();
     };
-    PDFDocument2.prototype.setTitle = function(title2, options2) {
-      assertIs(title2, "title", ["string"]);
+    PDFDocument2.prototype.setTitle = function(title3, options2) {
+      assertIs(title3, "title", ["string"]);
       var key4 = PDFName_default.of("Title");
-      this.getInfoDict().set(key4, PDFHexString_default.fromText(title2));
+      this.getInfoDict().set(key4, PDFHexString_default.fromText(title3));
       if (options2 === null || options2 === void 0 ? void 0 : options2.showInWindowTitleBar) {
         var prefs = this.catalog.getOrCreateViewerPreferences();
         prefs.setDisplayDocTitle(true);
@@ -75787,14 +76809,14 @@ var PDFButton_default = PDFButton;
 var ink = rgb(0.13, 0.16, 0.21);
 var border = rgb(0.72, 0.75, 0.79);
 var shade = rgb(0.93, 0.95, 0.97);
-var time = (value) => String(Math.floor(value / 60)).padStart(2, "0") + ":" + String(value % 60).padStart(2, "0");
+var time = (value2) => String(Math.floor(value2 / 60)).padStart(2, "0") + ":" + String(value2 % 60).padStart(2, "0");
 var status = { waiting: "\u5F85\u6A5F", called: "\u547C\u51FA\u6E08", playing: "\u9032\u884C\u4E2D", completed: "\u7D42\u4E86", bye: "\u514D\u9664" };
-function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
-  const [w, h] = opts.landscape ? [PageSizes.A4[1], PageSizes.A4[0]] : PageSizes.A4;
+function drawCourtSchedule(pdf, font, t2, opts2 = {}, court) {
+  const [w, h] = opts2.landscape ? [PageSizes.A4[1], PageSizes.A4[0]] : PageSizes.A4;
   const left = 22, available = w - left * 2;
   const entries = new Map(t2.events.flatMap((e) => e.entries).map((p) => [p.id, p]));
   const all = scheduleOrder(t2);
-  let page2, y = 0, headers = [], widths = [], title2 = "", pageNumber = 0;
+  let page2, y = 0, headers = [], widths = [], title3 = "", pageNumber = 0;
   const widthsAtUnit = /* @__PURE__ */ new Map();
   const width = (s2, size) => {
     let x = widthsAtUnit.get(s2);
@@ -75806,11 +76828,11 @@ function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
   };
   const glyphs = new Set(font.getCharacterSet());
   const clean = (s2) => [...s2.replace(/[\r\n\t]/g, " ")].map((c) => glyphs.has(c.codePointAt(0)) ? c : "\u25A1").join("");
-  function lines(value, span, base, atomic) {
-    const s2 = clean(value);
+  function lines(value2, span, base, atomic) {
+    const s2 = clean(value2);
     const scaled = width(s2, base) ? Math.min(base, base * span / width(s2, base)) : base;
     if (atomic) {
-      ensure(scaled >= 5.1, opts.landscape ? "\u8A66\u5408\u756A\u53F7\u3084\u30B3\u30FC\u30C8\u540D\u304C\u9577\u3059\u304E\u307E\u3059\u3002\u8868\u793A\u756A\u53F7\u3092\u77ED\u304F\u3057\u3066\u304F\u3060\u3055\u3044" : "A4\u7E26\u3067\u306F\u5168\u30B3\u30FC\u30C8\u3092\u5224\u8AAD\u3067\u304D\u307E\u305B\u3093\u3002A4\u6A2A\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+      ensure(scaled >= 5.1, opts2.landscape ? "\u8A66\u5408\u756A\u53F7\u3084\u30B3\u30FC\u30C8\u540D\u304C\u9577\u3059\u304E\u307E\u3059\u3002\u8868\u793A\u756A\u53F7\u3092\u77ED\u304F\u3057\u3066\u304F\u3060\u3055\u3044" : "A4\u7E26\u3067\u306F\u5168\u30B3\u30FC\u30C8\u3092\u5224\u8AAD\u3067\u304D\u307E\u305B\u3093\u3002A4\u6A2A\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
       return [{ s: s2, size: scaled }];
     }
     if (scaled >= Math.max(6, base * 0.74)) return [{ s: s2, size: scaled }];
@@ -75845,7 +76867,7 @@ function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
     ensure(pdf.getPageCount() < 1e3, "PDF\u306E\u30DA\u30FC\u30B8\u6570\u304C\u4E0A\u9650\u3092\u8D85\u3048\u307E\u3059");
     page2 = pdf.addPage([w, h]);
     pageNumber++;
-    const topic = lines(t2.name + "\u3000" + title2 + (pageNumber > 1 ? "\uFF08\u7D9A\uFF09" : ""), available, 13, false);
+    const topic = lines(t2.name + "\u3000" + title3 + (pageNumber > 1 ? "\uFF08\u7D9A\uFF09" : ""), available, 13, false);
     y = h - 28;
     for (const l of topic) {
       page2.drawText(l.s, { x: left, y, size: l.size, font, color: ink });
@@ -75859,13 +76881,13 @@ function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
     const a = entries.get(m.left), b = entries.get(m.right);
     return [
       { text: String(matchNumber(m, t2)), atomic: true },
-      ...opts.names ? [{ text: a?.name || "\u672A\u78BA\u5B9A" }, { text: b?.name || "\u672A\u78BA\u5B9A" }] : [],
-      ...opts.clubs ? [{ text: a?.club || "\u672A\u767B\u9332" }, { text: b?.club || "\u672A\u767B\u9332" }] : [],
-      ...opts.status ? [{ text: status[m.status] }] : []
+      ...opts2.names ? [{ text: a?.name || "\u672A\u78BA\u5B9A" }, { text: b?.name || "\u672A\u78BA\u5B9A" }] : [],
+      ...opts2.clubs ? [{ text: a?.club || "\u672A\u767B\u9332" }, { text: b?.club || "\u672A\u767B\u9332" }] : [],
+      ...opts2.status ? [{ text: status[m.status] }] : []
     ];
   };
   if (court !== void 0) {
-    title2 = court + "\u30B3\u30FC\u30C8\u4E88\u5B9A\u8868";
+    title3 = court + "\u30B3\u30FC\u30C8\u4E88\u5B9A\u8868";
     headers = ["\u958B\u59CB", "\u7D42\u4E86", "\u8A66\u5408\u756A\u53F7", "\u5DE6", "\u53F3", "\u72B6\u614B"];
     widths = [53, 53, 105, (available - 272) / 2, (available - 272) / 2, 61];
     fresh();
@@ -75882,9 +76904,9 @@ function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
     return;
   }
   const previews = [];
-  for (const part of splitTimetable(t2, opts.split)) {
-    let write4 = function(value, x, baseline, size, span2) {
-      const cleanValue = clean(value);
+  for (const part of splitTimetable(t2, opts2.split)) {
+    let write4 = function(value2, x, baseline, size, span2) {
+      const cleanValue = clean(value2);
       const actual = fitToWidth(cleanValue, size, span2);
       if (cleanValue) page2.drawText(cleanValue, { x, y: baseline, size: actual, font, color: ink });
       return actual;
@@ -75893,13 +76915,13 @@ function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
     const dates = [...new Set(part.fixtures.map((m) => plannedDate(t2, m) ?? "\u65E5\u7A0B\u672A\u6307\u5B9A"))];
     const events2 = [...new Set(part.fixtures.map((m) => t2.events.find((e) => e.id === m.eventId)?.code ?? t2.events.find((e) => e.id === m.eventId)?.name ?? ""))];
     const unassigned = part.fixtures.filter((m) => !m.court).length;
-    const columns = dates.length ? Math.max(...dates.map((date) => calendarCourts(t2, date))) : t2.courts;
+    const columns = dates.length ? Math.max(...dates.map((date) => calendarCourts(t2, date))) : timetableCourts(t2);
     const multi = dates.length > 1;
     const margin = 16, span = w - 2 * margin, axis = multi ? 57 : 36, cell = (span - axis) / columns;
     const pad2 = Math.min(1.6, cell * 0.09), inner = cell - 2 * pad2;
     const rows = timetableRows(t2, part.fixtures, columns);
     const top = h - 45, bottom = 28;
-    const hasDetails = !!(opts.names || opts.clubs || opts.status);
+    const hasDetails = !!(opts2.names || opts2.clubs || opts2.status);
     const wrapTo = (text2, size, limit = inner) => {
       const result2 = [];
       let line = "";
@@ -75914,18 +76936,18 @@ function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
       return result2;
     };
     const fields = rows.map((r) => r.cells.map((m) => m ? detail(m).map((item) => clean(item.text)) : void 0));
-    const clubIndex = 1 + (opts.names ? 2 : 0), clubCounts = /* @__PURE__ */ new Map(), key4 = /* @__PURE__ */ new Map();
-    if (opts.clubs) {
+    const clubIndex = 1 + (opts2.names ? 2 : 0), clubCounts = /* @__PURE__ */ new Map(), key4 = /* @__PURE__ */ new Map();
+    if (opts2.clubs) {
       for (const row2 of fields) for (const item of row2) if (item)
-        for (const value of item.slice(clubIndex, clubIndex + 2)) clubCounts.set(value, (clubCounts.get(value) ?? 0) + 1);
+        for (const value2 of item.slice(clubIndex, clubIndex + 2)) clubCounts.set(value2, (clubCounts.get(value2) ?? 0) + 1);
     }
     const legendColumns = w > 700 ? 3 : 2, keyWidth = span / legendColumns, legendSize = 6.5;
     const legend = [];
-    for (const [value, count] of [...clubCounts].sort((a, b) => b[1] - a[1])) {
-      if (count < 2 || width(value, 6) < inner * 2) continue;
-      const ref = "\u6240\u5C5E" + (key4.size + 1), group = wrapTo(ref + " " + value, legendSize, keyWidth - 5);
+    for (const [value2, count] of [...clubCounts].sort((a, b) => b[1] - a[1])) {
+      if (count < 2 || width(value2, 6) < inner * 2) continue;
+      const ref = "\u6240\u5C5E" + (key4.size + 1), group = wrapTo(ref + " " + value2, legendSize, keyWidth - 5);
       if (legend.flat().length + group.length > legendColumns * 7) continue;
-      key4.set(value, ref);
+      key4.set(value2, ref);
       legend.push(group);
     }
     if (key4.size) {
@@ -75938,10 +76960,11 @@ function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
     const rowCount = Math.max(1, rows.length);
     const idealNumbers = hasDetails ? 7 : 9;
     const numbers = Math.min(idealNumbers, budget / rowCount / (hasDetails ? 1.95 : 1.4));
-    const numHeight = numbers * 1.32;
+    const numHeight = numbers * (hasDetails ? 1.12 : 1.32);
+    const detailLeading = 1.16;
     const gap = Math.min(1, budget / rowCount * 0.06);
     const extra = Math.max(0.01, budget - (numHeight + gap) * rows.length);
-    const fitToWidth = (value, sz, limit) => Math.min(sz, limit / Math.max(1e-3, width(value, 1)));
+    const fitToWidth = (value2, sz, limit) => Math.min(sz, limit / Math.max(1e-3, width(value2, 1)));
     const ideal = fields.map((r) => Math.max(0, ...r.map((item) => item?.slice(1).flatMap((text2) => wrapTo(text2, 7)).length ?? 0)) * 8.7);
     const totalIdeal = ideal.reduce((a, b) => a + b, 0);
     const rowDetail = ideal.map((h2) => Math.min(h2, totalIdeal ? extra * h2 / totalIdeal : 0));
@@ -75952,7 +76975,7 @@ function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
       let lo = 0, hi = 7;
       for (let j = 0; j < 12; j++) {
         const mid2 = (lo + hi) / 2, count = texts.reduce((n2, s2) => n2 + wrapTo(s2, mid2).length, 0);
-        if (count * mid2 * 1.24 <= budget2) lo = mid2;
+        if (count * mid2 * detailLeading <= budget2) lo = mid2;
         else hi = mid2;
       }
       const size = Math.max(Number.EPSILON, lo);
@@ -75978,7 +77001,7 @@ function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
         const x = linesX[j] + pad2;
         minNumber = Math.min(minNumber, write4(item.id, x, y2 - numbers, numbers, inner));
         item.lines.forEach((s2, k) => {
-          const baseline = y2 - numHeight - (k + 1) * item.size * 1.24;
+          const baseline = y2 - numHeight - (k + 1) * item.size * detailLeading;
           minDetail = Math.min(minDetail, write4(s2, x, baseline, item.size, inner));
         });
       }
@@ -75994,7 +77017,7 @@ function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
     const warning = Math.min(minNumber, minDetail) < 6 ? "\u4E00\u90E8\u306E\u6587\u5B57\u304C6pt\u672A\u6E80\u3067\u3059\u3002\u7C21\u6613\u7248\u3001A4\u6A2A\u3001\u5206\u5272\u3001\u307E\u305F\u306F\u30B3\u30FC\u30C8\u5225\u3092\u304A\u8A66\u3057\u304F\u3060\u3055\u3044\u3002" : "";
     if (warning) {
       write4(warning, margin, 16, 7, span - 32);
-      opts.warn?.(warning);
+      opts2.warn?.(warning);
     }
     write4(String(pdf.getPageCount()), w - 32, 16, 8, 16);
     previews.push({
@@ -76009,90 +77032,8 @@ function drawCourtSchedule(pdf, font, t2, opts = {}, court) {
       warning
     });
   }
-  opts.preview?.(previews);
+  opts2.preview?.(previews);
   return previews.map((p) => p.warning).find(Boolean);
-}
-
-// src/reports.ts
-var escapeHtml = (v2) => String(v2 ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-var grid = (heads, rows) => `<div class="table"><table class="report-grid"><thead><tr>${heads.map((h) => `<th style="white-space:normal;overflow-wrap:anywhere">${escapeHtml(h)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr style="break-inside:avoid">${r.map((v2) => `<td style="white-space:normal;overflow-wrap:anywhere">${escapeHtml(v2)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
-function matchScore(m) {
-  if (m.status === "bye") return "\u521D\u6226\u514D\u9664";
-  if (m.termination) return [terminationName(m), ...(m.retirementGames ?? []).map((g) => g.join("-"))].join(" ");
-  if (m.walkover || m.status === "completed" && m.winner && !m.games.length && !m.rubbers) return "\u4E0D\u6226\u52DD";
-  if (m.rubbers) return m.rubbers.filter((r) => r.winner === "left").length + "-" + m.rubbers.filter((r) => r.winner === "right").length + (m.decision ? "\uFF08\u5F79\u54E1\u6C7A\u7740\uFF09" : !finished(m) ? "\uFF08\u9014\u4E2D\uFF09" : "");
-  return m.games.map((g) => g.join("-")).join("/");
-}
-function leagueCrossTable(t2, gid) {
-  const stage = t2.stages.find((s2) => s2.groups.some((g) => g.id === gid));
-  ensure(stage?.kind === "league", "\u30EA\u30FC\u30B0\u306A\u3057");
-  const group = stage.groups.find((g) => g.id === gid), ids = group.entries, pair = (a, b) => [a, b].sort().join("|"), selected = /* @__PURE__ */ new Map();
-  if (stage.source && t2.stages.find((s2) => s2.id === stage.source)?.kind === "league") for (const m of t2.matches.filter((m2) => m2.stageId === stage.source && finished(m2) && ids.includes(m2.left) && ids.includes(m2.right))) selected.set(pair(m.left, m.right), m);
-  for (const m of t2.matches.filter((m2) => m2.groupId === gid)) {
-    const key4 = pair(m.left, m.right);
-    if (finished(m) || !selected.has(key4)) selected.set(key4, m);
-  }
-  const members = ids.map((id, i) => ({ id, number: i + 1, name: entryOf(t2, id)?.name || id }));
-  const rows = ids.map((id, i) => [String(i + 1), ...ids.map((other) => {
-    if (id === other) return "\u2014";
-    const m = selected.get(pair(id, other));
-    if (!m) return stage.excludeClub && !opposing(entryOf(t2, id), entryOf(t2, other)) ? "\xD7" : stage.excludeClub ? "\u5BFE\u8C61\u5916" : "\u672A\u5165\u529B";
-    if (!finished(m)) return "\u672A\u5165\u529B";
-    const left = m.left === id, marker = m.draw ? "\u5206" : m.winner === id ? "\u25CB" : "\u25CF";
-    let score2 = m.walkover ? "\u4E0D\u6226\u52DD" : m.rubbers ? m.rubbers.reduce((n2, r) => n2 + (r.winner === (left ? "left" : "right") ? 1 : 0), 0) + "-" + m.rubbers.reduce((n2, r) => n2 + (r.winner === (left ? "right" : "left") ? 1 : 0), 0) : m.games.map((g) => (left ? g : [g[1], g[0]]).join("-")).join("/");
-    return marker + " " + score2 + (m.stageId !== stage.id ? "\uFF08\u4E88\u9078\uFF09" : "");
-  })]);
-  return { members, headers: ["\u9078\u624B\u756A\u53F7 / \u5BFE\u6226\u76F8\u624B", ...ids.map((_2, i) => String(i + 1))], rows, matches: [...selected.values()], note: "\u5404\u884C\u304B\u3089\u898B\u305F\u5F97\u70B9\u3002\xD7\u306F\u540C\u6240\u5C5E\u7B49\u306B\u3088\u308B\u9664\u5916\u3001\u2014\u306F\u81EA\u5DF1\u5BFE\u6226\u3002\u4E88\u9078\u7D50\u679C\u306F\u6C7A\u52DD\u306E\u518D\u8A66\u5408\u304C\u78BA\u5B9A\u3059\u308B\u307E\u3067\u63A1\u7528\u3057\u307E\u3059\u3002" };
-}
-function diagramReport(t2, sid2) {
-  const stage = t2.stages.find((s2) => s2.id === sid2);
-  return stage.groups.flatMap((g) => printableBrackets(t2, t2.matches.filter((m) => m.groupId === g.id), true).map(({ title: title2, layout }) => {
-    const lines = [...layout.segments].sort((a, b) => Number(a.red) - Number(b.red)).map((p) => `<path d="M ${p.x1} ${p.y1} L ${p.x2} ${p.y2}" stroke="${p.red ? "#c31329" : "#000"}" stroke-width="${p.red ? 3.5 : 1.2}"/>`).join("");
-    const text2 = layout.captions.flatMap((p) => p.lines.map((value, i) => `<text x="${p.x}" y="${p.y + i * 16}" text-anchor="${p.align}" font-size="14">${escapeHtml(value)}</text>`)).join("");
-    return `<div class="table"><h4>${escapeHtml(g.name + " " + title2)}</h4><svg role="img" aria-label="\u5BFE\u6226\u8868" viewBox="0 0 ${layout.width} ${layout.height}" width="100%">${lines}${text2}</svg></div>`;
-  })).join("");
-}
-function reportHtml(t2) {
-  validate(t2);
-  const name6 = (id) => entryOf(t2, id)?.name || "\u672A\u78BA\u5B9A", time2 = (n2) => String(Math.floor(n2 / 60)).padStart(2, "0") + ":" + String(n2 % 60).padStart(2, "0");
-  let out = `<style>.report-grid{table-layout:fixed}.report-grid thead{display:table-header-group}h2,h3,h4{break-after:avoid}.certificate{overflow-wrap:anywhere;word-break:normal}@media print{.report-grid tr{break-inside:avoid}svg{break-inside:avoid}}</style><h2>${escapeHtml(t2.name)} \u5E33\u7968</h2>`;
-  for (const s2 of t2.stages) {
-    out += `<h3>${escapeHtml(s2.name)}</h3>`;
-    if (s2.kind === "bracket") out += `<div class="table">${diagramReport(t2, s2.id)}</div>`;
-    else for (const g of s2.groups) {
-      out += `<h4>${escapeHtml(g.name)}</h4>` + (s2.exchange && !s2.exchange.ranked ? "" : grid(["\u9806\u4F4D", "\u9078\u624B", "\u52DD", "\u6557", "\u5206", "\u5BFE\u6226\u5DEE", "\u5F97\u5931G", "\u5F97\u5931\u70B9"], standings(t2, g.id).map((r) => [r.rank, name6(r.id), r.wins, r.losses, r.draws, r.rd, r.gd, r.pd])));
-      const cross = leagueCrossTable(t2, g.id);
-      out += "<h4>\u76F8\u4E92\u5BFE\u6226\u8868</h4><p>" + escapeHtml(cross.note) + "</p>";
-      if (cross.members.length <= 12) out += grid(["\u9078\u624B\u756A\u53F7", "\u9078\u624B\u540D"], cross.members.map((m) => [m.number, m.name])) + grid(cross.headers, cross.rows);
-      else out += "<p>13\u7D44\u4EE5\u4E0A\u306F\u53EF\u8AAD\u6027\u306E\u305F\u3081\u76F8\u4E92\u8868\u3092\u5BFE\u6226\u4E00\u89A7\u306B\u5206\u5272\u3057\u307E\u3059\u3002</p>" + grid(["\u756A\u53F7", "\u5DE6", "\u53F3", "\u5F97\u70B9", "\u7D50\u679C"], cross.matches.map((m) => [matchNumber(m, t2), name6(m.left), name6(m.right), matchScore(m), m.draw ? "\u5F15\u5206\u3051" : m.winner ? name6(m.winner) : "\u672A\u5165\u529B"]));
-    }
-  }
-  out += "<h3>\u8A66\u5408\u7D50\u679C\u4E00\u89A7</h3>" + grid(["\u756A\u53F7", "\u5DE6", "\u53F3", "\u5F97\u70B9", "\u52DD\u8005", "\u72B6\u614B", "\u6C7A\u7740\u7406\u7531"], t2.matches.filter((m) => m.status !== "bye").map((m) => [matchNumber(m, t2), name6(m.left), name6(m.right), matchScore(m), m.draw ? "\u5F15\u5206\u3051" : m.winner ? name6(m.winner) : "", m.status, m.decision ? m.decision.reason + " / " + m.decision.at : ""]));
-  for (let court = 1; court <= t2.courts; court++) out += `<h3>${court}\u30B3\u30FC\u30C8\u4E88\u5B9A\u8868</h3>` + grid(["\u4E88\u5B9A", "\u5206", "\u756A\u53F7", "\u5DE6", "\u53F3", "\u72B6\u614B"], t2.matches.filter((m) => m.court === court).sort((a, b) => a.time - b.time).map((m) => [time2(m.time), m.duration, matchNumber(m, t2), name6(m.left), name6(m.right), m.status]));
-  const players = /* @__PURE__ */ new Map();
-  for (const m of t2.matches.filter((m2) => m2.status !== "bye")) for (const id of [m.left, m.right].flatMap((id2) => entryOf(t2, id2)?.players || [])) {
-    const list = players.get(id) || [];
-    list.push(String(matchNumber(m, t2)));
-    players.set(id, list);
-  }
-  out += "<h3>\u9078\u624B\u5225\u8A66\u5408\u4E00\u89A7\uFF08\u9078\u624BID\uFF09</h3>" + grid(["\u9078\u624BID", "\u8A66\u5408\u756A\u53F7"], [...players].map(([p, ns]) => [p, [...new Set(ns)].join(" / ")]));
-  for (const m of t2.matches.filter((m2) => m2.rubbers)) out += `<h3>\u56E3\u4F53\u6226 #${escapeHtml(String(matchNumber(m, t2)))} ${escapeHtml(name6(m.left))} \u5BFE ${escapeHtml(name6(m.right))}</h3><p>${escapeHtml(m.draw ? "\u5F15\u5206\u3051" : m.decision ? "\u5F79\u54E1\u6C7A\u7740\uFF1A" + name6(m.winner) + " / " + m.decision.reason + " / " + m.decision.at : m.winner ? "\u52DD\u8005\uFF1A" + name6(m.winner) : "\u672A\u78BA\u5B9A")}</p>` + grid(["\u9806", "\u5DE6\u30AA\u30FC\u30C0\u30FC", "\u53F3\u30AA\u30FC\u30C0\u30FC", "\u5F97\u70B9", "\u52DD\u8005\u5074"], m.rubbers.map((r, i) => [i + 1, r.left.join(" / "), r.right.join(" / "), r.games.map((g) => g.join("-")).join("/"), r.winner]));
-  return out;
-}
-function certificateHtml(t2, sid2) {
-  validate(t2);
-  const s2 = t2.stages.find((s3) => s3.id === sid2);
-  ensure(s2, "\u30B9\u30C6\u30FC\u30B8\u306A\u3057");
-  const matches = t2.matches.filter((m) => m.stageId === sid2);
-  ensure(matches.length && matches.every(finished), "\u5168\u8A66\u5408\u3092\u7D42\u4E86\u3057\u3066\u304F\u3060\u3055\u3044");
-  const ranks = s2.kind === "league" ? s2.groups.flatMap((g) => standings(t2, g.id).filter((r) => r.rank <= 3).map((r) => ({ rank: r.rank, id: r.id }))) : (() => {
-    const final = [...matches].sort((a, b) => b.round - a.round)[0];
-    ensure(final?.winner, "\u6C7A\u52DD\u7D50\u679C\u306A\u3057");
-    return [{ rank: 1, id: final.winner }, { rank: 2, id: final.winner === final.left ? final.right : final.left }];
-  })();
-  const c = t2.certificate || { background: "", x: 0, y: 0, fontSize: 28 };
-  ensure(Number.isFinite(c.x) && Math.abs(c.x) <= 200 && Number.isFinite(c.y) && Math.abs(c.y) <= 300 && c.fontSize >= 12 && c.fontSize <= 80 && (!c.background || /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(c.background)), "\u8CDE\u72B6\u8A2D\u5B9A\u4E0D\u6B63");
-  return ranks.map((r) => `<section class="certificate" style="position:relative;min-height:800px;${c.background ? `background-image:url('${c.background}');background-size:100% 100%;` : ""}"><div style="transform:translate(${c.x}px,${c.y}px);font-size:${c.fontSize}px;overflow-wrap:anywhere;word-break:normal"><h2>\u8CDE \u72B6</h2><p>${escapeHtml(t2.name)} ${escapeHtml(s2.name)}</p><p>\u7B2C ${r.rank} \u4F4D</p><h3>${escapeHtml(entryOf(t2, r.id)?.name)} \u69D8</h3><p>\u3053\u3053\u306B\u305D\u306E\u6804\u8A89\u3092\u79F0\u3048\u8868\u5F70\u3057\u307E\u3059\u3002</p><p>${escapeHtml(t2.date)}\u3000${escapeHtml(t2.organizer || "")}</p></div></section>`).join("");
 }
 
 // node_modules/@pdf-lib/fontkit/dist/fontkit.es.js
@@ -76229,7 +77170,7 @@ var read = function read2(buffer2, offset2, isLE, mLen, nBytes) {
   }
   return (s2 ? -1 : 1) * m * Math.pow(2, e - mLen);
 };
-var write = function write2(buffer2, value, offset2, isLE, mLen, nBytes) {
+var write = function write2(buffer2, value2, offset2, isLE, mLen, nBytes) {
   var e, m, c;
   var eLen = nBytes * 8 - mLen - 1;
   var eMax = (1 << eLen) - 1;
@@ -76237,23 +77178,23 @@ var write = function write2(buffer2, value, offset2, isLE, mLen, nBytes) {
   var rt = mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0;
   var i = isLE ? 0 : nBytes - 1;
   var d = isLE ? 1 : -1;
-  var s2 = value < 0 || value === 0 && 1 / value < 0 ? 1 : 0;
-  value = Math.abs(value);
-  if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0;
+  var s2 = value2 < 0 || value2 === 0 && 1 / value2 < 0 ? 1 : 0;
+  value2 = Math.abs(value2);
+  if (isNaN(value2) || value2 === Infinity) {
+    m = isNaN(value2) ? 1 : 0;
     e = eMax;
   } else {
-    e = Math.floor(Math.log(value) / Math.LN2);
-    if (value * (c = Math.pow(2, -e)) < 1) {
+    e = Math.floor(Math.log(value2) / Math.LN2);
+    if (value2 * (c = Math.pow(2, -e)) < 1) {
       e--;
       c *= 2;
     }
     if (e + eBias >= 1) {
-      value += rt / c;
+      value2 += rt / c;
     } else {
-      value += rt * Math.pow(2, 1 - eBias);
+      value2 += rt * Math.pow(2, 1 - eBias);
     }
-    if (value * c >= 2) {
+    if (value2 * c >= 2) {
       e++;
       c /= 2;
     }
@@ -76261,10 +77202,10 @@ var write = function write2(buffer2, value, offset2, isLE, mLen, nBytes) {
       m = 0;
       e = eMax;
     } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen);
+      m = (value2 * c - 1) * Math.pow(2, mLen);
       e = e + eBias;
     } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
+      m = value2 * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
       e = 0;
     }
   }
@@ -76308,14 +77249,14 @@ var buffer = createCommonjsModule(function(module, exports) {
   }
   Object.defineProperty(Buffer3.prototype, "parent", {
     enumerable: true,
-    get: function get() {
+    get: function get2() {
       if (!Buffer3.isBuffer(this)) return void 0;
       return this.buffer;
     }
   });
   Object.defineProperty(Buffer3.prototype, "offset", {
     enumerable: true,
-    get: function get() {
+    get: function get2() {
       if (!Buffer3.isBuffer(this)) return void 0;
       return this.byteOffset;
     }
@@ -76338,38 +77279,38 @@ var buffer = createCommonjsModule(function(module, exports) {
     return from(arg, encodingOrOffset, length);
   }
   Buffer3.poolSize = 8192;
-  function from(value, encodingOrOffset, length) {
-    if (typeof value === "string") {
-      return fromString(value, encodingOrOffset);
+  function from(value2, encodingOrOffset, length) {
+    if (typeof value2 === "string") {
+      return fromString(value2, encodingOrOffset);
     }
-    if (ArrayBuffer.isView(value)) {
-      return fromArrayLike(value);
+    if (ArrayBuffer.isView(value2)) {
+      return fromArrayLike(value2);
     }
-    if (value == null) {
-      throw new TypeError("The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type " + typeof value);
+    if (value2 == null) {
+      throw new TypeError("The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type " + typeof value2);
     }
-    if (isInstance(value, ArrayBuffer) || value && isInstance(value.buffer, ArrayBuffer)) {
-      return fromArrayBuffer(value, encodingOrOffset, length);
+    if (isInstance(value2, ArrayBuffer) || value2 && isInstance(value2.buffer, ArrayBuffer)) {
+      return fromArrayBuffer(value2, encodingOrOffset, length);
     }
-    if (typeof SharedArrayBuffer !== "undefined" && (isInstance(value, SharedArrayBuffer) || value && isInstance(value.buffer, SharedArrayBuffer))) {
-      return fromArrayBuffer(value, encodingOrOffset, length);
+    if (typeof SharedArrayBuffer !== "undefined" && (isInstance(value2, SharedArrayBuffer) || value2 && isInstance(value2.buffer, SharedArrayBuffer))) {
+      return fromArrayBuffer(value2, encodingOrOffset, length);
     }
-    if (typeof value === "number") {
+    if (typeof value2 === "number") {
       throw new TypeError('The "value" argument must not be of type number. Received type number');
     }
-    var valueOf = value.valueOf && value.valueOf();
-    if (valueOf != null && valueOf !== value) {
+    var valueOf = value2.valueOf && value2.valueOf();
+    if (valueOf != null && valueOf !== value2) {
       return Buffer3.from(valueOf, encodingOrOffset, length);
     }
-    var b = fromObject(value);
+    var b = fromObject(value2);
     if (b) return b;
-    if (typeof Symbol !== "undefined" && Symbol.toPrimitive != null && typeof value[Symbol.toPrimitive] === "function") {
-      return Buffer3.from(value[Symbol.toPrimitive]("string"), encodingOrOffset, length);
+    if (typeof Symbol !== "undefined" && Symbol.toPrimitive != null && typeof value2[Symbol.toPrimitive] === "function") {
+      return Buffer3.from(value2[Symbol.toPrimitive]("string"), encodingOrOffset, length);
     }
-    throw new TypeError("The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type " + typeof value);
+    throw new TypeError("The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type " + typeof value2);
   }
-  Buffer3.from = function(value, encodingOrOffset, length) {
-    return from(value, encodingOrOffset, length);
+  Buffer3.from = function(value2, encodingOrOffset, length) {
+    return from(value2, encodingOrOffset, length);
   };
   Object.setPrototypeOf(Buffer3.prototype, Uint8Array.prototype);
   Object.setPrototypeOf(Buffer3, Uint8Array);
@@ -77212,202 +78153,202 @@ var buffer = createCommonjsModule(function(module, exports) {
     if (!noAssert) checkOffset(offset2, 8, this.length);
     return ieee754.read(this, offset2, false, 52, 8);
   };
-  function checkInt(buf, value, offset2, ext, max3, min) {
+  function checkInt(buf, value2, offset2, ext, max3, min) {
     if (!Buffer3.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance');
-    if (value > max3 || value < min) throw new RangeError('"value" argument is out of bounds');
+    if (value2 > max3 || value2 < min) throw new RangeError('"value" argument is out of bounds');
     if (offset2 + ext > buf.length) throw new RangeError("Index out of range");
   }
-  Buffer3.prototype.writeUIntLE = function writeUIntLE(value, offset2, byteLength3, noAssert) {
-    value = +value;
+  Buffer3.prototype.writeUIntLE = function writeUIntLE(value2, offset2, byteLength3, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
     byteLength3 = byteLength3 >>> 0;
     if (!noAssert) {
       var maxBytes = Math.pow(2, 8 * byteLength3) - 1;
-      checkInt(this, value, offset2, byteLength3, maxBytes, 0);
+      checkInt(this, value2, offset2, byteLength3, maxBytes, 0);
     }
     var mul = 1;
     var i = 0;
-    this[offset2] = value & 255;
+    this[offset2] = value2 & 255;
     while (++i < byteLength3 && (mul *= 256)) {
-      this[offset2 + i] = value / mul & 255;
+      this[offset2 + i] = value2 / mul & 255;
     }
     return offset2 + byteLength3;
   };
-  Buffer3.prototype.writeUIntBE = function writeUIntBE(value, offset2, byteLength3, noAssert) {
-    value = +value;
+  Buffer3.prototype.writeUIntBE = function writeUIntBE(value2, offset2, byteLength3, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
     byteLength3 = byteLength3 >>> 0;
     if (!noAssert) {
       var maxBytes = Math.pow(2, 8 * byteLength3) - 1;
-      checkInt(this, value, offset2, byteLength3, maxBytes, 0);
+      checkInt(this, value2, offset2, byteLength3, maxBytes, 0);
     }
     var i = byteLength3 - 1;
     var mul = 1;
-    this[offset2 + i] = value & 255;
+    this[offset2 + i] = value2 & 255;
     while (--i >= 0 && (mul *= 256)) {
-      this[offset2 + i] = value / mul & 255;
+      this[offset2 + i] = value2 / mul & 255;
     }
     return offset2 + byteLength3;
   };
-  Buffer3.prototype.writeUInt8 = function writeUInt8(value, offset2, noAssert) {
-    value = +value;
+  Buffer3.prototype.writeUInt8 = function writeUInt8(value2, offset2, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
-    if (!noAssert) checkInt(this, value, offset2, 1, 255, 0);
-    this[offset2] = value & 255;
+    if (!noAssert) checkInt(this, value2, offset2, 1, 255, 0);
+    this[offset2] = value2 & 255;
     return offset2 + 1;
   };
-  Buffer3.prototype.writeUInt16LE = function writeUInt16LE(value, offset2, noAssert) {
-    value = +value;
+  Buffer3.prototype.writeUInt16LE = function writeUInt16LE(value2, offset2, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
-    if (!noAssert) checkInt(this, value, offset2, 2, 65535, 0);
-    this[offset2] = value & 255;
-    this[offset2 + 1] = value >>> 8;
+    if (!noAssert) checkInt(this, value2, offset2, 2, 65535, 0);
+    this[offset2] = value2 & 255;
+    this[offset2 + 1] = value2 >>> 8;
     return offset2 + 2;
   };
-  Buffer3.prototype.writeUInt16BE = function writeUInt16BE(value, offset2, noAssert) {
-    value = +value;
+  Buffer3.prototype.writeUInt16BE = function writeUInt16BE(value2, offset2, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
-    if (!noAssert) checkInt(this, value, offset2, 2, 65535, 0);
-    this[offset2] = value >>> 8;
-    this[offset2 + 1] = value & 255;
+    if (!noAssert) checkInt(this, value2, offset2, 2, 65535, 0);
+    this[offset2] = value2 >>> 8;
+    this[offset2 + 1] = value2 & 255;
     return offset2 + 2;
   };
-  Buffer3.prototype.writeUInt32LE = function writeUInt32LE(value, offset2, noAssert) {
-    value = +value;
+  Buffer3.prototype.writeUInt32LE = function writeUInt32LE(value2, offset2, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
-    if (!noAssert) checkInt(this, value, offset2, 4, 4294967295, 0);
-    this[offset2 + 3] = value >>> 24;
-    this[offset2 + 2] = value >>> 16;
-    this[offset2 + 1] = value >>> 8;
-    this[offset2] = value & 255;
+    if (!noAssert) checkInt(this, value2, offset2, 4, 4294967295, 0);
+    this[offset2 + 3] = value2 >>> 24;
+    this[offset2 + 2] = value2 >>> 16;
+    this[offset2 + 1] = value2 >>> 8;
+    this[offset2] = value2 & 255;
     return offset2 + 4;
   };
-  Buffer3.prototype.writeUInt32BE = function writeUInt32BE(value, offset2, noAssert) {
-    value = +value;
+  Buffer3.prototype.writeUInt32BE = function writeUInt32BE(value2, offset2, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
-    if (!noAssert) checkInt(this, value, offset2, 4, 4294967295, 0);
-    this[offset2] = value >>> 24;
-    this[offset2 + 1] = value >>> 16;
-    this[offset2 + 2] = value >>> 8;
-    this[offset2 + 3] = value & 255;
+    if (!noAssert) checkInt(this, value2, offset2, 4, 4294967295, 0);
+    this[offset2] = value2 >>> 24;
+    this[offset2 + 1] = value2 >>> 16;
+    this[offset2 + 2] = value2 >>> 8;
+    this[offset2 + 3] = value2 & 255;
     return offset2 + 4;
   };
-  Buffer3.prototype.writeIntLE = function writeIntLE(value, offset2, byteLength3, noAssert) {
-    value = +value;
+  Buffer3.prototype.writeIntLE = function writeIntLE(value2, offset2, byteLength3, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
     if (!noAssert) {
       var limit = Math.pow(2, 8 * byteLength3 - 1);
-      checkInt(this, value, offset2, byteLength3, limit - 1, -limit);
+      checkInt(this, value2, offset2, byteLength3, limit - 1, -limit);
     }
     var i = 0;
     var mul = 1;
     var sub = 0;
-    this[offset2] = value & 255;
+    this[offset2] = value2 & 255;
     while (++i < byteLength3 && (mul *= 256)) {
-      if (value < 0 && sub === 0 && this[offset2 + i - 1] !== 0) {
+      if (value2 < 0 && sub === 0 && this[offset2 + i - 1] !== 0) {
         sub = 1;
       }
-      this[offset2 + i] = (value / mul >> 0) - sub & 255;
+      this[offset2 + i] = (value2 / mul >> 0) - sub & 255;
     }
     return offset2 + byteLength3;
   };
-  Buffer3.prototype.writeIntBE = function writeIntBE(value, offset2, byteLength3, noAssert) {
-    value = +value;
+  Buffer3.prototype.writeIntBE = function writeIntBE(value2, offset2, byteLength3, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
     if (!noAssert) {
       var limit = Math.pow(2, 8 * byteLength3 - 1);
-      checkInt(this, value, offset2, byteLength3, limit - 1, -limit);
+      checkInt(this, value2, offset2, byteLength3, limit - 1, -limit);
     }
     var i = byteLength3 - 1;
     var mul = 1;
     var sub = 0;
-    this[offset2 + i] = value & 255;
+    this[offset2 + i] = value2 & 255;
     while (--i >= 0 && (mul *= 256)) {
-      if (value < 0 && sub === 0 && this[offset2 + i + 1] !== 0) {
+      if (value2 < 0 && sub === 0 && this[offset2 + i + 1] !== 0) {
         sub = 1;
       }
-      this[offset2 + i] = (value / mul >> 0) - sub & 255;
+      this[offset2 + i] = (value2 / mul >> 0) - sub & 255;
     }
     return offset2 + byteLength3;
   };
-  Buffer3.prototype.writeInt8 = function writeInt8(value, offset2, noAssert) {
-    value = +value;
+  Buffer3.prototype.writeInt8 = function writeInt8(value2, offset2, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
-    if (!noAssert) checkInt(this, value, offset2, 1, 127, -128);
-    if (value < 0) value = 255 + value + 1;
-    this[offset2] = value & 255;
+    if (!noAssert) checkInt(this, value2, offset2, 1, 127, -128);
+    if (value2 < 0) value2 = 255 + value2 + 1;
+    this[offset2] = value2 & 255;
     return offset2 + 1;
   };
-  Buffer3.prototype.writeInt16LE = function writeInt16LE(value, offset2, noAssert) {
-    value = +value;
+  Buffer3.prototype.writeInt16LE = function writeInt16LE(value2, offset2, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
-    if (!noAssert) checkInt(this, value, offset2, 2, 32767, -32768);
-    this[offset2] = value & 255;
-    this[offset2 + 1] = value >>> 8;
+    if (!noAssert) checkInt(this, value2, offset2, 2, 32767, -32768);
+    this[offset2] = value2 & 255;
+    this[offset2 + 1] = value2 >>> 8;
     return offset2 + 2;
   };
-  Buffer3.prototype.writeInt16BE = function writeInt16BE(value, offset2, noAssert) {
-    value = +value;
+  Buffer3.prototype.writeInt16BE = function writeInt16BE(value2, offset2, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
-    if (!noAssert) checkInt(this, value, offset2, 2, 32767, -32768);
-    this[offset2] = value >>> 8;
-    this[offset2 + 1] = value & 255;
+    if (!noAssert) checkInt(this, value2, offset2, 2, 32767, -32768);
+    this[offset2] = value2 >>> 8;
+    this[offset2 + 1] = value2 & 255;
     return offset2 + 2;
   };
-  Buffer3.prototype.writeInt32LE = function writeInt32LE(value, offset2, noAssert) {
-    value = +value;
+  Buffer3.prototype.writeInt32LE = function writeInt32LE(value2, offset2, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
-    if (!noAssert) checkInt(this, value, offset2, 4, 2147483647, -2147483648);
-    this[offset2] = value & 255;
-    this[offset2 + 1] = value >>> 8;
-    this[offset2 + 2] = value >>> 16;
-    this[offset2 + 3] = value >>> 24;
+    if (!noAssert) checkInt(this, value2, offset2, 4, 2147483647, -2147483648);
+    this[offset2] = value2 & 255;
+    this[offset2 + 1] = value2 >>> 8;
+    this[offset2 + 2] = value2 >>> 16;
+    this[offset2 + 3] = value2 >>> 24;
     return offset2 + 4;
   };
-  Buffer3.prototype.writeInt32BE = function writeInt32BE(value, offset2, noAssert) {
-    value = +value;
+  Buffer3.prototype.writeInt32BE = function writeInt32BE(value2, offset2, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
-    if (!noAssert) checkInt(this, value, offset2, 4, 2147483647, -2147483648);
-    if (value < 0) value = 4294967295 + value + 1;
-    this[offset2] = value >>> 24;
-    this[offset2 + 1] = value >>> 16;
-    this[offset2 + 2] = value >>> 8;
-    this[offset2 + 3] = value & 255;
+    if (!noAssert) checkInt(this, value2, offset2, 4, 2147483647, -2147483648);
+    if (value2 < 0) value2 = 4294967295 + value2 + 1;
+    this[offset2] = value2 >>> 24;
+    this[offset2 + 1] = value2 >>> 16;
+    this[offset2 + 2] = value2 >>> 8;
+    this[offset2 + 3] = value2 & 255;
     return offset2 + 4;
   };
-  function checkIEEE754(buf, value, offset2, ext, max3, min) {
+  function checkIEEE754(buf, value2, offset2, ext, max3, min) {
     if (offset2 + ext > buf.length) throw new RangeError("Index out of range");
     if (offset2 < 0) throw new RangeError("Index out of range");
   }
-  function writeFloat(buf, value, offset2, littleEndian, noAssert) {
-    value = +value;
+  function writeFloat(buf, value2, offset2, littleEndian, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
     if (!noAssert) {
-      checkIEEE754(buf, value, offset2, 4);
+      checkIEEE754(buf, value2, offset2, 4);
     }
-    ieee754.write(buf, value, offset2, littleEndian, 23, 4);
+    ieee754.write(buf, value2, offset2, littleEndian, 23, 4);
     return offset2 + 4;
   }
-  Buffer3.prototype.writeFloatLE = function writeFloatLE(value, offset2, noAssert) {
-    return writeFloat(this, value, offset2, true, noAssert);
+  Buffer3.prototype.writeFloatLE = function writeFloatLE(value2, offset2, noAssert) {
+    return writeFloat(this, value2, offset2, true, noAssert);
   };
-  Buffer3.prototype.writeFloatBE = function writeFloatBE(value, offset2, noAssert) {
-    return writeFloat(this, value, offset2, false, noAssert);
+  Buffer3.prototype.writeFloatBE = function writeFloatBE(value2, offset2, noAssert) {
+    return writeFloat(this, value2, offset2, false, noAssert);
   };
-  function writeDouble(buf, value, offset2, littleEndian, noAssert) {
-    value = +value;
+  function writeDouble(buf, value2, offset2, littleEndian, noAssert) {
+    value2 = +value2;
     offset2 = offset2 >>> 0;
     if (!noAssert) {
-      checkIEEE754(buf, value, offset2, 8);
+      checkIEEE754(buf, value2, offset2, 8);
     }
-    ieee754.write(buf, value, offset2, littleEndian, 52, 8);
+    ieee754.write(buf, value2, offset2, littleEndian, 52, 8);
     return offset2 + 8;
   }
-  Buffer3.prototype.writeDoubleLE = function writeDoubleLE(value, offset2, noAssert) {
-    return writeDouble(this, value, offset2, true, noAssert);
+  Buffer3.prototype.writeDoubleLE = function writeDoubleLE(value2, offset2, noAssert) {
+    return writeDouble(this, value2, offset2, true, noAssert);
   };
-  Buffer3.prototype.writeDoubleBE = function writeDoubleBE(value, offset2, noAssert) {
-    return writeDouble(this, value, offset2, false, noAssert);
+  Buffer3.prototype.writeDoubleBE = function writeDoubleBE(value2, offset2, noAssert) {
+    return writeDouble(this, value2, offset2, false, noAssert);
   };
   Buffer3.prototype.copy = function copy(target, targetStart, start, end) {
     if (!Buffer3.isBuffer(target)) throw new TypeError("argument should be a Buffer");
@@ -78056,7 +78997,7 @@ function Item(fun, array) {
 Item.prototype.run = function() {
   this.fun.apply(null, this.array);
 };
-var title = "browser";
+var title2 = "browser";
 var platform = "browser";
 var browser = true;
 var env = {};
@@ -78112,7 +79053,7 @@ function uptime() {
 }
 var process2 = {
   nextTick,
-  title,
+  title: title2,
   browser,
   env,
   argv,
@@ -78242,17 +79183,17 @@ function debuglog(set) {
   }
   return debugs[set];
 }
-function inspect(obj, opts) {
+function inspect(obj, opts2) {
   var ctx = {
     seen: [],
     stylize: stylizeNoColor
   };
   if (arguments.length >= 3) ctx.depth = arguments[2];
   if (arguments.length >= 4) ctx.colors = arguments[3];
-  if (isBoolean(opts)) {
-    ctx.showHidden = opts;
-  } else if (opts) {
-    _extend(ctx, opts);
+  if (isBoolean(opts2)) {
+    ctx.showHidden = opts2;
+  } else if (opts2) {
+    _extend(ctx, opts2);
   }
   if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
   if (isUndefined(ctx.depth)) ctx.depth = 2;
@@ -78305,116 +79246,116 @@ function arrayToHash(array) {
   });
   return hash3;
 }
-function formatValue2(ctx, value, recurseTimes) {
-  if (ctx.customInspect && value && isFunction(value.inspect) && // Filter out the util module, it's inspect function is special
-  value.inspect !== inspect && // Also filter out any prototype objects using the circular check.
-  !(value.constructor && value.constructor.prototype === value)) {
-    var ret = value.inspect(recurseTimes, ctx);
+function formatValue2(ctx, value2, recurseTimes) {
+  if (ctx.customInspect && value2 && isFunction(value2.inspect) && // Filter out the util module, it's inspect function is special
+  value2.inspect !== inspect && // Also filter out any prototype objects using the circular check.
+  !(value2.constructor && value2.constructor.prototype === value2)) {
+    var ret = value2.inspect(recurseTimes, ctx);
     if (!isString(ret)) {
       ret = formatValue2(ctx, ret, recurseTimes);
     }
     return ret;
   }
-  var primitive = formatPrimitive(ctx, value);
+  var primitive = formatPrimitive(ctx, value2);
   if (primitive) {
     return primitive;
   }
-  var keys4 = Object.keys(value);
+  var keys4 = Object.keys(value2);
   var visibleKeys = arrayToHash(keys4);
   if (ctx.showHidden) {
-    keys4 = Object.getOwnPropertyNames(value);
+    keys4 = Object.getOwnPropertyNames(value2);
   }
-  if (isError(value) && (keys4.indexOf("message") >= 0 || keys4.indexOf("description") >= 0)) {
-    return formatError(value);
+  if (isError(value2) && (keys4.indexOf("message") >= 0 || keys4.indexOf("description") >= 0)) {
+    return formatError(value2);
   }
   if (keys4.length === 0) {
-    if (isFunction(value)) {
-      var name6 = value.name ? ": " + value.name : "";
+    if (isFunction(value2)) {
+      var name6 = value2.name ? ": " + value2.name : "";
       return ctx.stylize("[Function" + name6 + "]", "special");
     }
-    if (isRegExp(value)) {
-      return ctx.stylize(RegExp.prototype.toString.call(value), "regexp");
+    if (isRegExp(value2)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value2), "regexp");
     }
-    if (isDate(value)) {
-      return ctx.stylize(Date.prototype.toString.call(value), "date");
+    if (isDate(value2)) {
+      return ctx.stylize(Date.prototype.toString.call(value2), "date");
     }
-    if (isError(value)) {
-      return formatError(value);
+    if (isError(value2)) {
+      return formatError(value2);
     }
   }
   var base = "", array = false, braces = ["{", "}"];
-  if (isArray(value)) {
+  if (isArray(value2)) {
     array = true;
     braces = ["[", "]"];
   }
-  if (isFunction(value)) {
-    var n2 = value.name ? ": " + value.name : "";
+  if (isFunction(value2)) {
+    var n2 = value2.name ? ": " + value2.name : "";
     base = " [Function" + n2 + "]";
   }
-  if (isRegExp(value)) {
-    base = " " + RegExp.prototype.toString.call(value);
+  if (isRegExp(value2)) {
+    base = " " + RegExp.prototype.toString.call(value2);
   }
-  if (isDate(value)) {
-    base = " " + Date.prototype.toUTCString.call(value);
+  if (isDate(value2)) {
+    base = " " + Date.prototype.toUTCString.call(value2);
   }
-  if (isError(value)) {
-    base = " " + formatError(value);
+  if (isError(value2)) {
+    base = " " + formatError(value2);
   }
-  if (keys4.length === 0 && (!array || value.length == 0)) {
+  if (keys4.length === 0 && (!array || value2.length == 0)) {
     return braces[0] + base + braces[1];
   }
   if (recurseTimes < 0) {
-    if (isRegExp(value)) {
-      return ctx.stylize(RegExp.prototype.toString.call(value), "regexp");
+    if (isRegExp(value2)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value2), "regexp");
     } else {
       return ctx.stylize("[Object]", "special");
     }
   }
-  ctx.seen.push(value);
+  ctx.seen.push(value2);
   var output;
   if (array) {
-    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys4);
+    output = formatArray(ctx, value2, recurseTimes, visibleKeys, keys4);
   } else {
     output = keys4.map(function(key4) {
-      return formatProperty(ctx, value, recurseTimes, visibleKeys, key4, array);
+      return formatProperty(ctx, value2, recurseTimes, visibleKeys, key4, array);
     });
   }
   ctx.seen.pop();
   return reduceToSingleString(output, base, braces);
 }
-function formatPrimitive(ctx, value) {
-  if (isUndefined(value)) return ctx.stylize("undefined", "undefined");
-  if (isString(value)) {
-    var simple = "'" + JSON.stringify(value).replace(/^"|"$/g, "").replace(/'/g, "\\'").replace(/\\"/g, '"') + "'";
+function formatPrimitive(ctx, value2) {
+  if (isUndefined(value2)) return ctx.stylize("undefined", "undefined");
+  if (isString(value2)) {
+    var simple = "'" + JSON.stringify(value2).replace(/^"|"$/g, "").replace(/'/g, "\\'").replace(/\\"/g, '"') + "'";
     return ctx.stylize(simple, "string");
   }
-  if (isNumber(value)) return ctx.stylize("" + value, "number");
-  if (isBoolean(value)) return ctx.stylize("" + value, "boolean");
-  if (isNull(value)) return ctx.stylize("null", "null");
+  if (isNumber(value2)) return ctx.stylize("" + value2, "number");
+  if (isBoolean(value2)) return ctx.stylize("" + value2, "boolean");
+  if (isNull(value2)) return ctx.stylize("null", "null");
 }
-function formatError(value) {
-  return "[" + Error.prototype.toString.call(value) + "]";
+function formatError(value2) {
+  return "[" + Error.prototype.toString.call(value2) + "]";
 }
-function formatArray(ctx, value, recurseTimes, visibleKeys, keys4) {
+function formatArray(ctx, value2, recurseTimes, visibleKeys, keys4) {
   var output = [];
-  for (var i = 0, l = value.length; i < l; ++i) {
-    if (hasOwnProperty(value, String(i))) {
-      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys, String(i), true));
+  for (var i = 0, l = value2.length; i < l; ++i) {
+    if (hasOwnProperty(value2, String(i))) {
+      output.push(formatProperty(ctx, value2, recurseTimes, visibleKeys, String(i), true));
     } else {
       output.push("");
     }
   }
   keys4.forEach(function(key4) {
     if (!key4.match(/^\d+$/)) {
-      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys, key4, true));
+      output.push(formatProperty(ctx, value2, recurseTimes, visibleKeys, key4, true));
     }
   });
   return output;
 }
-function formatProperty(ctx, value, recurseTimes, visibleKeys, key4, array) {
+function formatProperty(ctx, value2, recurseTimes, visibleKeys, key4, array) {
   var name6, str, desc;
-  desc = Object.getOwnPropertyDescriptor(value, key4) || {
-    value: value[key4]
+  desc = Object.getOwnPropertyDescriptor(value2, key4) || {
+    value: value2[key4]
   };
   if (desc.get) {
     if (desc.set) {
@@ -79750,9 +80691,9 @@ function Transform(options2) {
   }
   this.once("prefinish", function() {
     if (typeof this._flush === "function") this._flush(function(er) {
-      done(stream2, er);
+      done2(stream2, er);
     });
-    else done(stream2);
+    else done2(stream2);
   });
 }
 Transform.prototype.push = function(chunk, encoding) {
@@ -79781,7 +80722,7 @@ Transform.prototype._read = function(n2) {
     ts.needTransform = true;
   }
 };
-function done(stream2, er) {
+function done2(stream2, er) {
   if (er) return stream2.emit("error", er);
   var ws = stream2._writableState;
   var ts = stream2._transformState;
@@ -79865,28 +80806,28 @@ Stream2.prototype.pipe = function(dest, options2) {
 };
 var Buffer2 = buffer.Buffer;
 var safer = {};
-var key2;
-for (key2 in buffer) {
-  if (!buffer.hasOwnProperty(key2)) continue;
-  if (key2 === "SlowBuffer" || key2 === "Buffer") continue;
-  safer[key2] = buffer[key2];
+var key3;
+for (key3 in buffer) {
+  if (!buffer.hasOwnProperty(key3)) continue;
+  if (key3 === "SlowBuffer" || key3 === "Buffer") continue;
+  safer[key3] = buffer[key3];
 }
 var Safer = safer.Buffer = {};
-for (key2 in Buffer2) {
-  if (!Buffer2.hasOwnProperty(key2)) continue;
-  if (key2 === "allocUnsafe" || key2 === "allocUnsafeSlow") continue;
-  Safer[key2] = Buffer2[key2];
+for (key3 in Buffer2) {
+  if (!Buffer2.hasOwnProperty(key3)) continue;
+  if (key3 === "allocUnsafe" || key3 === "allocUnsafeSlow") continue;
+  Safer[key3] = Buffer2[key3];
 }
 safer.Buffer.prototype = Buffer2.prototype;
 if (!Safer.from || Safer.from === Uint8Array.from) {
-  Safer.from = function(value, encodingOrOffset, length) {
-    if (typeof value === "number") {
-      throw new TypeError('The "value" argument must not be of type number. Received type ' + typeof value);
+  Safer.from = function(value2, encodingOrOffset, length) {
+    if (typeof value2 === "number") {
+      throw new TypeError('The "value" argument must not be of type number. Received type ' + typeof value2);
     }
-    if (value && typeof value.length === "undefined") {
-      throw new TypeError("The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type " + typeof value);
+    if (value2 && typeof value2.length === "undefined") {
+      throw new TypeError("The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type " + typeof value2);
     }
-    return Buffer2(value, encodingOrOffset, length);
+    return Buffer2(value2, encodingOrOffset, length);
   };
 }
 if (!Safer.alloc) {
@@ -90375,9 +91316,9 @@ var EncodeStream = createCommonjsModule(function(module) {
           (function(key5) {
             var bytes;
             bytes = +DecodeStream$1.TYPES[key5.replace(/write|[BL]E/g, "")];
-            return EncodeStream3.prototype[key5] = function(value) {
+            return EncodeStream3.prototype[key5] = function(value2) {
               this.ensure(bytes);
-              this.buffer[key5](value, this.bufferOffset);
+              this.buffer[key5](value2, this.bufferOffset);
               this.bufferOffset += bytes;
               return this.pos += bytes;
             };
@@ -90610,15 +91551,15 @@ var utils2 = createCommonjsModule(function(module, exports) {
       return res;
     };
     PropertyDescriptor = /* @__PURE__ */ (function() {
-      function PropertyDescriptor2(opts) {
+      function PropertyDescriptor2(opts2) {
         var key4, val3;
-        if (opts == null) {
-          opts = {};
+        if (opts2 == null) {
+          opts2 = {};
         }
         this.enumerable = true;
         this.configurable = true;
-        for (key4 in opts) {
-          val3 = opts[key4];
+        for (key4 in opts2) {
+          val3 = opts2[key4];
           this[key4] = val3;
         }
       }
@@ -91506,9 +92447,9 @@ var Pointer = createCommonjsModule(function(module, exports) {
       return Pointer3;
     })();
     VoidPointer = /* @__PURE__ */ (function() {
-      function VoidPointer2(type, value) {
+      function VoidPointer2(type, value2) {
         this.type = type;
-        this.value = value;
+        this.value = value2;
       }
       return VoidPointer2;
     })();
@@ -91582,18 +92523,18 @@ var fontkit = {
 };
 function cache(target, key4, descriptor) {
   if (descriptor.get) {
-    var get = descriptor.get;
+    var get2 = descriptor.get;
     descriptor.get = function() {
-      var value = get.call(this);
+      var value2 = get2.call(this);
       Object.defineProperty(this, key4, {
-        value
+        value: value2
       });
-      return value;
+      return value2;
     };
   } else if (typeof descriptor.value === "function") {
     var fn = descriptor.value;
     return {
-      get: function get2() {
+      get: function get3() {
         var cache2 = /* @__PURE__ */ new Map();
         function memoized() {
           for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -92719,11 +93660,11 @@ var CFFIndex = /* @__PURE__ */ (function() {
   return CFFIndex2;
 })();
 var toStr = Object.prototype.toString;
-var isArguments = function isArguments2(value) {
-  var str = toStr.call(value);
+var isArguments = function isArguments2(value2) {
+  var str = toStr.call(value2);
   var isArgs = str === "[object Arguments]";
   if (!isArgs) {
-    isArgs = str !== "[object Array]" && value !== null && typeof value === "object" && typeof value.length === "number" && value.length >= 0 && toStr.call(value.callee) === "[object Function]";
+    isArgs = str !== "[object Array]" && value2 !== null && typeof value2 === "object" && typeof value2.length === "number" && value2.length >= 0 && toStr.call(value2.callee) === "[object Function]";
   }
   return isArgs;
 };
@@ -92874,17 +93815,17 @@ keysShim$1.shim = function shimObjectKeys() {
 var objectKeys = keysShim$1;
 var hasToStringTag = typeof Symbol === "function" && typeof Symbol.toStringTag === "symbol";
 var toStr$2 = Object.prototype.toString;
-var isStandardArguments = function isArguments3(value) {
-  if (hasToStringTag && value && typeof value === "object" && Symbol.toStringTag in value) {
+var isStandardArguments = function isArguments3(value2) {
+  if (hasToStringTag && value2 && typeof value2 === "object" && Symbol.toStringTag in value2) {
     return false;
   }
-  return toStr$2.call(value) === "[object Arguments]";
+  return toStr$2.call(value2) === "[object Arguments]";
 };
-var isLegacyArguments = function isArguments4(value) {
-  if (isStandardArguments(value)) {
+var isLegacyArguments = function isArguments4(value2) {
+  if (isStandardArguments(value2)) {
     return true;
   }
-  return value !== null && typeof value === "object" && typeof value.length === "number" && value.length >= 0 && toStr$2.call(value) !== "[object Array]" && toStr$2.call(value.callee) === "[object Function]";
+  return value2 !== null && typeof value2 === "object" && typeof value2.length === "number" && value2.length >= 0 && toStr$2.call(value2) !== "[object Array]" && toStr$2.call(value2.callee) === "[object Function]";
 };
 var supportsStandardArguments = (function() {
   return isStandardArguments(arguments);
@@ -92914,7 +93855,7 @@ var arePropertyDescriptorsSupported = function arePropertyDescriptorsSupported2(
   }
 };
 var supportsDescriptors = origDefineProperty && arePropertyDescriptorsSupported();
-var defineProperty = function defineProperty2(object, name6, value, predicate) {
+var defineProperty = function defineProperty2(object, name6, value2, predicate) {
   if (name6 in object && (!isFunction$1(predicate) || !predicate())) {
     return;
   }
@@ -92922,11 +93863,11 @@ var defineProperty = function defineProperty2(object, name6, value, predicate) {
     origDefineProperty(object, name6, {
       configurable: true,
       enumerable: false,
-      value,
+      value: value2,
       writable: true
     });
   } else {
-    object[name6] = value;
+    object[name6] = value2;
   }
 };
 var defineProperties = function defineProperties2(object, map) {
@@ -93212,21 +94153,21 @@ var GetIntrinsic = function GetIntrinsic2(name6, allowMissing) {
     throw new TypeError('"allowMissing" argument must be a boolean');
   }
   var parts = stringToPath(name6);
-  var value = getBaseIntrinsic("%" + (parts.length > 0 ? parts[0] : "") + "%", allowMissing);
+  var value2 = getBaseIntrinsic("%" + (parts.length > 0 ? parts[0] : "") + "%", allowMissing);
   for (var i = 1; i < parts.length; i += 1) {
-    if (value != null) {
+    if (value2 != null) {
       if ($gOPD && i + 1 >= parts.length) {
-        var desc = $gOPD(value, parts[i]);
-        if (!allowMissing && !(parts[i] in value)) {
+        var desc = $gOPD(value2, parts[i]);
+        if (!allowMissing && !(parts[i] in value2)) {
           throw new $TypeError("base intrinsic for " + name6 + " exists, but the property is not available.");
         }
-        value = desc ? desc.get || desc.value : value[parts[i]];
+        value2 = desc ? desc.get || desc.value : value2[parts[i]];
       } else {
-        value = value[parts[i]];
+        value2 = value2[parts[i]];
       }
     }
   }
-  return value;
+  return value2;
 };
 var $Function = GetIntrinsic("%Function%");
 var $apply = $Function.apply;
@@ -93238,8 +94179,8 @@ var apply2 = function applyBind() {
   return functionBind.apply($apply, arguments);
 };
 callBind.apply = apply2;
-var numberIsNaN = function numberIsNaN2(value) {
-  return value !== value;
+var numberIsNaN = function numberIsNaN2(value2) {
+  return value2 !== value2;
 };
 var implementation$2 = function is(a, b) {
   if (a === 0 && b === 0) {
@@ -93277,34 +94218,34 @@ var objectIs = polyfill$1;
 var src = functionBind.call(Function.call, Object.prototype.hasOwnProperty);
 var regexExec = RegExp.prototype.exec;
 var gOPD = Object.getOwnPropertyDescriptor;
-var tryRegexExecCall = function tryRegexExec(value) {
+var tryRegexExecCall = function tryRegexExec(value2) {
   try {
-    var lastIndex = value.lastIndex;
-    value.lastIndex = 0;
-    regexExec.call(value);
+    var lastIndex = value2.lastIndex;
+    value2.lastIndex = 0;
+    regexExec.call(value2);
     return true;
   } catch (e) {
     return false;
   } finally {
-    value.lastIndex = lastIndex;
+    value2.lastIndex = lastIndex;
   }
 };
 var toStr$5 = Object.prototype.toString;
 var regexClass = "[object RegExp]";
 var hasToStringTag$1 = typeof Symbol === "function" && typeof Symbol.toStringTag === "symbol";
-var isRegex = function isRegex2(value) {
-  if (!value || typeof value !== "object") {
+var isRegex = function isRegex2(value2) {
+  if (!value2 || typeof value2 !== "object") {
     return false;
   }
   if (!hasToStringTag$1) {
-    return toStr$5.call(value) === regexClass;
+    return toStr$5.call(value2) === regexClass;
   }
-  var descriptor = gOPD(value, "lastIndex");
+  var descriptor = gOPD(value2, "lastIndex");
   var hasLastIndexDataProperty = descriptor && src(descriptor, "value");
   if (!hasLastIndexDataProperty) {
     return false;
   }
-  return tryRegexExecCall(value);
+  return tryRegexExecCall(value2);
 };
 var $Object = Object;
 var $TypeError$1 = TypeError;
@@ -93378,9 +94319,9 @@ defineProperties_1(flagsBound, {
 });
 var regexp_prototype_flags = flagsBound;
 var getDay = Date.prototype.getDay;
-var tryDateObject = function tryDateGetDayCall(value) {
+var tryDateObject = function tryDateGetDayCall(value2) {
   try {
-    getDay.call(value);
+    getDay.call(value2);
     return true;
   } catch (e) {
     return false;
@@ -93389,25 +94330,25 @@ var tryDateObject = function tryDateGetDayCall(value) {
 var toStr$6 = Object.prototype.toString;
 var dateClass = "[object Date]";
 var hasToStringTag$2 = typeof Symbol === "function" && typeof Symbol.toStringTag === "symbol";
-var isDateObject = function isDateObject2(value) {
-  if (typeof value !== "object" || value === null) {
+var isDateObject = function isDateObject2(value2) {
+  if (typeof value2 !== "object" || value2 === null) {
     return false;
   }
-  return hasToStringTag$2 ? tryDateObject(value) : toStr$6.call(value) === dateClass;
+  return hasToStringTag$2 ? tryDateObject(value2) : toStr$6.call(value2) === dateClass;
 };
 var getTime = Date.prototype.getTime;
 function deepEqual(actual, expected, options2) {
-  var opts = options2 || {};
-  if (opts.strict ? objectIs(actual, expected) : actual === expected) {
+  var opts2 = options2 || {};
+  if (opts2.strict ? objectIs(actual, expected) : actual === expected) {
     return true;
   }
   if (!actual || !expected || typeof actual !== "object" && typeof expected !== "object") {
-    return opts.strict ? objectIs(actual, expected) : actual == expected;
+    return opts2.strict ? objectIs(actual, expected) : actual == expected;
   }
-  return objEquiv(actual, expected, opts);
+  return objEquiv(actual, expected, opts2);
 }
-function isUndefinedOrNull(value) {
-  return value === null || value === void 0;
+function isUndefinedOrNull(value2) {
+  return value2 === null || value2 === void 0;
 }
 function isBuffer$1(x) {
   if (!x || typeof x !== "object" || typeof x.length !== "number") {
@@ -93421,7 +94362,7 @@ function isBuffer$1(x) {
   }
   return true;
 }
-function objEquiv(a, b, opts) {
+function objEquiv(a, b, opts2) {
   var i, key4;
   if (typeof a !== typeof b) {
     return false;
@@ -93483,7 +94424,7 @@ function objEquiv(a, b, opts) {
   }
   for (i = ka.length - 1; i >= 0; i--) {
     key4 = ka[i];
-    if (!deepEqual(a[key4], b[key4], opts)) {
+    if (!deepEqual(a[key4], b[key4], opts2)) {
       return false;
     }
   }
@@ -93501,23 +94442,23 @@ var FLOAT_ENCODE_LOOKUP = {
 var CFFOperand = /* @__PURE__ */ (function() {
   function CFFOperand2() {
   }
-  CFFOperand2.decode = function decode3(stream2, value) {
-    if (32 <= value && value <= 246) {
-      return value - 139;
+  CFFOperand2.decode = function decode3(stream2, value2) {
+    if (32 <= value2 && value2 <= 246) {
+      return value2 - 139;
     }
-    if (247 <= value && value <= 250) {
-      return (value - 247) * 256 + stream2.readUInt8() + 108;
+    if (247 <= value2 && value2 <= 250) {
+      return (value2 - 247) * 256 + stream2.readUInt8() + 108;
     }
-    if (251 <= value && value <= 254) {
-      return -(value - 251) * 256 - stream2.readUInt8() - 108;
+    if (251 <= value2 && value2 <= 254) {
+      return -(value2 - 251) * 256 - stream2.readUInt8() - 108;
     }
-    if (value === 28) {
+    if (value2 === 28) {
       return stream2.readInt16BE();
     }
-    if (value === 29) {
+    if (value2 === 29) {
       return stream2.readInt32BE();
     }
-    if (value === 30) {
+    if (value2 === 30) {
       var str = "";
       while (true) {
         var b = stream2.readUInt8();
@@ -93536,26 +94477,26 @@ var CFFOperand = /* @__PURE__ */ (function() {
     }
     return null;
   };
-  CFFOperand2.size = function size(value) {
-    if (value.forceLarge) {
-      value = 32768;
+  CFFOperand2.size = function size(value2) {
+    if (value2.forceLarge) {
+      value2 = 32768;
     }
-    if ((value | 0) !== value) {
-      var str = "" + value;
+    if ((value2 | 0) !== value2) {
+      var str = "" + value2;
       return 1 + Math.ceil((str.length + 1) / 2);
-    } else if (-107 <= value && value <= 107) {
+    } else if (-107 <= value2 && value2 <= 107) {
       return 1;
-    } else if (108 <= value && value <= 1131 || -1131 <= value && value <= -108) {
+    } else if (108 <= value2 && value2 <= 1131 || -1131 <= value2 && value2 <= -108) {
       return 2;
-    } else if (-32768 <= value && value <= 32767) {
+    } else if (-32768 <= value2 && value2 <= 32767) {
       return 3;
     } else {
       return 5;
     }
   };
-  CFFOperand2.encode = function encode(stream2, value) {
-    var val3 = Number(value);
-    if (value.forceLarge) {
+  CFFOperand2.encode = function encode(stream2, value2) {
+    var val3 = Number(value2);
+    if (value2.forceLarge) {
       stream2.writeUInt8(29);
       return stream2.writeInt32BE(val3);
     } else if ((val3 | 0) !== val3) {
@@ -93806,14 +94747,14 @@ var CFFPointer = /* @__PURE__ */ (function(_r$Pointer) {
     };
     return _r$Pointer.prototype.decode.call(this, stream2, parent, operands);
   };
-  _proto.encode = function encode(stream2, value, ctx) {
+  _proto.encode = function encode(stream2, value2, ctx) {
     if (!stream2) {
       this.offsetType = {
         size: function size() {
           return 0;
         }
       };
-      this.size(value, ctx);
+      this.size(value2, ctx);
       return [new Ptr(0)];
     }
     var ptr2 = null;
@@ -93822,7 +94763,7 @@ var CFFPointer = /* @__PURE__ */ (function(_r$Pointer) {
         return ptr2 = val3;
       }
     };
-    _r$Pointer.prototype.encode.call(this, stream2, value, ctx);
+    _r$Pointer.prototype.encode.call(this, stream2, value2, ctx);
     return [new Ptr(ptr2)];
   };
   return CFFPointer2;
@@ -94144,15 +95085,15 @@ var PredefinedOp = /* @__PURE__ */ (function() {
     }
     return this.type.decode(stream2, parent, operands);
   };
-  _proto.size = function size(value, ctx) {
-    return this.type.size(value, ctx);
+  _proto.size = function size(value2, ctx) {
+    return this.type.size(value2, ctx);
   };
-  _proto.encode = function encode(stream2, value, ctx) {
-    var index = this.predefinedOps.indexOf(value);
+  _proto.encode = function encode(stream2, value2, ctx) {
+    var index = this.predefinedOps.indexOf(value2);
     if (index !== -1) {
       return index;
     }
-    return this.type.encode(stream2, value, ctx);
+    return this.type.encode(stream2, value2, ctx);
   };
   return PredefinedOp2;
 })();
@@ -94458,7 +95399,7 @@ var CFFFont = /* @__PURE__ */ (function() {
   };
   _createClass(CFFFont2, [{
     key: "postscriptName",
-    get: function get() {
+    get: function get2() {
       if (this.version < 2) {
         return this.nameIndex[0];
       }
@@ -94466,12 +95407,12 @@ var CFFFont = /* @__PURE__ */ (function() {
     }
   }, {
     key: "fullName",
-    get: function get() {
+    get: function get2() {
       return this.string(this.topDict.FullName);
     }
   }, {
     key: "familyName",
-    get: function get() {
+    get: function get2() {
       return this.string(this.topDict.FamilyName);
     }
   }]);
@@ -97221,7 +98162,7 @@ var BBox = /* @__PURE__ */ (function() {
   };
   _createClass$1(BBox2, [{
     key: "width",
-    get: function get() {
+    get: function get2() {
       return this.maxX - this.minX;
     }
     /**
@@ -97230,7 +98171,7 @@ var BBox = /* @__PURE__ */ (function() {
      */
   }, {
     key: "height",
-    get: function get() {
+    get: function get2() {
       return this.maxY - this.minY;
     }
   }]);
@@ -97560,7 +98501,7 @@ var GlyphRun = /* @__PURE__ */ (function() {
   }
   _createClass$2(GlyphRun2, [{
     key: "advanceWidth",
-    get: function get() {
+    get: function get2() {
       var width = 0;
       for (var _iterator2 = _createForOfIteratorHelperLoose$7(this.positions), _step2; !(_step2 = _iterator2()).done; ) {
         var position = _step2.value;
@@ -97574,7 +98515,7 @@ var GlyphRun = /* @__PURE__ */ (function() {
      */
   }, {
     key: "advanceHeight",
-    get: function get() {
+    get: function get2() {
       var height = 0;
       for (var _iterator3 = _createForOfIteratorHelperLoose$7(this.positions), _step3; !(_step3 = _iterator3()).done; ) {
         var position = _step3.value;
@@ -97588,7 +98529,7 @@ var GlyphRun = /* @__PURE__ */ (function() {
      */
   }, {
     key: "bbox",
-    get: function get() {
+    get: function get2() {
       var bbox = new BBox();
       var x = 0;
       var y = 0;
@@ -98381,7 +99322,7 @@ var AATStateMachine = /* @__PURE__ */ (function() {
     }
     return glyphs;
   };
-  _proto.traverse = function traverse(opts, state, visited) {
+  _proto.traverse = function traverse(opts2, state, visited) {
     if (state === void 0) {
       state = 0;
     }
@@ -98399,14 +99340,14 @@ var AATStateMachine = /* @__PURE__ */ (function() {
       var entry = entryTable.getItem(entryIndex);
       for (var _iterator = _createForOfIteratorHelperLoose$9(this.lookupTable.glyphsForValue(classCode)), _step; !(_step = _iterator()).done; ) {
         var glyph2 = _step.value;
-        if (opts.enter) {
-          opts.enter(glyph2, entry);
+        if (opts2.enter) {
+          opts2.enter(glyph2, entry);
         }
         if (entry.newState !== 0) {
-          this.traverse(opts, entry.newState, visited);
+          this.traverse(opts2, entry.newState, visited);
         }
-        if (opts.exit) {
-          opts.exit(glyph2, entry);
+        if (opts2.exit) {
+          opts2.exit(glyph2, entry);
         }
       }
     }
@@ -98710,7 +99651,7 @@ var AATMorxProcessor = (_class$2 = /* @__PURE__ */ (function() {
     this.ligatureStack = [];
     var stateMachine2 = this.getStateMachine(subtable);
     var process3 = this.getProcessor();
-    var input3 = [];
+    var input4 = [];
     var stack = [];
     this.glyphs = [];
     stateMachine2.traverse({
@@ -98721,8 +99662,8 @@ var AATMorxProcessor = (_class$2 = /* @__PURE__ */ (function() {
           ligatureStack: _this.ligatureStack.slice()
         });
         var g = _this.font.getGlyph(glyph2);
-        input3.push(g);
-        glyphs.push(input3[input3.length - 1]);
+        input4.push(g);
+        glyphs.push(input4[input4.length - 1]);
         process3(glyphs[glyphs.length - 1], entry, glyphs.length - 1);
         var count = 0;
         var found = 0;
@@ -98733,7 +99674,7 @@ var AATMorxProcessor = (_class$2 = /* @__PURE__ */ (function() {
           }
         }
         if (count === 1) {
-          var result2 = input3.map(function(g2) {
+          var result2 = input4.map(function(g2) {
             return g2.id;
           });
           var _cache = _this.inputCache[found];
@@ -98748,7 +99689,7 @@ var AATMorxProcessor = (_class$2 = /* @__PURE__ */ (function() {
         var _stack$pop = stack.pop();
         _this.glyphs = _stack$pop.glyphs;
         _this.ligatureStack = _stack$pop.ligatureStack;
-        input3.pop();
+        input4.pop();
       }
     });
   };
@@ -98992,11 +99933,11 @@ var ShapingPlan = /* @__PURE__ */ (function() {
   };
   return ShapingPlan2;
 })();
-function _defineProperty(obj, key4, value) {
+function _defineProperty(obj, key4, value2) {
   if (key4 in obj) {
-    Object.defineProperty(obj, key4, { value, enumerable: true, configurable: true, writable: true });
+    Object.defineProperty(obj, key4, { value: value2, enumerable: true, configurable: true, writable: true });
   } else {
-    obj[key4] = value;
+    obj[key4] = value2;
   }
   return obj;
 }
@@ -99238,7 +100179,7 @@ var GlyphIterator = /* @__PURE__ */ (function() {
   };
   _createClass$3(GlyphIterator2, [{
     key: "cur",
-    get: function get() {
+    get: function get2() {
       return this.glyphs[this.index] || null;
     }
   }]);
@@ -99678,7 +100619,7 @@ var GlyphInfo = /* @__PURE__ */ (function() {
   };
   _createClass$4(GlyphInfo2, [{
     key: "id",
-    get: function get() {
+    get: function get2() {
       return this._id;
     },
     set: function set(id) {
@@ -99706,11 +100647,11 @@ function _inheritsLoose$4(subClass, superClass) {
   subClass.prototype.constructor = subClass;
   subClass.__proto__ = superClass;
 }
-function _defineProperty$1(obj, key4, value) {
+function _defineProperty$1(obj, key4, value2) {
   if (key4 in obj) {
-    Object.defineProperty(obj, key4, { value, enumerable: true, configurable: true, writable: true });
+    Object.defineProperty(obj, key4, { value: value2, enumerable: true, configurable: true, writable: true });
   } else {
-    obj[key4] = value;
+    obj[key4] = value2;
   }
   return obj;
 }
@@ -100251,11 +101192,11 @@ function _inheritsLoose$5(subClass, superClass) {
   subClass.prototype.constructor = subClass;
   subClass.__proto__ = superClass;
 }
-function _defineProperty$2(obj, key4, value) {
+function _defineProperty$2(obj, key4, value2) {
   if (key4 in obj) {
-    Object.defineProperty(obj, key4, { value, enumerable: true, configurable: true, writable: true });
+    Object.defineProperty(obj, key4, { value: value2, enumerable: true, configurable: true, writable: true });
   } else {
-    obj[key4] = value;
+    obj[key4] = value2;
   }
   return obj;
 }
@@ -100824,11 +101765,11 @@ function _inheritsLoose$6(subClass, superClass) {
   subClass.prototype.constructor = subClass;
   subClass.__proto__ = superClass;
 }
-function _defineProperty$3(obj, key4, value) {
+function _defineProperty$3(obj, key4, value2) {
   if (key4 in obj) {
-    Object.defineProperty(obj, key4, { value, enumerable: true, configurable: true, writable: true });
+    Object.defineProperty(obj, key4, { value: value2, enumerable: true, configurable: true, writable: true });
   } else {
-    obj[key4] = value;
+    obj[key4] = value2;
   }
   return obj;
 }
@@ -101360,34 +102301,34 @@ var GPOSProcessor = /* @__PURE__ */ (function(_OTProcessor) {
     return _OTProcessor.apply(this, arguments) || this;
   }
   var _proto = GPOSProcessor2.prototype;
-  _proto.applyPositionValue = function applyPositionValue(sequenceIndex, value) {
+  _proto.applyPositionValue = function applyPositionValue(sequenceIndex, value2) {
     var position = this.positions[this.glyphIterator.peekIndex(sequenceIndex)];
-    if (value.xAdvance != null) {
-      position.xAdvance += value.xAdvance;
+    if (value2.xAdvance != null) {
+      position.xAdvance += value2.xAdvance;
     }
-    if (value.yAdvance != null) {
-      position.yAdvance += value.yAdvance;
+    if (value2.yAdvance != null) {
+      position.yAdvance += value2.yAdvance;
     }
-    if (value.xPlacement != null) {
-      position.xOffset += value.xPlacement;
+    if (value2.xPlacement != null) {
+      position.xOffset += value2.xPlacement;
     }
-    if (value.yPlacement != null) {
-      position.yOffset += value.yPlacement;
+    if (value2.yPlacement != null) {
+      position.yOffset += value2.yPlacement;
     }
     var variationProcessor = this.font._variationProcessor;
     var variationStore = this.font.GDEF && this.font.GDEF.itemVariationStore;
     if (variationProcessor && variationStore) {
-      if (value.xPlaDevice) {
-        position.xOffset += variationProcessor.getDelta(variationStore, value.xPlaDevice.a, value.xPlaDevice.b);
+      if (value2.xPlaDevice) {
+        position.xOffset += variationProcessor.getDelta(variationStore, value2.xPlaDevice.a, value2.xPlaDevice.b);
       }
-      if (value.yPlaDevice) {
-        position.yOffset += variationProcessor.getDelta(variationStore, value.yPlaDevice.a, value.yPlaDevice.b);
+      if (value2.yPlaDevice) {
+        position.yOffset += variationProcessor.getDelta(variationStore, value2.yPlaDevice.a, value2.yPlaDevice.b);
       }
-      if (value.xAdvDevice) {
-        position.xAdvance += variationProcessor.getDelta(variationStore, value.xAdvDevice.a, value.xAdvDevice.b);
+      if (value2.xAdvDevice) {
+        position.xAdvance += variationProcessor.getDelta(variationStore, value2.xAdvDevice.a, value2.xAdvDevice.b);
       }
-      if (value.yAdvDevice) {
-        position.yAdvance += variationProcessor.getDelta(variationStore, value.yAdvDevice.a, value.yAdvDevice.b);
+      if (value2.yAdvDevice) {
+        position.yAdvance += variationProcessor.getDelta(variationStore, value2.yAdvDevice.a, value2.yAdvDevice.b);
       }
     }
   };
@@ -102008,7 +102949,7 @@ var Path = /* @__PURE__ */ (function() {
   };
   _createClass$5(Path2, [{
     key: "cbox",
-    get: function get() {
+    get: function get2() {
       if (!this._cbox) {
         var cbox = new BBox();
         for (var _iterator2 = _createForOfIteratorHelperLoose$l(this.commands), _step2; !(_step2 = _iterator2()).done; ) {
@@ -102028,7 +102969,7 @@ var Path = /* @__PURE__ */ (function() {
      */
   }, {
     key: "bbox",
-    get: function get() {
+    get: function get2() {
       if (this._bbox) {
         return this._bbox;
       }
@@ -102265,7 +103206,7 @@ var Glyph = (_class$3 = /* @__PURE__ */ (function() {
   };
   _createClass$6(Glyph2, [{
     key: "cbox",
-    get: function get() {
+    get: function get2() {
       return this._getCBox();
     }
     /**
@@ -102275,7 +103216,7 @@ var Glyph = (_class$3 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "bbox",
-    get: function get() {
+    get: function get2() {
       return this._getBBox();
     }
     /**
@@ -102284,12 +103225,12 @@ var Glyph = (_class$3 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "path",
-    get: function get() {
+    get: function get2() {
       return this._getPath();
     }
   }, {
     key: "advanceWidth",
-    get: function get() {
+    get: function get2() {
       return this._getMetrics().advanceWidth;
     }
     /**
@@ -102298,16 +103239,16 @@ var Glyph = (_class$3 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "advanceHeight",
-    get: function get() {
+    get: function get2() {
       return this._getMetrics().advanceHeight;
     }
   }, {
     key: "ligatureCaretPositions",
-    get: function get() {
+    get: function get2() {
     }
   }, {
     key: "name",
-    get: function get() {
+    get: function get2() {
       return this._getName();
     }
   }]);
@@ -103286,7 +104227,7 @@ var COLRGlyph = /* @__PURE__ */ (function(_Glyph) {
   };
   _createClass$7(COLRGlyph2, [{
     key: "layers",
-    get: function get() {
+    get: function get2() {
       var cpal = this._font.CPAL;
       var colr = this._font.COLR;
       var low = 0;
@@ -103841,11 +104782,11 @@ var Point$1 = /* @__PURE__ */ (function() {
   Point2.size = function size(val3) {
     return val3 >= 0 && val3 <= 255 ? 1 : 2;
   };
-  Point2.encode = function encode(stream2, value) {
-    if (value >= 0 && value <= 255) {
-      stream2.writeUInt8(value);
+  Point2.encode = function encode(stream2, value2) {
+    if (value2 >= 0 && value2 <= 255) {
+      stream2.writeUInt8(value2);
     } else {
-      stream2.writeInt16BE(value);
+      stream2.writeInt16BE(value2);
     }
   };
   return Point2;
@@ -103943,9 +104884,9 @@ var TTFGlyphEncoder = /* @__PURE__ */ (function() {
     }
     return stream2.buffer;
   };
-  _proto._encodePoint = function _encodePoint(value, last2, points, flag3, shortFlag, sameFlag) {
-    var diff = value - last2;
-    if (value === last2) {
+  _proto._encodePoint = function _encodePoint(value2, last2, points, flag3, shortFlag, sameFlag) {
+    var diff = value2 - last2;
+    if (value2 === last2) {
       flag3 |= sameFlag;
     } else {
       if (-255 <= diff && diff <= 255) {
@@ -104498,7 +105439,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
   };
   _createClass$8(TTFFont2, [{
     key: "postscriptName",
-    get: function get() {
+    get: function get2() {
       var name6 = this.name.records.postscriptName;
       if (name6) {
         var lang = Object.keys(name6)[0];
@@ -104508,7 +105449,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
     }
   }, {
     key: "fullName",
-    get: function get() {
+    get: function get2() {
       return this.getName("fullName");
     }
     /**
@@ -104517,7 +105458,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "familyName",
-    get: function get() {
+    get: function get2() {
       return this.getName("fontFamily");
     }
     /**
@@ -104526,7 +105467,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "subfamilyName",
-    get: function get() {
+    get: function get2() {
       return this.getName("fontSubfamily");
     }
     /**
@@ -104535,7 +105476,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "copyright",
-    get: function get() {
+    get: function get2() {
       return this.getName("copyright");
     }
     /**
@@ -104544,7 +105485,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "version",
-    get: function get() {
+    get: function get2() {
       return this.getName("version");
     }
     /**
@@ -104553,7 +105494,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "ascent",
-    get: function get() {
+    get: function get2() {
       return this.hhea.ascent;
     }
     /**
@@ -104562,7 +105503,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "descent",
-    get: function get() {
+    get: function get2() {
       return this.hhea.descent;
     }
     /**
@@ -104571,7 +105512,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "lineGap",
-    get: function get() {
+    get: function get2() {
       return this.hhea.lineGap;
     }
     /**
@@ -104580,7 +105521,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "underlinePosition",
-    get: function get() {
+    get: function get2() {
       return this.post.underlinePosition;
     }
     /**
@@ -104589,7 +105530,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "underlineThickness",
-    get: function get() {
+    get: function get2() {
       return this.post.underlineThickness;
     }
     /**
@@ -104598,7 +105539,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "italicAngle",
-    get: function get() {
+    get: function get2() {
       return this.post.italicAngle;
     }
     /**
@@ -104608,7 +105549,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "capHeight",
-    get: function get() {
+    get: function get2() {
       var os2 = this["OS/2"];
       return os2 ? os2.capHeight : this.ascent;
     }
@@ -104619,7 +105560,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "xHeight",
-    get: function get() {
+    get: function get2() {
       var os2 = this["OS/2"];
       return os2 ? os2.xHeight : 0;
     }
@@ -104629,7 +105570,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "numGlyphs",
-    get: function get() {
+    get: function get2() {
       return this.maxp.numGlyphs;
     }
     /**
@@ -104638,7 +105579,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "unitsPerEm",
-    get: function get() {
+    get: function get2() {
       return this.head.unitsPerEm;
     }
     /**
@@ -104647,12 +105588,12 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "bbox",
-    get: function get() {
+    get: function get2() {
       return Object.freeze(new BBox(this.head.xMin, this.head.yMin, this.head.xMax, this.head.yMax));
     }
   }, {
     key: "_cmapProcessor",
-    get: function get() {
+    get: function get2() {
       return new CmapProcessor(this.cmap);
     }
     /**
@@ -104661,22 +105602,22 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "characterSet",
-    get: function get() {
+    get: function get2() {
       return this._cmapProcessor.getCharacterSet();
     }
   }, {
     key: "_layoutEngine",
-    get: function get() {
+    get: function get2() {
       return new LayoutEngine(this);
     }
   }, {
     key: "availableFeatures",
-    get: function get() {
+    get: function get2() {
       return this._layoutEngine.getAvailableFeatures();
     }
   }, {
     key: "variationAxes",
-    get: function get() {
+    get: function get2() {
       var res = {};
       if (!this.fvar) {
         return res;
@@ -104701,7 +105642,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
      */
   }, {
     key: "namedVariations",
-    get: function get() {
+    get: function get2() {
       var res = {};
       if (!this.fvar) {
         return res;
@@ -104719,7 +105660,7 @@ var TTFFont = (_class$4 = /* @__PURE__ */ (function() {
     }
   }, {
     key: "_variationProcessor",
-    get: function get() {
+    get: function get2() {
       if (!this.fvar) {
         return null;
       }
@@ -105105,9 +106046,9 @@ var BROTLI_READ_SIZE = 4096;
 var BROTLI_IBUF_SIZE = 2 * BROTLI_READ_SIZE + 32;
 var BROTLI_IBUF_MASK = 2 * BROTLI_READ_SIZE - 1;
 var kBitMask = new Uint32Array([0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 16383, 32767, 65535, 131071, 262143, 524287, 1048575, 2097151, 4194303, 8388607, 16777215]);
-function BrotliBitReader(input3) {
+function BrotliBitReader(input4) {
   this.buf_ = new Uint8Array(BROTLI_IBUF_SIZE);
-  this.input_ = input3;
+  this.input_ = input4;
   this.reset();
 }
 BrotliBitReader.READ_SIZE = BROTLI_READ_SIZE;
@@ -105289,9 +106230,9 @@ var dictionary_3 = dictionary.offsetsByLength;
 var dictionary_4 = dictionary.sizeBitsByLength;
 var dictionary_5 = dictionary.minDictionaryWordLength;
 var dictionary_6 = dictionary.maxDictionaryWordLength;
-function HuffmanCode(bits4, value) {
+function HuffmanCode(bits4, value2) {
   this.bits = bits4;
-  this.value = value;
+  this.value = value2;
 }
 var HuffmanCode_1 = HuffmanCode;
 var MAX_LENGTH = 15;
@@ -107577,12 +108518,12 @@ function TranslateShortCodes(code3, ringbuffer, index) {
   return val3;
 }
 function MoveToFront(v2, index) {
-  var value = v2[index];
+  var value2 = v2[index];
   var i = index;
   for (; i; --i) {
     v2[i] = v2[i - 1];
   }
-  v2[0] = value;
+  v2[0] = value2;
 }
 function InverseMoveToFrontTransform(v2, v_len) {
   var mtf = new Uint8Array(256);
@@ -107749,28 +108690,28 @@ function JumpToByteBoundary(br) {
   return pad_bits == 0;
 }
 function BrotliDecompressedSize(buffer2) {
-  var input3 = new BrotliInput$1(buffer2);
-  var br = new bit_reader(input3);
+  var input4 = new BrotliInput$1(buffer2);
+  var br = new bit_reader(input4);
   DecodeWindowBits(br);
   var out = DecodeMetaBlockLength(br);
   return out.meta_block_length;
 }
 var BrotliDecompressedSize_1 = BrotliDecompressedSize;
 function BrotliDecompressBuffer(buffer2, output_size) {
-  var input3 = new BrotliInput$1(buffer2);
+  var input4 = new BrotliInput$1(buffer2);
   if (output_size == null) {
     output_size = BrotliDecompressedSize(buffer2);
   }
   var output_buffer = new Uint8Array(output_size);
   var output = new BrotliOutput$1(output_buffer);
-  BrotliDecompress(input3, output);
+  BrotliDecompress(input4, output);
   if (output.pos < output.buffer.length) {
     output.buffer = output.buffer.subarray(0, output.pos);
   }
   return output.buffer;
 }
 var BrotliDecompressBuffer_1 = BrotliDecompressBuffer;
-function BrotliDecompress(input3, output) {
+function BrotliDecompress(input4, output) {
   var i;
   var pos = 0;
   var input_end = 0;
@@ -107790,7 +108731,7 @@ function BrotliDecompress(input3, output) {
   var block_len_trees;
   var br;
   var kRingBufferWriteAheadSlack = 128 + bit_reader.READ_SIZE;
-  br = new bit_reader(input3);
+  br = new bit_reader(input4);
   window_bits = DecodeWindowBits(br);
   max_backward_distance = (1 << window_bits) - 16;
   ringbuffer_size = 1 << window_bits;
@@ -108391,7 +109332,7 @@ var TrueTypeCollection = /* @__PURE__ */ (function() {
   };
   _createClass$9(TrueTypeCollection2, [{
     key: "fonts",
-    get: function get() {
+    get: function get2() {
       var fonts = [];
       for (var _iterator2 = _createForOfIteratorHelperLoose$s(this.header.offsets), _step2; !(_step2 = _iterator2()).done; ) {
         var offset2 = _step2.value;
@@ -108536,7 +109477,7 @@ var DFont = /* @__PURE__ */ (function() {
   };
   _createClass$a(DFont2, [{
     key: "fonts",
-    get: function get() {
+    get: function get2() {
       var fonts = [];
       for (var _iterator5 = _createForOfIteratorHelperLoose$t(this.sfnt.refList), _step5; !(_step5 = _iterator5()).done; ) {
         var ref = _step5.value;
@@ -108572,8 +109513,8 @@ async function document2(fontBytes) {
   const font = await pdf.embedFont(fontBytes, { subset: false, features: { liga: false, clig: false, locl: false } });
   return { pdf, font };
 }
-function safeText(font, value) {
-  const text2 = String(value ?? "").replace(/[\r\n\t]/g, " ");
+function safeText(font, value2) {
+  const text2 = String(value2 ?? "").replace(/[\r\n\t]/g, " ");
   let chars3 = characterSets.get(font);
   if (!chars3) {
     chars3 = new Set(font.getCharacterSet());
@@ -108660,9 +109601,9 @@ async function generateReportPdf(t2, fontBytes, selection) {
   const diagram = (stage, results) => {
     for (const group of stage.groups) {
       const matches = t2.matches.filter((m) => m.groupId === group.id);
-      for (const { title: title2, layout } of printableBrackets(t2, matches, results, true)) {
+      for (const { title: title3, layout } of printableBrackets(t2, matches, results, true)) {
         fresh();
-        heading((t2.events.find((e) => e.id === stage.eventId)?.name ?? "") + " " + group.name + " " + title2);
+        heading((t2.events.find((e) => e.id === stage.eventId)?.name ?? "") + " " + group.name + " " + title3);
         const scale2 = (width - 32) / layout.width, small = layout.captions.filter((c) => c.kind === "player").length <= 8;
         const vertical = Math.min(small ? 2.15 : Math.max(scale2 * 1.5, 1.04), (y - 39) / layout.height);
         const x0 = (width - layout.width * scale2) / 2, top = small ? y - Math.min(54, Math.max(0, (y - 40 - layout.height * vertical) / 5)) : y;
@@ -108675,10 +109616,13 @@ async function generateReportPdf(t2, fontBytes, selection) {
           const limit = p.kind === "player" ? 181 * scale2 : 105 * scale2;
           let i = 0;
           for (const line of p.lines) {
-            for (const text2 of wrap(font, safeText(font, line), size, Math.max(limit, 28))) {
-              const ww = font.widthOfTextAtSize(text2, size);
+            const value2 = safeText(font, line);
+            const maxWidth = Math.max(limit, 28);
+            const fit = p.kind === "player" ? Math.min(size, maxWidth / Math.max(1e-3, font.widthOfTextAtSize(value2, 1))) : size;
+            for (const text2 of p.kind === "player" ? [value2] : wrap(font, value2, fit, maxWidth)) {
+              const ww = font.widthOfTextAtSize(text2, fit);
               const x = xx(p.x) - (p.align === "end" ? ww : p.align === "middle" ? ww / 2 : 0);
-              page2.drawText(text2, { x, y: yy(p.y) + 2 - i++ * (size + 1), size, font, color: INK });
+              page2.drawText(text2, { x, y: yy(p.y) + 2 - i++ * (size + 1), size: fit, font, color: INK });
             }
           }
         }
@@ -108686,13 +109630,22 @@ async function generateReportPdf(t2, fontBytes, selection) {
       }
     }
   };
-  const list = (ms, title2) => {
-    heading(title2);
-    table10(["\u756A\u53F7", "\u5DE6", "\u53F3", "\u5F97\u70B9", "\u52DD\u8005", "\u72B6\u614B", "\u6C7A\u7740\u7406\u7531"], ms.filter((m) => m.status !== "bye").map((m) => [matchNumber(m, t2), name6(m.left), name6(m.right), matchScore(m), m.draw ? "\u5F15\u5206\u3051" : m.winner ? name6(m.winner) : "", m.status, m.decision?.reason ?? ""]));
+  const list = (ms, title3) => {
+    heading(title3);
+    table10(["\u756A\u53F7", "\u5DE6", "\u53F3", "\u5F97\u70B9", "\u52DD\u8005", "\u72B6\u614B", "\u6C7A\u7740\u7406\u7531"], ms.filter((m) => m.status !== "bye").map((m) => [matchNumber(m, t2), name6(m.left), name6(m.right), matchScore(m), m.draw ? "\u5F15\u5206\u3051" : m.winner ? name6(m.winner) : "", matchStateName[m.status], m.decision?.reason ?? ""]));
   };
   const schedule = (court) => {
     drawCourtSchedule(pdf, font, t2, selection?.schedule ?? { names: true, clubs: false, status: true }, court);
     y = 26;
+  };
+  const teamLeagues = (eventId) => {
+    const stages = t2.stages.filter((s2) => s2.kind === "league" && (!eventId || s2.eventId === eventId) && t2.events.some((e) => e.id === s2.eventId && e.type === "team"));
+    for (const stage of stages) for (const group of stage.groups) for (const part of teamLeagueReport(t2, group.id)) {
+      heading(part.heading);
+      heading("\u2015 \u81EA\u5DF1\u5BFE\u6226 \uFF0F \xD7 \u5BFE\u6226\u9664\u5916 \uFF0F \u25CB \u52DD \uFF0F \u25CF \u6557 \uFF0F \u5206 \u5F15\u5206\u3051");
+      table10(part.headers, part.rows);
+    }
+    return stages.length;
   };
   if (selection) {
     const { kind, eventId, court } = selection;
@@ -108701,9 +109654,10 @@ async function generateReportPdf(t2, fontBytes, selection) {
       ensure(stages.length, "\u5BFE\u8C61\u306E\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u304C\u3042\u308A\u307E\u305B\u3093");
       for (const stage of stages) diagram(stage, kind === "bracket");
       pdf.removePage(0);
-    } else if (kind === "results") list(t2.matches.filter((m) => m.eventId === eventId), "\u7A2E\u76EE\u5225\u8A66\u5408\u7D50\u679C");
+    } else if (kind === "team-league") ensure(teamLeagues(eventId), "\u5BFE\u8C61\u306E\u56E3\u4F53\u6226\u30EA\u30FC\u30B0\u304C\u3042\u308A\u307E\u305B\u3093");
+    else if (kind === "results") list(t2.matches.filter((m) => m.eventId === eventId), "\u7A2E\u76EE\u5225\u8A66\u5408\u7D50\u679C");
     else if (kind === "court") {
-      ensure(Number.isInteger(court) && court >= 1 && court <= Math.max(t2.courts, ...(t2.competitionDays ?? []).map((d) => d.courts)), "\u30B3\u30FC\u30C8\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+      ensure(Number.isInteger(court) && court >= 1 && court <= timetableCourts(t2), "\u30B3\u30FC\u30C8\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
       schedule(court);
     } else schedule();
     return pdf.save();
@@ -108734,22 +109688,18 @@ async function generateReportPdf(t2, fontBytes, selection) {
     }
     else diagram(s2, true);
   }
+  teamLeagues();
   list(t2.matches, "\u8A66\u5408\u7D50\u679C\u4E00\u89A7");
   schedule();
-  for (let court = 1; court <= Math.max(t2.courts, ...(t2.competitionDays ?? []).map((d) => calendarCourts(t2, d.date))); court++) if (t2.matches.some((m) => m.court === court && m.status !== "bye")) schedule(court);
-  const players = /* @__PURE__ */ new Map();
-  for (const m of t2.matches.filter((m2) => m2.status !== "bye")) for (const p of [m.left, m.right].flatMap((id) => entryOf(t2, id)?.players || [])) {
-    const ns = players.get(p) || [];
-    ns.push(String(matchNumber(m, t2)));
-    players.set(p, ns);
-  }
+  for (let court = 1; court <= timetableCourts(t2); court++) if (t2.matches.some((m) => m.court === court && m.status !== "bye")) schedule(court);
   heading("\u9078\u624B\u5225\u8A66\u5408\u4E00\u89A7");
-  table10(["\u9078\u624BID", "\u8A66\u5408\u756A\u53F7"], [...players].map(([p, ns]) => [p, [...new Set(ns)].join(" / ")]));
+  table10(["\u9078\u624B\u540D", "\u6240\u5C5E", "\u8A66\u5408\u756A\u53F7"], playerMatchRows(t2));
+  const players = playerDirectory(t2);
   for (const m of t2.matches.filter((m2) => m2.rubbers)) {
     heading(`\u56E3\u4F53 #${String(matchNumber(m, t2))} ${name6(m.left)} \u5BFE ${name6(m.right)}`);
     heading(m.draw ? "\u5F15\u5206\u3051" : m.winner ? "\u52DD\u8005\uFF1A" + name6(m.winner) : "\u672A\u78BA\u5B9A");
     if (m.decision) heading(m.decision.reason + " / " + m.decision.at);
-    table10(["\u9806", "\u5DE6\u30AA\u30FC\u30C0\u30FC", "\u53F3\u30AA\u30FC\u30C0\u30FC", "\u30B9\u30B3\u30A2", "\u52DD\u8005\u5074"], m.rubbers.map((r, i) => [i + 1, r.left.join(" / "), r.right.join(" / "), r.games.map((g) => g.join("-")).join("/"), r.winner]));
+    table10(["\u9806", "\u5DE6\u30AA\u30FC\u30C0\u30FC", "\u53F3\u30AA\u30FC\u30C0\u30FC", "\u30B9\u30B3\u30A2", "\u52DD\u8005"], rubberReportRows(t2, m, players));
   }
   return pdf.save();
 }
@@ -108787,7 +109737,10 @@ async function generateCertificatePdf(t2, sid2, fontBytes) {
 }
 async function loadScoreTemplates(t2, matchIds) {
   const ids = new Set(matchIds);
-  const kinds = new Set(t2.events.filter((e) => t2.matches.some((m) => ids.has(m.id) && m.eventId === e.id)).map((e) => e.type));
+  const kinds = new Set(t2.matches.filter((m) => ids.has(m.id)).flatMap((m) => {
+    const type = t2.events.find((e) => e.id === m.eventId)?.type;
+    return type === "team" ? (m.rubbers ?? []).map((r) => r.left.length === 2 ? "doubles" : "singles") : [type];
+  }));
   const templates = {};
   for (const kind of ["singles", "doubles"]) if (kinds.has(kind)) {
     const res = await fetch(new URL("./score-sheets/" + kind + ".pdf", location.href));
@@ -108802,9 +109755,18 @@ async function generateScoreSheetsPdf(t2, matchIds, fontBytes, templates) {
   ensure(ids.size > 0 && ids.size === matches.length && matches.every((m) => m.status !== "bye" && m.left && m.right), "\u5BFE\u6226\u8005\u306E\u78BA\u5B9A\u3057\u305F\u8A66\u5408\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
   const { pdf, font } = await document2(fontBytes);
   const sources = /* @__PURE__ */ new Map();
-  for (const m of matches) {
-    let field2 = function(value, x, top, w, h, max3, center = false, maxLines = 1, balance = false) {
-      const text2 = safeText(font, value).trim();
+  const directory = playerDirectory(t2);
+  const jobs = matches.flatMap((m) => {
+    const event = t2.events.find((e) => e.id === m.eventId);
+    if (event.type === "team") {
+      ensure(m.rubbers?.length, "\u56E3\u4F53\u6226\u306E\u30B9\u30B3\u30A2\u30B7\u30FC\u30C8\u306B\u306F\u78BA\u5B9A\u6E08\u307F\u30AA\u30FC\u30C0\u30FC\u304C\u5FC5\u8981\u3067\u3059");
+      return m.rubbers.map((rubber, i) => ({ m, event, rubber, index: i }));
+    }
+    return [{ m, event, rubber: void 0, index: -1 }];
+  });
+  for (const { m, event, rubber, index } of jobs) {
+    let field2 = function(value2, x, top, w, h, max3, center = false, maxLines = 1, balance = false) {
+      const text2 = safeText(font, value2).trim();
       if (!text2) return;
       let size = max3, lines = [text2];
       while (true) {
@@ -108833,12 +109795,12 @@ async function generateScoreSheetsPdf(t2, matchIds, fontBytes, templates) {
       field2(club, clubX, 110, 103, 17, 9, true, font.widthOfTextAtSize(club, 5) < 103 ? 1 : 2, true);
       if (kind === "singles") return [entry.name];
       if (pair.length === 2) return pair;
-      return entry.players.map((id) => t2.roster?.find((player) => player.id === id)?.name || id);
+      const directory2 = playerDirectory(t2);
+      return entry.players.map((id) => playerText(directory2, id, entry.players));
     };
     var field = field2, balancedClub = balancedClub2, side = side2;
-    const event = t2.events.find((e) => e.id === m.eventId);
-    const kind = event.type;
-    ensure(kind === "singles" || kind === "doubles", "\u500B\u4EBA\u6226\u306E\u30B7\u30F3\u30B0\u30EB\u30B9\u307E\u305F\u306F\u30C0\u30D6\u30EB\u30B9\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+    const kind = rubber ? rubber.left.length === 2 ? "doubles" : "singles" : event.type;
+    ensure(kind === "singles" || kind === "doubles", "\u51FA\u529B\u5BFE\u8C61\u304C\u3042\u308A\u307E\u305B\u3093");
     let source = sources.get(kind);
     if (!source) {
       const bytes = templates[kind];
@@ -108850,8 +109812,12 @@ async function generateScoreSheetsPdf(t2, matchIds, fontBytes, templates) {
     }
     const [page2] = await pdf.copyPages(source, [0]);
     pdf.addPage(page2);
-    const left = entryOf(t2, m.left), right = entryOf(t2, m.right);
-    field2(event.name, 216, 9, 410, 16, 11, true);
+    const entryFor = (side3) => {
+      const entry = entryOf(t2, m[side3]);
+      return rubber ? { ...entry, club: entry.name, players: rubber[side3], name: rubber[side3].map((id) => playerText(directory, id, entry.players)).join("\uFF0F") } : entry;
+    };
+    const left = entryFor("left"), right = entryFor("right");
+    field2(event.name + (rubber ? " \xB7 " + (index + 1) + "\u672C\u76EE" : ""), 216, 9, 410, 16, 11, true);
     field2(t2.name, 96, 25, 114, 15, 10, false, 2);
     field2(String(matchNumber(m, t2)), 96, 43, 114, 14, 10);
     field2(m.court ? String(m.court) : "", 96, 60, 114, 14, 10);
@@ -108883,14 +109849,14 @@ function offerPdf(bytes, filename) {
   prior?.close();
   const file = new File([new Uint8Array(bytes)], filename, { type: "application/pdf" });
   const url = URL.createObjectURL(file);
-  const dialog = document.createElement("dialog");
-  dialog.id = "pdf-save";
-  dialog.className = "player-picker";
-  dialog.innerHTML = '<h2>PDF\u306E\u4FDD\u5B58\u30FB\u5370\u5237</h2><p>iPhone\u3067\u306F\u300C\u5171\u6709\u30FB\u30D5\u30A1\u30A4\u30EB\u306B\u4FDD\u5B58\u300D\u304B\u3089\u4FDD\u5B58\u5148\u3092\u9078\u3079\u307E\u3059\u3002</p><p data-pdf-status role="status"></p><div class="actions"><button type="button" data-share>\u5171\u6709\u30FB\u30D5\u30A1\u30A4\u30EB\u306B\u4FDD\u5B58</button><a class="file" data-download>\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9</a><a class="file" data-preview>PDF\u3092\u958B\u304F</a><button type="button" data-dismiss>\u9589\u3058\u308B</button></div>';
-  const status2 = dialog.querySelector("[data-pdf-status]");
-  const share = dialog.querySelector("[data-share]");
-  const download2 = dialog.querySelector("[data-download]");
-  const open = dialog.querySelector("[data-preview]");
+  const dialog2 = document.createElement("dialog");
+  dialog2.id = "pdf-save";
+  dialog2.className = "player-picker";
+  dialog2.innerHTML = '<h2>PDF\u306E\u4FDD\u5B58\u30FB\u5370\u5237</h2><p>iPhone\u3067\u306F\u300C\u5171\u6709\u30FB\u30D5\u30A1\u30A4\u30EB\u306B\u4FDD\u5B58\u300D\u304B\u3089\u4FDD\u5B58\u5148\u3092\u9078\u3079\u307E\u3059\u3002</p><p data-pdf-status role="status"></p><div class="actions"><button type="button" data-share>\u5171\u6709\u30FB\u30D5\u30A1\u30A4\u30EB\u306B\u4FDD\u5B58</button><a class="file" data-download>\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9</a><a class="file" data-preview>PDF\u3092\u958B\u304F</a><button type="button" data-dismiss>\u9589\u3058\u308B</button></div>';
+  const status2 = dialog2.querySelector("[data-pdf-status]");
+  const share = dialog2.querySelector("[data-share]");
+  const download2 = dialog2.querySelector("[data-download]");
+  const open = dialog2.querySelector("[data-preview]");
   download2.href = url;
   download2.download = filename;
   open.href = url;
@@ -108911,13 +109877,13 @@ function offerPdf(bytes, filename) {
   download2.addEventListener("click", () => {
     status2.textContent = "\u30D6\u30E9\u30A6\u30B6\u306E\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u4E00\u89A7\u307E\u305F\u306F\u4FDD\u5B58\u5148\u3067PDF\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\u3002";
   });
-  dialog.querySelector("[data-dismiss]").addEventListener("click", () => dialog.close());
-  dialog.addEventListener("close", () => {
-    dialog.remove();
+  dialog2.querySelector("[data-dismiss]").addEventListener("click", () => dialog2.close());
+  dialog2.addEventListener("close", () => {
+    dialog2.remove();
     setTimeout(() => URL.revokeObjectURL(url), 6e4);
   }, { once: true });
-  document.body.append(dialog);
-  dialog.showModal();
+  document.body.append(dialog2);
+  dialog2.showModal();
 }
 
 // src/governance.ts
@@ -109180,7 +110146,7 @@ function leagueForm(t2, gid) {
   };
 }
 var clock = (m) => String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
-var maxCourts = (t2, date) => date ? calendarCourts(t2, date) : Math.max(t2.courts, ...(t2.competitionDays ?? []).map((d) => d.courts));
+var maxCourts = (t2, date) => date ? calendarCourts(t2, date) : timetableCourts(t2);
 var virtualHeight = 52;
 var windowRows = 56;
 var visibleRows = (t2, date) => timetableRows(t2, date ? t2.matches.filter((m) => plannedDate(t2, m) === date) : t2.matches, maxCourts(t2, date));
@@ -109191,7 +110157,7 @@ function timetableWindow(t2, rows, columns, progress, first, count, virtual) {
   for (let i = first; i < last2; i++) {
     const row = rows[i];
     const time2 = (t2.competitionDays ? row.date + " " : "") + (row.time === void 0 ? "\u672A\u5272\u5F53" : clockText(row.time));
-    html += '<tr aria-rowindex="' + (i + 2) + '"><th>' + escapeHtml(time2) + "</th>" + row.cells.map((m) => m ? '<td class="fixture-cell ' + (progress ? stateClass(m) : "waiting") + '"><button data-act="matchEdit" data-id="' + escapeHtml(m.id) + '" title="' + escapeHtml((m.court ? "\u5272\u5F53\u6E08 " : "\u4EEE\u914D\u7F6E ") + clock(m.time) + " " + m.status) + '">' + escapeHtml(label(m, t2)) + (m.court ? "" : '<sup aria-label="\u672A\u5272\u5F53">\u2020</sup>') + "</button></td>" : "<td></td>").join("") + "</tr>";
+    html += '<tr aria-rowindex="' + (i + 2) + '"><th>' + escapeHtml(time2) + "</th>" + row.cells.map((m) => m ? '<td class="fixture-cell ' + (progress ? stateClass(m) : "waiting") + '"><button data-act="matchEdit" data-id="' + escapeHtml(m.id) + '" title="' + escapeHtml((m.court ? "\u5272\u5F53\u6E08 " : "\u4EEE\u914D\u7F6E ") + clock(m.time) + " " + matchStateName[m.status]) + '">' + escapeHtml(label(m, t2)) + (m.court ? "" : '<sup aria-label="\u672A\u5272\u5F53">\u2020</sup>') + "</button></td>" : "<td></td>").join("") + "</tr>";
   }
   return html + (virtual ? spacer(rows.length - last2) : "");
 }
@@ -109216,10 +110182,10 @@ function mountVirtualTimetable(host, t2, progress, date) {
     });
   }, { passive: true });
 }
-var button = (m, content) => '<button class="match-link ' + stateClass(m) + '" data-act="formScore" data-id="' + escapeHtml(m.id) + '">' + content + "</button>";
+var button2 = (m, content) => '<button class="match-link ' + stateClass(m) + '" data-act="formScore" data-id="' + escapeHtml(m.id) + '">' + content + "</button>";
 function leagueTable(t2, gid) {
   const form = leagueForm(t2, gid);
-  return '<div class="table"><table class="league-form"><thead><tr>' + form.headers.map((h) => "<th>" + escapeHtml(h) + "</th>").join("") + "</tr></thead><tbody>" + form.rows.map((r) => "<tr><th>" + escapeHtml(r.name) + "</th>" + r.cells.map((c) => "<td>" + (c.match ? button(c.match, escapeHtml(label(c.match, t2))) : "") + "<div>" + escapeHtml(c.text) + "</div></td>").join("") + r.stats.map((v2) => "<td>" + escapeHtml(v2) + "</td>").join("") + "</tr>").join("") + "</tbody></table></div>";
+  return '<div class="table"><table class="league-form"><thead><tr>' + form.headers.map((h) => "<th>" + escapeHtml(h) + "</th>").join("") + "</tr></thead><tbody>" + form.rows.map((r) => "<tr><th>" + escapeHtml(r.name) + "</th>" + r.cells.map((c) => "<td>" + (c.match ? button2(c.match, escapeHtml(label(c.match, t2))) : "") + "<div>" + escapeHtml(c.text) + "</div></td>").join("") + r.stats.map((v2) => "<td>" + escapeHtml(v2) + "</td>").join("") + "</tr>").join("") + "</tbody></table></div>";
 }
 function bracketTable(t2, matches) {
   const { width, height, segments, captions } = bracketLayout(t2, matches);
@@ -109231,8 +110197,12 @@ function bracketTable(t2, matches) {
   }).join("");
   return '<div class="bracket-view" data-group="' + escapeHtml(matches[0]?.groupId) + '"><div class="bracket-controls noprint"><button type="button" data-fit>\u5168\u4F53\u8868\u793A</button><button type="button" data-zoom-out aria-label="\u5BFE\u6226\u8868\u3092\u7E2E\u5C0F">\u2212</button><button type="button" data-zoom-in aria-label="\u5BFE\u6226\u8868\u3092\u62E1\u5927">\uFF0B</button><output></output></div><div class="table bracket-pan" tabindex="0" aria-label="\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u8868\u3002\u4E0A\u4E0B\u5DE6\u53F3\u306B\u30B9\u30AF\u30ED\u30FC\u30EB\u3067\u304D\u307E\u3059"><div class="bracket-surface"><div class="bracket-canvas" style="width:' + width + "px;height:" + height + 'px"><svg aria-hidden="true" width="' + width + '" height="' + height + '">' + paths + "</svg>" + text2 + "</div></div></div></div>";
 }
-function stageForms(t2, stages, limit = Infinity) {
-  return stages.flatMap((s2) => s2.groups.map((g, i) => ({ s: s2, g, i }))).slice(0, limit).map(({ s: s2, g, i }) => '<details class="form-block"' + (i === 0 ? " open" : "") + "><summary>" + escapeHtml(g.name) + "</summary>" + (s2.kind === "league" ? leagueTable(t2, g.id) : bracketTable(t2, t2.matches.filter((m) => m.groupId === g.id))) + "</details>").join("");
+function stageForms(t2, stages, limit = Infinity, open) {
+  return stages.flatMap((s2) => s2.groups.map((g, i) => ({ s: s2, g, i }))).slice(0, limit).map(({ s: s2, g, i }) => {
+    const content = s2.kind === "league" ? leagueTable(t2, g.id) : bracketTable(t2, t2.matches.filter((m) => m.groupId === g.id));
+    const sheet = open && s2.kind === "league" ? '<div data-league-zoom="' + escapeHtml(g.id) + '"><div class="board-league-controls"><button type="button" data-fit>\u81EA\u52D5</button><button type="button" data-zoom-out aria-label="\u5BFE\u6226\u8868\u3092\u7E2E\u5C0F">\u2212</button><button type="button" data-zoom-in aria-label="\u5BFE\u6226\u8868\u3092\u62E1\u5927">\uFF0B</button><output></output></div><div data-league-surface>' + content + "</div></div>" : content;
+    return '<details class="form-block" data-board-group="' + escapeHtml(g.id) + '"' + (open?.get(g.id) ?? i === 0 ? " open" : "") + "><summary>" + escapeHtml(open ? s2.name + " \xB7 " + g.name : g.name) + "</summary>" + sheet + "</details>";
+  }).join("");
 }
 
 // src/forms-xlsx.ts
@@ -109281,8 +110251,8 @@ async function formsWorkbook(t2) {
       const layouts = s2.kind === "bracket" ? printableBrackets(t2, t2.matches.filter((m) => m.groupId === g.id), results) : [void 0];
       for (const [part, page2] of layouts.entries()) {
         const ws2 = sheet(index + " " + (layouts.length > 1 ? "[" + (part + 1) + "] " : "") + g.name + " " + kind + (results ? "\u7D50\u679C" : "\u7D44\u5408\u305B"));
-        const title2 = [t2.name, t2.events.find((e) => e.id === s2.eventId)?.name, g.name, layouts.length > 1 ? page2?.title : ""].filter(Boolean).join("\u3000");
-        ws2.getCell("A1").value = title2;
+        const title3 = [t2.name, t2.events.find((e) => e.id === s2.eventId)?.name, g.name, layouts.length > 1 ? page2?.title : ""].filter(Boolean).join("\u3000");
+        ws2.getCell("A1").value = title3;
         if (s2.kind === "league") {
           const form = leagueForm(t2, g.id);
           grid2(ws2, results ? form.headers : form.headers.slice(0, g.entries.length + 1));
@@ -109312,10 +110282,10 @@ async function formsWorkbook(t2) {
           for (const p of layout.captions) {
             const x = col(p.x), y = row(p.y), player = p.kind === "player";
             const column = p.align === "start" ? x + 1 : x;
-            for (const [i, value] of p.lines.entries()) {
+            for (const [i, value2] of p.lines.entries()) {
               const rr = y + i + (p.kind === "number" || p.kind === "score" ? 1 : 0);
               const cell = ws2.getCell(rr, column);
-              cell.value = value;
+              cell.value = value2;
               cell.alignment = { horizontal: p.align === "end" ? "right" : p.align === "middle" ? "center" : "left" };
               cell.font = { size: player ? 10 : 9, color: { argb: p.kind === "number" ? "FF777777" : "FF000000" } };
             }
@@ -109325,13 +110295,13 @@ async function formsWorkbook(t2) {
         }
         ws2.mergeCells(1, 1, 1, ws2.columnCount);
         ws2.getCell("A1").alignment = { wrapText: true, vertical: "middle" };
-        ws2.getRow(1).height = title2.length > 44 ? 34 : 22;
+        ws2.getRow(1).height = title3.length > 44 ? 34 : 22;
         ws2.pageSetup.printArea = "A1:" + ws2.getCell(ws2.rowCount, ws2.columnCount).address;
       }
     }
   }
   const ws = sheet("\u30B3\u30FC\u30C8\u5225\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB");
-  const columns = Math.max(t2.courts, ...(t2.competitionDays ?? []).map((d) => d.courts));
+  const columns = timetableCourts(t2);
   grid2(ws, ["\u958B\u59CB\u4E88\u5B9A", ...Array.from({ length: columns }, (_2, i) => i + 1 + "\u30B3\u30FC\u30C8")]);
   timetableRows(t2, t2.matches, columns).forEach((row, i) => {
     const r = row.cells;
@@ -109354,320 +110324,14 @@ async function formsWorkbook(t2) {
   return book;
 }
 
-// src/diagnostics.ts
-var sensitive = /(password|passphrase|token|secret|credential|authorization|cookie)/i;
-function scrubDiagnostic(value, depth = 0) {
-  if (depth > 12) return "[depth limit]";
-  if (typeof value === "string") return value.slice(0, 4e3).replace(/((?:password|passphrase|token|secret|authorization)\s*[:=]\s*)[^\s,;]+/gi, "$1[redacted]");
-  if (Array.isArray(value)) return value.slice(0, 500).map((v2) => scrubDiagnostic(v2, depth + 1));
-  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([k, v2]) => [k, sensitive.test(k) ? "[redacted]" : scrubDiagnostic(v2, depth + 1)]));
-  return value;
-}
-function buildDiagnostic(logs, detail) {
-  return { version: "1.0.0-rc.4", at: (/* @__PURE__ */ new Date()).toISOString(), detailIncluded: !!detail, logs: scrubDiagnostic(logs), ...detail ? { drafts: scrubDiagnostic(detail.drafts), pending: scrubDiagnostic(detail.pending) } : {} };
-}
-
-// src/storage.ts
-async function hash(value) {
-  return Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value))), (b) => b.toString(16).padStart(2, "0")).join("");
-}
-var req = (r) => new Promise((resolve, reject) => {
-  r.onsuccess = () => resolve(r.result);
-  r.onerror = () => reject(r.error);
-});
-var done2 = (tx) => new Promise((resolve, reject) => {
-  tx.oncomplete = () => resolve();
-  tx.onabort = () => reject(tx.error || Error("\u4FDD\u5B58\u4E2D\u65AD"));
-  tx.onerror = () => {
-  };
-});
-var Store = class _Store {
-  db;
-  constructor(db2) {
-    this.db = db2;
-  }
-  static async open(name6 = "badminton-offline-rc64") {
-    const r = indexedDB.open(name6, 2);
-    let upgradeFailure;
-    r.onupgradeneeded = () => {
-      try {
-        const db3 = r.result;
-        for (const store of ["tournaments", "snapshots", "operations", "drafts", "logs", "trash", "pending", "masters", "templates"]) if (!db3.objectStoreNames.contains(store)) db3.createObjectStore(store, { keyPath: "id" });
-      } catch (error2) {
-        upgradeFailure = error2;
-        r.transaction?.abort();
-      }
-    };
-    r.onblocked = () => {
-      if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("storage-blocked"));
-    };
-    let db2;
-    try {
-      db2 = await req(r);
-    } catch (error2) {
-      throw upgradeFailure || error2;
-    }
-    db2.onversionchange = () => db2.close();
-    return new _Store(db2);
-  }
-  async rows(store) {
-    const tx = this.db.transaction(store), end = done2(tx);
-    const rows = await req(tx.objectStore(store).getAll());
-    await end;
-    return rows;
-  }
-  async raw(id) {
-    const tx = this.db.transaction("tournaments"), end = done2(tx);
-    const r = await req(tx.objectStore("tournaments").get(id));
-    await end;
-    return r;
-  }
-  async load(id) {
-    const r = await this.raw(id);
-    ensure(r, "\u5927\u4F1A\u304C\u3042\u308A\u307E\u305B\u3093");
-    return this.decode(r);
-  }
-  async decode(r) {
-    ensure(await hash(r.json) === r.hash, "\u7834\u640D\u691C\u51FA\uFF1A\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u304B\u3089\u5225\u5927\u4F1A\u3068\u3057\u3066\u5FA9\u5143\u3057\u3066\u304F\u3060\u3055\u3044");
-    const parsed = JSON.parse(r.json);
-    repairProgressMetadata(parsed);
-    const t2 = validate(parsed);
-    ensure(t2.id === r.id && t2.revision === r.revision, "\u4FDD\u5B58\u30E1\u30BF\u60C5\u5831\u4E0D\u4E00\u81F4");
-    return t2;
-  }
-  async list() {
-    const rows = await this.rows("tournaments");
-    return Promise.all(rows.map(async (r) => {
-      try {
-        const t2 = await this.decode(r);
-        return { id: t2.id, name: t2.name, revision: t2.revision, date: t2.date, error: "" };
-      } catch (e) {
-        return { id: r.id, name: "\u7834\u640D\u3057\u305F\u5927\u4F1A\uFF08\u524A\u9664\u305B\u305A\u4FDD\u6301\uFF09", revision: r.revision, date: "", error: String(e) };
-      }
-    }));
-  }
-  async save(input3, expected, op = uid(), action = "\u4FDD\u5B58") {
-    const requestHash = await hash(JSON.stringify({ input: input3, expected, action }));
-    const t2 = structuredClone(input3);
-    repairProgressMetadata(t2);
-    if (t2.schema === 1) {
-      for (const m of t2.matches) if (m.status === "completed" && m.walkover === void 0 && !m.games.length && t2.history.some((h) => h.action === "walkover:" + m.id)) m.walkover = true;
-    }
-    preserveRoster(t2);
-    validate(t2);
-    ensure(t2.revision === expected, "\u753B\u9762\u306E\u66F4\u65B0\u756A\u53F7\u304C\u4E0D\u4E00\u81F4");
-    t2.schema = 2;
-    t2.featureVersion = 2;
-    t2.revision = expected + 1;
-    t2.updated = (/* @__PURE__ */ new Date()).toISOString();
-    t2.history.push({ at: t2.updated, op, action, revision: t2.revision });
-    const json = JSON.stringify(t2), digest = await hash(json), env2 = { id: t2.id, revision: t2.revision, json, hash: digest };
-    let tx;
-    try {
-      tx = this.db.transaction(["tournaments", "snapshots", "operations", "trash"], "readwrite", { durability: "strict" });
-    } catch {
-      tx = this.db.transaction(["tournaments", "snapshots", "operations", "trash"], "readwrite");
-    }
-    const end = done2(tx), ts = tx.objectStore("tournaments"), ops = tx.objectStore("operations"), snaps = tx.objectStore("snapshots");
-    let failure, duplicate = false;
-    const fail = (message) => {
-      failure = Error(message);
-      tx.abort();
-    };
-    const guard = (fn) => () => {
-      try {
-        fn();
-      } catch (error2) {
-        failure = error2 instanceof Error ? error2 : Error(String(error2));
-        try {
-          tx.abort();
-        } catch {
-        }
-      }
-    };
-    const seen = ops.get(t2.id + ":" + op);
-    seen.onsuccess = guard(() => {
-      if (seen.result) {
-        if (seen.result.requestHash !== requestHash) fail("\u64CD\u4F5CID\u304C\u7570\u306A\u308B\u5185\u5BB9\u3067\u518D\u5229\u7528\u3055\u308C\u3066\u3044\u307E\u3059");
-        else duplicate = true;
-        return;
-      }
-      const current = ts.get(t2.id);
-      current.onsuccess = guard(() => {
-        const old = current.result;
-        const apply3 = () => {
-          if ((old ? old.revision : 0) !== expected) {
-            fail("\u66F4\u65B0\u7AF6\u5408\uFF1A\u518D\u8AAD\u8FBC\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u5165\u529B\u306F\u4E0B\u66F8\u304D\u306B\u4FDD\u6301\u3057\u3066\u3044\u307E\u3059");
-            return;
-          }
-          if (old) snaps.put({ ...old, id: t2.id + ":" + old.revision, tournamentId: t2.id, savedAt: Date.now() });
-          ts.put(env2);
-          ops.put({ id: t2.id + ":" + op, hash: digest, requestHash, revision: t2.revision });
-          const all = snaps.getAll();
-          all.onsuccess = guard(() => {
-            const items = all.result.filter((x) => x.tournamentId === t2.id).sort((a, b) => b.revision - a.revision);
-            items.slice(20).forEach((x) => snaps.delete(x.id));
-          });
-        };
-        if (old) apply3();
-        else {
-          const deleted = tx.objectStore("trash").get(t2.id);
-          deleted.onsuccess = guard(() => {
-            if (deleted.result) fail("\u524A\u9664\u6E08\u307F\u5927\u4F1A\u3078\u306E\u53E4\u3044\u4FDD\u5B58\u306F\u62D2\u5426\u3057\u307E\u3057\u305F\u3002\u5225\u5927\u4F1A\u3068\u3057\u3066\u5FA9\u5143\u3057\u3066\u304F\u3060\u3055\u3044");
-            else apply3();
-          });
-        }
-      });
-    });
-    try {
-      await end;
-    } catch (error2) {
-      throw failure || error2;
-    }
-    return duplicate ? await this.load(t2.id) : t2;
-  }
-  async put(store, value) {
-    const tx = this.db.transaction(store, "readwrite"), end = done2(tx);
-    tx.objectStore(store).put(value);
-    await end;
-  }
-  async removeDraft(id) {
-    const tx = this.db.transaction("drafts", "readwrite"), end = done2(tx);
-    tx.objectStore("drafts").delete(id);
-    await end;
-  }
-  async delete(id, expected) {
-    const tx = this.db.transaction(["tournaments", "trash"], "readwrite"), end = done2(tx);
-    const r = tx.objectStore("tournaments").get(id);
-    r.onsuccess = () => {
-      if (!r.result || r.result.revision !== expected) {
-        tx.abort();
-        return;
-      }
-      tx.objectStore("trash").put({ ...r.result, deletedAt: Date.now() });
-      tx.objectStore("tournaments").delete(id);
-    };
-    await end;
-  }
-  async restoreSnapshot(id) {
-    const rows = await this.rows("snapshots");
-    const r = rows.find((x) => x.id === id);
-    ensure(r, "\u4E16\u4EE3\u304C\u3042\u308A\u307E\u305B\u3093");
-    ensure(await hash(r.json) === r.hash, "\u4E16\u4EE3\u30C7\u30FC\u30BF\u7834\u640D");
-    return this.importCopy(validate(JSON.parse(r.json)));
-  }
-  async importCopy(t2) {
-    validate(t2);
-    const copy = structuredClone(t2);
-    copy.id = uid();
-    copy.revision = 0;
-    if (copy.name.length <= 116) copy.name += "\uFF08\u5FA9\u5143\uFF09";
-    copy.history = structuredClone(t2.history);
-    return this.save(copy, 0, uid(), "\u5225\u5927\u4F1A\u3068\u3057\u3066\u5FA9\u5143");
-  }
-  async importBundle(tours, masters) {
-    ensure(tours.length > 0 && tours.length <= 100, "\u79FB\u884C\u5927\u4F1A\u6570\u304C\u4E0D\u6B63");
-    ensure(new Set(masters.map((m) => m.id)).size === masters.length && masters.every((m) => m.id && m.name && ["player", "club"].includes(m.kind)), "\u79FB\u884C\u30DE\u30B9\u30BF\u30FC\u304C\u4E0D\u6B63");
-    const copies = tours.map((input3) => {
-      validate(input3);
-      const t2 = structuredClone(input3);
-      t2.id = uid();
-      if (t2.name.length <= 116) t2.name += "\uFF08\u79FB\u884C\uFF09";
-      t2.revision = 1;
-      t2.updated = (/* @__PURE__ */ new Date()).toISOString();
-      t2.history.push({ at: t2.updated, op: uid(), action: "GAS\u4E00\u62EC\u79FB\u884C", revision: 1 });
-      validate(t2);
-      return t2;
-    });
-    const envelopes = await Promise.all(copies.map(async (t2) => {
-      const json = JSON.stringify(t2);
-      return { id: t2.id, revision: t2.revision, json, hash: await hash(json) };
-    }));
-    const tx = this.db.transaction(["tournaments", "masters"], "readwrite"), end = done2(tx);
-    let failure;
-    for (const m of masters) {
-      const store = tx.objectStore("masters"), r = store.get(m.id);
-      r.onsuccess = () => {
-        if (r.result && JSON.stringify(r.result) !== JSON.stringify(m)) {
-          failure = Error("\u65E2\u5B58\u30DE\u30B9\u30BF\u30FCID\u3068\u5185\u5BB9\u304C\u7570\u306A\u308A\u307E\u3059\uFF1A" + m.id);
-          tx.abort();
-        } else if (!r.result) store.add(m);
-      };
-    }
-    for (const env2 of envelopes) tx.objectStore("tournaments").add(env2);
-    try {
-      await end;
-    } catch (e) {
-      throw failure || e;
-    }
-    return copies;
-  }
-  async insertMany(store, values2) {
-    const tx = this.db.transaction(store, "readwrite"), end = done2(tx);
-    try {
-      for (const v2 of values2) tx.objectStore(store).add(v2);
-    } catch (e) {
-      tx.abort();
-      await end.catch(() => {
-      });
-      throw e;
-    }
-    await end;
-  }
-  async remove(store, id) {
-    const tx = this.db.transaction(store, "readwrite"), end = done2(tx);
-    tx.objectStore(store).delete(id);
-    await end;
-  }
-  async queue(input3, expected, op, action, tab2) {
-    validate(input3);
-    ensure(op && op.length <= 150 && input3.revision === expected, "\u518D\u8A66\u884C\u64CD\u4F5CID\u30FB\u66F4\u65B0\u756A\u53F7\u304C\u4E0D\u6B63");
-    const signature = JSON.stringify({ input: input3, expected, action });
-    const value = { id: op, t: structuredClone(input3), expected, op, action, tab: tab2, at: Date.now() };
-    const tx = this.db.transaction("pending", "readwrite"), end = done2(tx);
-    let failure;
-    const store = tx.objectStore("pending"), r = store.get(op);
-    r.onsuccess = () => {
-      if (r.result) {
-        const p = r.result;
-        if (JSON.stringify({ input: p.t, expected: p.expected, action: p.action }) !== signature) {
-          failure = Error("\u64CD\u4F5CID\u304C\u7570\u306A\u308B\u5185\u5BB9\u3067\u518D\u5229\u7528\u3055\u308C\u3066\u3044\u307E\u3059");
-          tx.abort();
-        }
-      } else store.add(value);
-    };
-    try {
-      await end;
-    } catch (e) {
-      throw failure || e;
-    }
-  }
-  async retryPending(op) {
-    const p = (await this.rows("pending")).find((p2) => p2.id === op);
-    ensure(p, "\u518D\u8A66\u884C\u8981\u6C42\u306A\u3057");
-    const t2 = await this.save(p.t, p.expected, p.op, p.action);
-    await this.remove("pending", op);
-    return t2;
-  }
-  async pruneLogs(keep = 500) {
-    const logs = await this.rows("logs");
-    const tx = this.db.transaction("logs", "readwrite"), end = done2(tx);
-    logs.sort((a, b) => b.at.localeCompare(a.at)).slice(keep).forEach((l) => tx.objectStore("logs").delete(l.id));
-    await end;
-  }
-  async log(operation, error2, phase = "\u64CD\u4F5C") {
-    await this.put("logs", { id: uid(), at: (/* @__PURE__ */ new Date()).toISOString(), operation, phase, type: error2 instanceof Error ? error2.name : "Error", message: scrubDiagnostic(String(error2)) });
-  }
-};
-
 // src/maintenance.ts
 async function historyExport(db2, t2) {
   const [current, all] = await Promise.all([db2.raw(t2.id), db2.rows("snapshots")]);
   ensure(current && current.revision === t2.revision, "\u66F4\u65B0\u7AF6\u5408\uFF1A\u5927\u4F1A\u3092\u518D\u8AAD\u8FBC");
   await db2.decode(current);
-  const value = { format: "bdmt-history-v1", tournamentId: t2.id, current, snapshots: all.filter((s2) => s2.tournamentId === t2.id) };
-  for (const s2 of value.snapshots) ensure(await hash(s2.json) === s2.hash, "\u4E16\u4EE3\u306E\u7834\u640D\u3092\u691C\u51FA\u3002\u6574\u7406\u3092\u4E2D\u6B62");
-  return JSON.stringify(value);
+  const value2 = { format: "bdmt-history-v1", tournamentId: t2.id, current, snapshots: all.filter((s2) => s2.tournamentId === t2.id) };
+  for (const s2 of value2.snapshots) ensure(await hash(s2.json) === s2.hash, "\u4E16\u4EE3\u306E\u7834\u640D\u3092\u691C\u51FA\u3002\u6574\u7406\u3092\u4E2D\u6B62");
+  return JSON.stringify(value2);
 }
 async function readHistory(text2) {
   ensure(new TextEncoder().encode(text2).length <= 40 * 1024 * 1024, "\u4E16\u4EE3\u30D5\u30A1\u30A4\u30EB\u306F40MiB\u4EE5\u5185");
@@ -109684,7 +110348,7 @@ async function pruneSnapshots(db2, t2, proof, keep) {
   ensure(Number.isInteger(keep) && keep >= 1 && keep <= 20, "\u4FDD\u6301\u4E16\u4EE3\u306F1\u301C20");
   const file = await readHistory(proof);
   ensure(file.tournamentId === t2.id && file.current.revision === t2.revision, "\u5225\u5927\u4F1A\u30FB\u53E4\u3044\u4E16\u4EE3\u30D5\u30A1\u30A4\u30EB");
-  const tx = db2.db.transaction(["snapshots", "tournaments"], "readwrite"), end = done2(tx);
+  const tx = db2.db.transaction(["snapshots", "tournaments"], "readwrite"), end = done(tx);
   let failure;
   const fail = (message) => {
     failure = Error(message);
@@ -109746,14 +110410,15 @@ function annualStats(tours, year) {
     if (!prior) unique.set(t2.origin, t2);
   }
   const rows = /* @__PURE__ */ new Map();
-  const get = (id, name6) => {
+  const get2 = (id, name6) => {
     if (!rows.has(id)) rows.set(id, { id, name: name6, played: 0, wins: 0, pointsFor: 0, pointsAgainst: 0, events: [] });
     return rows.get(id);
   };
   for (const t2 of unique.values()) {
     const entries = new Map(t2.events.flatMap((e) => e.entries).map((e) => [e.id, e]));
+    const directory = playerDirectory(t2);
     const record = (id, name6, win, games2, left) => {
-      const r = get(id, name6);
+      const r = get2(id, name6);
       r.played++;
       if (win) r.wins++;
       for (const g of games2) {
@@ -109764,7 +110429,7 @@ function annualStats(tours, year) {
     };
     for (const m of t2.matches.filter((m2) => m2.status === "completed")) {
       if (m.rubbers) {
-        for (const r of m.rubbers.filter((r2) => r2.winner)) for (const side of ["left", "right"]) for (const id of r[side]) record(id, id, r.winner === side, r.games, side === "left");
+        for (const r of m.rubbers.filter((r2) => r2.winner)) for (const side of ["left", "right"]) for (const id of r[side]) record(id, playerText(directory, id), r.winner === side, r.games, side === "left");
         continue;
       }
       if (t2.events.find((e) => e.id === m.eventId)?.type === "team") continue;
@@ -109779,26 +110444,6 @@ function annualStats(tours, year) {
     }
   }
   return [...rows.values()].sort((a, b) => (b.played ? b.wins / b.played : 0) - (a.played ? a.wins / a.played : 0));
-}
-
-// src/encryption.ts
-async function key3(password, salt, usage) {
-  ensure(password.length >= 8, "\u30D1\u30B9\u30EF\u30FC\u30C9\u306F8\u6587\u5B57\u4EE5\u4E0A");
-  const raw = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]);
-  return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 21e4, hash: "SHA-256" }, raw, { name: "AES-GCM", length: 256 }, false, usage);
-}
-async function encrypt(bytes, password) {
-  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)), cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await key3(password, salt, ["encrypt"]), bytes);
-  return new Blob([new TextEncoder().encode("BDMTE001"), salt, iv, cipher], { type: "application/octet-stream" });
-}
-async function decrypt(bytes, password) {
-  const b = new Uint8Array(bytes);
-  ensure(bytes.byteLength >= 52 && bytes.byteLength <= 31 * 1024 * 1024 && new TextDecoder().decode(b.slice(0, 8)) === "BDMTE001", "\u6697\u53F7\u30D5\u30A1\u30A4\u30EB\u5F62\u5F0F\u4E0D\u6B63");
-  try {
-    return await crypto.subtle.decrypt({ name: "AES-GCM", iv: b.slice(24, 36) }, await key3(password, b.slice(8, 24), ["decrypt"]), b.slice(36));
-  } catch {
-    throw Error("\u30D1\u30B9\u30EF\u30FC\u30C9\u304C\u9055\u3046\u304B\u6697\u53F7\u30D5\u30A1\u30A4\u30EB\u304C\u7834\u640D\u3057\u3066\u3044\u307E\u3059");
-  }
 }
 
 // src/package.ts
@@ -110084,8 +110729,8 @@ function migrateMasterRows(rows, tournaments) {
 }
 
 // src/gas-migration.ts
-function migrateGas(input3, options2 = {}) {
-  const source = input3;
+function migrateGas(input4, options2 = {}) {
+  const source = input4;
   ensure(source?.format === "badminton-v3-gas-backup" && source.state?.sheets, "\u5BFE\u5FDC\u5F62\u5F0F\u306FGAS v3 JSON\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u3067\u3059");
   const tables2 = source.state.sheets, properties = source.state.properties || {};
   const rows = (name6) => {
@@ -110203,23 +110848,23 @@ function migrateGas(input3, options2 = {}) {
   } catch (e) {
     errors.push("\u5171\u901A\u30DE\u30B9\u30BF\u30FC\uFF1A" + String(e));
   }
-  return { format: "gas-to-offline-report-v1", tournaments, counts, warnings, errors, retained, practiceMigration, masterRecords: masters.records, sourcePlayers: players, sourceBackup: input3 };
+  return { format: "gas-to-offline-report-v1", tournaments, counts, warnings, errors, retained, practiceMigration, masterRecords: masters.records, sourcePlayers: players, sourceBackup: input4 };
 }
 
 // src/advanced-ui.ts
 var v = (id) => document.getElementById(id)?.value || "";
 var n = (id) => Number(v(id));
-var button2 = (label2, act2, extra = "") => `<button data-act="${act2}" ${extra}>${escapeHtml(label2)}</button>`;
-var input = (label2, id, value = "", type = "text") => `<label>${escapeHtml(label2)}<input id="${id}" type="${type}" value="${escapeHtml(value)}"></label>`;
-var select = (label2, id, rows, value = "") => `<label>${escapeHtml(label2)}<select id="${id}">${rows.map((r) => `<option value="${escapeHtml(r.id)}" ${r.id === value ? "selected" : ""}>${escapeHtml(r.name)}</option>`).join("")}</select></label>`;
+var button3 = (label2, act2, extra = "") => `<button data-act="${act2}" ${extra}>${escapeHtml(label2)}</button>`;
+var input2 = (label2, id, value2 = "", type = "text") => `<label>${escapeHtml(label2)}<input id="${id}" type="${type}" value="${escapeHtml(value2)}"></label>`;
+var select2 = (label2, id, rows, value2 = "") => `<label>${escapeHtml(label2)}<select id="${id}">${rows.map((r) => `<option value="${escapeHtml(r.id)}" ${r.id === value2 ? "selected" : ""}>${escapeHtml(r.name)}</option>`).join("")}</select></label>`;
 var sec = (label2, body) => `<details class="advanced"><summary>${escapeHtml(label2)}</summary>${body}</details>`;
 var sheets = [];
 var migration;
-function primeWorkbook(value) {
-  sheets = structuredClone(value);
+function primeWorkbook(value2) {
+  sheets = structuredClone(value2);
 }
 function mappingHtml() {
-  return sheets.length ? select("\u30B7\u30FC\u30C8", "sheetPick", sheets.map((s2, i) => ({ id: String(i), name: s2.name }))) + input("\u8868\u793A\u540D\u306E\u5217\u756A\u53F7\uFF081\u958B\u59CB\uFF09", "colName", 1, "number") + input("\u6240\u5C5E\u5217", "colClub", 2, "number") + input("\u69CB\u6210ID\u5217", "colPlayers", 3, "number") + input("\u30B7\u30FC\u30C9\u5217", "colSeed", 4, "number") + select("1\u884C\u76EE", "hasHeader", [{ id: "yes", name: "\u898B\u51FA\u3057" }, { id: "no", name: "\u30C7\u30FC\u30BF" }]) + button2("\u30DE\u30C3\u30D4\u30F3\u30B0\u7D50\u679C\u3092\u30D7\u30EC\u30D3\u30E5\u30FC", "xMapPreview") + button2("\u30D7\u30EC\u30D3\u30E5\u30FC\u3092\u78BA\u8A8D\u3057\u3066\u767B\u9332", "xMapImport") + '<pre id="mappedPreview"></pre>' : "";
+  return sheets.length ? select2("\u30B7\u30FC\u30C8", "sheetPick", sheets.map((s2, i) => ({ id: String(i), name: s2.name }))) + input2("\u8868\u793A\u540D\u306E\u5217\u756A\u53F7\uFF081\u958B\u59CB\uFF09", "colName", 1, "number") + input2("\u6240\u5C5E\u5217", "colClub", 2, "number") + input2("\u69CB\u6210ID\u5217", "colPlayers", 3, "number") + input2("\u30B7\u30FC\u30C9\u5217", "colSeed", 4, "number") + select2("1\u884C\u76EE", "hasHeader", [{ id: "yes", name: "\u898B\u51FA\u3057" }, { id: "no", name: "\u30C7\u30FC\u30BF" }]) + button3("\u30DE\u30C3\u30D4\u30F3\u30B0\u7D50\u679C\u3092\u30D7\u30EC\u30D3\u30E5\u30FC", "xMapPreview") + button3("\u30D7\u30EC\u30D3\u30E5\u30FC\u3092\u78BA\u8A8D\u3057\u3066\u767B\u9332", "xMapImport") + '<pre id="mappedPreview"></pre>' : "";
 }
 var reason = (label2 = "\u5909\u66F4\u7406\u7531") => {
   const s2 = prompt(label2);
@@ -110237,22 +110882,22 @@ async function renderAdvanced(c) {
   if (s2) {
     html += sec("\u540C\u9806\u4F4D\u88C1\u5B9A", s2.kind === "league" ? s2.groups.map((g) => {
       const rows = standings(t2, g.id, false);
-      return `<h3>${escapeHtml(g.name)}</h3><p>\u540C\u9806\u4F4D\u306F\u8A2D\u5B9A\u3055\u308C\u305F\u52DD\u7387\u30FB\u5BFE\u6226\u5DEE\u30FB\u5F97\u5931\u30B2\u30FC\u30E0\u30FB\u5F97\u5931\u70B9\u304C\u540C\u5024\u306E\u305F\u3081\u767A\u751F\u3057\u307E\u3059\u3002</p>${rows.map((r) => select(`${entryOf(t2, r.id)?.name}\uFF1A\u52DD\u7387${r.rate} / \u5BFE\u6226\u5DEE${r.rd} / G${r.gd} / \u70B9${r.pd}`, "rank-" + r.id, rows.map((_2, i) => ({ id: String(i + 1), name: String(i + 1) + "\u4F4D" })), String(rows.indexOf(r) + 1))).join("")}${button2("\u3053\u306E\u30EA\u30FC\u30B0\u306E\u9806\u4F4D\u3092\u88C1\u5B9A", "xAdjudicate", `data-group="${g.id}"`)}${button2("\u88C1\u5B9A\u3092\u53D6\u6D88", "xRevoke", `data-group="${g.id}"`)}`;
+      return `<h3>${escapeHtml(g.name)}</h3><p>\u540C\u9806\u4F4D\u306F\u8A2D\u5B9A\u3055\u308C\u305F\u52DD\u7387\u30FB\u5BFE\u6226\u5DEE\u30FB\u5F97\u5931\u30B2\u30FC\u30E0\u30FB\u5F97\u5931\u70B9\u304C\u540C\u5024\u306E\u305F\u3081\u767A\u751F\u3057\u307E\u3059\u3002</p>${rows.map((r) => select2(`${entryOf(t2, r.id)?.name}\uFF1A\u52DD\u7387${r.rate} / \u5BFE\u6226\u5DEE${r.rd} / G${r.gd} / \u70B9${r.pd}`, "rank-" + r.id, rows.map((_2, i) => ({ id: String(i + 1), name: String(i + 1) + "\u4F4D" })), String(rows.indexOf(r) + 1))).join("")}${button3("\u3053\u306E\u30EA\u30FC\u30B0\u306E\u9806\u4F4D\u3092\u88C1\u5B9A", "xAdjudicate", `data-group="${g.id}"`)}${button3("\u88C1\u5B9A\u3092\u53D6\u6D88", "xRevoke", `data-group="${g.id}"`)}`;
     }).join("") : "\u30EA\u30FC\u30B0\u30B9\u30C6\u30FC\u30B8\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
     const impact = stageDependents(t2, s2.id);
-    html += sec("\u6C7A\u52DD\u53D6\u6D88\u30FB\u4E88\u9078\u8A02\u6B63\u30FB\u518D\u751F\u6210", `<p>\u9078\u629E\u4E2D\uFF1A${escapeHtml(s2.name)}\u3002\u4F9D\u5B58\u6C7A\u52DD${impact.stages.length}\u3001\u8A66\u5408${impact.matches.length}\u3001\u4FDD\u8B77\u5BFE\u8C61${impact.protected.length}\u3002</p><ul>${impact.matches.map((m) => `<li>#${m.number} ${escapeHtml(m.status)} ${escapeHtml(entryOf(t2, m.left)?.name)} \u5BFE ${escapeHtml(entryOf(t2, m.right)?.name)}</li>`).join("")}</ul>${button2("\u4F9D\u5B58\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u53D6\u6D88", "xCancelFinals")}${button2("\u9078\u629E\u30B9\u30C6\u30FC\u30B8\u3092\u4FDD\u7BA1\u3057\u3066\u518D\u751F\u6210", "xRegenerate")}<p>\u53D6\u6D88\u5F8C\u3001\u5F97\u70B9\u753B\u9762\u3067\u4E88\u9078\u3092\u8A02\u6B63\u3057\u3001\u300C\u7D44\u5408\u305B\u300D\u3067\u6C7A\u52DD\u3092\u518D\u751F\u6210\u3057\u307E\u3059\u3002\u64CD\u4F5C\u524D\u72B6\u614B\u306F\u81EA\u52D5\u4E16\u4EE3\u3001\u53D6\u6D88\u6E08\u307F\u7D50\u679C\u306F\u5927\u4F1A\u5185\u30A2\u30FC\u30AB\u30A4\u30D6\u306B\u4FDD\u6301\u3057\u307E\u3059\u3002</p>`);
-    html += sec("\u7D44\u5408\u305B\u78BA\u5B9A\u30FB\u624B\u52D5\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u67A0", `<p>\u72B6\u614B\uFF1A${s2.locked ? "\u78BA\u5B9A" : "\u672A\u78BA\u5B9A"}</p>${button2("\u78BA\u5B9A\u30FB\u89E3\u9664", "xLock")}${s2.kind === "bracket" ? `<p>\u5404\u67A0\u306E\u53C2\u52A0\u8005ID\u3092\u9806\u756A\u306B1\u884C\u305A\u3064\u8A18\u5165\u3002\u7A7A\u67A0\u306F - \u3002\u5168\u54E11\u56DE\u305A\u3064\u3001\u521D\u6226\u306E\u4E21\u5074\u7A7A\u6B04\u306F\u7981\u6B62\u3002</p><textarea id="bracketSlots">${escapeHtml(bracketSlots(t2, s2.id).map((id) => id || "-").join("\n"))}</textarea><ul>${s2.groups[0].entries.map((id) => `<li>${escapeHtml(entryOf(t2, id)?.name)}\uFF1A${escapeHtml(id)}</li>`).join("")}</ul>${button2("\u67A0\u914D\u7F6E\u3092\u4FDD\u5B58", "xBracket")}${button2("\u540C\u6240\u5C5E\u521D\u6226\u3092\u56DE\u907F\uFF08\u30B7\u30FC\u30C9\u56FA\u5B9A\uFF09", "xAvoid")}<p>${escapeHtml(s2.warnings?.join("\n") || "")}</p>` : ""}`);
+    html += sec("\u6C7A\u52DD\u53D6\u6D88\u30FB\u4E88\u9078\u8A02\u6B63\u30FB\u518D\u751F\u6210", `<p>\u9078\u629E\u4E2D\uFF1A${escapeHtml(s2.name)}\u3002\u4F9D\u5B58\u6C7A\u52DD${impact.stages.length}\u3001\u8A66\u5408${impact.matches.length}\u3001\u4FDD\u8B77\u5BFE\u8C61${impact.protected.length}\u3002</p><ul>${impact.matches.map((m) => `<li>#${m.number} ${escapeHtml(matchStateName[m.status])} ${escapeHtml(entryOf(t2, m.left)?.name)} \u5BFE ${escapeHtml(entryOf(t2, m.right)?.name)}</li>`).join("")}</ul>${button3("\u4F9D\u5B58\u6C7A\u52DD\u3092\u4FDD\u7BA1\u3057\u3066\u53D6\u6D88", "xCancelFinals")}${button3("\u9078\u629E\u30B9\u30C6\u30FC\u30B8\u3092\u4FDD\u7BA1\u3057\u3066\u518D\u751F\u6210", "xRegenerate")}<p>\u53D6\u6D88\u5F8C\u3001\u5F97\u70B9\u753B\u9762\u3067\u4E88\u9078\u3092\u8A02\u6B63\u3057\u3001\u300C\u7D44\u5408\u305B\u300D\u3067\u6C7A\u52DD\u3092\u518D\u751F\u6210\u3057\u307E\u3059\u3002\u64CD\u4F5C\u524D\u72B6\u614B\u306F\u81EA\u52D5\u4E16\u4EE3\u3001\u53D6\u6D88\u6E08\u307F\u7D50\u679C\u306F\u5927\u4F1A\u5185\u30A2\u30FC\u30AB\u30A4\u30D6\u306B\u4FDD\u6301\u3057\u307E\u3059\u3002</p>`);
+    html += sec("\u7D44\u5408\u305B\u78BA\u5B9A\u30FB\u624B\u52D5\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u67A0", `<p>\u72B6\u614B\uFF1A${s2.locked ? "\u78BA\u5B9A" : "\u672A\u78BA\u5B9A"}</p>${button3("\u78BA\u5B9A\u30FB\u89E3\u9664", "xLock")}${s2.kind === "bracket" ? `<p>\u5404\u67A0\u306E\u53C2\u52A0\u756A\u53F7\u3092\u9806\u756A\u306B1\u884C\u305A\u3064\u8A18\u5165\u3002\u7A7A\u67A0\u306F - \u3002\u5168\u54E11\u56DE\u305A\u3064\u3001\u521D\u6226\u306E\u4E21\u5074\u7A7A\u6B04\u306F\u7981\u6B62\u3002</p><textarea id="bracketSlots">${escapeHtml(bracketSlots(t2, s2.id).map((id) => id ? String(s2.groups[0].entries.indexOf(id) + 1) : "-").join("\n"))}</textarea><ul>${s2.groups[0].entries.map((id, i) => `<li>${i + 1}\u3000${escapeHtml(entryOf(t2, id)?.name)}</li>`).join("")}</ul>${button3("\u67A0\u914D\u7F6E\u3092\u4FDD\u5B58", "xBracket")}${button3("\u540C\u6240\u5C5E\u521D\u6226\u3092\u56DE\u907F\uFF08\u30B7\u30FC\u30C9\u56FA\u5B9A\uFF09", "xAvoid")}<p>${escapeHtml(s2.warnings?.join("\n") || "")}</p>` : ""}`);
   }
-  html += sec("\u7A2E\u76EE\u30EB\u30FC\u30EB\u30FB\u56E3\u4F53\u6226\u8A2D\u5B9A", `<h3>${escapeHtml(e.name)}</h3>${select("\u7AF6\u6280\u5F62\u5F0F", "xType", [{ id: "singles", name: "\u30B7\u30F3\u30B0\u30EB\u30B9" }, { id: "doubles", name: "\u30C0\u30D6\u30EB\u30B9" }, { id: "team", name: "\u56E3\u4F53\u6226" }], e.type)}${input("\u57FA\u672C\u70B9", "xBase", e.rule.base, "number")}${input("\u4E0A\u9650", "xCap", e.rule.cap, "number")}${input("\u5FC5\u8981\u52DD\u6570", "xWins", e.rule.wins, "number")}${select("\u30C7\u30E5\u30FC\u30B9", "xDeuce", [{ id: "yes", name: "\u3042\u308A" }, { id: "no", name: "\u306A\u3057" }], e.rule.deuce ? "yes" : "no")}${select("\u56E3\u4F53\u6226\u7D42\u4E86\u6761\u4EF6", "xTeamMode", [{ id: "first", name: "\u5148\u53D6\u5236" }, { id: "all", name: "\u5168\u672C\u6D88\u5316" }], e.team?.mode)}${input("\u5BFE\u6226\u672C\u6570\uFF1AS=1 D=2 \u306E\u9806\u756A\uFF08\u4F8B 2,1,1\uFF09", "xTeamSizes", e.team?.orderSizes.join(",") || "2,1,1")}${input("\u540C\u4E00\u9078\u624B\u306E\u51FA\u5834\u4E0A\u9650", "xMaxAppear", e.team?.maxAppearances || 2, "number")}${select("\u56E3\u4F53T\u540C\u70B9\u306E\u6C7A\u7740\u65B9\u5F0F", "xTieBreak", [{ id: "reject", name: "\u540C\u70B9\u3092\u78BA\u5B9A\u3057\u306A\u3044" }, { id: "manual", name: "\u898F\u5B9A\u306B\u3088\u308B\u5F79\u54E1\u306E\u6C7A\u7740\u8A18\u9332" }], e.team?.tieBreak || "reject")}${select("\u5F15\u5206\u3051\u8A31\u53EF\uFF08\u30EA\u30FC\u30B0\u306E\u307F\uFF09", "xAllowDraw", [{ id: "no", name: "\u8A8D\u3081\u306A\u3044" }, { id: "yes", name: "\u8A8D\u3081\u308B" }], e.team?.allowDraw ? "yes" : "no")}${select("\u5F15\u5206\u3051\u306E\u52DD\u7387\u7B97\u5165", "xDrawValue", [{ id: "0.5", name: "0.5\u52DD" }, { id: "0", name: "0\u52DD" }], String(e.team?.drawValue ?? 0.5))}<label>\u51FA\u5834\u8CC7\u683CJSON\uFF08\u7701\u7565\u53EF\uFF09<textarea id="xEligibility">${escapeHtml(e.team?.eligibility ? JSON.stringify(e.team.eligibility) : "")}</textarea></label><p>\u4F8B {"genders":["\u5973"],"grades":["2"],"players":{"p1":{"gender":"\u5973","grade":"2","active":true}}}\u3002\u5236\u9650\u3092\u8A2D\u5B9A\u3059\u308B\u3068\u672A\u78BA\u8A8D\u9078\u624B\u306F\u62D2\u5426\u3057\u307E\u3059\u3002</p>${input("\u56E3\u4F53\u9806\u4F4D\u306E\u512A\u5148\u9806\uFF08rate,rubber,game,point\uFF09", "xRanking", e.team?.ranking.join(",") || "rate,rubber,game,point")}${button2("\u7A2E\u76EE\u30FB\u56E3\u4F53\u30EB\u30FC\u30EB\u3092\u4FDD\u5B58", "xEventRule")}`);
-  html += sec("\u7D44\u5408\u305B\u5F8C\u306E\u53C2\u52A0\u8005\u5909\u66F4", `<p>\u7D50\u679C\u3092\u4FDD\u7BA1\u3057\u3066\u5168\u7D44\u5408\u305B\u3092\u660E\u793A\u7684\u306B\u53D6\u6D88\u3057\u3066\u304B\u3089\u53C2\u52A0\u8005\u3092\u4FEE\u6B63\u3067\u304D\u307E\u3059\u3002\u53D6\u6D88\u6E08\u307F\u5185\u5BB9\u306F\u30A2\u30FC\u30AB\u30A4\u30D6\u306B\u6B8B\u308A\u307E\u3059\u3002</p>${button2("\u7A2E\u76EE\u306E\u5168\u7D44\u5408\u305B\u3092\u4FDD\u7BA1\u30FB\u53D6\u6D88", "xClearEventDraws")}${select("\u53C2\u52A0\u8005", "xEntry", e.entries.map((p) => ({ id: p.id, name: p.name })))}${input("\u65B0\u3057\u3044\u8868\u793A\u540D\uFF08\u7A7A\u6B04\u306A\u3089\u73FE\u72B6\uFF09", "xEntryName")}${input("\u6240\u5C5E", "xEntryClub")}${input("\u69CB\u6210\u9078\u624BID\uFF08/\u533A\u5207\u308A\u3001\u7A7A\u6B04\u306A\u3089\u73FE\u72B6\uFF09", "xEntryPlayers")}${input("\u53D7\u4ED8\u72B6\u6CC1", "xReception", "\u672A\u53D7\u4ED8")}${button2("\u53C2\u52A0\u8005\u3092\u66F4\u65B0", "xEntryUpdate")}${button2("\u53C2\u52A0\u8005\u3092\u524A\u9664", "xEntryRemove")}`);
-  html += sec("\u5168\u5927\u4F1A\u5171\u901A\u30DE\u30B9\u30BF\u30FC", `${input("\u6C0F\u540D", "masterName")}${input("\u30D5\u30EA\u30AC\u30CA", "masterKana")}${input("\u6027\u5225", "masterGender")}${input("\u5B66\u5E74", "masterGrade")}${input("\u6240\u5C5E\u56E3\u4F53\u540D", "masterClub")}${button2("\u65B0\u3057\u3044\u9078\u624B\u3092\u767B\u9332\uFF08\u540C\u540D\u53EF\u30FB\u5225ID\uFF09", "xMasterAdd")}${select("\u9078\u624B\u30DE\u30B9\u30BF\u30FC", "masterPick", masters.filter((m) => m.kind === "player").map((m) => ({ id: m.id, name: m.name + " / " + m.id })))}${button2("\u9078\u624B\u60C5\u5831\u3092\u66F4\u65B0", "xMasterEdit")}${button2("\u9078\u629E\u7A2E\u76EE\u3078\u9078\u624B\u3092\u53C2\u52A0\u767B\u9332", "xMasterRegister")}${button2("\u9078\u624B\u306E\u6709\u52B9\u30FB\u4F11\u6B62\u5207\u66FF", "xMasterToggle")}<p>${masters.filter((m) => m.kind === "player").length}\u540D / ${masters.filter((m) => m.kind === "club").length}\u56E3\u4F53\u3002\u30DE\u30B9\u30BF\u30FC\u60C5\u5831\u306E\u5909\u66F4\u306F\u904E\u53BB\u306E\u5927\u4F1A\u540D\u7C3F\u3092\u81EA\u52D5\u3067\u66F8\u304D\u63DB\u3048\u307E\u305B\u3093\u3002</p>${select("\u6240\u5C5E\u56E3\u4F53\u3092\u7DE8\u96C6", "clubPick", masters.filter((m) => m.kind === "club").map((m) => ({ id: m.id, name: m.name })))}${input("\u65B0\u3057\u3044\u56E3\u4F53\u540D", "clubEditName")}${button2("\u56E3\u4F53\u540D\u3092\u66F4\u65B0", "xClubEdit")}${input("\u96C6\u8A08\u3059\u308B\u5927\u4F1AID\uFF08\u7A7A\u6B04\u306F\u5168\u5E74\u5BFE\u8C61\u3001\u30AB\u30F3\u30DE\u533A\u5207\u308A\uFF09", "annualTournamentIds")}${button2("\u5927\u4F1A\u4E00\u89A7\u3068ID\u3092\u8868\u793A", "xTournamentIds")}${input("\u6210\u7E3E\u96C6\u8A08\u5E74", "statsYear", (/* @__PURE__ */ new Date()).getFullYear())}${button2("\u5E74\u9593\u30FB\u5927\u4F1A\u7DF4\u7FD2\u6210\u7E3E\u3092\u51FA\u529B", "xAnnual")}${button2("\u6709\u52B9\u30DE\u30B9\u30BF\u30FC\u9078\u624B\u3067\u7DF4\u7FD2\u7D44\u5408\u305B", "xMasterPractice")}${button2("\u5171\u901A\u30DE\u30B9\u30BF\u30FC\u3092\u5916\u90E8\u4FDD\u5B58", "xMasterExport")}<input type="file" id="masterImport" accept=".json">${button2("\u30DE\u30B9\u30BF\u30FC\u3092\u91CD\u8907\u306A\u3057\u3067\u53D6\u8FBC", "xMasterImport")}`);
-  html += sec("CSV/Excel\u306E\u5217\u30DE\u30C3\u30D4\u30F3\u30B0", `<input type="file" id="mappedFile" accept=".csv,.xlsx,.xls">${select("CSV\u6587\u5B57\u30B3\u30FC\u30C9", "csvEncoding", [{ id: "utf-8", name: "UTF-8" }, { id: "shift_jis", name: "Shift_JIS" }])}${button2("\u30B7\u30FC\u30C8\u3092\u8AAD\u8FBC", "xReadSheets")}<div id="mappingArea">${mappingHtml()}</div>`);
-  html += sec("GAS\u7248JSON\u304B\u3089\u79FB\u884C", `<input type="file" id="gasFile" accept=".json"><label>\u56E3\u4F53\u65B9\u5F0F<select id="gasTeamMode"><option value="first">\u5148\u53D6\u5236</option><option value="all">\u5168\u672C\u6D88\u5316</option></select></label><label>\u66D6\u6627\u306A\u56E3\u4F53\u9078\u624B\u540D\u306E\u767B\u9332ID\u5BFE\u5FDC\uFF08JSON\u3001\u7701\u7565\u53EF\uFF09<textarea id="gasNameResolution" placeholder="{}"></textarea></label>${button2("\u79FB\u884C\u30D7\u30EC\u30D3\u30E5\u30FC\u30FB\u7167\u5408", "xGasPreview")}${button2("\u691C\u67FB\u6E08\u307F\u5927\u4F1A\u3092\u65B0\u898F\u53D6\u8FBC", "xGasImport")}${button2("\u79FB\u884C\u5831\u544A\u66F8\u3092\u4FDD\u5B58", "xGasReport")}<label>\u7DF4\u7FD2\u30BB\u30C3\u30B7\u30E7\u30F3\u5225\u306E\u5F97\u70B9\u30EB\u30FC\u30EBJSON\uFF08\u7701\u7565\u53EF\uFF09<textarea id="gasPracticeRules" placeholder="{}"></textarea></label><pre id="gasReport"></pre><p>\u56E3\u4F53\u6226\u306E\u624B\u5165\u529B\u30AA\u30FC\u30C0\u30FC\u7B49\u3001\u66D6\u6627\u306A\u5F62\u5F0F\u304C\u3042\u308C\u3070\u53D6\u8FBC\u3092\u505C\u6B62\u3057\u672A\u5909\u63DB\u8868\u3092\u5831\u544A\u66F8\u306B\u6B8B\u3057\u307E\u3059\u3002\u5143\u30C7\u30FC\u30BF\u306B\u306F\u66F8\u304D\u8FBC\u307F\u307E\u305B\u3093\u3002</p>`);
-  html += sec("\u4E88\u5B9A\u8868CSV\u53D6\u8FBC\u30FB\u518D\u691C\u8A3C", `<p>UTF-8 CSV\uFF1A\u8A66\u5408ID,\u30B3\u30FC\u30C8\u756A\u53F7,\u958B\u59CB\u5206,\u6240\u8981\u5206\uFF08\u898B\u51FA\u3057\u3042\u308A\uFF09\u3002\u904B\u55B6\u753B\u9762\u3067\u4E88\u5B9A\u3092\u4F5C\u6210\u3057\u3066\u304B\u3089\u5909\u66F4\u3067\u304D\u307E\u3059\u3002</p><input type="file" id="scheduleFile" accept=".csv">${button2("\u4E88\u5B9A\u8868\u53D6\u8FBC", "xScheduleImport")}${button2("\u73FE\u5728\u306E\u4E88\u5B9A\u3092\u691C\u8A3C", "xScheduleValidate")}`);
-  html += sec("\u5168\u5E33\u7968\u30FB\u8CDE\u72B6", `${button2("\u30B3\u30FC\u30C8\u5225\u30FB\u9078\u624B\u5225\u30FB\u56E3\u4F53\u30FB\u6A39\u5F62\u56F3\u3092\u8868\u793A", "xReports")}${button2("\u5E33\u7968PDF\u3092\u76F4\u63A5\u51FA\u529B", "xPdfReport")}${s2 ? button2("\u9078\u629E\u30B9\u30C6\u30FC\u30B8\u306E\u8CDE\u72B6\u3092\u8868\u793A", "xCertificates") + button2("\u8CDE\u72B6PDF\u3092\u76F4\u63A5\u51FA\u529B", "xPdfCertificate") : ""}<label>\u8CDE\u72B6\u80CC\u666FPNG/JPEG\uFF082MB\u4EE5\u5185\uFF09<input type="file" id="certificateBg" accept="image/png,image/jpeg"></label>${input("\u6A2A\u4F4D\u7F6E px", "certX", t2.certificate?.x || 0, "number")}${input("\u7E26\u4F4D\u7F6E px", "certY", t2.certificate?.y || 0, "number")}${input("\u6587\u5B57\u30B5\u30A4\u30BA px", "certFont", t2.certificate?.fontSize || 28, "number")}${button2("\u8CDE\u72B6\u30C6\u30F3\u30D7\u30EC\u30FC\u30C8\u3092\u4FDD\u5B58", "xCertificateTemplate")}`);
-  html += sec("\u6697\u53F7\u5316\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u30FB\u5FA9\u5143\u524D\u30D7\u30EC\u30D3\u30E5\u30FC", `<p>AES-256-GCM\u3001\u30D1\u30B9\u30EF\u30FC\u30C98\u6587\u5B57\u4EE5\u4E0A\u3002\u5FD8\u308C\u305F\u30D1\u30B9\u30EF\u30FC\u30C9\u306E\u5FA9\u65E7\u306F\u3067\u304D\u307E\u305B\u3093\u3002\u901A\u5E38.bdmt\u3082\u7DAD\u6301\u3057\u307E\u3059\u3002</p>${input("\u30D1\u30B9\u30EF\u30FC\u30C9", "backupPassword", "", "password")}${button2("\u6697\u53F7\u5316\u5927\u4F1A\u30D5\u30A1\u30A4\u30EB\u3092\u51FA\u529B", "xEncrypt")}<input type="file" id="encryptedFile" accept=".bdmtx">${button2("\u5FA9\u53F7\u3057\u3066\u5225\u5927\u4F1A\u3078\u5FA9\u5143", "xDecrypt")}`);
-  html += sec("\u5916\u90E8\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u78BA\u8A8D\u3068\u4E16\u4EE3\u6574\u7406", `<p>${escapeHtml(await backupStatus(db2, t2))}</p>${button2("\u5916\u90E8\u30D5\u30A1\u30A4\u30EB\u306E\u4FDD\u5B58\u5B9F\u7269\u3092\u78BA\u8A8D\u3057\u305F", "xBackupConfirm")}${button2("\u516820\u4E16\u4EE3\u3092\u5916\u90E8JSON\u3078\u4FDD\u5B58", "xHistoryExport")}<input type="file" id="historyFile" accept=".bdmthistory,.json">${input("\u6B8B\u3059\u4E16\u4EE3\u6570\uFF081\u301C20\uFF09", "historyKeep", 5, "number")}${button2("\u4FDD\u5B58\u3057\u305F\u4E16\u4EE3JSON\u3092\u691C\u8A3C\u3057\u3066\u53E4\u3044\u5185\u90E8\u4E16\u4EE3\u3092\u6574\u7406", "xHistoryPrune")}${button2("\u4E16\u4EE3JSON\u304B\u3089\u5225\u5927\u4F1A\u3068\u3057\u3066\u5FA9\u5143", "xHistoryRestore")}<p>\u5916\u90E8\u30D5\u30A1\u30A4\u30EB\u3092\u9078\u3073\u76F4\u3057SHA\u3092\u691C\u8A3C\u3057\u3066\u304B\u3089\u6574\u7406\u3057\u307E\u3059\u3002\u64CD\u4F5CID\u30FB\u524A\u9664\u4FDD\u8B77\u8A18\u9332\u306F\u6D88\u53BB\u3057\u307E\u305B\u3093\u3002</p>`);
-  html += sec("\u518D\u8A66\u884C\u30FB\u4E0B\u66F8\u304D\u30FB\u5C65\u6B74\u7BA1\u7406", `<p>\u518D\u8A66\u884C\u5F85\u3061${pending.length}\u4EF6</p>${pending.map((p) => `<p>${escapeHtml(p.action)} / \u57FA\u6E96${p.expected} ${button2("\u540C\u64CD\u4F5CID\u3067\u518D\u8A66\u884C", "xPending", `data-id="${p.id}"`)}</p>`).join("")}<p>\u4E0B\u66F8\u304D${drafts.length}\u4EF6\uFF08\u30BF\u30D6\u5225\uFF09\u3002\u300C\u5165\u529B\u5024\u3092\u78BA\u8A8D\u300D\u3067\u4FDD\u5B58\u6E08\u307F\u5927\u4F1A\u3068\u5225\u306E\u30D5\u30A1\u30A4\u30EB\u3078\u53D6\u308A\u51FA\u305B\u307E\u3059\u3002</p>${drafts.slice(-30).map((d) => `<p>${escapeHtml(d.page || d.id)} / \u66F4\u65B0${d.base} ${button2("\u5165\u529B\u5024\u3092\u78BA\u8A8D", "xDraftInspect", `data-id="${escapeHtml(d.id)}"`)}${button2("\u6BD4\u8F03\u3057\u3066\u9078\u629E\u5FA9\u5143", "xDraftRestore", `data-id="${escapeHtml(d.id)}"`)}</p>`).join("")}${button2("\u8A3A\u65AD\u30ED\u30B0\u3092500\u4EF6\u306B\u6574\u7406", "xPrune")}<p>\u4FDD\u7BA1\u3057\u305F\u7D44\u5408\u305B${t2.archives?.length || 0}\u4EF6 / \u8A02\u6B63${t2.corrections?.length || 0}\u4EF6</p>${button2("\u53D6\u6D88\u6E08\u307F\u7D44\u5408\u305B\u30FB\u8A02\u6B63\u8A18\u9332\u3092\u51FA\u529B", "xArchives")}`);
+  html += sec("\u7A2E\u76EE\u30EB\u30FC\u30EB\u30FB\u56E3\u4F53\u6226\u8A2D\u5B9A", `<h3>${escapeHtml(e.name)}</h3>${select2("\u7AF6\u6280\u5F62\u5F0F", "xType", [{ id: "singles", name: "\u30B7\u30F3\u30B0\u30EB\u30B9" }, { id: "doubles", name: "\u30C0\u30D6\u30EB\u30B9" }, { id: "team", name: "\u56E3\u4F53\u6226" }], e.type)}${input2("\u57FA\u672C\u70B9", "xBase", e.rule.base, "number")}${input2("\u4E0A\u9650", "xCap", e.rule.cap, "number")}${input2("\u5FC5\u8981\u52DD\u6570", "xWins", e.rule.wins, "number")}${select2("\u30C7\u30E5\u30FC\u30B9", "xDeuce", [{ id: "yes", name: "\u3042\u308A" }, { id: "no", name: "\u306A\u3057" }], e.rule.deuce ? "yes" : "no")}${select2("\u56E3\u4F53\u6226\u7D42\u4E86\u6761\u4EF6", "xTeamMode", [{ id: "first", name: "\u5148\u53D6\u5236" }, { id: "all", name: "\u5168\u672C\u6D88\u5316" }], e.team?.mode)}${input2("\u5BFE\u6226\u672C\u6570\uFF1AS=1 D=2 \u306E\u9806\u756A\uFF08\u4F8B 2,1,1\uFF09", "xTeamSizes", e.team?.orderSizes.join(",") || "2,1,1")}${input2("\u540C\u4E00\u9078\u624B\u306E\u51FA\u5834\u4E0A\u9650", "xMaxAppear", e.team?.maxAppearances || 2, "number")}${select2("\u56E3\u4F53T\u540C\u70B9\u306E\u6C7A\u7740\u65B9\u5F0F", "xTieBreak", [{ id: "reject", name: "\u540C\u70B9\u3092\u78BA\u5B9A\u3057\u306A\u3044" }, { id: "manual", name: "\u898F\u5B9A\u306B\u3088\u308B\u5F79\u54E1\u306E\u6C7A\u7740\u8A18\u9332" }], e.team?.tieBreak || "reject")}${select2("\u5F15\u5206\u3051\u8A31\u53EF\uFF08\u30EA\u30FC\u30B0\u306E\u307F\uFF09", "xAllowDraw", [{ id: "no", name: "\u8A8D\u3081\u306A\u3044" }, { id: "yes", name: "\u8A8D\u3081\u308B" }], e.team?.allowDraw ? "yes" : "no")}${select2("\u5F15\u5206\u3051\u306E\u52DD\u7387\u7B97\u5165", "xDrawValue", [{ id: "0.5", name: "0.5\u52DD" }, { id: "0", name: "0\u52DD" }], String(e.team?.drawValue ?? 0.5))}<label>\u51FA\u5834\u8CC7\u683CJSON\uFF08\u7701\u7565\u53EF\uFF09<textarea id="xEligibility">${escapeHtml(e.team?.eligibility ? JSON.stringify(e.team.eligibility) : "")}</textarea></label><p>\u4F8B {"genders":["\u5973"],"grades":["2"],"players":{"p1":{"gender":"\u5973","grade":"2","active":true}}}\u3002\u5236\u9650\u3092\u8A2D\u5B9A\u3059\u308B\u3068\u672A\u78BA\u8A8D\u9078\u624B\u306F\u62D2\u5426\u3057\u307E\u3059\u3002</p>${input2("\u56E3\u4F53\u9806\u4F4D\u306E\u512A\u5148\u9806\uFF08rate,rubber,game,point\uFF09", "xRanking", e.team?.ranking.join(",") || "rate,rubber,game,point")}${button3("\u7A2E\u76EE\u30FB\u56E3\u4F53\u30EB\u30FC\u30EB\u3092\u4FDD\u5B58", "xEventRule")}`);
+  html += sec("\u7D44\u5408\u305B\u5F8C\u306E\u53C2\u52A0\u8005\u5909\u66F4", `<p>\u7D50\u679C\u3092\u4FDD\u7BA1\u3057\u3066\u5168\u7D44\u5408\u305B\u3092\u660E\u793A\u7684\u306B\u53D6\u6D88\u3057\u3066\u304B\u3089\u53C2\u52A0\u8005\u3092\u4FEE\u6B63\u3067\u304D\u307E\u3059\u3002\u53D6\u6D88\u6E08\u307F\u5185\u5BB9\u306F\u30A2\u30FC\u30AB\u30A4\u30D6\u306B\u6B8B\u308A\u307E\u3059\u3002</p>${button3("\u7A2E\u76EE\u306E\u5168\u7D44\u5408\u305B\u3092\u4FDD\u7BA1\u30FB\u53D6\u6D88", "xClearEventDraws")}${select2("\u53C2\u52A0\u8005", "xEntry", e.entries.map((p) => ({ id: p.id, name: p.name })))}${input2("\u65B0\u3057\u3044\u8868\u793A\u540D\uFF08\u7A7A\u6B04\u306A\u3089\u73FE\u72B6\uFF09", "xEntryName")}${input2("\u6240\u5C5E", "xEntryClub")}${input2("\u69CB\u6210\u9078\u624BID\uFF08/\u533A\u5207\u308A\u3001\u7A7A\u6B04\u306A\u3089\u73FE\u72B6\uFF09", "xEntryPlayers")}${input2("\u53D7\u4ED8\u72B6\u6CC1", "xReception", "\u672A\u53D7\u4ED8")}${button3("\u53C2\u52A0\u8005\u3092\u66F4\u65B0", "xEntryUpdate")}${button3("\u53C2\u52A0\u8005\u3092\u524A\u9664", "xEntryRemove")}`);
+  html += sec("\u5168\u5927\u4F1A\u5171\u901A\u30DE\u30B9\u30BF\u30FC", `${input2("\u6C0F\u540D", "masterName")}${input2("\u30D5\u30EA\u30AC\u30CA", "masterKana")}${input2("\u6027\u5225", "masterGender")}${input2("\u5B66\u5E74", "masterGrade")}${input2("\u6240\u5C5E\u56E3\u4F53\u540D", "masterClub")}${button3("\u65B0\u3057\u3044\u9078\u624B\u3092\u767B\u9332\uFF08\u540C\u540D\u53EF\u30FB\u5225ID\uFF09", "xMasterAdd")}${select2("\u9078\u624B\u30DE\u30B9\u30BF\u30FC", "masterPick", masters.filter((m) => m.kind === "player").map((m) => ({ id: m.id, name: m.name + (m.clubId ? " / " + (masters.find((c2) => c2.id === m.clubId)?.name || "\u6240\u5C5E\u306A\u3057") : "") })))}${button3("\u9078\u624B\u60C5\u5831\u3092\u66F4\u65B0", "xMasterEdit")}${button3("\u9078\u629E\u7A2E\u76EE\u3078\u9078\u624B\u3092\u53C2\u52A0\u767B\u9332", "xMasterRegister")}${button3("\u9078\u624B\u306E\u6709\u52B9\u30FB\u4F11\u6B62\u5207\u66FF", "xMasterToggle")}<p>${masters.filter((m) => m.kind === "player").length}\u540D / ${masters.filter((m) => m.kind === "club").length}\u56E3\u4F53\u3002\u30DE\u30B9\u30BF\u30FC\u60C5\u5831\u306E\u5909\u66F4\u306F\u904E\u53BB\u306E\u5927\u4F1A\u540D\u7C3F\u3092\u81EA\u52D5\u3067\u66F8\u304D\u63DB\u3048\u307E\u305B\u3093\u3002</p>${select2("\u6240\u5C5E\u56E3\u4F53\u3092\u7DE8\u96C6", "clubPick", masters.filter((m) => m.kind === "club").map((m) => ({ id: m.id, name: m.name })))}${input2("\u65B0\u3057\u3044\u56E3\u4F53\u540D", "clubEditName")}${button3("\u56E3\u4F53\u540D\u3092\u66F4\u65B0", "xClubEdit")}${button3("\u96C6\u8A08\u3059\u308B\u5927\u4F1A\u3092\u9078\u629E", "xTournamentIds")}<div id="annualTournaments"></div>${input2("\u6210\u7E3E\u96C6\u8A08\u5E74", "statsYear", (/* @__PURE__ */ new Date()).getFullYear())}${button3("\u5E74\u9593\u30FB\u5927\u4F1A\u7DF4\u7FD2\u6210\u7E3E\u3092\u51FA\u529B", "xAnnual")}${button3("\u6709\u52B9\u30DE\u30B9\u30BF\u30FC\u9078\u624B\u3067\u7DF4\u7FD2\u7D44\u5408\u305B", "xMasterPractice")}${button3("\u5171\u901A\u30DE\u30B9\u30BF\u30FC\u3092\u5916\u90E8\u4FDD\u5B58", "xMasterExport")}<input type="file" id="masterImport" accept=".json">${button3("\u30DE\u30B9\u30BF\u30FC\u3092\u91CD\u8907\u306A\u3057\u3067\u53D6\u8FBC", "xMasterImport")}`);
+  html += sec("CSV/Excel\u306E\u5217\u30DE\u30C3\u30D4\u30F3\u30B0", `<input type="file" id="mappedFile" accept=".csv,.xlsx,.xls">${select2("CSV\u6587\u5B57\u30B3\u30FC\u30C9", "csvEncoding", [{ id: "utf-8", name: "UTF-8" }, { id: "shift_jis", name: "Shift_JIS" }])}${button3("\u30B7\u30FC\u30C8\u3092\u8AAD\u8FBC", "xReadSheets")}<div id="mappingArea">${mappingHtml()}</div>`);
+  html += sec("GAS\u7248JSON\u304B\u3089\u79FB\u884C", `<input type="file" id="gasFile" accept=".json"><label>\u56E3\u4F53\u65B9\u5F0F<select id="gasTeamMode"><option value="first">\u5148\u53D6\u5236</option><option value="all">\u5168\u672C\u6D88\u5316</option></select></label><label>\u66D6\u6627\u306A\u56E3\u4F53\u9078\u624B\u540D\u306E\u767B\u9332ID\u5BFE\u5FDC\uFF08JSON\u3001\u7701\u7565\u53EF\uFF09<textarea id="gasNameResolution" placeholder="{}"></textarea></label>${button3("\u79FB\u884C\u30D7\u30EC\u30D3\u30E5\u30FC\u30FB\u7167\u5408", "xGasPreview")}${button3("\u691C\u67FB\u6E08\u307F\u5927\u4F1A\u3092\u65B0\u898F\u53D6\u8FBC", "xGasImport")}${button3("\u79FB\u884C\u5831\u544A\u66F8\u3092\u4FDD\u5B58", "xGasReport")}<label>\u7DF4\u7FD2\u30BB\u30C3\u30B7\u30E7\u30F3\u5225\u306E\u5F97\u70B9\u30EB\u30FC\u30EBJSON\uFF08\u7701\u7565\u53EF\uFF09<textarea id="gasPracticeRules" placeholder="{}"></textarea></label><pre id="gasReport"></pre><p>\u56E3\u4F53\u6226\u306E\u624B\u5165\u529B\u30AA\u30FC\u30C0\u30FC\u7B49\u3001\u66D6\u6627\u306A\u5F62\u5F0F\u304C\u3042\u308C\u3070\u53D6\u8FBC\u3092\u505C\u6B62\u3057\u672A\u5909\u63DB\u8868\u3092\u5831\u544A\u66F8\u306B\u6B8B\u3057\u307E\u3059\u3002\u5143\u30C7\u30FC\u30BF\u306B\u306F\u66F8\u304D\u8FBC\u307F\u307E\u305B\u3093\u3002</p>`);
+  html += sec("\u4E88\u5B9A\u8868CSV\u53D6\u8FBC\u30FB\u518D\u691C\u8A3C", `<p>UTF-8 CSV\uFF1A\u8A66\u5408ID,\u30B3\u30FC\u30C8\u756A\u53F7,\u958B\u59CB\u5206,\u6240\u8981\u5206\uFF08\u898B\u51FA\u3057\u3042\u308A\uFF09\u3002\u904B\u55B6\u753B\u9762\u3067\u4E88\u5B9A\u3092\u4F5C\u6210\u3057\u3066\u304B\u3089\u5909\u66F4\u3067\u304D\u307E\u3059\u3002</p><input type="file" id="scheduleFile" accept=".csv">${button3("\u4E88\u5B9A\u8868\u53D6\u8FBC", "xScheduleImport")}${button3("\u73FE\u5728\u306E\u4E88\u5B9A\u3092\u691C\u8A3C", "xScheduleValidate")}`);
+  html += sec("\u5168\u5E33\u7968\u30FB\u8CDE\u72B6", `${button3("\u30B3\u30FC\u30C8\u5225\u30FB\u9078\u624B\u5225\u30FB\u56E3\u4F53\u30FB\u6A39\u5F62\u56F3\u3092\u8868\u793A", "xReports")}${button3("\u5E33\u7968PDF\u3092\u76F4\u63A5\u51FA\u529B", "xPdfReport")}${s2 ? button3("\u9078\u629E\u30B9\u30C6\u30FC\u30B8\u306E\u8CDE\u72B6\u3092\u8868\u793A", "xCertificates") + button3("\u8CDE\u72B6PDF\u3092\u76F4\u63A5\u51FA\u529B", "xPdfCertificate") : ""}<label>\u8CDE\u72B6\u80CC\u666FPNG/JPEG\uFF082MB\u4EE5\u5185\uFF09<input type="file" id="certificateBg" accept="image/png,image/jpeg"></label>${input2("\u6A2A\u4F4D\u7F6E px", "certX", t2.certificate?.x || 0, "number")}${input2("\u7E26\u4F4D\u7F6E px", "certY", t2.certificate?.y || 0, "number")}${input2("\u6587\u5B57\u30B5\u30A4\u30BA px", "certFont", t2.certificate?.fontSize || 28, "number")}${button3("\u8CDE\u72B6\u30C6\u30F3\u30D7\u30EC\u30FC\u30C8\u3092\u4FDD\u5B58", "xCertificateTemplate")}`);
+  html += sec("\u6697\u53F7\u5316\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u30FB\u5FA9\u5143\u524D\u30D7\u30EC\u30D3\u30E5\u30FC", `<p>AES-256-GCM\u3001\u30D1\u30B9\u30EF\u30FC\u30C98\u6587\u5B57\u4EE5\u4E0A\u3002\u5FD8\u308C\u305F\u30D1\u30B9\u30EF\u30FC\u30C9\u306E\u5FA9\u65E7\u306F\u3067\u304D\u307E\u305B\u3093\u3002\u901A\u5E38.bdmt\u3082\u7DAD\u6301\u3057\u307E\u3059\u3002</p>${input2("\u30D1\u30B9\u30EF\u30FC\u30C9", "backupPassword", "", "password")}${button3("\u6697\u53F7\u5316\u5927\u4F1A\u30D5\u30A1\u30A4\u30EB\u3092\u51FA\u529B", "xEncrypt")}<input type="file" id="encryptedFile" accept=".bdmtx">${button3("\u5FA9\u53F7\u3057\u3066\u5225\u5927\u4F1A\u3078\u5FA9\u5143", "xDecrypt")}`);
+  html += sec("\u5916\u90E8\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u78BA\u8A8D\u3068\u4E16\u4EE3\u6574\u7406", `<p>${escapeHtml(await backupStatus(db2, t2))}</p>${button3("\u5916\u90E8\u30D5\u30A1\u30A4\u30EB\u306E\u4FDD\u5B58\u5B9F\u7269\u3092\u78BA\u8A8D\u3057\u305F", "xBackupConfirm")}${button3("\u516820\u4E16\u4EE3\u3092\u5916\u90E8JSON\u3078\u4FDD\u5B58", "xHistoryExport")}<input type="file" id="historyFile" accept=".bdmthistory,.json">${input2("\u6B8B\u3059\u4E16\u4EE3\u6570\uFF081\u301C20\uFF09", "historyKeep", 5, "number")}${button3("\u4FDD\u5B58\u3057\u305F\u4E16\u4EE3JSON\u3092\u691C\u8A3C\u3057\u3066\u53E4\u3044\u5185\u90E8\u4E16\u4EE3\u3092\u6574\u7406", "xHistoryPrune")}${button3("\u4E16\u4EE3JSON\u304B\u3089\u5225\u5927\u4F1A\u3068\u3057\u3066\u5FA9\u5143", "xHistoryRestore")}<p>\u5916\u90E8\u30D5\u30A1\u30A4\u30EB\u3092\u9078\u3073\u76F4\u3057SHA\u3092\u691C\u8A3C\u3057\u3066\u304B\u3089\u6574\u7406\u3057\u307E\u3059\u3002\u64CD\u4F5CID\u30FB\u524A\u9664\u4FDD\u8B77\u8A18\u9332\u306F\u6D88\u53BB\u3057\u307E\u305B\u3093\u3002</p>`);
+  html += sec("\u518D\u8A66\u884C\u30FB\u4E0B\u66F8\u304D\u30FB\u5C65\u6B74\u7BA1\u7406", `<p>\u518D\u8A66\u884C\u5F85\u3061${pending.length}\u4EF6</p>${pending.map((p) => `<p>${escapeHtml(p.action)} / \u57FA\u6E96${p.expected} ${button3("\u540C\u64CD\u4F5CID\u3067\u518D\u8A66\u884C", "xPending", `data-id="${p.id}"`)}</p>`).join("")}<p>\u4E0B\u66F8\u304D${drafts.length}\u4EF6\uFF08\u30BF\u30D6\u5225\uFF09\u3002\u300C\u5165\u529B\u5024\u3092\u78BA\u8A8D\u300D\u3067\u4FDD\u5B58\u6E08\u307F\u5927\u4F1A\u3068\u5225\u306E\u30D5\u30A1\u30A4\u30EB\u3078\u53D6\u308A\u51FA\u305B\u307E\u3059\u3002</p>${drafts.slice(-30).map((d) => `<p>${escapeHtml(d.page || "\u4FDD\u5B58\u3055\u308C\u305F\u753B\u9762")} / \u66F4\u65B0${d.base} ${button3("\u5165\u529B\u5024\u3092\u78BA\u8A8D", "xDraftInspect", `data-id="${escapeHtml(d.id)}"`)}${button3("\u6BD4\u8F03\u3057\u3066\u9078\u629E\u5FA9\u5143", "xDraftRestore", `data-id="${escapeHtml(d.id)}"`)}</p>`).join("")}${button3("\u8A3A\u65AD\u30ED\u30B0\u3092500\u4EF6\u306B\u6574\u7406", "xPrune")}<p>\u4FDD\u7BA1\u3057\u305F\u7D44\u5408\u305B${t2.archives?.length || 0}\u4EF6 / \u8A02\u6B63${t2.corrections?.length || 0}\u4EF6</p>${button3("\u53D6\u6D88\u6E08\u307F\u7D44\u5408\u305B\u30FB\u8A02\u6B63\u8A18\u9332\u3092\u51FA\u529B", "xArchives")}`);
   return html;
 }
 async function advancedAction(c, act2, b) {
@@ -110300,7 +110945,7 @@ async function advancedAction(c, act2, b) {
     case "xBracket": {
       ensure(s2, "\u30B9\u30C6\u30FC\u30B8\u306A\u3057");
       const r = reason();
-      const slots = v("bracketSlots").split(/\r?\n/).map((x) => x.trim() === "-" ? "" : x.trim());
+      const slots = v("bracketSlots").split(/\r?\n/).map((x) => x.trim() === "-" ? "" : /^\d+$/.test(x.trim()) ? s2.groups[0].entries[Number(x.trim()) - 1] ?? "\u7121\u52B9" : x.trim());
       await c.save("\u624B\u52D5\u67A0\u914D\u7F6E", (x) => editBracket(x, s2.id, slots, r));
       break;
     }
@@ -110362,7 +111007,7 @@ async function advancedAction(c, act2, b) {
       break;
     }
     case "xMasterExport":
-      download(new Blob([JSON.stringify({ format: "bdmt-masters-v1", rows: await db2.rows("masters") }, null, 2)], { type: "application/json" }), "\u5171\u901A\u30DE\u30B9\u30BF\u30FC.json");
+      download(new Blob([JSON.stringify({ format: "bdmt-masters-v1", rows: (await db2.rows("masters")).filter((row) => row.kind === "player" || row.kind === "club") }, null, 2)], { type: "application/json" }), "\u5171\u901A\u30DE\u30B9\u30BF\u30FC.json");
       break;
     case "xMasterImport": {
       const f = document.getElementById("masterImport").files?.[0];
@@ -110393,15 +111038,15 @@ async function advancedAction(c, act2, b) {
     }
     case "xTournamentIds": {
       const rows = await db2.list();
-      alert(rows.map((r) => r.name + " : " + r.id).join("\n"));
+      document.getElementById("annualTournaments").innerHTML = "<p>\u672A\u9078\u629E\u306E\u5834\u5408\u306F\u6307\u5B9A\u5E74\u306E\u5168\u5927\u4F1A\u3092\u96C6\u8A08\u3057\u307E\u3059\u3002</p>" + rows.filter((r) => !r.error).map((r) => `<label class="cm-check"><input type="checkbox" value="${escapeHtml(r.id)}"> ${escapeHtml(r.date + " " + r.name)}</label>`).join("");
       break;
     }
     case "xAnnual": {
       const all = await db2.list(), tours = [];
-      const ids = v("annualTournamentIds").split(",").map((x) => x.trim()).filter(Boolean);
+      const ids = [...document.querySelectorAll("#annualTournaments input:checked")].map((x) => x.value);
       ensure(ids.every((id) => all.some((r) => r.id === id && !r.error)), "\u96C6\u8A08\u5927\u4F1AID\u304C\u4E0D\u6B63");
       for (const row of all) if (!row.error && (!ids.length || ids.includes(row.id))) tours.push(await db2.load(row.id));
-      download(new Blob([csv([["ID", "\u540D\u524D", "\u8A66\u5408", "\u52DD", "\u5F97\u70B9", "\u5931\u70B9", "\u53C2\u52A0\u5927\u4F1A"], ...annualStats(tours, v("statsYear")).map((r) => [r.id, r.name, r.played, r.wins, r.pointsFor, r.pointsAgainst, r.events.length])])]), "\u5E74\u9593\u6210\u7E3E.csv");
+      download(new Blob([csv([["\u9078\u624B\u756A\u53F7", "\u540D\u524D", "\u8A66\u5408", "\u52DD", "\u5F97\u70B9", "\u5931\u70B9", "\u53C2\u52A0\u5927\u4F1A"], ...annualStats(tours, v("statsYear")).map((r, i) => [i + 1, r.name, r.played, r.wins, r.pointsFor, r.pointsAgainst, r.events.length])])]), "\u5E74\u9593\u6210\u7E3E.csv");
       break;
     }
     case "xReadSheets": {
@@ -110477,11 +111122,11 @@ async function advancedAction(c, act2, b) {
       break;
     }
     case "xReports":
-      document.getElementById("main").innerHTML = button2("\u5370\u5237\u30FBPDF\u4FDD\u5B58", "xPdfReport") + reportHtml(t2);
+      document.getElementById("main").innerHTML = button3("\u5370\u5237\u30FBPDF\u4FDD\u5B58", "xPdfReport") + reportHtml(t2);
       break;
     case "xCertificates":
       ensure(s2, "\u30B9\u30C6\u30FC\u30B8\u306A\u3057");
-      document.getElementById("main").innerHTML = button2("\u5370\u5237\u30FBPDF\u4FDD\u5B58", "print") + certificateHtml(t2, s2.id);
+      document.getElementById("main").innerHTML = button3("\u5370\u5237\u30FBPDF\u4FDD\u5B58", "print") + certificateHtml(t2, s2.id);
       break;
     case "xCertificateTemplate": {
       const f = document.getElementById("certificateBg").files?.[0];
@@ -110578,7 +111223,9 @@ var val2 = (id) => document.getElementById(id)?.value || "";
 var num = (id) => Number(val2(id));
 var showProgress = true;
 var slotCount = 0;
-var boardEvent = "";
+var boardEvent = "all";
+var boardOpen = /* @__PURE__ */ new Map();
+var leagueZoom = /* @__PURE__ */ new Map();
 var bracketViews = /* @__PURE__ */ new Map();
 var returnScroll;
 function rememberMatches() {
@@ -110636,11 +111283,11 @@ var epoch = 0;
 var saving = false;
 var draftToApply;
 var retry;
-var section = (title2, body) => `<section><h2>${esc(title2)}</h2>${body}</section>`;
-var button3 = (text2, act2, extra = "") => `<button data-act="${act2}" ${extra}>${esc(text2)}</button>`;
-var input2 = (label2, id, value = "", type = "text") => `<label for="${id}">${esc(label2)}</label><input id="${id}" type="${type}" value="${esc(value)}">`;
-var options = (rows, selected = "") => rows.map((r) => `<option value="${esc(r.id)}" ${r.id === selected ? "selected" : ""}>${esc(r.name)}</option>`).join("");
-var select2 = (label2, id, rows, selected = "") => `<label for="${id}">${esc(label2)}</label><select id="${id}">${options(rows, selected)}</select>`;
+var section = (title3, body) => `<section><h2>${esc(title3)}</h2>${body}</section>`;
+var button4 = (text2, act2, extra = "") => `<button data-act="${act2}" ${extra}>${esc(text2)}</button>`;
+var input3 = (label2, id, value2 = "", type = "text") => `<label for="${id}">${esc(label2)}</label><input id="${id}" type="${type}" value="${esc(value2)}">`;
+var options = (rows, selected2 = "") => rows.map((r) => `<option value="${esc(r.id)}" ${r.id === selected2 ? "selected" : ""}>${esc(r.name)}</option>`).join("");
+var select3 = (label2, id, rows, selected2 = "") => `<label for="${id}">${esc(label2)}</label><select id="${id}">${options(rows, selected2)}</select>`;
 var table9 = (heads, rows) => `<div class="table"><table><thead><tr>${heads.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 function notice(s2, error2 = false) {
   $2("notice").textContent = s2;
@@ -110654,9 +111301,9 @@ var ranked = (id) => {
 var visualSlot = (id, group, index) => `<button class="draw-slot" data-act="slotChoose" data-id="${esc(id)}" data-group="${esc(group)}" data-index="${index}" title="\u9078\u624B\u3092\u5909\u66F4">${esc(ranked(id))} \u270E</button>`;
 var bracketOverview = (matches) => {
   const group = t.stages.flatMap((s2) => s2.groups).find((g) => g.id === matches[0]?.groupId);
-  if (group?.slots) return '<div class="bracket-overview">' + group.slots.map((id, i) => button3(id ? ranked(id) : "\uFF0B \u7A7A\u67A0", "bracketSlot", `data-group="${esc(group.id)}" data-position="${i}"`)).join("") + "</div>";
+  if (group?.slots) return '<div class="bracket-overview">' + group.slots.map((id, i) => button4(id ? ranked(id) : "\uFF0B \u7A7A\u67A0", "bracketSlot", `data-group="${esc(group.id)}" data-position="${i}"`)).join("") + "</div>";
   const rounds = [...new Set(matches.map((m) => m.round))].sort((a, b) => a - b);
-  return `<div class="bracket-overview" aria-label="\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u5BFE\u6226\u8868">${rounds.map((round) => `<div class="bracket-round"><h4>${round === rounds[rounds.length - 1] ? "\u6C7A\u52DD" : `${round}\u56DE\u6226`}</h4>${matches.filter((m) => m.round === round).sort((a, b) => a.number - b.number).map((m) => `<div class="bracket-game">${m.status === "bye" ? "" : button3(label(m, t), "editScore", `data-id="${esc(m.id)}"`)}<div>${m.round === 1 ? `<button class="draw-slot" data-act="bracketSlot" data-group="${esc(m.groupId)}" data-position="${matches.filter((x) => x.round === 1).sort((a, b) => a.number - b.number).indexOf(m) * 2}">${m.left ? esc(ranked(m.left)) : "\uFF0B \u7A7A\u67A0"} \u270E</button>` : esc(ranked(m.left))}</div><div>${m.round === 1 ? `<button class="draw-slot" data-act="bracketSlot" data-group="${esc(m.groupId)}" data-position="${matches.filter((x) => x.round === 1).sort((a, b) => a.number - b.number).indexOf(m) * 2 + 1}">${m.right ? esc(ranked(m.right)) : "\uFF0B \u7A7A\u67A0"} \u270E</button>` : esc(ranked(m.right))}</div><small>${m.status === "completed" ? "\u7D42\u4E86" : m.status === "called" ? "\u30B3\u30FC\u30EB\u6E08" : m.status === "playing" ? "\u8A66\u5408\u4E2D" : m.status === "bye" ? "\u521D\u6226\u514D\u9664" : "\u672A\u5B9F\u65BD"}</small></div>`).join("")}</div>`).join("")}</div>`;
+  return `<div class="bracket-overview" aria-label="\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u5BFE\u6226\u8868">${rounds.map((round) => `<div class="bracket-round"><h4>${round === rounds[rounds.length - 1] ? "\u6C7A\u52DD" : `${round}\u56DE\u6226`}</h4>${matches.filter((m) => m.round === round).sort((a, b) => a.number - b.number).map((m) => `<div class="bracket-game">${m.status === "bye" ? "" : button4(label(m, t), "editScore", `data-id="${esc(m.id)}"`)}<div>${m.round === 1 ? `<button class="draw-slot" data-act="bracketSlot" data-group="${esc(m.groupId)}" data-position="${matches.filter((x) => x.round === 1).sort((a, b) => a.number - b.number).indexOf(m) * 2}">${m.left ? esc(ranked(m.left)) : "\uFF0B \u7A7A\u67A0"} \u270E</button>` : esc(ranked(m.left))}</div><div>${m.round === 1 ? `<button class="draw-slot" data-act="bracketSlot" data-group="${esc(m.groupId)}" data-position="${matches.filter((x) => x.round === 1).sort((a, b) => a.number - b.number).indexOf(m) * 2 + 1}">${m.right ? esc(ranked(m.right)) : "\uFF0B \u7A7A\u67A0"} \u270E</button>` : esc(ranked(m.right))}</div><small>${m.status === "completed" ? "\u7D42\u4E86" : m.status === "called" ? "\u30B3\u30FC\u30EB\u6E08" : m.status === "playing" ? "\u8A66\u5408\u4E2D" : m.status === "bye" ? "\u521D\u6226\u514D\u9664" : "\u672A\u5B9F\u65BD"}</small></div>`).join("")}</div>`).join("")}</div>`;
 };
 function currentEvent() {
   if (!t) return;
@@ -110665,12 +111312,27 @@ function currentEvent() {
 function eventPicker() {
   const e = currentEvent();
   eid = e?.id || "";
-  return select2("\u7A2E\u76EE", "event", t.events, eid);
+  return select3("\u7A2E\u76EE", "event", t.events, eid);
 }
 function stagePicker() {
   const rows = t.stages.filter((s2) => s2.eventId === eid);
   if (!rows.some((s2) => s2.id === sid)) sid = rows[0]?.id || "";
-  return select2("\u30B9\u30C6\u30FC\u30B8", "stage", rows, sid);
+  return select3("\u30B9\u30C6\u30FC\u30B8", "stage", rows, sid);
+}
+function teamOrderPanel(m) {
+  const tour = t, event = eventOf(tour, m.eventId), players = playerDirectory(tour);
+  const sizes = event.team?.orderSizes || m.rubbers?.map((r) => r.left.length) || [1, 1, 1];
+  const locked = m.status !== "waiting" || !!m.rubbers?.some((r) => r.games.length);
+  const series = sizes.map((size, i) => {
+    const type = size === 2 ? "D" : "S", number = sizes.slice(0, i + 1).filter((n2) => n2 === size).length;
+    return `<fieldset class="order-rubber"><legend>${i + 1}\u672C\u76EE ${type}${number} \xB7 ${size === 2 ? "\u30C0\u30D6\u30EB\u30B9" : "\u30B7\u30F3\u30B0\u30EB\u30B9"}</legend>
+   <div class="order-teams">${["left", "right"].map((side, sideIndex) => {
+      const team = entryOf(tour, m[side]), roster = (team?.players ?? []).filter((id) => !id.startsWith("TEAM-PENDING-"));
+      const selected2 = m.rubbers?.[i]?.[side] ?? [];
+      return `<div><strong>${esc(team?.name || "\u672A\u78BA\u5B9A")}</strong>${Array.from({ length: size }, (_2, j) => `<label>${j + 1}\u4EBA\u76EE<select id="order-${i}-${sideIndex}-${j}" class="order-select" data-row="${i}" data-side="${sideIndex}" data-position="${j}" ${locked ? "disabled data-fixed-disabled" : ""}>${options([{ id: "", name: "\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044" }, ...roster.map((id) => ({ id, name: playerText(players, id, roster) }))], selected2[j])}</select></label>`).join("")}</div>`;
+    }).join("")}</div></fieldset>`;
+  }).join("");
+  return section("\u56E3\u4F53\u6226\u30AA\u30FC\u30C0\u30FC \xB7 " + label(m, tour), (locked ? "<p>\u9032\u884C\u4E2D\u307E\u305F\u306F\u5F97\u70B9\u5165\u529B\u6E08\u307F\u306E\u305F\u3081\u30AA\u30FC\u30C0\u30FC\u306F\u56FA\u5B9A\u3055\u308C\u3066\u3044\u307E\u3059\u3002</p>" : `<p>\u540C\u4E00\u9078\u624B\u306E\u51FA\u5834\u306F\u6700\u5927${event.team?.maxAppearances ?? 9}\u672C\u3002\u5927\u4F1A\u306E\u51FA\u5834\u8CC7\u683C\u3068\u5404\u5BFE\u6226\u306E\u767B\u9332\u4EBA\u6570\u3092\u78BA\u8A8D\u3057\u3066\u4FDD\u5B58\u3057\u307E\u3059\u3002</p>`) + series + (!locked ? '<div class="actions">' + button4("\u524D\u56DE\u30AA\u30FC\u30C0\u30FC\u3092\u6D41\u7528", "teamOrderReuse") + button4(m.rubbers ? "\u30AA\u30FC\u30C0\u30FC\u306E\u5909\u66F4\u3092\u4FDD\u5B58" : "\u30AA\u30FC\u30C0\u30FC\u3092\u4FDD\u5B58", "teamOrder") + (m.rubbers ? button4("\u4FDD\u5B58\u6E08\u307F\u30AA\u30FC\u30C0\u30FC\u3092\u53D6\u6D88", "teamOrderRemove") : "") + "</div>" : "") + '<div class="actions">' + button4("\u9032\u884C\u753B\u9762\u3078\u623B\u308B", "back") + button4("\u56E3\u4F53\u7D50\u679C\u30FB\u9032\u884C\u3092\u53D6\u6D88", "cancel") + "</div>");
 }
 function renderScore(m, rubber = -1) {
   const e = eventOf(t, m.eventId), r = e.rule, games2 = rubber >= 0 ? m.rubbers[rubber].games : m.retirementGames ?? m.games;
@@ -110678,22 +111340,24 @@ function renderScore(m, rubber = -1) {
   for (let hi = r.base; hi <= r.cap; hi++) for (let low = 0; low < hi; low++) if (gameValid([hi, low], r)) {
     choices.push({ score: hi + "," + low, side: "left" }, { score: low + "," + hi, side: "right" });
   }
-  const opts = (values2, sel) => '<option value="">\u5F97\u70B9\u3092\u9078\u629E</option>' + values2.map((v2) => `<option value="${v2.score}" ${v2.score === sel ? "selected" : ""}>${v2.score.replace(",", " \u2212 ")}</option>`).join("");
+  const opts2 = (values2, sel) => '<option value="">\u5F97\u70B9\u3092\u9078\u629E</option>' + values2.map((v2) => `<option value="${v2.score}" ${v2.score === sel ? "selected" : ""}>${v2.score.replace(",", " \u2212 ")}</option>`).join("");
   const prefix2 = rubber >= 0 ? "rubber" + rubber + "game" : "game";
   const panels = Array.from({ length: 2 * r.wins - 1 }, (_2, i) => {
-    const id = prefix2 + i, selected = games2[i]?.join(",") ?? "";
-    return `<fieldset class="game-picker"><legend>\u7B2C${i + 1}\u30B2\u30FC\u30E0</legend><div class="game-columns">${["left", "right"].map((side) => `<label>${side === "left" ? "\u5DE6\u5074" : "\u53F3\u5074"}\u306E\u52DD\u3061<select data-game-pair="${id}" aria-label="\u7B2C${i + 1}\u30B2\u30FC\u30E0 ${side === "left" ? "\u5DE6\u5074" : "\u53F3\u5074"}\u306E\u52DD\u3061\u5F97\u70B9">${opts(choices.filter((v2) => v2.side === side), selected)}</select></label>`).join("")}</div><select hidden tabindex="-1" aria-hidden="true" id="${id}">${opts(choices, selected)}</select></fieldset>`;
+    const id = prefix2 + i, selected2 = games2[i]?.join(",") ?? "";
+    return `<fieldset class="game-picker"><legend>\u7B2C${i + 1}\u30B2\u30FC\u30E0</legend><div class="game-columns">${["left", "right"].map((side) => `<label>${side === "left" ? "\u5DE6\u5074" : "\u53F3\u5074"}\u306E\u52DD\u3061<select data-game-pair="${id}" aria-label="\u7B2C${i + 1}\u30B2\u30FC\u30E0 ${side === "left" ? "\u5DE6\u5074" : "\u53F3\u5074"}\u306E\u52DD\u3061\u5F97\u70B9">${opts2(choices.filter((v2) => v2.side === side), selected2)}</select></label>`).join("")}</div><select hidden tabindex="-1" aria-hidden="true" id="${id}">${opts2(choices, selected2)}</select></fieldset>`;
   }).join("");
-  return `<div class="match"><strong>${name5(m.left)}</strong><span>VS</span><strong>${name5(m.right)}</strong></div><label>\u52DD\u8005\u5074\uFF08\u5148\u306B\u9078\u629E\u53EF\u30FB\u5F97\u70B9\u3068\u306E\u4E00\u81F4\u3092\u78BA\u8A8D\uFF09<select id="winnerChoice"><option value="">\u5F97\u70B9\u304B\u3089\u81EA\u52D5\u5224\u5B9A</option><option value="left">\u5DE6\u306E\u52DD\u3061</option><option value="right">\u53F3\u306E\u52DD\u3061</option></select></label><p>\u8A66\u5408 ${esc(label(m, t))} \xB7 ${r.base}\u70B9 / \u4E0A\u9650${r.cap} / ${r.wins}\u30B2\u30FC\u30E0\u5148\u53D6</p>${panels}<p id="${rubber >= 0 ? "rubber" + rubber + "Preview" : "scorePreview"}" aria-live="polite"></p><div class="actions">${button3("\u5F97\u70B9\u3092\u4FDD\u5B58", rubber >= 0 ? "rubberScore" : "saveScore", rubber >= 0 ? `data-index="${rubber}"` : "")}${rubber >= 0 ? button3("\u3053\u306E\u5185\u8A33\u3092\u53D6\u6D88", "rubberCancel", `data-index="${rubber}"`) : ""}${button3("\u623B\u308B", "back")}</div>${rubber < 0 ? `<div class="actions">${button3("\u5DE6\u306E\u4E0D\u6226\u52DD", "walkover", 'data-side="left"')}${button3("\u53F3\u306E\u4E0D\u6226\u52DD", "walkover", 'data-side="right"')}${button3("\u68C4\u6A29\u30FB\u9014\u4E2D\u68C4\u6A29", "termination")}${button3("\u7D50\u679C\u30FB\u9032\u884C\u3092\u53D6\u6D88", "cancel")}</div><label>\u8A02\u6B63\u7406\u7531\uFF08\u65E2\u5B58\u7D50\u679C\u306E\u5909\u66F4\u6642\u306B\u5FC5\u9808\uFF09<input id="reason"></label>` : ""}`;
+  const people = playerDirectory(t);
+  const sideLabel = (side) => name5(m[side]) + (rubber < 0 ? "" : "<br>" + m.rubbers[rubber][side].map((id) => esc(playerText(people, id, entryOf(t, m[side])?.players))).join("<br>"));
+  return `<div class="match"><strong>${sideLabel("left")}</strong><span>\u5BFE</span><strong>${sideLabel("right")}</strong></div><label>\u52DD\u8005\u5074\uFF08\u5148\u306B\u9078\u629E\u53EF\u30FB\u5F97\u70B9\u3068\u306E\u4E00\u81F4\u3092\u78BA\u8A8D\uFF09<select id="winnerChoice"><option value="">\u5F97\u70B9\u304B\u3089\u81EA\u52D5\u5224\u5B9A</option><option value="left">\u5DE6\u306E\u52DD\u3061</option><option value="right">\u53F3\u306E\u52DD\u3061</option></select></label><p>\u8A66\u5408 ${esc(label(m, t))} \xB7 ${r.base}\u70B9 / \u4E0A\u9650${r.cap} / ${r.wins}\u30B2\u30FC\u30E0\u5148\u53D6</p>${panels}<p id="${rubber >= 0 ? "rubber" + rubber + "Preview" : "scorePreview"}" aria-live="polite"></p><div class="actions">${button4("\u5F97\u70B9\u3092\u4FDD\u5B58", rubber >= 0 ? "rubberScore" : "saveScore", rubber >= 0 ? `data-index="${rubber}"` : "")}${rubber >= 0 ? button4("\u3053\u306E\u5185\u8A33\u3092\u53D6\u6D88", "rubberCancel", `data-index="${rubber}"`) : ""}${button4("\u623B\u308B", "back")}</div>${rubber < 0 ? `<div class="actions">${button4("\u5DE6\u306E\u4E0D\u6226\u52DD", "walkover", 'data-side="left"')}${button4("\u53F3\u306E\u4E0D\u6226\u52DD", "walkover", 'data-side="right"')}${button4("\u68C4\u6A29\u30FB\u9014\u4E2D\u68C4\u6A29", "termination")}${button4("\u7D50\u679C\u30FB\u9032\u884C\u3092\u53D6\u6D88", "cancel")}</div><label>\u8A02\u6B63\u7406\u7531\uFF08\u65E2\u5B58\u7D50\u679C\u306E\u5909\u66F4\u6642\u306B\u5FC5\u9808\uFF09<input id="reason"></label>` : ""}`;
 }
 function rangeGuide(t2) {
   return `<details><summary>\u7A2E\u76EE\u30FB\u7BC4\u56F2\u306E\u6307\u5B9A\u4F8B</summary><p>1\u884C\u5185\u306E\u8907\u6570\u6761\u4EF6\u306F ; \u3067\u533A\u5207\u308A\u307E\u3059\u3002* \u306F\u5168\u7A2E\u76EE\u3067\u3059\u3002\u5165\u529B\u4F8B BS:best:8; GS:round:2\u3002\u6E96\u3005\u6C7A\u52DD\u304B\u3089\u306F BS:after-best:8 \u306E\u3088\u3046\u306B\u6307\u5B9A\u3002\u6C7A\u52DD\u306E\u4E88\u5B9A\u7BC4\u56F2\u306F *:finals\u3001\u6B8B\u308A\u3059\u3079\u3066\u306F *:all\u3002\u8A66\u5408\u306E\u6307\u5B9A\u306F BS:through-match:BS-41\u3001\u307E\u305F\u306F BS:matches:BS-1,BS-3\u3002</p>
- ${table9(["\u7A2E\u76EE", "\u5229\u7528\u3067\u304D\u308B\u30E9\u30A6\u30F3\u30C9\u4F8B", "\u30B9\u30C6\u30FC\u30B8\u5225\u306E\u6307\u5B9A"], t2.events.map((e) => {
-    const code3 = e.code ?? e.id;
+ ${table9(["\u7A2E\u76EE", "\u5229\u7528\u3067\u304D\u308B\u30E9\u30A6\u30F3\u30C9\u4F8B", "\u30B9\u30C6\u30FC\u30B8\u5225\u306E\u6307\u5B9A"], t2.events.map((e, index) => {
+    const code3 = e.code ?? "\u7A2E\u76EE" + (index + 1);
     const stages = t2.stages.filter((s2) => s2.eventId === e.id), matches = t2.matches.filter((m) => m.eventId === e.id && m.status !== "bye");
     const max3 = Math.max(0, ...matches.map((m) => m.round));
     const best = stages.some((s2) => s2.kind === "bracket") ? [32, 16, 8, 4, 2].filter((n2) => n2 < 2 ** max3).map((n2) => code3 + ":best:" + n2) : [];
-    return [esc(code3), esc([...best, ...Array.from({ length: max3 }, (_2, i) => code3 + ":round:" + (i + 1))].join(" / ")), stages.map((s2) => esc(s2.name + " " + code3 + ":stage:" + s2.id + " \u307E\u305F\u306F " + code3 + ":through-stage:" + s2.id)).join("<br>")];
+    return [esc(code3), esc([...best, ...Array.from({ length: max3 }, (_2, i) => code3 + ":round:" + (i + 1))].join(" / ")), stages.map((s2, i) => esc(s2.name + " " + code3 + ":stage:" + (i + 1) + " \u307E\u305F\u306F " + code3 + ":through-stage:" + (i + 1))).join("<br>")];
   }))}<p>\u30D9\u30B9\u30C88\u6C7A\u5B9A\u307E\u3067\u306B\u306F\u6E96\u3005\u6C7A\u52DD\u306F\u542B\u307E\u308C\u307E\u305B\u3093\u3002\u6E96\u3005\u6C7A\u52DD\u7D42\u4E86\u307E\u3067\u306B\u306F\u30D9\u30B9\u30C84\u6C7A\u5B9A\u307E\u3067\u3092\u6307\u5B9A\u3057\u307E\u3059\u3002</p></details>`;
 }
 function calendarPanel(t2) {
@@ -110701,8 +111365,8 @@ function calendarPanel(t2) {
   return `<details><summary>\u8907\u6570\u65E5\u306E\u958B\u50AC\u65E5\u7A0B\u3092\u8A2D\u5B9A</summary>
  <p>1\u884C\u306B\u3064\u304D1\u65E5\u3002\u65E5\u4ED8 | \u958B\u59CB | \u7D42\u4E86 | \u30B3\u30FC\u30C8\u6570 | \u4F11\u61A9\u5206 | \u5BFE\u8C61\u7BC4\u56F2\u3002\u65E5\u4ED8\u9806\u3067\u6700\u521D\u306B\u8A72\u5F53\u3059\u308B\u958B\u50AC\u65E5\u306B\u5272\u308A\u5F53\u3066\u307E\u3059\u3002\u6700\u7D42\u65E5\u3092 *:all \u3068\u3059\u308B\u3068\u6B8B\u308A\u3092\u5BFE\u8C61\u306B\u3067\u304D\u307E\u3059\u3002\u4F11\u61A9\u306F\u9078\u624B\u306E\u6700\u4F4E\u9593\u9694\u3067\u3059\u3002\u5168\u30B3\u30FC\u30C8\u3092\u4F7F\u308F\u306A\u3044\u6642\u9593\u306F\u4EFB\u610F\u306E7\u5217\u76EE\u306B 12:00-13:00 \u306E\u3088\u3046\u306B\u6307\u5B9A\u3057\u307E\u3059\u3002</p>
  <label for="competitionDays">\u958B\u50AC\u65E5\u3054\u3068\u306E\u8A2D\u5B9A</label><textarea id="competitionDays" rows="4" placeholder="${esc(t2.date + " | 09:00 | 17:00 | " + t2.courts + " | 10 | " + code3 + ":best:8")}">${esc(formatDays(t2, t2.competitionDays ?? []))}</textarea>
- ${button3("\u958B\u50AC\u65E5\u7A0B\u3092\u4FDD\u5B58", "calendarSave")}${button3("\u30D9\u30B9\u30C88\u307E\u3067\u30FB\u6E96\u3005\u6C7A\u52DD\u304B\u3089\u306E2\u65E5\u9593\u4F8B", "calendarExample")}${rangeGuide(t2)}
- ${t2.competitionDays?.length ? select2("\u7E70\u308A\u8D8A\u3059\u8A66\u5408", "calendarMatch", t2.matches.filter((m) => m.status === "waiting").map((m) => ({ id: m.id, name: label(m, t2) + " " + (plannedDate(t2, m) ?? "\u65E5\u7A0B\u672A\u6307\u5B9A") }))) + select2("\u79FB\u52D5\u5148\u306E\u958B\u50AC\u65E5", "calendarDestination", t2.competitionDays.map((d) => ({ id: d.date, name: d.date }))) + button3("\u9078\u629E\u3057\u305F\u8A66\u5408\u3092\u958B\u50AC\u65E5\u306B\u79FB\u52D5", "calendarMove") : ""}</details>`;
+ ${button4("\u958B\u50AC\u65E5\u7A0B\u3092\u4FDD\u5B58", "calendarSave")}${button4("\u30D9\u30B9\u30C88\u307E\u3067\u30FB\u6E96\u3005\u6C7A\u52DD\u304B\u3089\u306E2\u65E5\u9593\u4F8B", "calendarExample")}${rangeGuide(t2)}
+ ${t2.competitionDays?.length ? select3("\u7E70\u308A\u8D8A\u3059\u8A66\u5408", "calendarMatch", t2.matches.filter((m) => m.status === "waiting").map((m) => ({ id: m.id, name: label(m, t2) + " " + (plannedDate(t2, m) ?? "\u65E5\u7A0B\u672A\u6307\u5B9A") }))) + select3("\u79FB\u52D5\u5148\u306E\u958B\u50AC\u65E5", "calendarDestination", t2.competitionDays.map((d) => ({ id: d.date, name: d.date }))) + button4("\u9078\u629E\u3057\u305F\u8A66\u5408\u3092\u958B\u50AC\u65E5\u306B\u79FB\u52D5", "calendarMove") : ""}</details>`;
 }
 function registrationPanel(t2) {
   if (registrationTournament !== t2.id) {
@@ -110719,75 +111383,75 @@ function registrationPanel(t2) {
   const shown = players.filter((p) => !registrationTeam || p.teamId === registrationTeam).sort((a, b) => a.club.localeCompare(b.club, "ja") || (a.teamRank ?? Infinity) - (b.teamRank ?? Infinity) || a.name.localeCompare(b.name, "ja"));
   const people = shown.slice(registrationPage * 50, registrationPage * 50 + 50);
   const locked = (id) => t2.stages.some((s2) => s2.eventId === id);
-  const selected = players.find((p) => p.id === registrationPlayer);
+  const selected2 = players.find((p) => p.id === registrationPlayer);
   const team = registrationTeam || teams[0]?.id || "";
-  const edit = selected?.id ?? "";
+  const edit = selected2?.id ?? "";
   return section("\u5927\u4F1A\u53C2\u52A0\u8005\u30FB\u30A8\u30F3\u30C8\u30EA\u30FC", `<details open><summary>\u30C1\u30FC\u30E0\u3068\u5927\u4F1A\u540D\u7C3F\uFF08${players.length}\u540D\uFF09</summary>
- ${input2("\u65B0\u898F\u30C1\u30FC\u30E0\u540D", "regTeamName")}${button3("\u30C1\u30FC\u30E0\u3092\u8FFD\u52A0", "regTeamAdd")}
- ${select2("\u8868\u793A\u3059\u308B\u6240\u5C5E", "regFilter", teamList, registrationTeam)}${button3("\u6240\u5C5E\u3067\u7D5E\u308B", "regFilter")}
- ${select2("\u767B\u9332\u3059\u308B\u6240\u5C5E", "regTeam", teams, selected?.teamId ?? team)}
- ${edit ? input2("\u53C2\u52A0\u8005ID\uFF08\u518D\u63D0\u51FA\u7528\uFF09", "regParticipantId", edit).replace("<input ", "<input readonly ") : ""}
- ${input2("\u6C0F\u540D", "regName", selected?.name ?? "")}${input2("\u3075\u308A\u304C\u306A", "regKana", selected?.kana ?? "")}
- ${input2("\u30C1\u30FC\u30E0\u5185\u9806\u4F4D\uFF08\u7A7A\u6B04\u306F\u672B\u5C3E\uFF09", "regRank", selected?.teamRank ?? "", "number")}
- <details><summary>\u4EFB\u610F\u306E\u53C2\u52A0\u8CC7\u683C\u60C5\u5831</summary>${input2("\u6027\u5225", "regGender", selected?.gender ?? "")}${input2("\u5E74\u9F62", "regAge", selected?.age ?? "", "number")}${input2("\u5B66\u5E74", "regGrade", selected?.grade ?? "")}</details>
+ ${input3("\u65B0\u898F\u30C1\u30FC\u30E0\u540D", "regTeamName")}${button4("\u30C1\u30FC\u30E0\u3092\u8FFD\u52A0", "regTeamAdd")}
+ ${select3("\u8868\u793A\u3059\u308B\u6240\u5C5E", "regFilter", teamList, registrationTeam)}${button4("\u6240\u5C5E\u3067\u7D5E\u308B", "regFilter")}
+ ${select3("\u767B\u9332\u3059\u308B\u6240\u5C5E", "regTeam", teams, selected2?.teamId ?? team)}
+ ${edit ? button4("Excel\u518D\u63D0\u51FA\u7528\u306E\u53C2\u52A0\u8005\u756A\u53F7\u3092\u30B3\u30D4\u30FC", "regCopyIdentifier", `data-id="${esc(edit)}"`) : ""}
+ ${input3("\u6C0F\u540D", "regName", selected2?.name ?? "")}${input3("\u3075\u308A\u304C\u306A", "regKana", selected2?.kana ?? "")}
+ ${input3("\u30C1\u30FC\u30E0\u5185\u9806\u4F4D\uFF08\u7A7A\u6B04\u306F\u672B\u5C3E\uFF09", "regRank", selected2?.teamRank ?? "", "number")}
+ <details><summary>\u4EFB\u610F\u306E\u53C2\u52A0\u8CC7\u683C\u60C5\u5831</summary>${input3("\u6027\u5225", "regGender", selected2?.gender ?? "")}${input3("\u5E74\u9F62", "regAge", selected2?.age ?? "", "number")}${input3("\u5B66\u5E74", "regGrade", selected2?.grade ?? "")}</details>
  ${teams.length ? `<details data-reg-panel="bulk" ${expandedRegistration.has("bulk") ? "open" : ""}><summary>\u30C1\u30FC\u30E0\u5185\u9078\u624B\u306E\u4E00\u62EC\u767B\u9332</summary>
- ${select2("\u4E00\u62EC\u767B\u9332\u3059\u308B\u6240\u5C5E", "bulkTeam", teams, team)}<label for="bulkMembers">1\u884C1\u4EBA\u3002\u6C0F\u540D\u306E\u307F\u3001\u307E\u305F\u306F\u6C0F\u540D\u30FB\u3075\u308A\u304C\u306A\u3092\u30BF\u30D6\uFF0F\u30AB\u30F3\u30DE\u3067\u533A\u5207\u3063\u3066\u8CBC\u308A\u4ED8\u3051</label><textarea id="bulkMembers" rows="5"></textarea>${button3("\u767B\u9332\u524D\u30D7\u30EC\u30D3\u30E5\u30FC", "bulkPreview")}</details>` : ""}
- ${button3(edit ? "\u53C2\u52A0\u8005\u3092\u66F4\u65B0" : "\u53C2\u52A0\u8005\u3092\u8FFD\u52A0", "regPersonSave")}${edit ? button3("\u65B0\u898F\u767B\u9332\u306B\u623B\u308B", "regEdit") : ""}
+ ${select3("\u4E00\u62EC\u767B\u9332\u3059\u308B\u6240\u5C5E", "bulkTeam", teams, team)}<label for="bulkMembers">1\u884C1\u4EBA\u3002\u6C0F\u540D\u306E\u307F\u3001\u307E\u305F\u306F\u6C0F\u540D\u30FB\u3075\u308A\u304C\u306A\u3092\u30BF\u30D6\uFF0F\u30AB\u30F3\u30DE\u3067\u533A\u5207\u3063\u3066\u8CBC\u308A\u4ED8\u3051</label><textarea id="bulkMembers" rows="5"></textarea>${button4("\u767B\u9332\u524D\u30D7\u30EC\u30D3\u30E5\u30FC", "bulkPreview")}</details>` : ""}
+ ${button4(edit ? "\u53C2\u52A0\u8005\u3092\u66F4\u65B0" : "\u53C2\u52A0\u8005\u3092\u8FFD\u52A0", "regPersonSave")}${edit ? button4("\u65B0\u898F\u767B\u9332\u306B\u623B\u308B", "regEdit") : ""}
  <p>\u30A8\u30F3\u30C8\u30EA\u30FC\u306F\u7A2E\u76EE\u3054\u3068\u306B\u5207\u308A\u66FF\u3048\u307E\u3059\u3002\u30C0\u30D6\u30EB\u30B9\u306F\u540C\u3058\u756A\u53F7\u306E2\u540D\u30671\u7D44\u3067\u3059\u3002\u7D44\u5408\u305B\u78BA\u5B9A\u5F8C\u306F\u5909\u66F4\u3067\u304D\u307E\u305B\u3093\u3002</p>
  ${table9(["\u6C0F\u540D\u30FB\u3075\u308A\u304C\u306A", "\u6240\u5C5E\u30FB\u9806\u4F4D", ...evs.map((e) => e.code ?? e.name)], people.map((p) => [
-    button3(p.name + (p.kana ? "\uFF08" + p.kana + "\uFF09" : ""), "regEdit", `data-id="${esc(p.id)}"`),
+    button4(p.name + (p.kana ? "\uFF08" + p.kana + "\uFF09" : ""), "regEdit", `data-id="${esc(p.id)}"`),
     esc([p.club, p.teamRank].filter(Boolean).join(" / ")),
     ...evs.map((e) => {
       const entry = e.entries.find((x) => x.players.includes(p.id)), draft = e.pairDrafts?.find((x) => x.players.includes(p.id));
       const active = !!entry || !!draft;
-      return button3(e.type !== "doubles" ? active ? "\u25CB" : "\u672A\u9078\u629E" : entry ? String(pairDisplay(withRoster, e, { number: entry.pairNo ?? 0, players: entry.players, pairRank: entry.pairRank, id: entry.id })) : draft ? pairDisplay(withRoster, e, draft) + "\uFF08\u6B20\u54E1\uFF09" : "\u672A\u9078\u629E", "regToggle", `data-id="${esc(p.id)}" data-event="${esc(e.id)}" data-active="${active}" aria-pressed="${active}" ${locked(e.id) ? "disabled data-fixed-disabled" : ""}`);
+      return button4(e.type !== "doubles" ? active ? "\u25CB" : "\u672A\u9078\u629E" : entry ? String(pairDisplay(withRoster, e, { number: entry.pairNo ?? 0, players: entry.players, pairRank: entry.pairRank, id: entry.id })) : draft ? pairDisplay(withRoster, e, draft) + "\uFF08\u6B20\u54E1\uFF09" : "\u672A\u9078\u629E", "regToggle", `data-id="${esc(p.id)}" data-event="${esc(e.id)}" data-active="${active}" aria-pressed="${active}" ${locked(e.id) ? "disabled data-fixed-disabled" : ""}`);
     })
   ]))}
- <div class="actions">${registrationPage > 0 ? button3("\u524D\u306E50\u540D", "regPrevious") : ""}${shown.length > (registrationPage + 1) * 50 ? button3("\u6B21\u306E50\u540D", "regNext") : ""}</div>
+ <div class="actions">${registrationPage > 0 ? button4("\u524D\u306E50\u540D", "regPrevious") : ""}${shown.length > (registrationPage + 1) * 50 ? button4("\u6B21\u306E50\u540D", "regNext") : ""}</div>
  </details>
  <details data-reg-panel="seeds" ${expandedRegistration.has("seeds") ? "open" : ""}><summary>\u30DA\u30A2\u30FB\u7A2E\u76EE\u5225\u30B7\u30FC\u30C9\u30FB\u53C2\u52A0\u8CC7\u683C</summary>
  ${evs.map((e) => `<details data-reg-panel="${e.id}" ${expandedRegistration.has(e.id) ? "open" : ""}><summary>${esc(e.code ?? e.name)} ${e.entries.length}\u67A0</summary>
  ${locked(e.id) ? "<p>\u7D44\u5408\u305B\u304C\u3042\u308B\u305F\u3081\u5909\u66F4\u306B\u306F\u4FDD\u7BA1\u30FB\u53D6\u6D88\u304C\u5FC5\u8981\u3067\u3059\u3002</p>" : ""}
- ${!locked(e.id) ? `<div class="row">${input2("\u6027\u5225\u6761\u4EF6\uFF08\u4EFB\u610F\u30FB\u5B8C\u5168\u4E00\u81F4\uFF09", "regGender" + e.id, e.entryEligibility?.gender ?? "")}${input2("\u5B66\u5E74\u6761\u4EF6\uFF08\u4EFB\u610F\u30FB\u5B8C\u5168\u4E00\u81F4\uFF09", "regGrade" + e.id, e.entryEligibility?.grade ?? "")}${input2("\u6700\u5C0F\u5E74\u9F62", "regMin" + e.id, e.entryEligibility?.minAge ?? "", "number")}${input2("\u6700\u5927\u5E74\u9F62", "regMax" + e.id, e.entryEligibility?.maxAge ?? "", "number")}</div>${button3("\u53C2\u52A0\u8CC7\u683C\u3092\u4FDD\u5B58", "regEligibility", `data-event="${e.id}"`)}` : ""}
+ ${!locked(e.id) ? `<div class="row">${input3("\u6027\u5225\u6761\u4EF6\uFF08\u4EFB\u610F\u30FB\u5B8C\u5168\u4E00\u81F4\uFF09", "regGender" + e.id, e.entryEligibility?.gender ?? "")}${input3("\u5B66\u5E74\u6761\u4EF6\uFF08\u4EFB\u610F\u30FB\u5B8C\u5168\u4E00\u81F4\uFF09", "regGrade" + e.id, e.entryEligibility?.grade ?? "")}${input3("\u6700\u5C0F\u5E74\u9F62", "regMin" + e.id, e.entryEligibility?.minAge ?? "", "number")}${input3("\u6700\u5927\u5E74\u9F62", "regMax" + e.id, e.entryEligibility?.maxAge ?? "", "number")}</div>${button4("\u53C2\u52A0\u8CC7\u683C\u3092\u4FDD\u5B58", "regEligibility", `data-event="${e.id}"`)}` : ""}
  ${e.type === "doubles" ? pairSlots(e).map((x) => {
     const teamId = pairScope({ ...t2, roster: players }, x.players), teamName = teamId === "@mixed" ? "\u7570\u6240\u5C5E" : teams.find((team2) => team2.id === teamId)?.name ?? "\u6240\u5C5E\u306A\u3057";
     const rank = pairDisplay({ ...t2, roster: players }, e, x);
-    return `<p>${esc(teamName)} ${rank} \xB7 ${x.players.map((id) => esc(players.find((p) => p.id === id)?.name ?? id)).join(" \uFF0F ")}${x.players.length === 1 ? " \uFF0F \u6B20\u54E1" : ""}</p>${!locked(e.id) ? button3("\u30DA\u30A2\u69CB\u6210\u3092\u7DE8\u96C6", "regPair", `data-event="${e.id}" data-pair="${x.number || ""}" data-id="${x.id ?? ""}"`) : ""}${x.id && x.number ? input2("\u30C1\u30FC\u30E0\u5185\u30DA\u30A2\u9806\u4F4D", "pairRank" + x.id, rank, "number") + button3("\u30DA\u30A2\u9806\u4F4D\u3092\u4FDD\u5B58", "regPairRank", `data-event="${e.id}" data-pair="${x.number}" data-id="${x.id}"`) : ""}`;
-  }).join("") + (!locked(e.id) ? button3("\u7570\u6240\u5C5E\u30DA\u30A2\u3092\u500B\u5225\u767B\u9332", "regPair", `data-event="${e.id}"`) : "") : ""}
- ${table9(["\u767B\u9332\u9078\u624B\u30FB\u30DA\u30A2", "\u30B7\u30FC\u30C9\uFF080\u306F\u672A\u6307\u5B9A\uFF09"], e.entries.map((x) => [esc(x.name), locked(e.id) ? x.seed : input2("\u9806\u4F4D", "regSeed" + x.id, x.seed, "number") + button3("\u4FDD\u5B58", "regSeed", `data-event="${e.id}" data-id="${x.id}"`)]))}
+    return `<p>${esc(teamName)} ${rank} \xB7 ${x.players.map((id) => esc(players.find((p) => p.id === id)?.name ?? id)).join(" \uFF0F ")}${x.players.length === 1 ? " \uFF0F \u6B20\u54E1" : ""}</p>${!locked(e.id) ? button4("\u30DA\u30A2\u69CB\u6210\u3092\u7DE8\u96C6", "regPair", `data-event="${e.id}" data-pair="${x.number || ""}" data-id="${x.id ?? ""}"`) : ""}${x.id && x.number ? input3("\u30C1\u30FC\u30E0\u5185\u30DA\u30A2\u9806\u4F4D", "pairRank" + x.id, rank, "number") + button4("\u30DA\u30A2\u9806\u4F4D\u3092\u4FDD\u5B58", "regPairRank", `data-event="${e.id}" data-pair="${x.number}" data-id="${x.id}"`) : ""}`;
+  }).join("") + (!locked(e.id) ? button4("\u7570\u6240\u5C5E\u30DA\u30A2\u3092\u500B\u5225\u767B\u9332", "regPair", `data-event="${e.id}"`) : "") : ""}
+ ${table9(["\u767B\u9332\u9078\u624B\u30FB\u30DA\u30A2", "\u30B7\u30FC\u30C9\uFF080\u306F\u672A\u6307\u5B9A\uFF09"], e.entries.map((x) => [esc(x.name), locked(e.id) ? x.seed : input3("\u9806\u4F4D", "regSeed" + x.id, x.seed, "number") + button4("\u4FDD\u5B58", "regSeed", `data-event="${e.id}" data-id="${x.id}"`)]))}
  </details>`).join("")}
  </details>
  <details data-reg-panel="applications" ${expandedRegistration.has("applications") ? "open" : ""}><summary>\u5927\u4F1A\u5C02\u7528\u306EExcel\u7533\u8FBC</summary>
- ${select2("\u5E74\u9F62\u30FB\u5B66\u5E74\u6B04", "regApplicationFields", [{ id: "none", name: "\u4F7F\u7528\u3057\u306A\u3044" }, { id: "age", name: "\u5E74\u9F62" }, { id: "grade", name: "\u5B66\u5E74" }], t2.applicationFields ?? "none")}
- ${button3("\u7533\u8FBC\u9805\u76EE\u3092\u4FDD\u5B58", "regApplicationConfig")}${button3("\u5927\u4F1A\u5C02\u7528\u306E\u7533\u8FBCExcel\u3092\u4F5C\u6210", "regWorkbook")}
+ ${select3("\u5E74\u9F62\u30FB\u5B66\u5E74\u6B04", "regApplicationFields", [{ id: "none", name: "\u4F7F\u7528\u3057\u306A\u3044" }, { id: "age", name: "\u5E74\u9F62" }, { id: "grade", name: "\u5B66\u5E74" }], t2.applicationFields ?? "none")}
+ ${button4("\u7533\u8FBC\u9805\u76EE\u3092\u4FDD\u5B58", "regApplicationConfig")}${button4("\u5927\u4F1A\u5C02\u7528\u306E\u7533\u8FBCExcel\u3092\u4F5C\u6210", "regWorkbook")}
  <label>\u30C1\u30FC\u30E0\u304B\u3089\u53D7\u9818\u3057\u305F\u7533\u8FBC\u66F8<input type="file" id="regFiles" accept=".xlsx" multiple></label>
- ${button3("\u7533\u8FBC\u306E\u5DEE\u5206\u3092\u78BA\u8A8D", "regPreview")}
+ ${button4("\u7533\u8FBC\u306E\u5DEE\u5206\u3092\u78BA\u8A8D", "regPreview")}
  </details>`);
 }
 async function render() {
   const token = ++epoch;
-  $2("nav").innerHTML = [["home", "\u5927\u4F1A\u4E00\u89A7"], ["manage", "\u767B\u9332\u30FB\u8A2D\u5B9A"], ["draw", "\u7D44\u5408\u305B"], ["matches", "\u5F97\u70B9\u30FB\u9032\u884C"], ["results", "\u9806\u4F4D\u30FB\u5E33\u7968"], ["practice", "\u7DF4\u7FD2"], ["tools", "\u904B\u55B6\u8A2D\u5B9A"], ["backup", "\u4FDD\u5B58\u30FB\u5FA9\u65E7"], ["help", "\u4F7F\u3044\u65B9"]].map(([p, n2]) => button3(n2, "nav", `data-page="${p}" class="${page === p ? "selected" : ""}"`)).join("");
+  $2("nav").innerHTML = [["home", "\u5927\u4F1A\u4E00\u89A7"], ["manage", "\u767B\u9332\u30FB\u8A2D\u5B9A"], ["draw", "\u7D44\u5408\u305B"], ["matches", "\u5F97\u70B9\u30FB\u9032\u884C"], ["results", "\u9806\u4F4D\u30FB\u5E33\u7968"], ["practice", "\u7DF4\u7FD2"], ["tools", "\u904B\u55B6\u8A2D\u5B9A"], ["backup", "\u4FDD\u5B58\u30FB\u5FA9\u65E7"], ["help", "\u4F7F\u3044\u65B9"]].map(([p, n2]) => button4(n2, "nav", `data-page="${p}" class="${page === p ? "selected" : ""}"`)).join("");
   if (page === "home") {
     const list = await db.list();
     if (token !== epoch) return;
-    $2("main").innerHTML = section("\u7AEF\u672B\u5185\u306E\u5927\u4F1A", `<p class="muted">\u5404\u7AEF\u672B\u304C\u72EC\u7ACB\u3057\u3066\u4FDD\u5B58\u3057\u307E\u3059\u3002\u5927\u4F1A\u958B\u59CB\u524D\u3068\u7D42\u4E86\u5F8C\u306B\u5927\u4F1A\u30D5\u30A1\u30A4\u30EB\u3092\u4FDD\u5B58\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>${table9(["\u5927\u4F1A\u540D", "\u958B\u50AC\u65E5", "\u66F4\u65B0", "\u64CD\u4F5C"], list.map((x) => [esc(x.name), esc(x.date), x.revision, button3("\u958B\u304F", "open", `data-id="${esc(x.id)}" ${x.error ? "disabled" : ""}`)]))}`) + section("\u5927\u4F1A\u3092\u4F5C\u6210", input2("\u5927\u4F1A\u540D", "newName") + button3("\u65B0\u898F\u4F5C\u6210", "create")) + section("\u5FA9\u65E7\u30FB\u8A3A\u65AD", button3("\u5168\u5927\u4F1A\u306E\u5185\u90E8\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u3092\u8868\u793A", "recovery") + button3("\u8A3A\u65AD\u30ED\u30B0\u51FA\u529B", "logs")) + section("\u5927\u4F1A\u30D5\u30A1\u30A4\u30EB\u304B\u3089\u53D6\u8FBC", `<input type="file" id="importFile" accept=".bdmt">${button3("\u5225\u5927\u4F1A\u3068\u3057\u3066\u5FA9\u5143", "import")}`);
+    $2("main").innerHTML = section("\u7AEF\u672B\u5185\u306E\u5927\u4F1A", `<p class="muted">\u5404\u7AEF\u672B\u304C\u72EC\u7ACB\u3057\u3066\u4FDD\u5B58\u3057\u307E\u3059\u3002\u5927\u4F1A\u958B\u59CB\u524D\u3068\u7D42\u4E86\u5F8C\u306B\u5927\u4F1A\u30D5\u30A1\u30A4\u30EB\u3092\u4FDD\u5B58\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>${table9(["\u5927\u4F1A\u540D", "\u958B\u50AC\u65E5", "\u66F4\u65B0", "\u64CD\u4F5C"], list.map((x) => [esc(x.name), esc(x.date), x.revision, button4("\u958B\u304F", "open", `data-id="${esc(x.id)}" ${x.error ? "disabled" : ""}`)]))}`) + section("\u30C1\u30FC\u30E0\u3068\u7DF4\u7FD2", button4("\u30C1\u30FC\u30E0\u7BA1\u7406", "nav", 'data-page="community"') + button4("\u7DF4\u7FD2\u3092\u958B\u304F", "nav", 'data-page="practice-home"')) + section("\u5927\u4F1A\u3092\u4F5C\u6210", input3("\u5927\u4F1A\u540D", "newName") + button4("\u65B0\u898F\u4F5C\u6210", "create")) + section("\u5FA9\u65E7\u30FB\u8A3A\u65AD", button4("\u5168\u5927\u4F1A\u306E\u5185\u90E8\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u3092\u8868\u793A", "recovery") + button4("\u8A3A\u65AD\u30ED\u30B0\u51FA\u529B", "logs")) + section("\u5927\u4F1A\u30D5\u30A1\u30A4\u30EB\u304B\u3089\u53D6\u8FBC", `<input type="file" id="importFile" accept=".bdmt">${button4("\u5225\u5927\u4F1A\u3068\u3057\u3066\u5FA9\u5143", "import")}`);
     return;
   }
   if (page === "recovery") {
     const snapshots = await db.rows("snapshots");
     if (token !== epoch) return;
     const rows = snapshots.sort((a, b) => b.savedAt - a.savedAt).map((s2) => {
-      let title2 = "\u5927\u4F1A\u540D\u3092\u8AAD\u307F\u53D6\u308C\u307E\u305B\u3093";
+      let title3 = "\u5927\u4F1A\u540D\u3092\u8AAD\u307F\u53D6\u308C\u307E\u305B\u3093";
       try {
-        const value = JSON.parse(s2.json).name;
-        if (typeof value === "string") title2 = value;
+        const value2 = JSON.parse(s2.json).name;
+        if (typeof value2 === "string") title3 = value2;
       } catch {
       }
-      return `<li><strong>${esc(title2)}</strong><span>\u66F4\u65B0 ${s2.revision}\u3000${esc(new Date(s2.savedAt).toLocaleString("ja-JP"))}</span>${button3("\u5225\u5927\u4F1A\u3078\u5FA9\u5143", "snapshot", `data-id="${esc(s2.id)}"`)}</li>`;
+      return `<li><strong>${esc(title3)}</strong><span>\u66F4\u65B0 ${s2.revision}\u3000${esc(new Date(s2.savedAt).toLocaleString("ja-JP"))}</span>${button4("\u5225\u5927\u4F1A\u3078\u5FA9\u5143", "snapshot", `data-id="${esc(s2.id)}"`)}</li>`;
     }).join("");
     $2("main").innerHTML = section(
       "\u5168\u5927\u4F1A\u306E\u5185\u90E8\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7",
-      '<p>\u5FA9\u5143\u306F\u5225\u5927\u4F1A\u3068\u3057\u3066\u4FDD\u5B58\u3057\u307E\u3059\u3002</p><ul class="snapshot-list">' + rows + "</ul>" + button3("\u5927\u4F1A\u4E00\u89A7\u3078", "nav", 'data-page="home"')
+      '<p>\u5FA9\u5143\u306F\u5225\u5927\u4F1A\u3068\u3057\u3066\u4FDD\u5B58\u3057\u307E\u3059\u3002</p><ul class="snapshot-list">' + rows + "</ul>" + button4("\u5927\u4F1A\u4E00\u89A7\u3078", "nav", 'data-page="home"')
     );
     return;
   }
@@ -110795,51 +111459,63 @@ async function render() {
     $2("main").innerHTML = section("iPhone\u3067\u4F7F\u3046", `<ol><li>\u914D\u5E03\u7528dist\u306E\u5168\u30D5\u30A1\u30A4\u30EB\u3092\u540C\u3058HTTPS URL\u3078\u914D\u7F6E\u3057\u307E\u3059\u3002\u521D\u56DE\u306F\u901A\u4FE1\u304C\u5FC5\u8981\u3067\u3059\u3002</li><li>Safari\u3067\u958B\u304D\u300C\u5171\u6709\u300D\u2192\u300C\u30DB\u30FC\u30E0\u753B\u9762\u306B\u8FFD\u52A0\u300D\u3002\u30DB\u30FC\u30E0\u753B\u9762\u304B\u3089\u8D77\u52D5\u3057\u3066\u304F\u3060\u3055\u3044\u3002</li><li>\u300C\u30AA\u30D5\u30E9\u30A4\u30F3\u6E96\u5099\u5B8C\u4E86\u300D\u3092\u78BA\u8A8D\u3057\u3001\u4E00\u5EA6\u7D42\u4E86\u3057\u3066\u6A5F\u5185\u30E2\u30FC\u30C9\u3067\u518D\u8D77\u52D5\u3057\u307E\u3059\u3002</li><li>\u7DF4\u7FD2\u7528\u5927\u4F1A\u3092\u4F5C\u6210\u3057\u3001\u5F97\u70B9\u4FDD\u5B58\u2192\u518D\u8D77\u52D5\u2192\u30D5\u30A1\u30A4\u30EB\u51FA\u529B\u2192\u5FA9\u5143\u307E\u3067\u78BA\u8A8D\u3057\u307E\u3059\u3002</li></ol><p>\u30DB\u30FC\u30E0\u753B\u9762\u7248\u3068Safari\u30BF\u30D6\u3001\u5225\u306EURL\u3067\u306F\u4FDD\u5B58\u9818\u57DF\u304C\u7570\u306A\u308B\u5834\u5408\u304C\u3042\u308A\u307E\u3059\u3002\u5229\u7528\u3059\u308B\u8D77\u52D5\u65B9\u6CD5\u3068URL\u3092\u56FA\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p><p>\u5916\u90E8\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u306F\u300C\u5927\u4F1A\u30D5\u30A1\u30A4\u30EB\u4F5C\u6210\u300D\u2192\u5171\u6709\u2192\u300C\u30D5\u30A1\u30A4\u30EB\u306B\u4FDD\u5B58\u300D\u3002\u4FDD\u5B58\u5148\u3067\u5B9F\u30D5\u30A1\u30A4\u30EB\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u81EA\u52D5\u30B9\u30CA\u30C3\u30D7\u30B7\u30E7\u30C3\u30C8\u3082\u540C\u3058\u30D6\u30E9\u30A6\u30B6\u4FDD\u5B58\u9818\u57DF\u5185\u306A\u306E\u3067\u3001\u5916\u90E8\u4FDD\u5B58\u306E\u4EE3\u308F\u308A\u306B\u306F\u306A\u308A\u307E\u305B\u3093\u3002</p><p>\u5370\u5237\u753B\u9762\u304B\u3089PDF\u4FDD\u5B58\u304C\u53EF\u80FD\u3067\u3059\u3002iPhone\u3067\u306F\u30D7\u30EC\u30D3\u30E5\u30FC\u3092\u62E1\u5927\u3057\u3066\u5171\u6709\u2192\u30D5\u30A1\u30A4\u30EB\u306B\u4FDD\u5B58\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p><p>RC3\uFF1A\u904B\u55B6\u8A2D\u5B9A\u306B\u540C\u9806\u4F4D\u88C1\u5B9A\u30FB\u6C7A\u52DD\u53D6\u6D88\u30FB\u56E3\u4F53\u30EB\u30FC\u30EB\u30FBGAS\u79FB\u884C\u30D7\u30EC\u30D3\u30E5\u30FC\u3092\u8FFD\u52A0\u3057\u307E\u3057\u305F\u3002\u5B9F\u5927\u4F1A\u524D\u306B\u540C\u68B1\u306E\u53D7\u5165\u30C1\u30A7\u30C3\u30AF\u3092\u5B9F\u65BD\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>`);
     return;
   }
+  if (page === "community" || page === "practice-home") {
+    const rows = await db.rows("masters");
+    if (token !== epoch) return;
+    $2("main").innerHTML = button4("\u5927\u4F1A\u4E00\u89A7\u3078", "nav", 'data-page="home"') + renderCommunity(rows, page);
+    mountCommunity($2("main"));
+    return;
+  }
   if (!t) {
-    $2("main").innerHTML = section("\u5927\u4F1A\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044", button3("\u5927\u4F1A\u4E00\u89A7\u3078", "nav", 'data-page="home"'));
+    $2("main").innerHTML = section("\u5927\u4F1A\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044", button4("\u5927\u4F1A\u4E00\u89A7\u3078", "nav", 'data-page="home"'));
     return;
   }
   renderEntries = new Map(t.events.flatMap((e) => e.entries).map((p) => [p.id, p]));
   const heading = `<p class="muted">${esc(t.name)} \xB7 \u66F4\u65B0 ${t.revision} \xB7 ${esc(t.date)}</p>`;
   let html = "";
   if (page === "tools") {
-    html = t.events.length ? await renderAdvanced(context2()) : section("\u7A2E\u76EE\u3092\u5148\u306B\u4F5C\u6210\u3057\u3066\u304F\u3060\u3055\u3044", button3("\u767B\u9332\u30FB\u8A2D\u5B9A\u3078", "nav", 'data-page="manage"'));
+    html = t.events.length ? await renderAdvanced(context2()) : section("\u7A2E\u76EE\u3092\u5148\u306B\u4F5C\u6210\u3057\u3066\u304F\u3060\u3055\u3044", button4("\u767B\u9332\u30FB\u8A2D\u5B9A\u3078", "nav", 'data-page="manage"'));
     if (token !== epoch) return;
   }
   if (page === "manage") {
-    html = section("\u5927\u4F1A\u8A2D\u5B9A", input2("\u5927\u4F1A\u540D", "tname", t.name) + input2("\u958B\u50AC\u65E5", "tdate", t.date, "date") + input2("\u4F1A\u5834", "venue", t.venue) + input2("\u4E3B\u50AC\u8005", "organizer", t.organizer || "") + input2("\u7D42\u4E86\u65E5", "endDate", t.endDate || "", "date") + input2("\u5927\u4F1A\u533A\u5206", "category", t.category || "") + input2("\u5927\u4F1A\u72B6\u614B", "tourState", t.state || "\u6E96\u5099\u4E2D") + input2("\u30B3\u30FC\u30C8\u6570\uFF081\u301C64\uFF09", "courts", t.courts, "number") + `<div class="actions">${button3("\u8A2D\u5B9A\u3092\u4FDD\u5B58", "settings")}${button3("\u5927\u4F1A\u3092\u8907\u88FD", "duplicate")}${button3("\u5927\u4F1A\u3092\u524A\u9664", "delete")}</div>`) + section("\u7A2E\u76EE\u8FFD\u52A0", input2("\u7A2E\u76EE\u540D", "ename") + input2("\u7A2E\u76EE\u8A18\u53F7\uFF08BS\u30FBGS\u306A\u3069\uFF09", "newEventCode", "") + select2("\u7AF6\u6280\u5F62\u5F0F", "etype", [{ id: "singles", name: "\u30B7\u30F3\u30B0\u30EB\u30B9" }, { id: "doubles", name: "\u30C0\u30D6\u30EB\u30B9" }, { id: "team", name: "\u56E3\u4F53\u6226" }]) + `<div class="row">${input2("\u57FA\u672C\u70B9", "base", 21, "number")}${input2("\u4E0A\u9650", "cap", 30, "number")}${input2("\u5FC5\u8981\u52DD\u6570", "wins", 2, "number")}</div>` + select2("\u30C7\u30E5\u30FC\u30B9", "deuce", [{ id: "yes", name: "\u3042\u308A" }, { id: "no", name: "\u306A\u3057" }]) + button3("\u7A2E\u76EE\u3092\u8FFD\u52A0", "eventAdd"));
+    html = section("\u5927\u4F1A\u8A2D\u5B9A", input3("\u5927\u4F1A\u540D", "tname", t.name) + input3("\u958B\u50AC\u65E5", "tdate", t.date, "date") + input3("\u4F1A\u5834", "venue", t.venue) + input3("\u4E3B\u50AC\u8005", "organizer", t.organizer || "") + input3("\u7D42\u4E86\u65E5", "endDate", t.endDate || "", "date") + input3("\u5927\u4F1A\u533A\u5206", "category", t.category || "") + input3("\u5927\u4F1A\u72B6\u614B", "tourState", t.state || "\u6E96\u5099\u4E2D") + input3("\u30B3\u30FC\u30C8\u6570\uFF081\u301C64\uFF09", "courts", t.courts, "number") + `<div class="actions">${button4("\u8A2D\u5B9A\u3092\u4FDD\u5B58", "settings")}${button4("\u5927\u4F1A\u3092\u8907\u88FD", "duplicate")}${button4("\u5927\u4F1A\u3092\u524A\u9664", "delete")}</div>`) + section("\u7A2E\u76EE\u8FFD\u52A0", input3("\u7A2E\u76EE\u540D", "ename") + input3("\u7A2E\u76EE\u8A18\u53F7\uFF08BS\u30FBGS\u306A\u3069\uFF09", "newEventCode", "") + select3("\u7AF6\u6280\u5F62\u5F0F", "etype", [{ id: "singles", name: "\u30B7\u30F3\u30B0\u30EB\u30B9" }, { id: "doubles", name: "\u30C0\u30D6\u30EB\u30B9" }, { id: "team", name: "\u56E3\u4F53\u6226" }]) + `<div class="row">${input3("\u57FA\u672C\u70B9", "base", 21, "number")}${input3("\u4E0A\u9650", "cap", 30, "number")}${input3("\u5FC5\u8981\u52DD\u6570", "wins", 2, "number")}</div>` + select3("\u30C7\u30E5\u30FC\u30B9", "deuce", [{ id: "yes", name: "\u3042\u308A" }, { id: "no", name: "\u306A\u3057" }]) + button4("\u7A2E\u76EE\u3092\u8FFD\u52A0", "eventAdd"));
     html += registrationPanel(t);
     if (t.events.length) {
       const e = currentEvent();
-      if (e.type === "team") html += section("\u56E3\u4F53\u3092\u500B\u5225\u767B\u9332", `<p class="muted">\u56E3\u4F53\u540D\u3060\u3051\u3092\u5148\u306B\u767B\u9332\u3057\u3001\u4E0B\u306E\u4E00\u89A7\u306E\u300C\u7DE8\u96C6\u300D\u304B\u3089\u9078\u624BID\u3092\u767B\u9332\u3067\u304D\u307E\u3059\u3002\u7D44\u5408\u305B\u4F5C\u6210\u524D\u306B\u5168\u54E1\u306E\u767B\u9332\u3092\u5B8C\u4E86\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>${input2("\u56E3\u4F53\u540D", "newTeamName")}${input2("\u6240\u5C5E", "newTeamClub")}${button3("\u56E3\u4F53\u540D\u3092\u767B\u9332", "teamAdd")}`);
-      html += section("\u53C2\u52A0\u8005\u767B\u9332", eventPicker() + input2("\u7A2E\u76EE\u540D\u306E\u7DE8\u96C6", "editEventName", e.name) + input2("\u7A2E\u76EE\u8A18\u53F7", "editEventCode", e.code || "") + button3("\u7A2E\u76EE\u540D\u30FB\u8A18\u53F7\u3092\u4FDD\u5B58", "eventEdit") + button3("\u9078\u629E\u4E2D\u306E\u7A2E\u76EE\u3092\u524A\u9664", "eventDelete") + `<p class="muted">1\u884C1\u7D44\uFF1A\u8868\u793A\u540D,\u6240\u5C5E,\u9078\u624BID\uFF08\u30C0\u30D6\u30EB\u30B9\u30FB\u56E3\u4F53\u306F / \u533A\u5207\u308A\uFF09,\u30B7\u30FC\u30C9\u9806\u4F4D,\u6240\u5C5E\u5185\u30E9\u30F3\u30AF\uFF08\u4EFB\u610F\uFF09\u3002\u9078\u624BID\u306F\u7A2E\u76EE\u3092\u307E\u305F\u3044\u3067\u5171\u901A\u306E\u5024\u3092\u4F7F\u7528\u3059\u308B\u3068\u8A66\u5408\u91CD\u8907\u3092\u9632\u6B62\u3067\u304D\u307E\u3059\u3002\u7701\u7565\u6642\u306F\u8868\u793A\u540D\u3092ID\u306B\u4F7F\u7528\u3057\u307E\u3059\u3002</p><textarea id="entries" placeholder="\u7530\u4E2D,A\u4E2D\u5B66\u6821,\u7530\u4E2D,0,1&#10;\u4F50\u85E4,A\u4E2D\u5B66\u6821,\u4F50\u85E4,0,2"></textarea><div class="actions">${button3("\u53C2\u52A0\u8005\u3092\u4E00\u62EC\u767B\u9332", "entriesAdd")}</div><label>CSV\u30FBExcel\uFF084\u301C5\u5217\u306F\u76F4\u63A5\u8868\u793A\u3001\u591A\u5217\u30FB\u8907\u6570\u30B7\u30FC\u30C8\u306F\u5217\u5BFE\u5FDC\u753B\u9762\u3078\uFF09<input type="file" id="rosterFile" accept=".csv,.xlsx,.xls"></label>${button3("\u8AAD\u8FBC\u5185\u5BB9\u3092\u5165\u529B\u6B04\u3078\u8868\u793A", "rosterPreview")}` + table9(["\u540D\u524D", "\u6240\u5C5E", "\u30E9\u30F3\u30AF", "\u69CB\u6210", "\u30B7\u30FC\u30C9", "\u7DE8\u96C6"], e.entries.map((p) => [esc(p.name), esc(p.club), p.rank || "\u2014", esc(p.players.join("/")), p.seed, button3("\u7DE8\u96C6", "entryEdit", `data-id="${p.id}"`) + button3("\u30EC\u30D9\u30EB", "entryLevel", `data-id="${p.id}"`) + button3("\u524A\u9664", "entryDelete", `data-id="${p.id}"`)])));
+      if (e.type === "team") html += section("\u56E3\u4F53\u3092\u500B\u5225\u767B\u9332", `<p class="muted">\u56E3\u4F53\u540D\u3060\u3051\u3092\u5148\u306B\u767B\u9332\u3057\u3001\u4E0B\u306E\u4E00\u89A7\u306E\u300C\u7DE8\u96C6\u300D\u304B\u3089\u9078\u624BID\u3092\u767B\u9332\u3067\u304D\u307E\u3059\u3002\u7D44\u5408\u305B\u4F5C\u6210\u524D\u306B\u5168\u54E1\u306E\u767B\u9332\u3092\u5B8C\u4E86\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>${input3("\u56E3\u4F53\u540D", "newTeamName")}${input3("\u6240\u5C5E", "newTeamClub")}${button4("\u56E3\u4F53\u540D\u3092\u767B\u9332", "teamAdd")}`);
+      html += section("\u53C2\u52A0\u8005\u767B\u9332", eventPicker() + input3("\u7A2E\u76EE\u540D\u306E\u7DE8\u96C6", "editEventName", e.name) + input3("\u7A2E\u76EE\u8A18\u53F7", "editEventCode", e.code || "") + button4("\u7A2E\u76EE\u540D\u30FB\u8A18\u53F7\u3092\u4FDD\u5B58", "eventEdit") + button4("\u9078\u629E\u4E2D\u306E\u7A2E\u76EE\u3092\u524A\u9664", "eventDelete") + `<p class="muted">1\u884C1\u7D44\uFF1A\u8868\u793A\u540D,\u6240\u5C5E,\u9078\u624BID\uFF08\u30C0\u30D6\u30EB\u30B9\u30FB\u56E3\u4F53\u306F / \u533A\u5207\u308A\uFF09,\u30B7\u30FC\u30C9\u9806\u4F4D,\u6240\u5C5E\u5185\u30E9\u30F3\u30AF\uFF08\u4EFB\u610F\uFF09\u3002\u9078\u624BID\u306F\u7A2E\u76EE\u3092\u307E\u305F\u3044\u3067\u5171\u901A\u306E\u5024\u3092\u4F7F\u7528\u3059\u308B\u3068\u8A66\u5408\u91CD\u8907\u3092\u9632\u6B62\u3067\u304D\u307E\u3059\u3002\u7701\u7565\u6642\u306F\u8868\u793A\u540D\u3092ID\u306B\u4F7F\u7528\u3057\u307E\u3059\u3002</p><textarea id="entries" placeholder="\u7530\u4E2D,A\u4E2D\u5B66\u6821,\u7530\u4E2D,0,1&#10;\u4F50\u85E4,A\u4E2D\u5B66\u6821,\u4F50\u85E4,0,2"></textarea><div class="actions">${button4("\u53C2\u52A0\u8005\u3092\u4E00\u62EC\u767B\u9332", "entriesAdd")}</div><label>CSV\u30FBExcel\uFF084\u301C5\u5217\u306F\u76F4\u63A5\u8868\u793A\u3001\u591A\u5217\u30FB\u8907\u6570\u30B7\u30FC\u30C8\u306F\u5217\u5BFE\u5FDC\u753B\u9762\u3078\uFF09<input type="file" id="rosterFile" accept=".csv,.xlsx,.xls"></label>${button4("\u8AAD\u8FBC\u5185\u5BB9\u3092\u5165\u529B\u6B04\u3078\u8868\u793A", "rosterPreview")}` + table9(["\u540D\u524D", "\u6240\u5C5E", "\u30E9\u30F3\u30AF", "\u69CB\u6210", "\u30B7\u30FC\u30C9", "\u7DE8\u96C6"], e.entries.map((p) => [esc(p.name), esc(p.club), p.rank || "\u2014", esc(p.players.map((id) => playerText(playerDirectory(t), id, p.players)).join("\uFF0F")), p.seed, button4("\u7DE8\u96C6", "entryEdit", `data-id="${p.id}"`) + button4("\u30EC\u30D9\u30EB", "entryLevel", `data-id="${p.id}"`) + button4("\u524A\u9664", "entryDelete", `data-id="${p.id}"`)])));
     }
+  }
+  if (page === "manage") {
+    const rows = await db.rows("masters");
+    if (token !== epoch) return;
+    html += tournamentBridge(t, rows);
   }
   if (page === "draw") {
     const current = currentEvent();
     const seeded = current?.entries.filter((x) => x.seed).sort((a, b) => a.seed - b.seed) ?? [];
-    html = section("\u30B7\u30FC\u30C9\u8A2D\u5B9A\u306E\u78BA\u8A8D", current ? "<p>" + esc(current.name) + " \xB7 " + seeded.length + "\u4EF6" + (seeded.length ? "\uFF1A" + seeded.map((x) => esc(x.seed + " " + x.name)).join(" \uFF0F ") : "\uFF08\u672A\u8A2D\u5B9A\uFF09") + "</p>" + button3("\u3053\u306E\u7A2E\u76EE\u306E\u30B7\u30FC\u30C9\u8A2D\u5B9A\u3078", "seedShortcut") + (t.stages.some((s2) => s2.eventId === current.id) ? button3("\u7D44\u5408\u305B\u306E\u4FDD\u7BA1\u30FB\u53D6\u6D88\u3078", "seedArchiveHelp") : "<p>\u7D44\u5408\u305B\u751F\u6210\u5F8C\u306E\u30B7\u30FC\u30C9\u5909\u66F4\u306B\u306F\u4FDD\u7BA1\u30FB\u53D6\u6D88\u304C\u5FC5\u8981\u3067\u3059\u3002\u30B7\u30FC\u30C9\u306A\u3057\u306E\u4F5C\u6210\u3082\u53EF\u80FD\u3067\u3059\u3002</p>") : "<p>\u7A2E\u76EE\u3092\u4F5C\u6210\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>") + section("\u7A2E\u76EE\u30B3\u30FC\u30C9\u3067\u63A1\u756A", input2("\u90E8\u9580\u512A\u5148\u5EA6\uFF08\u7A7A\u6B04\u306F\u53C2\u52A0\u4EBA\u6570\u3001\u5927\u304D\u3044\u307B\u3069\u512A\u5148\uFF09", "eventPriority", currentEvent()?.schedulePriority ?? "", "number") + button3("\u512A\u5148\u5EA6\u3092\u4FDD\u5B58", "eventPriority") + input2("\u7A2E\u76EE\u30B3\u30FC\u30C9\uFF08\u4F8B BS\u3001WD3\uFF09", "eventCode", currentEvent()?.code || "") + button3("\u7A2E\u76EE\u8A18\u53F7\u3092\u9069\u7528", "assignLabels")) + section("\u7D44\u5408\u305B\u4F5C\u6210", eventPicker() + select2("\u65B9\u5F0F", "kind", [{ id: "league", name: "\u30EA\u30FC\u30B0\u30FB\u7DCF\u5F53\u305F\u308A" }, { id: "bracket", name: "\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8" }, { id: "exchange", name: "\u4EA4\u6D41\u6226\u30FB\u7DF4\u7FD2\u8A66\u5408" }]) + input2("\u7D44\u6570\uFF08\u30EA\u30FC\u30B0\u30FB\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\uFF09", "groupCount", 1, "number") + select2("\u632F\u308A\u5206\u3051", "mode", [{ id: "rank", name: "\u30E9\u30F3\u30AF\u512A\u5148\uFF08\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\uFF09" }, { id: "seed", name: "\u30B7\u30FC\u30C9\uFF0B\u30E9\u30F3\u30C0\u30E0" }, { id: "random", name: "\u30E9\u30F3\u30C0\u30E0" }, { id: "manual", name: "\u767B\u9332\u9806\uFF08\u624B\u52D5\uFF09" }]) + `<label><input id="excludeClub" type="checkbox"> \u540C\u30C1\u30FC\u30E0\u5BFE\u6C7A\u3092\u9664\u5916\uFF08\u500B\u4EBA\u30EA\u30FC\u30B0\uFF09</label><details><summary>\u4EA4\u6D41\u6226\u306E\u8A2D\u5B9A</summary>${select2("\u7D44\u5408\u305B", "exchangeMode", [{ id: "all", name: "\u5168\u5BFE\u6226\u6D88\u5316" }, { id: "balanced", name: "\u8A66\u5408\u6570\u5747\u7B49" }])}${input2("\u76EE\u6A19\u8A66\u5408\u6570", "exchangeTarget", 3, "number")}${input2("\u60F3\u5B9A\u8A66\u5408\u6642\u9593\uFF08\u5206\uFF09", "exchangeDuration", 20, "number")}${input2("\u7D42\u4E86\u4E88\u5B9A\u6642\u523B\uFF08\u4EFB\u610F\uFF09", "exchangeEnd", "", "time")}<label><input id="exchangeLevels" type="checkbox"> \u540C\u3058\u30EC\u30D9\u30EB\u540C\u58EB</label><label><input id="exchangeRanked" type="checkbox"> \u9806\u4F4D\u96C6\u8A08</label><p>\u4E8B\u524D\u306B\u767B\u9332\u30FB\u8A2D\u5B9A\u3067\u53C2\u52A0\u8005\u3054\u3068\u306B\u30EC\u30D9\u30EB\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u30C0\u30D6\u30EB\u30B9\u306F\u767B\u9332\u30DA\u30A2\u5358\u4F4D\u3067\u7D44\u307F\u5408\u308F\u305B\u307E\u3059\u3002</p></details>` + button3("\u7A7A\u767D\u306E\u7D44\u5408\u305B\u8868\u3092\u958B\u304F", "draftStart") + button3("\u521D\u671F\u7D44\u5408\u305B\u3092\u4F5C\u6210", "draw") + (visualDraft && visualDraft.eventId === eid ? section("\u7A7A\u767D\u8868\u304B\u3089\u624B\u52D5\u914D\u7F6E\uFF08\u672A\u4FDD\u5B58\uFF09", `<p>\u67A0\u3092\u30BF\u30C3\u30D7\u3057\u3066\u9078\u624B\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u5168\u54E1\u3092\u914D\u7F6E\u3057\u305F\u5F8C\u306B\u78BA\u5B9A\u3057\u307E\u3059\u3002\u9014\u4E2D\u3067\u9589\u3058\u3066\u3082\u65E2\u5B58\u306E\u7D44\u5408\u305B\u306F\u5909\u66F4\u3055\u308C\u307E\u305B\u3093\u3002</p>${visualDraftPreview()}<div class="actions">${button3("\u3053\u306E\u914D\u7F6E\u3067\u7D44\u5408\u305B\u3092\u78BA\u5B9A", "draftCommit")}${button3("\u4E0B\u66F8\u304D\u3092\u7834\u68C4", "draftDiscard")}</div>`) : ""));
+    html = section("\u30B7\u30FC\u30C9\u8A2D\u5B9A\u306E\u78BA\u8A8D", current ? "<p>" + esc(current.name) + " \xB7 " + seeded.length + "\u4EF6" + (seeded.length ? "\uFF1A" + seeded.map((x) => esc(x.seed + " " + x.name)).join(" \uFF0F ") : "\uFF08\u672A\u8A2D\u5B9A\uFF09") + "</p>" + button4("\u3053\u306E\u7A2E\u76EE\u306E\u30B7\u30FC\u30C9\u8A2D\u5B9A\u3078", "seedShortcut") + (t.stages.some((s2) => s2.eventId === current.id) ? button4("\u7D44\u5408\u305B\u306E\u4FDD\u7BA1\u30FB\u53D6\u6D88\u3078", "seedArchiveHelp") : "<p>\u7D44\u5408\u305B\u751F\u6210\u5F8C\u306E\u30B7\u30FC\u30C9\u5909\u66F4\u306B\u306F\u4FDD\u7BA1\u30FB\u53D6\u6D88\u304C\u5FC5\u8981\u3067\u3059\u3002\u30B7\u30FC\u30C9\u306A\u3057\u306E\u4F5C\u6210\u3082\u53EF\u80FD\u3067\u3059\u3002</p>") : "<p>\u7A2E\u76EE\u3092\u4F5C\u6210\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>") + section("\u7A2E\u76EE\u30B3\u30FC\u30C9\u3067\u63A1\u756A", input3("\u90E8\u9580\u512A\u5148\u5EA6\uFF08\u7A7A\u6B04\u306F\u53C2\u52A0\u4EBA\u6570\u3001\u5927\u304D\u3044\u307B\u3069\u512A\u5148\uFF09", "eventPriority", currentEvent()?.schedulePriority ?? "", "number") + button4("\u512A\u5148\u5EA6\u3092\u4FDD\u5B58", "eventPriority") + input3("\u7A2E\u76EE\u30B3\u30FC\u30C9\uFF08\u4F8B BS\u3001WD3\uFF09", "eventCode", currentEvent()?.code || "") + button4("\u7A2E\u76EE\u8A18\u53F7\u3092\u9069\u7528", "assignLabels")) + section("\u7D44\u5408\u305B\u4F5C\u6210", eventPicker() + select3("\u65B9\u5F0F", "kind", [{ id: "league", name: "\u30EA\u30FC\u30B0\u30FB\u7DCF\u5F53\u305F\u308A" }, { id: "bracket", name: "\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8" }, { id: "exchange", name: "\u4EA4\u6D41\u6226\u30FB\u7DF4\u7FD2\u8A66\u5408" }]) + input3("\u7D44\u6570\uFF08\u30EA\u30FC\u30B0\u30FB\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\uFF09", "groupCount", 1, "number") + select3("\u632F\u308A\u5206\u3051", "mode", [{ id: "rank", name: "\u30E9\u30F3\u30AF\u512A\u5148\uFF08\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\uFF09" }, { id: "seed", name: "\u30B7\u30FC\u30C9\uFF0B\u30E9\u30F3\u30C0\u30E0" }, { id: "random", name: "\u30E9\u30F3\u30C0\u30E0" }, { id: "manual", name: "\u767B\u9332\u9806\uFF08\u624B\u52D5\uFF09" }]) + `<label><input id="excludeClub" type="checkbox"> \u540C\u30C1\u30FC\u30E0\u5BFE\u6C7A\u3092\u9664\u5916\uFF08\u500B\u4EBA\u30EA\u30FC\u30B0\uFF09</label><details><summary>\u4EA4\u6D41\u6226\u306E\u8A2D\u5B9A</summary>${select3("\u7D44\u5408\u305B", "exchangeMode", [{ id: "all", name: "\u5168\u5BFE\u6226\u6D88\u5316" }, { id: "balanced", name: "\u8A66\u5408\u6570\u5747\u7B49" }])}${input3("\u76EE\u6A19\u8A66\u5408\u6570", "exchangeTarget", 3, "number")}${input3("\u60F3\u5B9A\u8A66\u5408\u6642\u9593\uFF08\u5206\uFF09", "exchangeDuration", 20, "number")}${input3("\u7D42\u4E86\u4E88\u5B9A\u6642\u523B\uFF08\u4EFB\u610F\uFF09", "exchangeEnd", "", "time")}<label><input id="exchangeLevels" type="checkbox"> \u540C\u3058\u30EC\u30D9\u30EB\u540C\u58EB</label><label><input id="exchangeRanked" type="checkbox"> \u9806\u4F4D\u96C6\u8A08</label><p>\u4E8B\u524D\u306B\u767B\u9332\u30FB\u8A2D\u5B9A\u3067\u53C2\u52A0\u8005\u3054\u3068\u306B\u30EC\u30D9\u30EB\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u30C0\u30D6\u30EB\u30B9\u306F\u767B\u9332\u30DA\u30A2\u5358\u4F4D\u3067\u7D44\u307F\u5408\u308F\u305B\u307E\u3059\u3002</p></details>` + button4("\u7A7A\u767D\u306E\u7D44\u5408\u305B\u8868\u3092\u958B\u304F", "draftStart") + button4("\u521D\u671F\u7D44\u5408\u305B\u3092\u4F5C\u6210", "draw") + (visualDraft && visualDraft.eventId === eid ? section("\u7A7A\u767D\u8868\u304B\u3089\u624B\u52D5\u914D\u7F6E\uFF08\u672A\u4FDD\u5B58\uFF09", `<p>\u67A0\u3092\u30BF\u30C3\u30D7\u3057\u3066\u9078\u624B\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u5168\u54E1\u3092\u914D\u7F6E\u3057\u305F\u5F8C\u306B\u78BA\u5B9A\u3057\u307E\u3059\u3002\u9014\u4E2D\u3067\u9589\u3058\u3066\u3082\u65E2\u5B58\u306E\u7D44\u5408\u305B\u306F\u5909\u66F4\u3055\u308C\u307E\u305B\u3093\u3002</p>${visualDraftPreview()}<div class="actions">${button4("\u3053\u306E\u914D\u7F6E\u3067\u7D44\u5408\u305B\u3092\u78BA\u5B9A", "draftCommit")}${button4("\u4E0B\u66F8\u304D\u3092\u7834\u68C4", "draftDiscard")}</div>`) : ""));
     if (t.stages.length) {
-      html += section("\u6C7A\u52DD\u9032\u51FA", stagePicker() + input2("\u5404\u7D44\u306E\u9032\u51FA\u6570\uFF08\u5171\u901A 1\u3001\u7D44\u5225 2,1,3\uFF09", "top", 1) + input2("\u6C7A\u52DD\u30B9\u30C6\u30FC\u30B8\u540D\uFF08\u4F8B\uFF1A\u9806\u4F4D\u6C7A\u5B9A\u6226\uFF09", "finalStageName", "") + select2("\u6C7A\u52DD\u65B9\u5F0F", "finalKind", [{ id: "league", name: "\u6C7A\u52DD\u30EA\u30FC\u30B0" }, { id: "bracket", name: "\u6C7A\u52DD\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8" }, { id: "rank", name: "\u9806\u4F4D\u5225\u6C7A\u52DD\u30EA\u30FC\u30B0" }]) + button3("\u4E88\u9078\u7D50\u679C\u304B\u3089\u6C7A\u52DD\u3092\u4F5C\u6210", "promote"));
+      html += section("\u6C7A\u52DD\u9032\u51FA", stagePicker() + input3("\u5404\u7D44\u306E\u9032\u51FA\u6570\uFF08\u5171\u901A 1\u3001\u7D44\u5225 2,1,3\uFF09", "top", 1) + input3("\u6C7A\u52DD\u30B9\u30C6\u30FC\u30B8\u540D\uFF08\u4F8B\uFF1A\u9806\u4F4D\u6C7A\u5B9A\u6226\uFF09", "finalStageName", "") + select3("\u6C7A\u52DD\u65B9\u5F0F", "finalKind", [{ id: "league", name: "\u6C7A\u52DD\u30EA\u30FC\u30B0" }, { id: "bracket", name: "\u6C7A\u52DD\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8" }, { id: "rank", name: "\u9806\u4F4D\u5225\u6C7A\u52DD\u30EA\u30FC\u30B0" }]) + button4("\u4E88\u9078\u7D50\u679C\u304B\u3089\u6C7A\u52DD\u3092\u4F5C\u6210", "promote"));
       const s2 = t.stages.find((s3) => s3.id === sid);
       if (s2) {
-        html += section("\u30B9\u30C6\u30FC\u30B8\u540D\u306E\u5909\u66F4", input2("\u30B9\u30C6\u30FC\u30B8\u540D\uFF08\u4F8B\uFF1A\u9806\u4F4D\u6C7A\u5B9A\u6226\uFF09", "editStageName", s2.name) + button3("\u30B9\u30C6\u30FC\u30B8\u540D\u3092\u4FDD\u5B58", "stageRename"));
-        if (s2.rankDraw) html += section("\u30E9\u30F3\u30AF\u56FA\u5B9A", button3("\u672A\u5165\u529B\u30E9\u30F3\u30AF\u3060\u3051\u518D\u62BD\u9078", "redrawUnranked"));
+        html += section("\u30B9\u30C6\u30FC\u30B8\u540D\u306E\u5909\u66F4", input3("\u30B9\u30C6\u30FC\u30B8\u540D\uFF08\u4F8B\uFF1A\u9806\u4F4D\u6C7A\u5B9A\u6226\uFF09", "editStageName", s2.name) + button4("\u30B9\u30C6\u30FC\u30B8\u540D\u3092\u4FDD\u5B58", "stageRename"));
+        if (s2.rankDraw) html += section("\u30E9\u30F3\u30AF\u56FA\u5B9A", button4("\u672A\u5165\u529B\u30E9\u30F3\u30AF\u3060\u3051\u518D\u62BD\u9078", "redrawUnranked"));
         if (s2.kind === "bracket" && !s2.source) {
           const from = t.matches.filter((m) => m.stageId === s2.id && m.status !== "bye");
           const choices = [{ id: "", name: "\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044" }, ...from.flatMap((m) => ["winner", "loser"].map((side) => ({ id: m.id + ":" + side, name: (s2.groups.find((g) => g.id === m.groupId)?.name || "") + " " + label(m, t) + " " + (side === "winner" ? "\u52DD\u8005" : "\u6557\u8005") })))];
           const count = slotCount || s2.finalSlots?.length || 2;
-          html += section("\u6C7A\u52DD\u9032\u51FA\u5143\u3092\u67A0\u5225\u306B\u6307\u5B9A", input2("\u6C7A\u52DD\u53C2\u52A0\u67A0\u6570", "slotCount", count, "number") + button3("\u67A0\u6570\u3092\u53CD\u6620", "slotCount") + '<div data-final-slot-count="' + count + '">' + Array.from({ length: count }, (_2, i) => {
+          html += section("\u6C7A\u52DD\u9032\u51FA\u5143\u3092\u67A0\u5225\u306B\u6307\u5B9A", input3("\u6C7A\u52DD\u53C2\u52A0\u67A0\u6570", "slotCount", count, "number") + button4("\u67A0\u6570\u3092\u53CD\u6620", "slotCount") + '<div data-final-slot-count="' + count + '">' + Array.from({ length: count }, (_2, i) => {
             const slot = s2.finalSlots?.[i], id = slot && resolveFinalSlot(t, slot);
-            const selected = slot ? slot.matchId + ":" + slot.side : "";
-            return select2("\u6C7A\u52DD " + (i + 1) + "\u67A0", "finalSlot" + i, choices, selected) + (selected ? "<p>" + esc(id ? entryOf(t, id)?.name : choices.find((c) => c.id === selected)?.name + "\uFF08\u672A\u78BA\u5B9A\uFF09") + "</p>" : "");
-          }).join("") + "</div>" + button3("\u9032\u51FA\u5143\u8A2D\u5B9A\u3092\u4FDD\u5B58", "saveFinalSlots") + button3("\u78BA\u5B9A\u3057\u305F\u9032\u51FA\u5143\u304B\u3089\u6C7A\u52DD\u3092\u751F\u6210", "promoteSlots"));
+            const selected2 = slot ? slot.matchId + ":" + slot.side : "";
+            return select3("\u6C7A\u52DD " + (i + 1) + "\u67A0", "finalSlot" + i, choices, selected2) + (selected2 ? "<p>" + esc(id ? entryOf(t, id)?.name : choices.find((c) => c.id === selected2)?.name + "\uFF08\u672A\u78BA\u5B9A\uFF09") + "</p>" : "");
+          }).join("") + "</div>" + button4("\u9032\u51FA\u5143\u8A2D\u5B9A\u3092\u4FDD\u5B58", "saveFinalSlots") + button4("\u78BA\u5B9A\u3057\u305F\u9032\u51FA\u5143\u304B\u3089\u6C7A\u52DD\u3092\u751F\u6210", "promoteSlots"));
         }
         html += section("\u7D44\u5408\u305B\u78BA\u8A8D", s2.groups.map((g) => `<h3>${esc(g.name)}</h3>${s2.kind === "league" ? table9(["\u67A0", "\u9078\u624B\uFF08\u30BF\u30C3\u30D7\u3057\u3066\u5165\u66FF\uFF09", ...g.entries.map((_2, i) => String(i + 1))], g.entries.map((id, i) => [i + 1, visualSlot(id, g.id, i), ...g.entries.map((other, j) => i === j ? "\u2014" : (() => {
           const m = t.matches.find((m2) => m2.groupId === g.id && (m2.left === id && m2.right === other || m2.left === other && m2.right === id));
-          return m ? button3(label(m, t), "editScore", `data-id="${m.id}"`) : s2.excludeClub ? "\xD7" : "\u2014";
+          return m ? button4(label(m, t), "editScore", `data-id="${m.id}"`) : s2.excludeClub ? "\xD7" : "\u2014";
         })())])) : bracketTable(t, t.matches.filter((m) => m.groupId === g.id)) + "<details><summary>\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u67A0\u306E\u624B\u52D5\u7DE8\u96C6</summary>" + bracketOverview(t.matches.filter((m) => m.groupId === g.id)) + "</details>"}`).join(""));
-        if (s2.kind === "league") html += section("\u958B\u59CB\u524D\u306E\u624B\u52D5\u8ABF\u6574", select2("\u79FB\u52D5\u3059\u308B\u53C2\u52A0\u8005", "movePlayer", s2.groups.flatMap((g) => g.entries.map((id) => ({ id, name: lookupEntry(id).name })))) + select2("\u79FB\u52D5\u5148", "moveGroup", s2.groups) + button3("\u6240\u5C5E\u3092\u79FB\u52D5\u3057\u3066\u518D\u4F5C\u6210", "move"));
+        if (s2.kind === "league") html += section("\u958B\u59CB\u524D\u306E\u624B\u52D5\u8ABF\u6574", select3("\u79FB\u52D5\u3059\u308B\u53C2\u52A0\u8005", "movePlayer", s2.groups.flatMap((g) => g.entries.map((id) => ({ id, name: lookupEntry(id).name })))) + select3("\u79FB\u52D5\u5148", "moveGroup", s2.groups) + button4("\u6240\u5C5E\u3092\u79FB\u52D5\u3057\u3066\u518D\u4F5C\u6210", "move"));
       }
     }
   }
@@ -110851,18 +111527,19 @@ async function render() {
     if (!t.competitionDays?.some((d) => d.date === scheduleDay)) scheduleDay = "";
     const progress = new Map(progressStatus(t).map((p) => [p.id, p]));
     const complete = t.matches.filter((m) => m.status === "completed").length, total = t.matches.filter((m) => m.status !== "bye").length;
-    html = section("\u5927\u4F1A\u306E\u9032\u884C", `<div class="stats"><div><b>${complete}</b>\u7D42\u4E86</div><div><b>${total - complete}</b>\u672A\u7D42\u4E86</div></div><div class="row">${input2("\u958B\u59CB\u6642\u523B", "start", "09:00", "time")}${input2("\u4E88\u5B9A\u6642\u9593\uFF08\u5206\uFF09", "duration", 20, "number")}${input2("\u9593\u9694\uFF08\u5206\uFF09", "gap", 0, "number") + input2("\u5FC5\u8981\u4F11\u61A9\uFF08\u5206\uFF09", "rest", t.restMinutes || 0, "number") + select2("\u9032\u884C\u65B9\u5F0F", "scheduleMode", [{ id: "flow", name: "\u6D41\u3057\u8FBC\u307F" }, { id: "fixed", name: "\u56FA\u5B9A\u6642\u523B" }], t.scheduleMode || "flow")}</div><div class="actions">${button3("\u4E88\u5B9A\u8868\u3092\u81EA\u52D5\u4F5C\u6210", "schedule") + (!scheduleNumberingLocked(t) ? button3("\u73FE\u5728\u306E\u4E88\u5B9A\u9806\u3067\u518D\u63A1\u756A", "renumberSchedule") : "")}${button3("\u7A7A\u304D\u30B3\u30FC\u30C8\u3078\u81EA\u52D5\u547C\u51FA", "flow")}</div><p class="muted">\u30B3\u30FC\u30C8\u672A\u8A18\u9332\u306E\u7D42\u4E86\u8A66\u5408\u306F\u7D50\u679C\u3092\u4FDD\u3063\u305F\u5C65\u6B74\u3068\u3057\u3066\u6271\u3044\u3001\u4ECA\u5F8C\u306E\u4E88\u5B9A\u3078\u518D\u914D\u7F6E\u3057\u307E\u305B\u3093\u3002\u4E88\u5B9A\u8868\u306F\u52DD\u3061\u4E0A\u304C\u308A\u5019\u88DC\u306E\u91CD\u8907\u3082\u56DE\u907F\u3057\u307E\u3059\u3002\u81EA\u52D5\u547C\u51FA\u306F\u73FE\u5728\u547C\u51FA\u30FB\u8A66\u5408\u4E2D\u306E\u9078\u624B\u3068\u30B3\u30FC\u30C8\u3092\u4FDD\u8B77\u3057\u307E\u3059\u3002</p>`);
-    html += section("\u30B3\u30FC\u30C8\u5225\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB", calendarPanel(t) + (t.competitionDays?.length ? select2("\u8868\u793A\u3059\u308B\u958B\u50AC\u65E5", "scheduleDay", [{ id: "", name: "\u5168\u65E5\u7A0B" }, ...t.competitionDays.map((d, i) => ({ id: d.date, name: i + 1 + "\u65E5\u76EE " + d.date }))], scheduleDay) + table9(["\u958B\u50AC\u65E5", "\u8A66\u5408\u6570", "\u7D42\u4E86", "\u6B8B\u308A"], [...t.competitionDays.map((d) => ({ date: d.date, items: t.matches.filter((m) => m.status !== "bye" && plannedDate(t, m) === d.date) })), { date: "\u65E5\u7A0B\u672A\u6307\u5B9A", items: t.matches.filter((m) => m.status !== "bye" && !plannedDate(t, m)) }].filter((d) => d.items.length || d.date !== "\u65E5\u7A0B\u672A\u6307\u5B9A").map((d) => {
+    html = section("\u5927\u4F1A\u306E\u9032\u884C", `<div class="stats"><div><b>${complete}</b>\u7D42\u4E86</div><div><b>${total - complete}</b>\u672A\u7D42\u4E86</div></div><div class="row">${input3("\u958B\u59CB\u6642\u523B", "start", "09:00", "time")}${input3("\u4E88\u5B9A\u6642\u9593\uFF08\u5206\uFF09", "duration", 20, "number")}${input3("\u9593\u9694\uFF08\u5206\uFF09", "gap", 0, "number") + input3("\u5FC5\u8981\u4F11\u61A9\uFF08\u5206\uFF09", "rest", t.restMinutes || 0, "number") + select3("\u9032\u884C\u65B9\u5F0F", "scheduleMode", [{ id: "flow", name: "\u6D41\u3057\u8FBC\u307F" }, { id: "fixed", name: "\u56FA\u5B9A\u6642\u523B" }], t.scheduleMode || "flow")}</div><div class="actions">${button4("\u4E88\u5B9A\u8868\u3092\u81EA\u52D5\u4F5C\u6210", "schedule") + (!scheduleNumberingLocked(t) ? button4("\u73FE\u5728\u306E\u4E88\u5B9A\u9806\u3067\u518D\u63A1\u756A", "renumberSchedule") : "")}${button4("\u7A7A\u304D\u30B3\u30FC\u30C8\u3078\u81EA\u52D5\u547C\u51FA", "flow")}</div><p class="muted">\u30B3\u30FC\u30C8\u672A\u8A18\u9332\u306E\u7D42\u4E86\u8A66\u5408\u306F\u7D50\u679C\u3092\u4FDD\u3063\u305F\u5C65\u6B74\u3068\u3057\u3066\u6271\u3044\u3001\u4ECA\u5F8C\u306E\u4E88\u5B9A\u3078\u518D\u914D\u7F6E\u3057\u307E\u305B\u3093\u3002\u4E88\u5B9A\u8868\u306F\u52DD\u3061\u4E0A\u304C\u308A\u5019\u88DC\u306E\u91CD\u8907\u3082\u56DE\u907F\u3057\u307E\u3059\u3002\u81EA\u52D5\u547C\u51FA\u306F\u73FE\u5728\u547C\u51FA\u30FB\u8A66\u5408\u4E2D\u306E\u9078\u624B\u3068\u30B3\u30FC\u30C8\u3092\u4FDD\u8B77\u3057\u307E\u3059\u3002</p>`);
+    html += section("\u30B3\u30FC\u30C8\u5225\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB", calendarPanel(t) + (t.competitionDays?.length ? select3("\u8868\u793A\u3059\u308B\u958B\u50AC\u65E5", "scheduleDay", [{ id: "", name: "\u5168\u65E5\u7A0B" }, ...t.competitionDays.map((d, i) => ({ id: d.date, name: i + 1 + "\u65E5\u76EE " + d.date }))], scheduleDay) + table9(["\u958B\u50AC\u65E5", "\u8A66\u5408\u6570", "\u7D42\u4E86", "\u6B8B\u308A"], [...t.competitionDays.map((d) => ({ date: d.date, items: t.matches.filter((m) => m.status !== "bye" && plannedDate(t, m) === d.date) })), { date: "\u65E5\u7A0B\u672A\u6307\u5B9A", items: t.matches.filter((m) => m.status !== "bye" && !plannedDate(t, m)) }].filter((d) => d.items.length || d.date !== "\u65E5\u7A0B\u672A\u6307\u5B9A").map((d) => {
       const done3 = d.items.filter(finished).length;
       return [d.date, d.items.length, done3, d.items.length - done3];
-    })) : "") + button3("\u4E88\u5B9A\u8868", "plannedView") + button3("\u9032\u884C\u72B6\u6CC1", "progressView") + timetable(t, showProgress, scheduleDay || void 0) + "<p>\u300C\u2020\u300D\u306F\u672A\u5272\u5F53\u306E\u4EEE\u8868\u793A\u3067\u3059\u3002\u8A66\u5408\u756A\u53F7\u304B\u3089\u5BFE\u6226\u8A73\u7D30\u30FB\u5B9F\u969B\u306E\u5272\u5F53\u3092\u64CD\u4F5C\u3067\u304D\u307E\u3059\u3002</p>");
-    if (!t.events.some((e) => e.id === boardEvent)) boardEvent = t.events[0]?.id || "";
-    html += section("\u5BFE\u6226\u8868", select2("\u5BFE\u6226\u8868\u306E\u7A2E\u76EE", "boardEvent", t.events.map((e) => ({ id: e.id, name: e.code ? e.code + "\u3000" + e.name : e.name })), boardEvent) + stageForms(t, t.stages.filter((s2) => s2.eventId === boardEvent && !s2.exchange), allBoards ? Infinity : 12) + (!allBoards ? button3("\u5BFE\u6226\u8868\u3092\u5168\u4EF6\u8868\u793A", "boardExpand") : ""));
+    })) : "") + button4("\u4E88\u5B9A\u8868", "plannedView") + button4("\u9032\u884C\u72B6\u6CC1", "progressView") + timetable(t, showProgress, scheduleDay || void 0) + "<p>\u300C\u2020\u300D\u306F\u672A\u5272\u5F53\u306E\u4EEE\u8868\u793A\u3067\u3059\u3002\u8A66\u5408\u756A\u53F7\u304B\u3089\u5BFE\u6226\u8A73\u7D30\u30FB\u5B9F\u969B\u306E\u5272\u5F53\u3092\u64CD\u4F5C\u3067\u304D\u307E\u3059\u3002</p>");
+    if (boardEvent !== "all" && !t.events.some((e) => e.id === boardEvent)) boardEvent = "all";
+    const boardEvents = t.events.filter((e) => boardEvent === "all" || e.id === boardEvent);
+    html += section("\u5BFE\u6226\u8868", select3("\u5BFE\u6226\u8868\u306E\u7A2E\u76EE", "boardEvent", [{ id: "all", name: "\u5168\u7A2E\u76EE" }, ...t.events.map((e) => ({ id: e.id, name: e.code ? e.code + "\u3000" + e.name : e.name }))], boardEvent) + boardEvents.map((e) => '<section class="event-board"><h3>' + esc(e.name) + "</h3>" + stageForms(t, t.stages.filter((s2) => s2.eventId === e.id), allBoards ? Infinity : 12, boardOpen) + "</section>").join("") + (!allBoards && boardEvents.some((e) => t.stages.filter((s2) => s2.eventId === e.id).reduce((n2, s2) => n2 + s2.groups.length, 0) > 12) ? button4("\u5BFE\u6226\u8868\u3092\u5168\u4EF6\u8868\u793A", "boardExpand") : ""));
     const filtered = t.matches.filter((m) => m.status !== "bye" && (!matchEvent || m.eventId === matchEvent) && (!matchSearch || label(m, t).includes(matchSearch) || [m.left, m.right].some((id) => (lookupEntry(id)?.name || "").includes(matchSearch))));
     matchPage = Math.min(matchPage, Math.max(0, Math.ceil(filtered.length / 100) - 1));
     html += section("\u6B21\u8A66\u5408\u5019\u88DC", table9(["\u756A\u53F7", "\u547C\u51FA\u6761\u4EF6"], candidates(t).slice(0, 10).map((c) => [esc(label(t.matches.find((m) => m.id === c.id), t)), esc(c.reason || (c.court ? c.court + "\u30B3\u30FC\u30C8\u3078\u547C\u51FA\u53EF\u80FD" : "\u547C\u51FA\u53EF\u80FD"))])));
-    html += section("\u7D5E\u8FBC\u30FB\u30DA\u30FC\u30B8", input2("\u756A\u53F7\u30FB\u9078\u624B\u540D\u691C\u7D22", "matchSearch", matchSearch) + select2("\u7A2E\u76EE\u3067\u7D5E\u8FBC", "matchFilter", [{ id: "", name: "\u5168\u7A2E\u76EE" }, ...t.events], matchEvent) + button3("\u7D5E\u8FBC", "matchFilter") + `<p>${filtered.length}\u8A66\u5408 / ${matchPage + 1}\u30DA\u30FC\u30B8\uFF08100\u4EF6\u305A\u3064\uFF09</p>` + button3("\u524D\u30DA\u30FC\u30B8", "matchPrev") + button3("\u6B21\u30DA\u30FC\u30B8", "matchNext"));
-    html += section("\u8A66\u5408\u4E00\u89A7", '<div id="matchList">' + table9(["\u756A\u53F7", "\u30B9\u30C6\u30FC\u30B8", "\u5DE6", "\u53F3", "\u7D50\u679C\u30FB\u72B6\u614B", "\u30B3\u30FC\u30C8 / \u4E88\u5B9A", "\u64CD\u4F5C"], filtered.slice(matchPage * 100, (matchPage + 1) * 100).map((m) => [button3(label(m, t), "matchEdit", `data-id="${m.id}"`), esc(t.stages.find((s2) => s2.id === m.stageId)?.name), name5(m.left), name5(m.right), `${m.games.map((g) => g.join("-")).join("/")} ${esc(m.draw ? "\u5F15\u5206\u3051" : m.status)}`, `${progress.get(m.id)?.delayMinutes || 0}\u5206\u9045\u5EF6 / ${m.startedAt ? esc(new Date(m.startedAt).toLocaleTimeString("ja-JP")) : "\u958B\u59CB\u672A\u8A18\u9332"} / ${m.finishedAt ? esc(new Date(m.finishedAt).toLocaleTimeString("ja-JP")) : "\u7D42\u4E86\u672A\u8A18\u9332"}<br>${m.court || (m.status === "completed" ? "\u672A\u8A18\u9332\uFF08\u7D42\u4E86\uFF09" : "\u2014")} / ${m.time ? `${String(Math.floor(m.time / 60)).padStart(2, "0")}:${String(m.time % 60).padStart(2, "0")}` : "\u2014"}`, m.status === "bye" ? "BYE" : button3("\u5165\u529B\u30FB\u8A02\u6B63", "editScore", `data-id="${m.id}"`) + button3("\u8A66\u5408\u958B\u59CB", "startMatch", `data-id="${m.id}"`) + button3("\u9806\u5E8F\u30FB\u30B3\u30FC\u30C8", "matchEdit", `data-id="${m.id}"`)])) + "</div>");
+    html += section("\u7D5E\u8FBC\u30FB\u30DA\u30FC\u30B8", input3("\u756A\u53F7\u30FB\u9078\u624B\u540D\u691C\u7D22", "matchSearch", matchSearch) + select3("\u7A2E\u76EE\u3067\u7D5E\u8FBC", "matchFilter", [{ id: "", name: "\u5168\u7A2E\u76EE" }, ...t.events], matchEvent) + button4("\u7D5E\u8FBC", "matchFilter") + `<p>${filtered.length}\u8A66\u5408 / ${matchPage + 1}\u30DA\u30FC\u30B8\uFF08100\u4EF6\u305A\u3064\uFF09</p>` + button4("\u524D\u30DA\u30FC\u30B8", "matchPrev") + button4("\u6B21\u30DA\u30FC\u30B8", "matchNext"));
+    html += section("\u8A66\u5408\u4E00\u89A7", '<div id="matchList">' + table9(["\u756A\u53F7", "\u30B9\u30C6\u30FC\u30B8", "\u5DE6", "\u53F3", "\u7D50\u679C\u30FB\u72B6\u614B", "\u30B3\u30FC\u30C8 / \u4E88\u5B9A", "\u64CD\u4F5C"], filtered.slice(matchPage * 100, (matchPage + 1) * 100).map((m) => [button4(label(m, t), "matchEdit", `data-id="${m.id}"`), esc(t.stages.find((s2) => s2.id === m.stageId)?.name), name5(m.left), name5(m.right), `${m.games.map((g) => g.join("-")).join("/")} ${esc(m.draw ? "\u5F15\u5206\u3051" : matchStateName[m.status])}`, `${progress.get(m.id)?.delayMinutes || 0}\u5206\u9045\u5EF6 / ${m.startedAt ? esc(new Date(m.startedAt).toLocaleTimeString("ja-JP")) : "\u958B\u59CB\u672A\u8A18\u9332"} / ${m.finishedAt ? esc(new Date(m.finishedAt).toLocaleTimeString("ja-JP")) : "\u7D42\u4E86\u672A\u8A18\u9332"}<br>${m.court || (m.status === "completed" ? "\u672A\u8A18\u9332\uFF08\u7D42\u4E86\uFF09" : "\u2014")} / ${m.time ? `${String(Math.floor(m.time / 60)).padStart(2, "0")}:${String(m.time % 60).padStart(2, "0")}` : "\u2014"}`, m.status === "bye" ? "BYE" : button4("\u5165\u529B\u30FB\u8A02\u6B63", "editScore", `data-id="${m.id}"`) + button4("\u8A66\u5408\u958B\u59CB", "startMatch", `data-id="${m.id}"`) + button4("\u9806\u5E8F\u30FB\u30B3\u30FC\u30C8", "matchEdit", `data-id="${m.id}"`)])) + "</div>");
   }
   if (page === "matches") for (const x of t.stages.filter((s2) => s2.exchange)) {
     const controls = t.events.find((e) => e.id === x.eventId);
@@ -110873,31 +111550,27 @@ async function render() {
     const pageSize = 50, index = Math.min(exchangePages.get(key4) || 0, Math.max(0, Math.ceil(upcoming.length / pageSize) - 1));
     const limit = x.exchange.target;
     const missing = stats.filter((r) => x.exchange.mode === "balanced" && r.status !== "\u96E2\u8131" && r.planned < limit);
-    const membership = select2("\u53C2\u52A0\u67A0", "exMember" + key4, entries);
+    const membership = select3("\u53C2\u52A0\u67A0", "exMember" + key4, entries);
     const roster = collectRoster(t);
     html += section("\u4EA4\u6D41\u6226 \xB7 " + controls.name, `<details open><summary>\u9078\u624B\u5225\u9032\u884C\u30FB\u904B\u55B6\u8A2D\u5B9A</summary><p>\u672A\u5B9F\u65BD ${upcoming.length}\u8A66\u5408 \xB7 ${x.exchange.ranked ? "\u9806\u4F4D\u96C6\u8A08\u3042\u308A" : "\u9806\u4F4D\u96C6\u8A08\u306A\u3057"}</p>${missing.length ? `<p>\u76EE\u6A19${limit}\u8A66\u5408\u306B\u5C4A\u304B\u306A\u3044\u67A0\u304C${missing.length}\u7D44\u3042\u308A\u307E\u3059\u3002\u540C\u6240\u5C5E\u30FB\u30EC\u30D9\u30EB\u30FB\u767B\u9332\u4EBA\u6570\u30FB\u65E2\u5B58\u306E\u5BFE\u6226\u306B\u3088\u308A\u5019\u88DC\u304C\u4E0D\u8DB3\u3057\u3066\u3044\u307E\u3059\u3002</p>` : ""}${table9(["\u9078\u624B\u30FB\u30DA\u30A2", "\u6240\u5C5E", "\u4E88\u5B9A", "\u6D88\u5316", "\u6B8B\u308A", "\u72B6\u6CC1", "\u6700\u7D42\u7D42\u4E86", "\u5F85\u3061"], stats.flatMap((r) => r.entry.players.map((id) => [esc(roster.players.find((p) => p.id === id)?.name ?? r.entry.name), esc(r.entry.club), r.planned, r.done, r.planned - r.done, r.status, r.last ? esc(new Date(r.last).toLocaleTimeString("ja-JP")) : "\u2014", r.wait + "\u5206"])))}
-  ${input2("\u9014\u4E2D\u53C2\u52A0\u306E\u8868\u793A\u540D", "exName" + key4)}${input2("\u6240\u5C5E", "exClub" + key4)}${input2("\u9078\u624BID\uFF08\u8907\u6570\u306F / \u533A\u5207\u308A\uFF09", "exPlayers" + key4)}${input2("\u30EC\u30D9\u30EB", "exLevel" + key4)}
-  ${button3("\u9014\u4E2D\u53C2\u52A0\u3092\u8FFD\u52A0", "exchangeJoin", param)}
-  ${input2("\u7D42\u4E86\u4E88\u5B9A\u6642\u523B\uFF08\u7A7A\u6B04\u3067\u89E3\u9664\uFF09", "exEnd" + key4, clock2, "time")}${button3("\u7D42\u4E86\u4E88\u5B9A\u6642\u523B\u3092\u66F4\u65B0", "exchangeEnd", param)}${membership}${button3("\u9078\u629E\u67A0\u3092\u9014\u4E2D\u96E2\u8131", "exchangeLeave", param)}
-  ${select2("\u624B\u52D5\u5BFE\u6226 \u5DE6", "exLeft" + key4, entries)}${select2("\u624B\u52D5\u5BFE\u6226 \u53F3", "exRight" + key4, entries)}${button3("\u624B\u52D5\u5BFE\u6226\u3092\u8FFD\u52A0", "exchangePair", param)}
-  ${select2("\u4F11\u61A9\u3092\u8A2D\u5B9A\u3059\u308B\u9078\u624B", "exRestPlayer" + key4, roster.players.map((p) => ({ id: p.id, name: p.name + "\uFF08" + p.club + " \xB7 " + p.id + "\uFF09" })))}${input2("\u6700\u4F4E\u4F11\u61A9\uFF08\u7A7A\u6B04\u3067\u5927\u4F1A\u8A2D\u5B9A\uFF09", "exRest" + key4, "", "number")}${button3("\u9078\u624B\u5225\u4F11\u61A9\u3092\u4FDD\u5B58", "exchangeRest", param)}
-  <details ${exchangePages.has(key4) ? "open" : ""}><summary>\u672A\u5B9F\u65BD\u8A66\u5408</summary><p>${index + 1} / ${Math.max(1, Math.ceil(upcoming.length / pageSize))} \u30DA\u30FC\u30B8</p>${button3("\u524D\u3078", "exchangeList", param + ' data-step="-1"')}${button3("\u6B21\u3078", "exchangeList", param + ' data-step="1"')}<ul>${upcoming.slice(index * pageSize, (index + 1) * pageSize).map((m) => `<li>${button3(label(m, t), "matchEdit", `data-id="${esc(m.id)}"`)} ${name5(m.left)} \u5BFE ${name5(m.right)}</li>`).join("")}</ul></details></details>`);
+  ${input3("\u9014\u4E2D\u53C2\u52A0\u306E\u8868\u793A\u540D", "exName" + key4)}${input3("\u6240\u5C5E", "exClub" + key4)}${input3("\u9078\u624BID\uFF08\u8907\u6570\u306F / \u533A\u5207\u308A\uFF09", "exPlayers" + key4)}${input3("\u30EC\u30D9\u30EB", "exLevel" + key4)}
+  ${button4("\u9014\u4E2D\u53C2\u52A0\u3092\u8FFD\u52A0", "exchangeJoin", param)}
+  ${input3("\u7D42\u4E86\u4E88\u5B9A\u6642\u523B\uFF08\u7A7A\u6B04\u3067\u89E3\u9664\uFF09", "exEnd" + key4, clock2, "time")}${button4("\u7D42\u4E86\u4E88\u5B9A\u6642\u523B\u3092\u66F4\u65B0", "exchangeEnd", param)}${membership}${button4("\u9078\u629E\u67A0\u3092\u9014\u4E2D\u96E2\u8131", "exchangeLeave", param)}
+  ${select3("\u624B\u52D5\u5BFE\u6226 \u5DE6", "exLeft" + key4, entries)}${select3("\u624B\u52D5\u5BFE\u6226 \u53F3", "exRight" + key4, entries)}${button4("\u624B\u52D5\u5BFE\u6226\u3092\u8FFD\u52A0", "exchangePair", param)}
+  ${select3("\u4F11\u61A9\u3092\u8A2D\u5B9A\u3059\u308B\u9078\u624B", "exRestPlayer" + key4, roster.players.map((p) => ({ id: p.id, name: p.name + "\uFF08" + p.club + "\uFF09" })))}${input3("\u6700\u4F4E\u4F11\u61A9\uFF08\u7A7A\u6B04\u3067\u5927\u4F1A\u8A2D\u5B9A\uFF09", "exRest" + key4, "", "number")}${button4("\u9078\u624B\u5225\u4F11\u61A9\u3092\u4FDD\u5B58", "exchangeRest", param)}
+  <details ${exchangePages.has(key4) ? "open" : ""}><summary>\u672A\u5B9F\u65BD\u8A66\u5408</summary><p>${index + 1} / ${Math.max(1, Math.ceil(upcoming.length / pageSize))} \u30DA\u30FC\u30B8</p>${button4("\u524D\u3078", "exchangeList", param + ' data-step="-1"')}${button4("\u6B21\u3078", "exchangeList", param + ' data-step="1"')}<ul>${upcoming.slice(index * pageSize, (index + 1) * pageSize).map((m) => `<li>${button4(label(m, t), "matchEdit", `data-id="${esc(m.id)}"`)} ${name5(m.left)} \u5BFE ${name5(m.right)}</li>`).join("")}</ul></details></details>`);
   }
   if (page === "score") {
     const m = t.matches.find((m2) => m2.id === mid);
     ensure(m, "\u8A66\u5408\u304C\u3042\u308A\u307E\u305B\u3093");
     if (eventOf(t, m.eventId).type === "team") {
-      html = section("\u56E3\u4F53\u6226\u30AA\u30FC\u30C0\u30FC", `<div class="match"><strong>${name5(m.left)}</strong><span>VS</span><strong>${name5(m.right)}</strong></div><p class="muted">1\u884C1\u672C\uFF1A\u5DE6\u306E\u9078\u624BID\uFF08/\u533A\u5207\u308A\uFF09,\u53F3\u306E\u9078\u624BID\u3002\u8A2D\u5B9A\u3057\u305F\u672C\u6570\u3002\u6240\u5C5E\u767B\u9332\u6E08\u307F\u9078\u624B\u3092\u6307\u5B9A\u3057\u307E\u3059\u3002</p><p>\u5DE6\uFF1A${esc(entryOf(t, m.left)?.players.join(" / "))}<br>\u53F3\uFF1A${esc(entryOf(t, m.right)?.players.join(" / "))}</p>${(() => {
-        const sizes = eventOf(t, m.eventId).team?.orderSizes || [1, 1, 1];
-        const a = lookupEntry(m.left)?.players || [], b = lookupEntry(m.right)?.players || [];
-        return `<div class="table"><table><thead><tr><th>\u8A66\u5408</th><th>${name5(m.left)}</th><th>${name5(m.right)}</th></tr></thead><tbody>${sizes.map((n2, i) => `<tr><td>${n2 === 2 ? "D" : "S" + sizes.slice(0, i + 1).filter((x) => x === 1).length}</td>${[a, b].map((roster, side) => `<td>${Array.from({ length: n2 }, (_2, j) => `<select class="order-select" data-row="${i}" data-side="${side}" data-position="${j}"><option value="">\u9078\u629E</option>${roster.map((id) => `<option value="${esc(id)}" ${m.rubbers?.[i]?.[side === 0 ? "left" : "right"]?.[j] === id ? "selected" : ""}>${esc(id)}${lookupEntry(id) ? `\uFF08${esc(lookupEntry(id)?.name)}\uFF09` : ""}</option>`).join("")}</select>`).join("")}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
-      })()}${button3("\u30AA\u30FC\u30C0\u30FC\u3092\u4FDD\u5B58", "teamOrder")}<details><summary>\u5F93\u6765\u306EID\u4E00\u62EC\u5165\u529B</summary><textarea id="orders">${esc(m.rubbers?.map((r) => r.left.join("/") + "," + r.right.join("/")).join("\n") || "")}</textarea>${button3("ID\u4E00\u62EC\u30AA\u30FC\u30C0\u30FC\u3092\u4FDD\u5B58", "teamOrderText")}</details>${button3("\u56E3\u4F53\u7D50\u679C\u30FB\u9032\u884C\u3092\u53D6\u6D88", "cancel")}`);
-      if (eventOf(t, m.eventId).team?.tieBreak === "manual" && t.stages.find((s2) => s2.id === m.stageId)?.kind === "bracket") html += section("\u56E3\u4F53\u540C\u70B9\u306E\u6C7A\u7740\u8A18\u9332", select2("\u898F\u5B9A\u306B\u57FA\u3065\u304F\u6C7A\u7740\u306E\u52DD\u8005", "teamDecisionWinner", [{ id: m.left, name: entryOf(t, m.left)?.name || "" }, { id: m.right, name: entryOf(t, m.right)?.name || "" }]) + button3("\u540C\u70B9\u6C7A\u7740\u3092\u8A18\u9332\u30FB\u518D\u88C1\u5B9A", "teamDecide") + "<p>\u5168\u672C\u540C\u70B9\u6642\u306E\u307F\u3002\u4EE3\u8868\u6226\u7B49\u306E\u5B9F\u969B\u306E\u6C7A\u7740\u3068\u5927\u4F1A\u898F\u5B9A\u306E\u6839\u62E0\u3092\u8A18\u9332\u3057\u307E\u3059\u3002\u5143\u306E\u5185\u8A33\u5F97\u70B9\u306F\u5909\u3048\u307E\u305B\u3093\u3002</p>");
-      if (m.rubbers) html += m.rubbers.map((r, i) => section(`${i + 1}\u672C\u76EE ${r.left.join("\u30FB")} \u5BFE ${r.right.join("\u30FB")}`, renderScore(m, i).replaceAll('id="winnerChoice', 'id="rubber' + i + "winnerChoice"))).join("");
+      html = teamOrderPanel(m);
+      if (eventOf(t, m.eventId).team?.tieBreak === "manual" && t.stages.find((s2) => s2.id === m.stageId)?.kind === "bracket") html += section("\u56E3\u4F53\u540C\u70B9\u306E\u6C7A\u7740\u8A18\u9332", select3("\u898F\u5B9A\u306B\u57FA\u3065\u304F\u6C7A\u7740\u306E\u52DD\u8005", "teamDecisionWinner", [{ id: m.left, name: entryOf(t, m.left)?.name || "" }, { id: m.right, name: entryOf(t, m.right)?.name || "" }]) + button4("\u540C\u70B9\u6C7A\u7740\u3092\u8A18\u9332\u30FB\u518D\u88C1\u5B9A", "teamDecide") + "<p>\u5168\u672C\u540C\u70B9\u6642\u306E\u307F\u3002\u4EE3\u8868\u6226\u7B49\u306E\u5B9F\u969B\u306E\u6C7A\u7740\u3068\u5927\u4F1A\u898F\u5B9A\u306E\u6839\u62E0\u3092\u8A18\u9332\u3057\u307E\u3059\u3002\u5143\u306E\u5185\u8A33\u5F97\u70B9\u306F\u5909\u3048\u307E\u305B\u3093\u3002</p>");
+      if (m.rubbers) html += m.rubbers.map((r, i) => section(`${i + 1}\u672C\u76EE ${r.left.length === 2 ? "\u30C0\u30D6\u30EB\u30B9" : "\u30B7\u30F3\u30B0\u30EB\u30B9"}`, renderScore(m, i).replaceAll('id="winnerChoice', 'id="rubber' + i + "winnerChoice"))).join("");
     } else html = section("\u5F97\u70B9\u5165\u529B\u30FB\u8A02\u6B63", renderScore(m));
   }
   if (page === "results") {
-    html = eventPicker() + section("\u51FA\u529B\u30FB\u5370\u5237", `<div class="actions">${button3("\u5370\u5237\u30FBPDF\u4FDD\u5B58", "print")}${button3("\u5E33\u7968PDF\u3092\u76F4\u63A5\u51FA\u529B", "xPdfReport")}${button3("Excel\u7D50\u679C\u51FA\u529B", "xlsx")}${button3("\u7D44\u5408\u305B\u30FB\u7D50\u679C\u30FB\u4E88\u5B9A\u306EExcel\u5E33\u7968", "formsXlsx")}${button3("CSV\u7D50\u679C\u51FA\u529B", "csv")}</div><p class="muted">\u5370\u5237\u306F\u73FE\u5728\u306E\u9806\u4F4D\u30FB\u7D44\u5408\u305B\u30FB\u7D50\u679C\u3092\u5BFE\u8C61\u306B\u3057\u307E\u3059\u3002\u8CDE\u72B6\u306F\u4E0B\u306E\u30DC\u30BF\u30F3\u3067\u751F\u6210\u3057\u307E\u3059\u3002</p>`);
+    html = eventPicker() + section("\u51FA\u529B\u30FB\u5370\u5237", `<div class="actions">${button4("\u5370\u5237\u30FBPDF\u4FDD\u5B58", "print")}${button4("\u5E33\u7968PDF\u3092\u76F4\u63A5\u51FA\u529B", "xPdfReport")}${button4("Excel\u7D50\u679C\u51FA\u529B", "xlsx")}${button4("\u7D44\u5408\u305B\u30FB\u7D50\u679C\u30FB\u4E88\u5B9A\u306EExcel\u5E33\u7968", "formsXlsx")}${button4("CSV\u7D50\u679C\u51FA\u529B", "csv")}</div><p class="muted">\u5370\u5237\u306F\u73FE\u5728\u306E\u9806\u4F4D\u30FB\u7D44\u5408\u305B\u30FB\u7D50\u679C\u3092\u5BFE\u8C61\u306B\u3057\u307E\u3059\u3002\u8CDE\u72B6\u306F\u4E0B\u306E\u30DC\u30BF\u30F3\u3067\u751F\u6210\u3057\u307E\u3059\u3002</p>`);
     for (const s2 of t.stages.filter((s3) => s3.eventId === eid)) {
       if (s2.kind === "league") for (const g of s2.groups) {
         const ranks = standings(t, g.id);
@@ -110905,14 +111578,14 @@ async function render() {
           if (s2.exchange && g.entries.length > 24) return "<p>25\u67A0\u4EE5\u4E0A\u306E\u4EA4\u6D41\u6226\u306F\u300C\u5F97\u70B9\u30FB\u9032\u884C\u300D\u306E\u672A\u5B9F\u65BD\u8A66\u5408\u4E00\u89A7\u3001\u307E\u305F\u306F\u5E33\u7968\u3092\u5229\u7528\u3057\u3066\u304F\u3060\u3055\u3044\u3002</p>";
           const cross = leagueCrossTable(t, g.id);
           return "<p>" + esc(cross.note) + "</p>" + table9(cross.headers, cross.rows.map((row) => row.map(esc)));
-        })() + (s2.exchange && !s2.exchange.ranked ? "" : button3("\u4E0A\u4F4D3\u540D\u306E\u8CDE\u72B6\u3092\u8868\u793A", "certificate", `data-group="${g.id}"`)));
+        })() + (s2.exchange && !s2.exchange.ranked ? "" : button4("\u4E0A\u4F4D3\u540D\u306E\u8CDE\u72B6\u3092\u8868\u793A", "certificate", `data-group="${g.id}"`)));
       }
       else html += section(s2.name, table9(["\u56DE\u6226", "\u756A\u53F7", "\u5DE6", "\u53F3", "\u52DD\u8005"], t.matches.filter((m) => m.stageId === s2.id && m.status !== "bye").map((m) => [m.round, esc(label(m, t)), name5(m.left), name5(m.right), m.winner ? name5(m.winner) : "\u672A\u78BA\u5B9A"])));
     }
   }
   if (page === "results") html += section(
     "\u500B\u5225PDF\u51FA\u529B",
-    select2("\u5E33\u7968", "pdfKind", [{ id: "draw", name: "\u9078\u629E\u7A2E\u76EE\u306E\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u7D44\u5408\u305B" }, { id: "bracket", name: "\u9078\u629E\u7A2E\u76EE\u306E\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u7D50\u679C" }, { id: "results", name: "\u9078\u629E\u7A2E\u76EE\u306E\u8A66\u5408\u7D50\u679C\u4E00\u89A7" }, { id: "all-courts", name: "\u5168\u30B3\u30FC\u30C8\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB" }, { id: "court", name: "\u30B3\u30FC\u30C8\u5225\u4E88\u5B9A\u8868" }]) + select2("\u30B3\u30FC\u30C8\u5225\u4E88\u5B9A\u8868\u306E\u30B3\u30FC\u30C8", "pdfCourt", Array.from({ length: Math.max(t.courts, ...(t.competitionDays ?? []).map((d) => d.courts)) }, (_2, i) => ({ id: String(i + 1), name: i + 1 + "\u30B3\u30FC\u30C8" }))) + select2("\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB\u306E\u7528\u7D19", "pdfOrientation", [{ id: "portrait", name: "A4\u7E26" }, { id: "landscape", name: "A4\u6A2A" }]) + select2("\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB\u306E\u5185\u5BB9", "pdfPreset", [{ id: "simple", name: "\u7C21\u6613\u7248 \xB7 \u8A66\u5408\u756A\u53F7\u3068\u6642\u523B" }, { id: "standard", name: "\u6A19\u6E96\u7248 \xB7 \u9078\u624B\u540D\u3082\u8868\u793A" }, { id: "detail", name: "\u8A73\u7D30\u7248 \xB7 \u9078\u624B\u540D\u30FB\u6240\u5C5E\u30FB\u9032\u884C\u72B6\u614B" }, { id: "custom", name: "\u30AB\u30B9\u30BF\u30E0" }]) + select2("\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB\u306E\u5206\u5272", "pdfSplit", [
+    select3("\u5E33\u7968", "pdfKind", [{ id: "draw", name: "\u9078\u629E\u7A2E\u76EE\u306E\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u7D44\u5408\u305B" }, { id: "bracket", name: "\u9078\u629E\u7A2E\u76EE\u306E\u30C8\u30FC\u30CA\u30E1\u30F3\u30C8\u7D50\u679C" }, { id: "results", name: "\u9078\u629E\u7A2E\u76EE\u306E\u8A66\u5408\u7D50\u679C\u4E00\u89A7" }, { id: "team-league", name: "\u9078\u629E\u7A2E\u76EE\u306E\u56E3\u4F53\u6226\u30EA\u30FC\u30B0\u8868" }, { id: "all-courts", name: "\u5168\u30B3\u30FC\u30C8\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB" }, { id: "court", name: "\u30B3\u30FC\u30C8\u5225\u4E88\u5B9A\u8868" }]) + select3("\u30B3\u30FC\u30C8\u5225\u4E88\u5B9A\u8868\u306E\u30B3\u30FC\u30C8", "pdfCourt", Array.from({ length: timetableCourts(t) }, (_2, i) => ({ id: String(i + 1), name: i + 1 + "\u30B3\u30FC\u30C8" }))) + select3("\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB\u306E\u7528\u7D19", "pdfOrientation", [{ id: "portrait", name: "A4\u7E26" }, { id: "landscape", name: "A4\u6A2A" }]) + select3("\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB\u306E\u5185\u5BB9", "pdfPreset", [{ id: "simple", name: "\u7C21\u6613\u7248 \xB7 \u8A66\u5408\u756A\u53F7\u3068\u6642\u523B" }, { id: "standard", name: "\u6A19\u6E96\u7248 \xB7 \u9078\u624B\u540D\u3082\u8868\u793A" }, { id: "detail", name: "\u8A73\u7D30\u7248 \xB7 \u9078\u624B\u540D\u30FB\u6240\u5C5E\u30FB\u9032\u884C\u72B6\u614B" }, { id: "custom", name: "\u30AB\u30B9\u30BF\u30E0" }]) + select3("\u5171\u901A\u30BF\u30A4\u30E0\u30C6\u30FC\u30D6\u30EB\u306E\u5206\u5272", "pdfSplit", [
       { id: "one", name: "\u5168\u65E5\u7A0B\u30921\u30DA\u30FC\u30B8" },
       { id: "days", name: "\u958B\u50AC\u65E5\u3054\u3068" },
       { id: "boundaries", name: "\u8A66\u5408\u756A\u53F7\u304B\u3089\u65B0\u30DA\u30FC\u30B8" },
@@ -110921,29 +111594,56 @@ async function render() {
       { id: "rounds", name: "\u30E9\u30A6\u30F3\u30C9\u3054\u3068" },
       { id: "times", name: "\u6307\u5B9A\u65E5\u6642\u304B\u3089\u65B0\u30DA\u30FC\u30B8" },
       { id: "ranges", name: "\u30DA\u30FC\u30B8\u3054\u3068\u306B\u7BC4\u56F2\u30FB\u8A66\u5408\u3092\u6307\u5B9A" }
-    ], t.printSplit?.kind ?? "one") + `<label for="pdfSplitText">\u5206\u5272\u306E\u8A73\u7D30</label><textarea id="pdfSplitText" rows="3">${esc(formatPrintSplit(t, t.printSplit))}</textarea><p>\u8A66\u5408\u756A\u53F7\u6307\u5B9A\u306F BS-41 \u306E\u3088\u3046\u306B\u6307\u5B9A\u3057\u3001\u8907\u6570\u5883\u754C\u306F1\u884C\u305A\u3064\u5165\u529B\u3002\u65E5\u6642\u306F YYYY-MM-DD HH:MM\u3002\u7BC4\u56F2\u306F\u300C\u30DA\u30FC\u30B8\u898B\u51FA\u3057 | BS:best:8; GS:matches:GS-1,GS-3\u300D\u30921\u884C\u305A\u3064\u3002\u672A\u6307\u5B9A\u306F\u5225\u30DA\u30FC\u30B8\u306B\u6B8B\u3057\u307E\u3059\u3002</p>` + rangeGuide(t) + button3("PDF\u5206\u5272\u8A2D\u5B9A\u3092\u4FDD\u5B58", "savePdfSplit") + `<div class="actions"><label><input type="checkbox" id="pdfNames"> \u9078\u624B\u540D</label><label><input type="checkbox" id="pdfClubs"> \u6240\u5C5E</label><label><input type="checkbox" id="pdfStatus"> \u9032\u884C\u72B6\u614B</label></div>` + button3("\u9078\u629E\u3057\u305FPDF\u3092\u4F5C\u6210", "preparePdf")
+    ], t.printSplit?.kind ?? "one") + `<label for="pdfSplitText">\u5206\u5272\u306E\u8A73\u7D30</label><textarea id="pdfSplitText" rows="3">${esc(formatPrintSplit(t, t.printSplit))}</textarea><p>\u8A66\u5408\u756A\u53F7\u6307\u5B9A\u306F BS-41 \u306E\u3088\u3046\u306B\u6307\u5B9A\u3057\u3001\u8907\u6570\u5883\u754C\u306F1\u884C\u305A\u3064\u5165\u529B\u3002\u65E5\u6642\u306F YYYY-MM-DD HH:MM\u3002\u7BC4\u56F2\u306F\u300C\u30DA\u30FC\u30B8\u898B\u51FA\u3057 | BS:best:8; GS:matches:GS-1,GS-3\u300D\u30921\u884C\u305A\u3064\u3002\u672A\u6307\u5B9A\u306F\u5225\u30DA\u30FC\u30B8\u306B\u6B8B\u3057\u307E\u3059\u3002</p>` + rangeGuide(t) + button4("PDF\u5206\u5272\u8A2D\u5B9A\u3092\u4FDD\u5B58", "savePdfSplit") + `<div class="actions"><label><input type="checkbox" id="pdfNames"> \u9078\u624B\u540D</label><label><input type="checkbox" id="pdfClubs"> \u6240\u5C5E</label><label><input type="checkbox" id="pdfStatus"> \u9032\u884C\u72B6\u614B</label></div>` + button4("\u9078\u629E\u3057\u305FPDF\u3092\u4F5C\u6210", "preparePdf")
   );
   if (page === "results") {
-    const sheets2 = t.matches.filter((m) => m.eventId === eid && m.left && m.right && m.status !== "bye" && eventOf(t, m.eventId).type !== "team");
-    const multi = new Set(t.matches.filter((m) => m.left && m.right && m.status !== "bye" && eventOf(t, m.eventId).type !== "team").map((m) => m.eventId)).size > 1;
-    html += section("\u5BE9\u5224\u7528\u30B9\u30B3\u30A2\u30B7\u30FC\u30C8", (sheets2.length ? select2("1\u8A66\u5408\u3092\u51FA\u529B", "scoreSheetMatch", sheets2.map((m) => ({ id: m.id, name: label(m, t) + "\u3000" + (lookupEntry(m.left)?.name ?? "") + " \u5BFE " + (lookupEntry(m.right)?.name ?? "") }))) + button3("\u9078\u629E\u8A66\u5408\u306E\u30B9\u30B3\u30A2\u30B7\u30FC\u30C8", "scoreSheet") + button3("\u5BFE\u6226\u8005\u78BA\u5B9A\u6E08\u307F\u306E\u5168\u8A66\u5408\u3092\u4E00\u62EC\u51FA\u529B", "scoreSheets") : "\u5BFE\u6226\u8005\u304C\u78BA\u5B9A\u3059\u308B\u3068\u51FA\u529B\u3067\u304D\u307E\u3059\u3002") + (multi ? button3("\u5168\u7A2E\u76EE\u306E\u5BFE\u6226\u8005\u78BA\u5B9A\u6E08\u307F\u8A66\u5408\u3092\u4E00\u62EC\u51FA\u529B", "scoreSheetsAll") : ""));
+    const sheets2 = t.matches.filter((m) => m.eventId === eid && m.left && m.right && m.status !== "bye" && (eventOf(t, m.eventId).type !== "team" || !!m.rubbers?.length));
+    const multi = new Set(t.matches.filter((m) => m.left && m.right && m.status !== "bye" && (eventOf(t, m.eventId).type !== "team" || !!m.rubbers?.length)).map((m) => m.eventId)).size > 1;
+    html += section("\u5BE9\u5224\u7528\u30B9\u30B3\u30A2\u30B7\u30FC\u30C8", (sheets2.length ? select3("1\u8A66\u5408\u3092\u51FA\u529B", "scoreSheetMatch", sheets2.map((m) => ({ id: m.id, name: label(m, t) + "\u3000" + (lookupEntry(m.left)?.name ?? "") + " \u5BFE " + (lookupEntry(m.right)?.name ?? "") }))) + button4("\u9078\u629E\u8A66\u5408\u306E\u30B9\u30B3\u30A2\u30B7\u30FC\u30C8", "scoreSheet") + button4("\u5BFE\u6226\u8005\u78BA\u5B9A\u6E08\u307F\u306E\u5168\u8A66\u5408\u3092\u4E00\u62EC\u51FA\u529B", "scoreSheets") : "\u5BFE\u6226\u8005\u304C\u78BA\u5B9A\u3059\u308B\u3068\u51FA\u529B\u3067\u304D\u307E\u3059\u3002") + (multi ? button4("\u5168\u7A2E\u76EE\u306E\u5BFE\u6226\u8005\u78BA\u5B9A\u6E08\u307F\u8A66\u5408\u3092\u4E00\u62EC\u51FA\u529B", "scoreSheetsAll") : ""));
   }
   if (page === "results") html += stageForms(t, t.stages.filter((s2) => s2.eventId === eid && (!s2.exchange || s2.groups[0].entries.length <= 24)));
   if (page === "practice") {
-    html = section("\u7DF4\u7FD2\u7D44\u5408\u305B", `<p class="muted">1\u884C1\u540D\u3002\u30C0\u30D6\u30EB\u30B9\u306E\u7D44\u5408\u305B\u3092\u4F5C\u6210\u3057\u307E\u3059\u3002\u51FA\u5834\u56DE\u6570\u3068\u30DA\u30A2\u91CD\u8907\u3092\u8EFD\u6E1B\u3057\u307E\u3059\u304C\u3001\u5B8C\u5168\u5747\u7B49\u306F\u4FDD\u8A3C\u3057\u307E\u305B\u3093\u3002</p><textarea id="practiceNames"></textarea>` + input2("\u4F7F\u7528\u30B3\u30FC\u30C8\u6570", "practiceCourts", t.courts, "number") + input2("\u5DE1\u6570", "practiceRounds", 5, "number") + button3("\u7DF4\u7FD2\u7D44\u5408\u305B\u3092\u4F5C\u6210", "practiceGenerate"));
+    html = section("\u72EC\u7ACB\u7DF4\u7FD2", button4("\u5171\u901A\u540D\u7C3F\u304B\u3089\u7DF4\u7FD2\u3092\u958B\u304F", "nav", 'data-page="practice-home"')) + section("\u7DF4\u7FD2\u7D44\u5408\u305B", `<p class="muted">1\u884C1\u540D\u3002\u30C0\u30D6\u30EB\u30B9\u306E\u7D44\u5408\u305B\u3092\u4F5C\u6210\u3057\u307E\u3059\u3002\u51FA\u5834\u56DE\u6570\u3068\u30DA\u30A2\u91CD\u8907\u3092\u8EFD\u6E1B\u3057\u307E\u3059\u304C\u3001\u5B8C\u5168\u5747\u7B49\u306F\u4FDD\u8A3C\u3057\u307E\u305B\u3093\u3002</p><textarea id="practiceNames"></textarea>` + input3("\u4F7F\u7528\u30B3\u30FC\u30C8\u6570", "practiceCourts", t.courts, "number") + input3("\u5DE1\u6570", "practiceRounds", 5, "number") + button4("\u7DF4\u7FD2\u7D44\u5408\u305B\u3092\u4F5C\u6210", "practiceGenerate"));
     for (const p of t.practice || []) {
       const pn = (ids) => esc(ids.map((id) => p.members.find((m) => m.id === id)?.name).join("\u30FB"));
-      html += section(p.name, table9(["\u5DE1", "\u30B3\u30FC\u30C8", "\u5DE6", "\u53F3", "\u7D50\u679C", "\u64CD\u4F5C"], p.matches.map((m) => [m.round, m.court, pn(m.left), pn(m.right), m.games.map((g) => g.join("-")).join("/"), button3("\u5F97\u70B9\u5165\u529B", "practiceScore", `data-session="${p.id}" data-id="${m.id}"`)])) + table9(["\u9806\u4F4D", "\u540D\u524D", "\u8A66\u5408", "\u52DD", "\u5F97\u5931\u70B9"], practiceRanking(p).map((r) => [r.rank, esc(r.name), r.played, r.wins, r.diff])));
+      html += section(p.name, table9(["\u5DE1", "\u30B3\u30FC\u30C8", "\u5DE6", "\u53F3", "\u7D50\u679C", "\u64CD\u4F5C"], p.matches.map((m) => [m.round, m.court, pn(m.left), pn(m.right), m.games.map((g) => g.join("-")).join("/"), button4("\u5F97\u70B9\u5165\u529B", "practiceScore", `data-session="${p.id}" data-id="${m.id}"`)])) + table9(["\u9806\u4F4D", "\u540D\u524D", "\u8A66\u5408", "\u52DD", "\u5F97\u5931\u70B9"], practiceRanking(p).map((r) => [r.rank, esc(r.name), r.played, r.wins, r.diff])));
     }
   }
   if (page === "backup") {
     const snapshots = (await db.rows("snapshots")).filter((x) => x.tournamentId === t.id).sort((a, b) => b.revision - a.revision);
     if (token !== epoch) return;
-    html = section("\u5916\u90E8\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7", `<p>\u5185\u90E8\u30B9\u30CA\u30C3\u30D7\u30B7\u30E7\u30C3\u30C8\u306F\u76F4\u8FD120\u4E16\u4EE3\u3067\u3059\u3002\u7AEF\u672B\u6545\u969C\u30FB\u30D6\u30E9\u30A6\u30B6\u30C7\u30FC\u30BF\u6D88\u53BB\u306B\u306F\u5916\u90E8\u30D5\u30A1\u30A4\u30EB\u304C\u5FC5\u8981\u3067\u3059\u3002</p><div class="actions">${button3("\u5927\u4F1A\u30D5\u30A1\u30A4\u30EB\u3092\u4F5C\u6210", "export")}${button3("\u8A3A\u65AD\u30ED\u30B0\u51FA\u529B", "logs")}${button3("\u4FDD\u5B58\u9818\u57DF\u306E\u72B6\u614B", "storageInfo")}${button3("\u4FDD\u5B58\u3092\u518D\u8A66\u884C", "retry", retry ? "" : "disabled")}</div><div id="downloadArea"></div><p id="storageInfo"></p>`) + section("\u5FA9\u5143\u30FB\u30E1\u30A4\u30F3\u30B5\u30D6\u7167\u5408", `<input type="file" id="importFile" accept=".bdmt"><div class="actions">${button3("\u5225\u5927\u4F1A\u3068\u3057\u3066\u5FA9\u5143", "import")}${button3("\u73FE\u5728\u306E\u5927\u4F1A\u3068\u7167\u5408", "compare")}</div><div id="comparison"></div>`) + section("\u5185\u90E8\u30B9\u30CA\u30C3\u30D7\u30B7\u30E7\u30C3\u30C8", '<ul class="snapshot-list">' + snapshots.map((s2) => `<li><strong>${esc(t.name)}</strong><span>\u66F4\u65B0 ${s2.revision}\u3000${esc(new Date(s2.savedAt).toLocaleString("ja-JP"))}</span>${button3("\u5225\u5927\u4F1A\u3078\u5FA9\u5143", "snapshot", `data-id="${esc(s2.id)}"`)}</li>`).join("") + "</ul>") + section("\u524A\u9664\u6E08\u307F\u5927\u4F1A\u306E\u6551\u51FA", button3("\u524A\u9664\u6E08\u307F\u4E00\u89A7\u3092\u8868\u793A", "trash") + '<div id="trashList"></div>');
+    html = section("\u5916\u90E8\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7", `<p>\u5185\u90E8\u30B9\u30CA\u30C3\u30D7\u30B7\u30E7\u30C3\u30C8\u306F\u76F4\u8FD120\u4E16\u4EE3\u3067\u3059\u3002\u7AEF\u672B\u6545\u969C\u30FB\u30D6\u30E9\u30A6\u30B6\u30C7\u30FC\u30BF\u6D88\u53BB\u306B\u306F\u5916\u90E8\u30D5\u30A1\u30A4\u30EB\u304C\u5FC5\u8981\u3067\u3059\u3002</p><div class="actions">${button4("\u5927\u4F1A\u30D5\u30A1\u30A4\u30EB\u3092\u4F5C\u6210", "export")}${button4("\u8A3A\u65AD\u30ED\u30B0\u51FA\u529B", "logs")}${button4("\u4FDD\u5B58\u9818\u57DF\u306E\u72B6\u614B", "storageInfo")}${button4("\u4FDD\u5B58\u3092\u518D\u8A66\u884C", "retry", retry ? "" : "disabled")}</div><div id="downloadArea"></div><p id="storageInfo"></p>`) + section("\u5FA9\u5143\u30FB\u30E1\u30A4\u30F3\u30B5\u30D6\u7167\u5408", `<input type="file" id="importFile" accept=".bdmt"><div class="actions">${button4("\u5225\u5927\u4F1A\u3068\u3057\u3066\u5FA9\u5143", "import")}${button4("\u73FE\u5728\u306E\u5927\u4F1A\u3068\u7167\u5408", "compare")}</div><div id="comparison"></div>`) + section("\u5185\u90E8\u30B9\u30CA\u30C3\u30D7\u30B7\u30E7\u30C3\u30C8", '<ul class="snapshot-list">' + snapshots.map((s2) => `<li><strong>${esc(t.name)}</strong><span>\u66F4\u65B0 ${s2.revision}\u3000${esc(new Date(s2.savedAt).toLocaleString("ja-JP"))}</span>${button4("\u5225\u5927\u4F1A\u3078\u5FA9\u5143", "snapshot", `data-id="${esc(s2.id)}"`)}</li>`).join("") + "</ul>") + section("\u524A\u9664\u6E08\u307F\u5927\u4F1A\u306E\u6551\u51FA", button4("\u524A\u9664\u6E08\u307F\u4E00\u89A7\u3092\u8868\u793A", "trash") + '<div id="trashList"></div>');
   }
   $2("main").innerHTML = heading + html;
   if (page === "matches") mountVirtualTimetable($2("main"), t, showProgress, scheduleDay || void 0);
+  mountCommunity($2("main"));
   mountBracketZoom($2("main"), bracketViews);
+  if (page === "matches") {
+    for (const form of $2("main").querySelectorAll(".form-block[data-board-group]")) {
+      form.addEventListener("toggle", () => boardOpen.set(form.dataset.boardGroup, form.open));
+    }
+    for (const control of $2("main").querySelectorAll("[data-league-zoom]")) {
+      const key4 = control.dataset.leagueZoom, surface = control.querySelector("[data-league-surface]");
+      const apply3 = () => {
+        const value2 = leagueZoom.get(key4);
+        surface.style.zoom = value2 === void 0 ? "" : String(value2);
+        control.querySelector("output").textContent = value2 === void 0 ? "\u81EA\u52D5" : Math.round(value2 * 100) + "%";
+      };
+      control.querySelector("[data-fit]").addEventListener("click", () => {
+        leagueZoom.delete(key4);
+        apply3();
+      });
+      control.querySelector("[data-zoom-in]").addEventListener("click", () => {
+        leagueZoom.set(key4, Math.min(2, (leagueZoom.get(key4) ?? 1) * 1.2));
+        apply3();
+      });
+      control.querySelector("[data-zoom-out]").addEventListener("click", () => {
+        leagueZoom.set(key4, Math.max(0.55, (leagueZoom.get(key4) ?? 1) / 1.2));
+        apply3();
+      });
+      apply3();
+    }
+  }
   await restoreDraft();
   syncGamePickers();
   updateScorePreview();
@@ -110956,8 +111656,8 @@ function captureDraft() {
   $2("main").querySelectorAll("input:not([type=file]):not([type=password]),select,textarea").forEach((e) => {
     if (e.id) fields[e.id] = e instanceof HTMLInputElement && e.type === "checkbox" ? String(e.checked) : e.value;
   });
-  const value = { id: draftKey(), tab, tournamentId: t.id, page, mid, eid, sid, base: t.revision, fields, at: Date.now() };
-  draftQueue = draftQueue.then(() => db.put("drafts", value)).catch(async (e) => {
+  const value2 = { id: draftKey(), tab, tournamentId: t.id, page, mid, eid, sid, base: t.revision, fields, at: Date.now() };
+  draftQueue = draftQueue.then(() => db.put("drafts", value2)).catch(async (e) => {
     notice("\u4E0B\u66F8\u304D\u4FDD\u5B58\u5931\u6557\uFF1A\u753B\u9762\u3092\u9589\u3058\u305A\u306B\u5165\u529B\u3092\u4FDD\u5B58\u3057\u3066\u304F\u3060\u3055\u3044 " + String(e), true);
     await db.log("\u4E0B\u66F8\u304D", e, "IndexedDB");
   });
@@ -111046,15 +111746,19 @@ function context2() {
     overlay.id = "draftCompare";
     overlay.className = "draft-dialog";
     overlay.setAttribute("role", "dialog");
-    overlay.innerHTML = "<h2>\u53E4\u3044\u4E0B\u66F8\u304D\u3068\u73FE\u5728\u753B\u9762\u3092\u6BD4\u8F03</h2><p>\u9078\u629E\u9805\u76EE\u3060\u3051\u3092\u5165\u529B\u6B04\u3078\u5FA9\u5143\u3057\u307E\u3059\u3002\u5927\u4F1A\u3078\u306E\u78BA\u5B9A\u4FDD\u5B58\u306F\u5225\u64CD\u4F5C\u3067\u3059\u3002</p>" + Object.entries(d.fields).filter(([id]) => document.getElementById(id)).map(([id, value], i) => `<label><input type="checkbox" id="draftChoice${i}" data-field="${esc(id)}">${esc(id)}<br>\u73FE\u5728\uFF1A${esc(val2(id))}<br>\u4E0B\u66F8\u304D\uFF1A${esc(value)}</label>`).join("") + button3("\u9078\u629E\u9805\u76EE\u3092\u5165\u529B\u6B04\u3078\u5FA9\u5143", "draftApply") + button3("\u6BD4\u8F03\u3092\u9589\u3058\u308B", "draftClose");
+    overlay.innerHTML = "<h2>\u53E4\u3044\u4E0B\u66F8\u304D\u3068\u73FE\u5728\u753B\u9762\u3092\u6BD4\u8F03</h2><p>\u9078\u629E\u9805\u76EE\u3060\u3051\u3092\u5165\u529B\u6B04\u3078\u5FA9\u5143\u3057\u307E\u3059\u3002\u5927\u4F1A\u3078\u306E\u78BA\u5B9A\u4FDD\u5B58\u306F\u5225\u64CD\u4F5C\u3067\u3059\u3002</p>" + Object.entries(d.fields).filter(([id]) => document.getElementById(id)).map(([id, value2], i) => `<label><input type="checkbox" id="draftChoice${i}" data-field="${esc(id)}">${esc(id)}<br>\u73FE\u5728\uFF1A${esc(val2(id))}<br>\u4E0B\u66F8\u304D\uFF1A${esc(value2)}</label>`).join("") + button4("\u9078\u629E\u9805\u76EE\u3092\u5165\u529B\u6B04\u3078\u5FA9\u5143", "draftApply") + button4("\u6BD4\u8F03\u3092\u9589\u3058\u308B", "draftClose");
     document.body.append(overlay);
-  }, open: async (value) => {
-    t = value;
+  }, open: async (value2) => {
+    t = value2;
     page = "matches";
     await render();
   } };
 }
 async function act(action, b) {
+  if (action.startsWith("cm")) {
+    await communityAction({ db, t, save: mutate, render, notice }, action.slice(2), b.dataset.id ?? "");
+    return;
+  }
   if (action.startsWith("x")) {
     await advancedAction(context2(), action, b);
     return;
@@ -111142,8 +111846,8 @@ async function act(action, b) {
       await mutate("PDF\u5206\u5272\u8A2D\u5B9A\u3092\u4FDD\u5B58", (c) => {
         c.printSplit = split;
       });
-      for (const [id, value] of controls) $2(id).value = value;
-      for (const [id, value] of checkboxes) $2(id).checked = value;
+      for (const [id, value2] of controls) $2(id).value = value2;
+      for (const [id, value2] of checkboxes) $2(id).checked = value2;
       break;
     }
     case "regFilter":
@@ -111180,6 +111884,17 @@ async function act(action, b) {
         registrationPlayer = "";
       });
       break;
+    case "regCopyIdentifier": {
+      const id = b.dataset.id;
+      ensure(id, "\u53C2\u52A0\u8005\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
+      try {
+        await navigator.clipboard.writeText(id);
+        notice("\u518D\u63D0\u51FA\u7528\u306E\u53C2\u52A0\u8005\u756A\u53F7\u3092\u30B3\u30D4\u30FC\u3057\u307E\u3057\u305F");
+      } catch {
+        prompt("Excel\u518D\u63D0\u51FA\u7528\u306E\u53C2\u52A0\u8005\u756A\u53F7", id);
+      }
+      break;
+    }
     case "regToggle":
       await mutate("\u51FA\u5834\u7A2E\u76EE\u3092\u5909\u66F4", (c) => {
         initializeRegistration(c);
@@ -111204,9 +111919,9 @@ async function act(action, b) {
       const pair = e.entries.find((p2) => p2.id === b.dataset.id), number = b.dataset.pair ? Number(b.dataset.pair) : null;
       const prior = pair?.players ?? e.pairDrafts?.find((p2) => p2.number === number)?.players ?? [];
       const p = registrationView(t).players;
-      const rows = [{ id: "", name: "\u9078\u629E" }, ...p.map((p2) => ({ id: p2.id, name: p2.name + "\uFF08" + p2.club + "\u30FB" + (p2.teamRank ?? p2.id.slice(-8)) + "\uFF09" }))];
+      const rows = [{ id: "", name: "\u9078\u629E" }, ...p.map((p2) => ({ id: p2.id, name: p2.name + "\uFF08" + p2.club + "\u30FB" + (p2.teamRank ?? "\u9806\u4F4D\u306A\u3057") + "\uFF09" }))];
       const panel = document.createElement("dialog");
-      panel.innerHTML = "<h2>\u30DA\u30A2\u69CB\u6210</h2>" + select2("1\u4EBA\u76EE", "regPairA", rows, prior[0]) + select2("2\u4EBA\u76EE", "regPairB", rows, prior[1]) + "<button data-commit>\u4FDD\u5B58</button><button data-close>\u9589\u3058\u308B</button>";
+      panel.innerHTML = "<h2>\u30DA\u30A2\u69CB\u6210</h2>" + select3("1\u4EBA\u76EE", "regPairA", rows, prior[0]) + select3("2\u4EBA\u76EE", "regPairB", rows, prior[1]) + "<button data-commit>\u4FDD\u5B58</button><button data-close>\u9589\u3058\u308B</button>";
       document.body.append(panel);
       panel.addEventListener("close", () => panel.remove());
       panel.querySelector("[data-close]").addEventListener("click", () => panel.close());
@@ -111435,14 +112150,14 @@ async function act(action, b) {
       break;
     case "practiceScore": {
       const p = t.practice.find((p2) => p2.id === b.dataset.session), m = p.matches.find((m2) => m2.id === b.dataset.id);
-      const value = prompt("\u5DE6-\u53F3\u306E\u7D42\u4E86\u5F97\u70B9\uFF0821\u70B9\u3001\u30C7\u30E5\u30FC\u30B9\u3042\u308A\u4E0A\u965030\uFF09", m.games[0]?.join("-") || "21-15");
-      if (value === null) return;
-      ensure(/^\d{1,2}-\d{1,2}$/.test(value), "\u4F8B\uFF1A21-15");
+      const value2 = prompt("\u5DE6-\u53F3\u306E\u7D42\u4E86\u5F97\u70B9\uFF0821\u70B9\u3001\u30C7\u30E5\u30FC\u30B9\u3042\u308A\u4E0A\u965030\uFF09", m.games[0]?.join("-") || "21-15");
+      if (value2 === null) return;
+      ensure(/^\d{1,2}-\d{1,2}$/.test(value2), "\u4F8B\uFF1A21-15");
       const reason2 = m.games.length ? prompt("\u7DF4\u7FD2\u7D50\u679C\u306E\u8A02\u6B63\u7406\u7531") : "\u521D\u56DE\u8A18\u9332";
       ensure(reason2?.trim(), "\u7406\u7531\u304C\u5FC5\u8981\u3067\u3059");
       await mutate("\u7DF4\u7FD2\u5F97\u70B9\u4FDD\u5B58", (c) => {
         const before = structuredClone(m);
-        practiceScore(c, p.id, m.id, [value.split("-").map(Number)]);
+        practiceScore(c, p.id, m.id, [value2.split("-").map(Number)]);
         recordCorrection(c, m.id, reason2, before, c.practice.find((p2) => p2.id === p.id).matches.find((m2) => m2.id === m.id));
       });
       break;
@@ -111450,6 +112165,7 @@ async function act(action, b) {
     case "nav":
       await draftQueue;
       page = b.dataset.page;
+      if (page === "practice" && !t) page = "practice-home";
       await render();
       break;
     case "create": {
@@ -111558,10 +112274,10 @@ async function act(action, b) {
       panel.className = "player-picker";
       panel.innerHTML = `<h2>\u4EA4\u63DB\u3059\u308B\u9078\u624B\u3092\u9078\u629E</h2><p>\u73FE\u5728\uFF1A${esc(ranked(source))}</p><input type="search" placeholder="\u6240\u5C5E\u30FB\u540D\u524D\u3067\u691C\u7D22" aria-label="\u9078\u624B\u691C\u7D22"><div class="picker-options">${candidates2.map((id) => `<button type="button" data-pick="${esc(id)}">${esc(ranked(id))}</button>`).join("")}</div><button type="button" data-close>\u9589\u3058\u308B</button>`;
       document.body.append(panel);
-      const search = panel.querySelector("input");
-      search.addEventListener("input", () => {
+      const search2 = panel.querySelector("input");
+      search2.addEventListener("input", () => {
         panel.querySelectorAll("[data-pick]").forEach((x) => {
-          x.hidden = !x.textContent.toLowerCase().includes(search.value.toLowerCase());
+          x.hidden = !x.textContent.toLowerCase().includes(search2.value.toLowerCase());
         });
       });
       panel.querySelector("[data-close]").addEventListener("click", () => panel.close());
@@ -111677,12 +112393,12 @@ async function act(action, b) {
       break;
     case "entryLevel": {
       const entry = eventOf(t, eid).entries.find((p) => p.id === b.dataset.id);
-      const value = prompt("\u30EC\u30D9\u30EB\uFF08\u4F8B\uFF1A\u521D\u7D1A\u30FB\u4E2D\u7D1A\u30FB\u4E0A\u7D1A\uFF09", entry.level || "");
-      if (value === null) return;
-      ensure(value.trim().length <= 32, "\u30EC\u30D9\u30EB\u306F32\u6587\u5B57\u4EE5\u5185\u3067\u3059");
+      const value2 = prompt("\u30EC\u30D9\u30EB\uFF08\u4F8B\uFF1A\u521D\u7D1A\u30FB\u4E2D\u7D1A\u30FB\u4E0A\u7D1A\uFF09", entry.level || "");
+      if (value2 === null) return;
+      ensure(value2.trim().length <= 32, "\u30EC\u30D9\u30EB\u306F32\u6587\u5B57\u4EE5\u5185\u3067\u3059");
       await mutate("\u53C2\u52A0\u8005\u30EC\u30D9\u30EB\u8A2D\u5B9A", (c) => {
         ensure(!c.stages.some((s2) => s2.eventId === eid), "\u7D44\u5408\u305B\u4F5C\u6210\u5F8C\u306E\u30EC\u30D9\u30EB\u306F\u4FDD\u8B77\u3055\u308C\u3066\u3044\u307E\u3059");
-        eventOf(c, eid).entries.find((p) => p.id === entry.id).level = value.normalize("NFKC").trim();
+        eventOf(c, eid).entries.find((p) => p.id === entry.id).level = value2.normalize("NFKC").trim();
       });
       break;
     }
@@ -111721,10 +112437,10 @@ async function act(action, b) {
           const [h, m] = raw.split(":").map(Number);
           c.stages.find((stage) => stage.id === id).exchange.end = raw ? h * 60 + m : 0;
         } else {
-          const player = val2("exRestPlayer" + id), value = val2("exRest" + id);
+          const player = val2("exRestPlayer" + id), value2 = val2("exRest" + id);
           ensure(player, "\u9078\u624B\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
           c.playerRest = (c.playerRest ?? []).filter((p) => p.id !== player);
-          if (value) c.playerRest.push({ id: player, minutes: Number(value) });
+          if (value2) c.playerRest.push({ id: player, minutes: Number(value2) });
         }
       });
       break;
@@ -111767,8 +112483,8 @@ async function act(action, b) {
       const m = t.matches.find((m2) => m2.id === b.dataset.id);
       const panel = document.createElement("dialog");
       panel.className = "player-picker schedule-picker";
-      const opts = Array.from({ length: calendarCourts(t, plannedDate(t, m)) }, (_2, i) => `<option value="${i + 1}" ${m.court === i + 1 ? "selected" : ""}>${i + 1}\u30B3\u30FC\u30C8</option>`).join("");
-      panel.innerHTML = `<form method="dialog"><h2>${esc(label(m, t))} \u8A66\u5408\u8A73\u7D30</h2><p>${name5(m.left)}\uFF08${esc(lookupEntry(m.left)?.club)}\uFF09 \u5BFE ${name5(m.right)}\uFF08${esc(lookupEntry(m.right)?.club)}\uFF09</p><p>\u72B6\u614B ${esc(terminationName(m) || m.status)}\u3000\u5F97\u70B9 ${esc((m.retirementGames ?? m.games).map((g) => g.join("-")).join(" / ") || "\u2014")}</p><label>\u30B3\u30FC\u30C8<select name="court"><option value="0" ${!m.court ? "selected" : ""}>\u672A\u5272\u5F53</option>${opts}</select></label><label>\u8868\u793A\u8A66\u5408\u756A\u53F7<input name="displayNumber" type="text" maxlength="48" required value="${esc(label(m, t))}"></label><label>\u8A66\u5408\u9806<input name="order" type="number" min="1" step="1" required value="${m.queueOrder ?? m.number}"></label><label>\u958B\u59CB\u4E88\u5B9A\u6642\u523B<input name="time" type="time" value="${String(Math.floor(m.time / 60)).padStart(2, "0")}:${String(m.time % 60).padStart(2, "0")}"></label><label>\u6240\u8981\u6642\u9593\uFF08\u5206\uFF09<input name="duration" type="number" min="1" step="1" required value="${m.duration}"></label><div class="actions"><button type="button" data-score ${m.left && m.right ? "" : "disabled"}>\u5F97\u70B9\u5165\u529B\u3078</button>${m.status === "waiting" && m.left && m.right ? '<button type="button" data-call>\u3053\u306E\u8A66\u5408\u3092\u547C\u51FA</button>' : m.status === "called" ? '<button type="button" data-start>\u8A66\u5408\u958B\u59CB</button>' : ""}${m.status === "waiting" && t.stages.some((s2) => s2.id === m.stageId && s2.exchange) && (m.court || m.queueOrder) ? '<button type="button" data-unpin>\u4E88\u5B9A\u30FB\u624B\u52D5\u9806\u3092\u89E3\u9664</button>' : ""}<button type="button" data-cancel>\u30AD\u30E3\u30F3\u30BB\u30EB</button><button type="submit" value="save" ${m.status === "waiting" ? "" : "disabled"}>\u5909\u66F4\u3092\u4FDD\u5B58</button></div></form>`;
+      const opts2 = Array.from({ length: calendarCourts(t, plannedDate(t, m)) }, (_2, i) => `<option value="${i + 1}" ${m.court === i + 1 ? "selected" : ""}>${i + 1}\u30B3\u30FC\u30C8</option>`).join("");
+      panel.innerHTML = `<form method="dialog"><h2>${esc(label(m, t))} \u8A66\u5408\u8A73\u7D30</h2><p>${name5(m.left)}\uFF08${esc(lookupEntry(m.left)?.club)}\uFF09 \u5BFE ${name5(m.right)}\uFF08${esc(lookupEntry(m.right)?.club)}\uFF09</p><p>\u72B6\u614B ${esc(terminationName(m) || matchStateName[m.status])}\u3000\u5F97\u70B9 ${esc((m.retirementGames ?? m.games).map((g) => g.join("-")).join(" / ") || "\u2014")}</p><label>\u30B3\u30FC\u30C8<select name="court"><option value="0" ${!m.court ? "selected" : ""}>\u672A\u5272\u5F53</option>${opts2}</select></label><label>\u8868\u793A\u8A66\u5408\u756A\u53F7<input name="displayNumber" type="text" maxlength="48" required value="${esc(label(m, t))}"></label><label>\u8A66\u5408\u9806<input name="order" type="number" min="1" step="1" required value="${m.queueOrder ?? m.number}"></label><label>\u958B\u59CB\u4E88\u5B9A\u6642\u523B<input name="time" type="time" value="${String(Math.floor(m.time / 60)).padStart(2, "0")}:${String(m.time % 60).padStart(2, "0")}"></label><label>\u6240\u8981\u6642\u9593\uFF08\u5206\uFF09<input name="duration" type="number" min="1" step="1" required value="${m.duration}"></label><div class="actions"><button type="button" data-score ${m.left && m.right ? "" : "disabled"}>\u5F97\u70B9\u5165\u529B\u3078</button>${m.status === "waiting" && m.left && m.right ? '<button type="button" data-call>\u3053\u306E\u8A66\u5408\u3092\u547C\u51FA</button>' : m.status === "called" ? '<button type="button" data-start>\u8A66\u5408\u958B\u59CB</button>' : ""}${m.status === "waiting" && t.stages.some((s2) => s2.id === m.stageId && s2.exchange) && (m.court || m.queueOrder) ? '<button type="button" data-unpin>\u4E88\u5B9A\u30FB\u624B\u52D5\u9806\u3092\u89E3\u9664</button>' : ""}<button type="button" data-cancel>\u30AD\u30E3\u30F3\u30BB\u30EB</button><button type="submit" value="save" ${m.status === "waiting" ? "" : "disabled"}>\u5909\u66F4\u3092\u4FDD\u5B58</button></div></form>`;
       document.body.append(panel);
       panel.querySelector("[data-score]").addEventListener("click", async () => {
         panel.close();
@@ -111873,7 +112589,7 @@ async function act(action, b) {
       ensure(losing === "\u5DE6" || losing === "\u53F3", "\u68C4\u6A29\u3057\u305F\u5074\u306F\u300C\u5DE6\u300D\u307E\u305F\u306F\u300C\u53F3\u300D\u3067\u3059");
       const reason2 = prompt("\u68C4\u6A29\u306E\u7406\u7531");
       ensure(reason2?.trim(), "\u7406\u7531\u304C\u5FC5\u8981\u3067\u3059");
-      const played = kind === "2" && eventOf(t, m.eventId).type !== "team" ? games() : [];
+      const played = kind === "2" && (eventOf(t, m.eventId).type !== "team" || !!m.rubbers?.length) ? games() : [];
       await mutate("\u68C4\u6A29\uFF1A" + reason2, (c) => {
         terminateMatch(c, mid, losing === "\u5DE6" ? m.right : m.left, kind === "2" ? "retirement" : "withdrawal", played);
         recordCorrection(c, mid, reason2, m, c.matches.find((x) => x.id === mid));
@@ -111910,18 +112626,45 @@ async function act(action, b) {
       await mutate("\u56E3\u4F53\u540C\u70B9\u6C7A\u7740", (x) => teamDecide(x, mid, winner, reason2));
       break;
     }
-    case "teamOrderText":
-      await mutate("\u56E3\u4F53\u4E00\u62EC\u30AA\u30FC\u30C0\u30FC", (c) => teamOrder(c, mid, val2("orders").split(/\r?\n/).filter((x) => x.trim()).map((l) => {
-        const [a, b2] = l.split(",");
-        return { left: a.split("/").map((x) => x.trim()), right: (b2 || "").split("/").map((x) => x.trim()) };
-      })));
+    case "teamOrderReuse": {
+      const m = t.matches.find((match) => match.id === mid);
+      ensure(m.status === "waiting" && !m.rubbers?.some((r) => r.games.length), "\u5F97\u70B9\u5165\u529B\u6E08\u307F\u306E\u30AA\u30FC\u30C0\u30FC\u306F\u5909\u66F4\u3067\u304D\u307E\u305B\u3093");
+      let used = 0;
+      for (const [side, key4] of ["left", "right"].entries()) {
+        const prior = t.matches.filter((other) => other.id !== m.id && other.eventId === m.eventId && other.rubbers?.length && (other.left === m[key4] || other.right === m[key4])).sort((a, b2) => (b2.orderSavedAt ?? b2.finishedAt ?? b2.startedAt ?? 0) - (a.orderSavedAt ?? a.finishedAt ?? a.startedAt ?? 0) || b2.number - a.number)[0];
+        if (!prior) continue;
+        for (const field of document.querySelectorAll('.order-select[data-side="' + side + '"]')) {
+          const rubber = prior.rubbers[Number(field.dataset.row)];
+          const members = rubber?.[prior.left === m[key4] ? "left" : "right"];
+          const value2 = members?.[Number(field.dataset.position)];
+          if (value2 && [...field.options].some((option) => option.value === value2)) {
+            field.value = value2;
+            used++;
+          }
+        }
+      }
+      ensure(used, "\u6D41\u7528\u3067\u304D\u308B\u4FDD\u5B58\u6E08\u307F\u30AA\u30FC\u30C0\u30FC\u304C\u3042\u308A\u307E\u305B\u3093");
+      captureDraft();
+      notice("\u524D\u56DE\u30AA\u30FC\u30C0\u30FC\u3092\u5165\u529B\u6B04\u3078\u53CD\u6620\u3057\u307E\u3057\u305F\u3002\u5185\u5BB9\u3092\u78BA\u8A8D\u3057\u3066\u4FDD\u5B58\u3057\u3066\u304F\u3060\u3055\u3044");
+      break;
+    }
+    case "teamOrderRemove":
+      if (confirm("\u4FDD\u5B58\u6E08\u307F\u30AA\u30FC\u30C0\u30FC\u3092\u53D6\u308A\u6D88\u3057\u307E\u3059\u304B\uFF1F")) await mutate("\u56E3\u4F53\u30AA\u30FC\u30C0\u30FC\u53D6\u6D88", (c) => {
+        const m = c.matches.find((m2) => m2.id === mid);
+        ensure(m?.status === "waiting" && !m.rubbers?.some((r) => r.games.length), "\u9032\u884C\u6E08\u307F\u306E\u30AA\u30FC\u30C0\u30FC\u306F\u53D6\u6D88\u3067\u304D\u307E\u305B\u3093");
+        delete m.rubbers;
+      });
       break;
     case "teamOrder": {
-      const sizes = eventOf(t, t.matches.find((m) => m.id === mid).eventId).team?.orderSizes || [1, 1, 1];
+      const current = t.matches.find((m) => m.id === mid);
+      const sizes = eventOf(t, current.eventId).team?.orderSizes || current.rubbers?.map((r) => r.left.length) || [1, 1, 1];
       const controls = [...document.querySelectorAll(".order-select")];
       const orders = sizes.map((n2, i) => ({ left: Array.from({ length: n2 }, (_2, j) => controls.find((c) => c.dataset.row === String(i) && c.dataset.side === "0" && c.dataset.position === String(j))?.value || ""), right: Array.from({ length: n2 }, (_2, j) => controls.find((c) => c.dataset.row === String(i) && c.dataset.side === "1" && c.dataset.position === String(j))?.value || "") }));
       ensure(orders.every((o) => o.left.every(Boolean) && o.right.every(Boolean)), "\u5168\u9078\u624B\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
-      await mutate("\u56E3\u4F53\u30AA\u30FC\u30C0\u30FC", (c) => teamOrder(c, mid, orders));
+      await mutate("\u56E3\u4F53\u30AA\u30FC\u30C0\u30FC", (c) => {
+        teamOrder(c, mid, orders);
+        c.matches.find((m) => m.id === mid).orderSavedAt = Date.now();
+      });
       break;
     }
     case "rubberCancel": {
@@ -111964,7 +112707,7 @@ async function act(action, b) {
       const filename = `\u5927\u4F1A_${t.date}_r${t.revision}.bdmt`;
       download(blob, filename);
       const url = URL.createObjectURL(blob);
-      $2("downloadArea").innerHTML = `<a href="${url}" download="${filename}">\u5927\u4F1A\u30D5\u30A1\u30A4\u30EB\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9</a> ${button3("\u5171\u6709\u3057\u3066\u30D5\u30A1\u30A4\u30EB\u306B\u4FDD\u5B58", "share")}`;
+      $2("downloadArea").innerHTML = `<a href="${url}" download="${filename}">\u5927\u4F1A\u30D5\u30A1\u30A4\u30EB\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9</a> ${button4("\u5171\u6709\u3057\u3066\u30D5\u30A1\u30A4\u30EB\u306B\u4FDD\u5B58", "share")}`;
       lastFile = new File([blob], filename, { type: "application/zip" });
       notice("\u5927\u4F1A\u30D5\u30A1\u30A4\u30EB\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F\u3002\u300C\u30D5\u30A1\u30A4\u30EB\u300D\u306B\u4FDD\u5B58\u3057\u3001\u4FDD\u5B58\u5148\u3067\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044");
       break;
@@ -111998,7 +112741,7 @@ async function act(action, b) {
       break;
     case "trash": {
       const rows = await db.rows("trash");
-      $2("trashList").innerHTML = table9(["\u5927\u4F1A", "\u66F4\u65B0", "\u64CD\u4F5C"], rows.map((r) => [esc(JSON.parse(r.json).name), r.revision, button3("\u5225\u5927\u4F1A\u3078\u6551\u51FA", "rescue", `data-id="${r.id}"`)]));
+      $2("trashList").innerHTML = table9(["\u5927\u4F1A", "\u66F4\u65B0", "\u64CD\u4F5C"], rows.map((r) => [esc(JSON.parse(r.json).name), r.revision, button4("\u5225\u5927\u4F1A\u3078\u6551\u51FA", "rescue", `data-id="${r.id}"`)]));
       break;
     }
     case "rescue": {
@@ -112026,7 +112769,7 @@ async function act(action, b) {
     case "scoreSheet":
     case "scoreSheets":
     case "scoreSheetsAll": {
-      const ids = action === "scoreSheet" ? [val2("scoreSheetMatch")] : t.matches.filter((m) => (action === "scoreSheetsAll" || m.eventId === eid) && m.left && m.right && m.status !== "bye" && eventOf(t, m.eventId).type !== "team").map((m) => m.id);
+      const ids = action === "scoreSheet" ? [val2("scoreSheetMatch")] : t.matches.filter((m) => (action === "scoreSheetsAll" || m.eventId === eid) && m.left && m.right && m.status !== "bye" && (eventOf(t, m.eventId).type !== "team" || !!m.rubbers?.length)).map((m) => m.id);
       notice("\u30B9\u30B3\u30A2\u30B7\u30FC\u30C8\u4F5C\u6210\u4E2D\u2026");
       const [font, templates] = await Promise.all([loadPdfFont(), loadScoreTemplates(t, ids)]);
       offerPdf(await generateScoreSheetsPdf(t, ids, font, templates), "\u30B9\u30B3\u30A2\u30B7\u30FC\u30C8.pdf");
@@ -112035,12 +112778,12 @@ async function act(action, b) {
     }
     case "preparePdf": {
       notice("PDF\u4F5C\u6210\u4E2D\u2026");
-      const kinds = ["draw", "bracket", "results", "all-courts", "court"];
+      const kinds = ["draw", "bracket", "results", "team-league", "all-courts", "court"];
       const kind = kinds.find((x) => x === val2("pdfKind"));
       ensure(kind, "\u5E33\u7968\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044");
       let warning = "", pages = [];
       const split = kind === "all-courts" ? parsePrintSplit(t, val2("pdfSplit"), val2("pdfSplitText")) : void 0;
-      const bytes = await generateReportPdf(t, await loadPdfFont(), { kind, eventId: eid, court: num("pdfCourt"), schedule: { landscape: kind === "all-courts" && val2("pdfOrientation") === "landscape", names: checked("pdfNames"), clubs: checked("pdfClubs"), status: checked("pdfStatus"), split, warn: (message) => warning = message, preview: (value) => pages = value } });
+      const bytes = await generateReportPdf(t, await loadPdfFont(), { kind, eventId: eid, court: num("pdfCourt"), schedule: { landscape: kind === "all-courts" && val2("pdfOrientation") === "landscape", names: checked("pdfNames"), clubs: checked("pdfClubs"), status: checked("pdfStatus"), split, warn: (message) => warning = message, preview: (value2) => pages = value2 } });
       const deliver = () => {
         offerPdf(bytes, "\u5927\u4F1A\u5E33\u7968-" + kind + ".pdf");
         notice(warning || "PDF\u3092\u4F5C\u6210\u3057\u307E\u3057\u305F\u3002\u4FDD\u5B58\u5148\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044", !!warning);
@@ -112081,13 +112824,13 @@ async function act(action, b) {
       await exportXlsx(t);
       break;
     case "csv":
-      download(new Blob([csv([["\u756A\u53F7", "\u5DE6", "\u53F3", "\u30B9\u30B3\u30A2", "\u52DD\u8005", "\u72B6\u614B"], ...t.matches.filter((m) => m.status !== "bye").map((m) => [label(m, t), lookupEntry(m.left)?.name, lookupEntry(m.right)?.name, (m.retirementGames ?? m.games).map((g) => g.join("-")).join("/"), m.draw ? "\u5F15\u5206\u3051" : lookupEntry(m.winner)?.name, terminationName(m) || m.status])])], { type: "text/csv;charset=utf-8" }), "\u8A66\u5408\u7D50\u679C.csv");
+      download(new Blob([csv([["\u756A\u53F7", "\u5DE6", "\u53F3", "\u30B9\u30B3\u30A2", "\u52DD\u8005", "\u72B6\u614B"], ...t.matches.filter((m) => m.status !== "bye").map((m) => [label(m, t), lookupEntry(m.left)?.name, lookupEntry(m.right)?.name, (m.retirementGames ?? m.games).map((g) => g.join("-")).join("/"), m.draw ? "\u5F15\u5206\u3051" : lookupEntry(m.winner)?.name, terminationName(m) || matchStateName[m.status]])])], { type: "text/csv;charset=utf-8" }), "\u8A66\u5408\u7D50\u679C.csv");
       break;
     case "certificate": {
       const s2 = t.stages.find((s3) => s3.groups.some((g) => g.id === b.dataset.group));
       const ranks = standings(t, b.dataset.group);
       ensure(t.matches.filter((m) => m.groupId === b.dataset.group).every(finished), "\u5168\u8A66\u5408\u3092\u7D42\u4E86\u3057\u3066\u304F\u3060\u3055\u3044");
-      $2("main").innerHTML = button3("\u5370\u5237\u30FBPDF\u4FDD\u5B58", "print") + ranks.filter((r) => r.rank <= 3).map((r) => `<section class="certificate"><h2>\u8CDE \u72B6</h2><h3>${esc(t.name)} ${esc(eventOf(t, s2.eventId).name)}</h3><p>\u7B2C ${r.rank} \u4F4D</p><h2>${name5(r.id)} \u69D8</h2><p>\u4E0A\u8A18\u306E\u6210\u7E3E\u3092\u53CE\u3081\u3089\u308C\u307E\u3057\u305F\u306E\u3067<br>\u3053\u3053\u306B\u305D\u306E\u6804\u8A89\u3092\u79F0\u3048\u8868\u5F70\u3057\u307E\u3059\u3002</p><p>${esc(t.date)}</p></section>`).join("");
+      $2("main").innerHTML = button4("\u5370\u5237\u30FBPDF\u4FDD\u5B58", "print") + ranks.filter((r) => r.rank <= 3).map((r) => `<section class="certificate"><h2>\u8CDE \u72B6</h2><h3>${esc(t.name)} ${esc(eventOf(t, s2.eventId).name)}</h3><p>\u7B2C ${r.rank} \u4F4D</p><h2>${name5(r.id)} \u69D8</h2><p>\u4E0A\u8A18\u306E\u6210\u7E3E\u3092\u53CE\u3081\u3089\u308C\u307E\u3057\u305F\u306E\u3067<br>\u3053\u3053\u306B\u305D\u306E\u6804\u8A89\u3092\u79F0\u3048\u8868\u5F70\u3057\u307E\u3059\u3002</p><p>${esc(t.date)}</p></section>`).join("");
       break;
     }
   }
